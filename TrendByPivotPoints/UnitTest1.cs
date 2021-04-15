@@ -9,6 +9,7 @@ namespace TrendByPivotPoints
         [TestMethod]
         public void TestMethod1()
         {
+            //Первый коммит
         }
     }
 }
