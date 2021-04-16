@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 namespace TrendByPivotPoints
 {
     public class MoneyManager
-    {        
+    {
+        public virtual int GetQntContracts()
+        {
+            return 0;
+        }
     }
 }
