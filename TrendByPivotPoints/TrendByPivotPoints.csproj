@@ -49,9 +49,15 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MoneyManager.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="Account.cs" />
+    <Compile Include="AccountFake.cs" />
+    <Compile Include="AccountReal.cs" />
+    <Compile Include="GlobalMoneyManager.cs" />
+    <Compile Include="Initializator.cs" />
+    <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="GlobalMoneyManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TradingSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
