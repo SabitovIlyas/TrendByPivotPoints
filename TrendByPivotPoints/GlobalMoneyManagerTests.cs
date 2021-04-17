@@ -1,24 +1,32 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TrendByPivotPoints;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace TrendByPivotPoints
+namespace TrendByPivotPoints.Tests
 {
-    [TestClass]
+    [TestClass()]
     public class GlobalMoneyManagerTests
     {
-        [TestMethod]
-        public void GetMoney_Deposit1000RiskValuePrcnt5FreeBalance100_50returned()
+        [TestInitialize]
+        public void TestInitialize()
         {
-            var mm = new LocalMoneyManager();
-            var res = mm.GetQntContracts();
-            //Assert.AreEqual();
+
         }
 
-        public void GetMoney_Deposit1000RiskValuePrcnt5FreeBalance25_25returned()
+        [TestCleanup]
+        public void TestCleanup()
         {
-            var mm = new LocalMoneyManager();
-            var res = mm.GetQntContracts();
-            //Assert.AreEqual();
+
+        }
+
+        [TestMethod()]
+        public void GetMoneyTest()
+        {
+            Assert.Fail();
         }
     }
 }

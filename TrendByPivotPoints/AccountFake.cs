@@ -1,4 +1,5 @@
 ﻿using System;
+using TrendByPivotPoints;
 
 namespace TrendByPivotPoints
 {
