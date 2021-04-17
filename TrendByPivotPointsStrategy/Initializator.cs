@@ -10,16 +10,10 @@ namespace TrendByPivotPoints
     {
         public void Initialize()
         {
-            var globalMoneyManager = new GlobalMoneyManager();
+            var account = new AccountReal();
+            var globalMoneyManager = new GlobalMoneyManager(account, riskValuePrcnt: 5.00);
             var localMoneyManager = new LocalMoneyManager();
             var tradingSystem = new TradingSystem();
-        }
-
-        public void Trad()
-        {
-            var globalMoneyManager = new GlobalMoneyManager();
-            var localMoneyManager = new LocalMoneyManager();
-            var tradingSystem = new TradingSystem();
-        }
+        }       
     }
 }

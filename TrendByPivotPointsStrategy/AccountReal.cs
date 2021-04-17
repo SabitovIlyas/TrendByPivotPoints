@@ -4,14 +4,8 @@ namespace TrendByPivotPoints
 {
     public class AccountReal : Account
     {
-        public double GetDeposit()
-        {
-            throw new NotImplementedException();
-        }
+        public double Deposit => throw new NotImplementedException();
 
-        public double GetFreeBalance()
-        {
-            throw new NotImplementedException();
-        }
+        public double FreeBalance => throw new NotImplementedException();        
     }
 }

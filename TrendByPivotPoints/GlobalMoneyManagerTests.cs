@@ -11,10 +11,15 @@ namespace TrendByPivotPoints.Tests
     [TestClass()]
     public class GlobalMoneyManagerTests
     {
+        AccountFake account;
+
+        GlobalMoneyManager globalMoneyManager;
         [TestInitialize]
         public void TestInitialize()
         {
-
+            account = new AccountFake();
+            account.Deposit = 1000.0;
+            globalMoneyManager = new GlobalMoneyManager(account, riskValuePrcnt: 5.00); ;
         }
 
         [TestCleanup]
@@ -24,9 +29,29 @@ namespace TrendByPivotPoints.Tests
         }
 
         [TestMethod()]
-        public void GetMoneyTest()
+        public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance100_returned50()
         {
-            Assert.Fail();
+            //arrange            
+            var expected = 50;
+            account.FreeBalance = 100;
+
+            //act
+            var actual = globalMoneyManager.GetMoney();
+            //assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance25_returned25()
+        {
+            //arrange            
+            var expected = 25;
+            account.FreeBalance = 25;
+
+            //act
+            var actual = globalMoneyManager.GetMoney();
+            //assert
+            Assert.AreEqual(expected, actual);
         }
     }
 }

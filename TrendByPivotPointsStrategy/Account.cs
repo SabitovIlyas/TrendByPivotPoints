@@ -2,7 +2,7 @@
 {
     public interface Account
     {
-        double GetDeposit();
-        double GetFreeBalance();
+        double Deposit { get;}
+        double FreeBalance { get;}      
     }
 }
