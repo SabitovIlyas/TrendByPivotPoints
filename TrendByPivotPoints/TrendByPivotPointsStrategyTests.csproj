@@ -50,7 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
+    <Compile Include="GlobalMoneyManagerFake.cs" />
     <Compile Include="GlobalMoneyManagerTests.cs" />
+    <Compile Include="LocalMoneyManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
