@@ -1,4 +1,6 @@
-﻿namespace TrendByPivotPoints
+﻿using System.Collections.Generic;
+
+namespace TrendByPivotPoints
 {
     public interface Account
     {

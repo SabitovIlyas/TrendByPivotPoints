@@ -57,7 +57,10 @@
     <Compile Include="GlobalMoneyManagerReal.cs" />
     <Compile Include="Initializator.cs" />
     <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="Pattern.cs" />
+    <Compile Include="PatternPivotPoints.cs" />
     <Compile Include="Position.cs" />
+    <Compile Include="PositionOpenCasePatternPivotPoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TradingSystem.cs" />
     <Compile Include="TrendByPivotPointsStrategy.cs" />
