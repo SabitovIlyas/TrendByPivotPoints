@@ -1,10 +1,9 @@
-﻿namespace TrendByPivotPoints
+﻿using System.Collections.Generic;
+
+namespace TrendByPivotPoints
 {
-    public class PatternPivotPoints
+    public interface PatternPivotPoints
     {
-        public bool Check()
-        {
-            return false;
-        }
+        bool Check(List<double> extremums);
     }
 }
