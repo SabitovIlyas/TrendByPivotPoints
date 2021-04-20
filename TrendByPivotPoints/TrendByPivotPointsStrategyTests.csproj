@@ -53,7 +53,10 @@
     <Compile Include="GlobalMoneyManagerFake.cs" />
     <Compile Include="GlobalMoneyManagerTests.cs" />
     <Compile Include="LocalMoneyManagerTests.cs" />
-    <Compile Include="PatternPivotPointsTests.cs" />
+    <Compile Include="PatternPivotPoints_1g2Tests.cs" />
+    <Compile Include="PatternPivotPoints_1l2g3Tests.cs" />
+    <Compile Include="PatternPivotPoints_1g2l3Tests.cs" />
+    <Compile Include="PatternPivotPoints_1l2Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
