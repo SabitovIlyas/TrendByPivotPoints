@@ -54,6 +54,7 @@
     <Compile Include="GlobalMoneyManagerTests.cs" />
     <Compile Include="LocalMoneyManagerTests.cs" />
     <Compile Include="PatternPivotPointsTests.cs" />
+    <Compile Include="PivotPointsIndicatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
