@@ -47,9 +47,22 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="TSLab.DataSource">
+      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.DataSource.dll</HintPath>
+    </Reference>
+    <Reference Include="TSLab.Script">
+      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.dll</HintPath>
+    </Reference>
+    <Reference Include="TSLab.Script.Handlers">
+      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.Handlers.dll</HintPath>
+    </Reference>
+    <Reference Include="TSLab.Utility">
+      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Utility.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
+    <Compile Include="DataBarsForTesting.cs" />
     <Compile Include="GlobalMoneyManagerFake.cs" />
     <Compile Include="GlobalMoneyManagerTests.cs" />
     <Compile Include="LocalMoneyManagerTests.cs" />
@@ -57,7 +70,7 @@
     <Compile Include="PatternPivotPoints_1l2g3Tests.cs" />
     <Compile Include="PatternPivotPoints_1g2l3Tests.cs" />
     <Compile Include="PatternPivotPoints_1l2Tests.cs" />
-    <Compile Include="PatternPivotPointsTests.cs" />
+	<Compile Include="PivotPointsIndicatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

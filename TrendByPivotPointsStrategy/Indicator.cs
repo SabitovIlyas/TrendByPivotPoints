@@ -9,6 +9,6 @@ namespace TrendByPivotPointsStrategy
     public class Indicator
     {
         public int BarNumber { get; set; }
-        public int Value { get; set; }
+        public double Value { get; set; }
     }
 }

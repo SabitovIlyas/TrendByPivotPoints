@@ -13,6 +13,7 @@ namespace TrendByPivotPointsStrategy
     {
         public void Execute(IContext ctx, ISecurity sec)
         {
+            var b = sec.Bars[0];
             throw new NotImplementedException();
         }
     }
