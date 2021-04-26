@@ -6,7 +6,17 @@ using System.Threading.Tasks;
 
 namespace TrendByPivotPointsStrategy
 {
-    class TradingSystem
+    public class TradingSystem    
     {
+        List<Bar> bars;
+        public TradingSystem(List<Bar> bars)
+        {
+            this.bars = bars;
+        }
+
+        public void Update(int barNumber)
+        {
+
+        }
     }
 }

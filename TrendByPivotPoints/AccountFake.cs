@@ -1,5 +1,6 @@
 ﻿using System;
 using TrendByPivotPoints;
+using TSLab.Script;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -12,5 +13,7 @@ namespace TrendByPivotPointsStrategy
 
         public double GOselling { get; set; }
         public double Rate { get; set; }
+
+        public ISecurity Security => throw new NotImplementedException();
     }
 }

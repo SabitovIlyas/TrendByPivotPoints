@@ -1,9 +1,14 @@
 ﻿using System;
+using TSLab.Script;
+using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
     public class AccountReal : Account
     {
+        public ISecurity Security { get => sec;}
+        ISecurity sec;
+
         public double Deposit => throw new NotImplementedException();
 
         public double FreeBalance => throw new NotImplementedException();
@@ -12,6 +17,11 @@ namespace TrendByPivotPointsStrategy
 
         public double GOselling => throw new NotImplementedException();
 
-        public double Rate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public double Rate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }        
+
+        public AccountReal(ISecurity sec)
+        {
+            this.sec = sec;
+        }
     }
 }

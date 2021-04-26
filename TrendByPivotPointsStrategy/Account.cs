@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using TSLab.Script;
+using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -12,5 +14,7 @@ namespace TrendByPivotPointsStrategy
         double GOselling { get; }
 
         double Rate { get; set; }
+
+        ISecurity Security { get; }
     }
 }

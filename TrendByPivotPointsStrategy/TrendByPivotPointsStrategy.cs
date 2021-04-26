@@ -14,7 +14,8 @@ namespace TrendByPivotPointsStrategy
         public void Execute(IContext ctx, ISecurity sec)
         {
             var system = new MainSystem();
-            system.Initialize();
+            var bars = GetBars(sec);
+            system.Initialize(sec, bars);
             system.Run();
             system.Paint();            
         }
