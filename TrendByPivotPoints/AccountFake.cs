@@ -1,7 +1,7 @@
 ﻿using System;
 using TrendByPivotPoints;
 
-namespace TrendByPivotPoints
+namespace TrendByPivotPointsStrategy
 {
     public class AccountFake : Account
     {

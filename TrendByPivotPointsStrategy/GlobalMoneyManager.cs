@@ -1,4 +1,4 @@
-﻿namespace TrendByPivotPoints
+﻿namespace TrendByPivotPointsStrategy
 {
     public interface GlobalMoneyManager
     {

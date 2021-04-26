@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TrendByPivotPoints;
+using TrendByPivotPointsStrategy;
 using System;
 using System.Collections.Generic;
 using System.Linq;

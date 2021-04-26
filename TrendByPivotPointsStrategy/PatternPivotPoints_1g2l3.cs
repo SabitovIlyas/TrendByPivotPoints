@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendByPivotPoints
+namespace TrendByPivotPointsStrategy
 {
     public class PatternPivotPoints_1g2l3 : PatternPivotPoints
     {

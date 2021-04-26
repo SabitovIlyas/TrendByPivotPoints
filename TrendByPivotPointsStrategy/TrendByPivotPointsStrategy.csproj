@@ -40,16 +40,16 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="TSLab.DataSource">
-      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.DataSource.dll</HintPath>
+      <HintPath>..\TSLab.DataSource.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Script">
-      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.dll</HintPath>
+      <HintPath>..\TSLab.Script.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Script.Handlers">
-      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.Handlers.dll</HintPath>
+      <HintPath>..\TSLab.Script.Handlers.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Utility">
-      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Utility.dll</HintPath>
+      <HintPath>..\TSLab.Utility.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -60,7 +60,7 @@
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
     <Compile Include="Indicator.cs" />
-    <Compile Include="Initializator.cs" />
+    <Compile Include="MainSystem.cs" />
     <Compile Include="LocalMoneyManager.cs" />
     <Compile Include="PatternPivotPoints.cs" />
     <Compile Include="PatternPivotPoints_1g2.cs" />

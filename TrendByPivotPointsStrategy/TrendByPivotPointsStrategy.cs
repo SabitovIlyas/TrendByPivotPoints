@@ -13,8 +13,18 @@ namespace TrendByPivotPointsStrategy
     {
         public void Execute(IContext ctx, ISecurity sec)
         {
-            var b = sec.Bars[0];
-            throw new NotImplementedException();
+            var system = new MainSystem();
+            system.Initialize();
+            system.Run();
+            system.Paint();            
+        }
+
+        public List<Bar> GetBars(ISecurity sec)
+        {
+            var bars = new List<Bar>();
+            foreach (var bar in sec.Bars)
+                bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close });
+            return bars;
         }
     }
 }

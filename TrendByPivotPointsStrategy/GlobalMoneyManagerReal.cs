@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TrendByPivotPoints
+namespace TrendByPivotPointsStrategy
 {
     public class GlobalMoneyManagerReal : GlobalMoneyManager
     {
