@@ -8,7 +8,7 @@ using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
-    class TrendByPivotPointsStrategy : IExternalScript
+    public class TrendByPivotPointsStrategy : IExternalScript
 
     {
         public void Execute(IContext ctx, ISecurity sec)
@@ -17,7 +17,7 @@ namespace TrendByPivotPointsStrategy
             var bars = GetBars(sec);
             system.Initialize(sec, bars);
             system.Run();
-            system.Paint();            
+            system.Paint(ctx, sec);            
         }
 
         public List<Bar> GetBars(ISecurity sec)
