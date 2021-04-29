@@ -21,7 +21,7 @@ namespace TrendByPivotPointsStrategy
             var account = new AccountReal(sec);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
-            tradingSystem = new TradingSystem(bars);
+            tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account);
             this.bars = bars;
         }
         
@@ -29,7 +29,7 @@ namespace TrendByPivotPointsStrategy
         {
             for (var i = 0; i < bars.Count; i++)
             {
-                tradingSystem.Update(i);
+                tradingSystem.Update(i, lo);
             }
         }
 
