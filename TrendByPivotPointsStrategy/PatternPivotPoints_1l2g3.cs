@@ -8,8 +8,12 @@ namespace TrendByPivotPointsStrategy
         {
             var last3extremums = new List<double>();
             var countExtremumsInPattern = 3;
+
+            if (extremums.Count < countExtremumsInPattern)
+                return false;
+
             var lastIndex = extremums.Count - 1;
-            var startIndex = lastIndex - (countExtremumsInPattern - 1);
+            var startIndex = lastIndex - (countExtremumsInPattern - 1);            
 
             for (var i = startIndex; i <= lastIndex; i++)
                 last3extremums.Add(extremums[i]);

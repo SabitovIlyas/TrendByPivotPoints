@@ -9,13 +9,15 @@ using TSLab.Script.Handlers;
 namespace TrendByPivotPointsStrategy
 {
     public class TrendByPivotPointsStrategy : IExternalScript
-
-    {
+    {         
+        public static IContext ctx;
+    
         public void Execute(IContext ctx, ISecurity sec)
-        {
+        {            
             var system = new MainSystem();
             var bars = GetBars(sec);
-            system.Initialize(sec, bars);
+            TrendByPivotPointsStrategy.ctx = ctx;
+            system.Initialize(sec, bars);            
             system.Run();
             system.Paint(ctx, sec);            
         }
@@ -24,7 +26,7 @@ namespace TrendByPivotPointsStrategy
         {
             var bars = new List<Bar>();
             foreach (var bar in sec.Bars)
-                bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close });
+                bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date });
             return bars;
         }
     }

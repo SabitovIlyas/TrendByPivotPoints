@@ -21,14 +21,14 @@ namespace TrendByPivotPointsStrategy
             var account = new AccountReal(sec);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
-            tradingSystem = new TradingSystem(bars);
-            this.bars = bars;
+            tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account);
+            this.bars = bars;            
         }
         
         public void Run()
         {
             for (var i = 0; i < bars.Count; i++)
-            {
+            {                
                 tradingSystem.Update(i);
             }
         }
@@ -37,7 +37,7 @@ namespace TrendByPivotPointsStrategy
         {
             var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
             var color = new TsLabColor(SystemColor.Green.ToArgb());
-            pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);           
+            pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);            
 
             var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
 

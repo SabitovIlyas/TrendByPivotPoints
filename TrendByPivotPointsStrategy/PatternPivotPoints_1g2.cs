@@ -9,6 +9,10 @@ namespace TrendByPivotPointsStrategy
             var last2extremums = new List<double>();
             var countExtremumsInPattern = 2;
             var lastIndex = extremums.Count - 1;
+
+            if (extremums.Count < countExtremumsInPattern)
+                return false;
+
             var startIndex = lastIndex - (countExtremumsInPattern - 1);
 
             for (var i = startIndex; i <= lastIndex; i++)
