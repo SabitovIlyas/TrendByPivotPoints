@@ -18,11 +18,12 @@ namespace TrendByPivotPointsStrategy
         List<Bar> bars;
         public void Initialize(ISecurity sec, List<Bar> bars)
         {
-            var account = new AccountReal(sec);
+            var account = new AccountLab(sec);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account);
-            this.bars = bars;            
+            this.bars = bars;           
+
         }
         
         public void Run()
@@ -40,11 +41,12 @@ namespace TrendByPivotPointsStrategy
             pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);            
 
             var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
-
-            pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);            
+            pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);            
             pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
 
-            
+            //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
+            //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
+            //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
         }
     }
 }

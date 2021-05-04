@@ -6,15 +6,19 @@ namespace TrendByPivotPointsStrategy
     {
         public bool Check(List<double> extremums)
         {
-            var last3highs = new List<double>();
-            var countHighsInPattern = 3;
+            var last3extremums = new List<double>();
+            var countExtremumsInPattern = 3;
+
+            if (extremums.Count < countExtremumsInPattern)
+                return false;
+
             var lastIndex = extremums.Count - 1;
-            var startIndex = lastIndex - (countHighsInPattern - 1); //
+            var startIndex = lastIndex - (countExtremumsInPattern - 1); //
 
             for (var i = startIndex; i <= lastIndex; i++)
-                last3highs.Add(extremums[i]);
+                last3extremums.Add(extremums[i]);
 
-            return (last3highs[1] > last3highs[0]) && (last3highs[2] < last3highs[1]);
+            return (last3extremums[1] > last3extremums[0]) && (last3extremums[2] < last3extremums[1]);
         }
     }
 }
