@@ -31,6 +31,12 @@ namespace TrendByPivotPointsStrategy
         public TradingSystem(List<Bar> bars, LocalMoneyManager localMoneyManager, Account account)
         {
             this.bars = bars;
+            if (bars == null)
+                throw new ArgumentNullException("List<Bar> bars", "В конструктор передан null вместо списка баров");
+
+            if (bars.Count == 0)
+                throw new Exception("В конструктор передан пустой список баров");
+
             this.localMoneyManager = localMoneyManager;
             this.account = account;
             sec = account.Security;
@@ -50,6 +56,7 @@ namespace TrendByPivotPointsStrategy
             counter++;
             TrendByPivotPointsStrategy.ctx.Log("counter " + counter.ToString());
             var subBars = GetSubBars(barNumber);
+
             var lastBar = subBars.Last();
 
             var lows = pivotPointsIndicator.GetLows(subBars, 3, 3);
@@ -135,8 +142,8 @@ namespace TrendByPivotPointsStrategy
                             var lastPrice = subBars.Last().Close;
                             if (lastPrice > stopPrice)
                             {
-                                //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
-                                var contracts = 1;
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                                //var contracts = 1;
                                 sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                 takeProfitLong = 0;
                             }
@@ -146,6 +153,8 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
+                TrendByPivotPointsStrategy.ctx.Log("le.EntryPrice = " + le.EntryPrice.ToString());
+
                 var low = lows.Last();
 
                 var riskValue = le.EntryPrice - (low.Value - 1);
@@ -153,6 +162,8 @@ namespace TrendByPivotPointsStrategy
                 if (takeProfitLong == 0)
                     takeProfitLong = le.EntryPrice + riskValue*2;
                 var stopLoss = low.Value - 1;
+                //var stopLoss = low.Value - riskValue * 2;
+
 
                 if (IsAboutEndOfSession(lastBar.Date))
                     le.CloseAtMarket(barNumber + 1, "LXT");
@@ -185,8 +196,8 @@ namespace TrendByPivotPointsStrategy
                             var lastPrice = subBars.Last().Close;
                             if (lastPrice < stopPrice)
                             {
-                                //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
-                                var contracts = 1;
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
+                                //var contracts = 1;
                                 sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
                                 takeProfitShort = 0;
                             }
@@ -203,6 +214,7 @@ namespace TrendByPivotPointsStrategy
                 if (takeProfitShort == 0)
                     takeProfitShort = se.EntryPrice - riskValue * 2;
                 var stopLoss = high.Value + 1;
+                //var stopLoss = high.Value + riskValue * 2;
 
                 if (IsAboutEndOfSession(lastBar.Date))
                     se.CloseAtMarket(barNumber + 1, "SXT");

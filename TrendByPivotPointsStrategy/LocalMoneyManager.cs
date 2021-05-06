@@ -21,6 +21,11 @@ namespace TrendByPivotPointsStrategy
 
         public virtual int GetQntContracts(double enterPrice, double stopPrice, Position position)
         {
+            TrendByPivotPointsStrategy.ctx.Log("enterPrice = " + enterPrice.ToString());
+            TrendByPivotPointsStrategy.ctx.Log("stopPrice = " + stopPrice.ToString());
+            TrendByPivotPointsStrategy.ctx.Log("position = " + position.ToString());
+
+
             var go = 0.0;
             switch (position)
             {
@@ -28,7 +33,9 @@ namespace TrendByPivotPointsStrategy
                     {
                         if (stopPrice >= enterPrice)
                             return 0;
+
                         go = account.GObying;
+                        TrendByPivotPointsStrategy.ctx.Log("go = " + go.ToString());
 
                     }
                     break;
@@ -41,15 +48,29 @@ namespace TrendByPivotPointsStrategy
                     break;
                 case Position.LongAndShort:                    
                     break;
-            }
+            }            
 
             var money = globalMoneyManager.GetMoney();
+
+            TrendByPivotPointsStrategy.ctx.Log("money = " + money.ToString());
+
             var riskMoney = Math.Abs(enterPrice - stopPrice);
-            var contractsByGO = (int)(money / go);
+
+            TrendByPivotPointsStrategy.ctx.Log("riskMoney = " + riskMoney.ToString());
+
+            //var contractsByGO = (int)(money / go); // надо вычислять это значение исходя из общего депозита
+            var contractsByGO = 1000000;
+
+            TrendByPivotPointsStrategy.ctx.Log("contractsByGO = " + contractsByGO.ToString());
 
             if (currency == Currency.USD)
                 money = money / account.Rate;
-            var contractsByRiskMoney = (int)(money / riskMoney);            
+
+            TrendByPivotPointsStrategy.ctx.Log("money = " + money.ToString());
+
+            var contractsByRiskMoney = (int)(money / riskMoney);
+
+            TrendByPivotPointsStrategy.ctx.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
 
             return Math.Min(contractsByRiskMoney, contractsByGO);
         }

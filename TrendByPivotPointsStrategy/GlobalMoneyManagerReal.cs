@@ -19,6 +19,8 @@ namespace TrendByPivotPointsStrategy
         public double GetMoney()
         {
             var deposit = account.Deposit;
+            TrendByPivotPointsStrategy.ctx.Log("deposit = " + deposit.ToString());
+
             var freeBalance = account.FreeBalance;
             var partofDeposit = riskValue * deposit;
             return Math.Min(partofDeposit, freeBalance);

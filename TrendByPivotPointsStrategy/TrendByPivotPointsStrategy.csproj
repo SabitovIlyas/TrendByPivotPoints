@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="AccountLab.cs" />
     <Compile Include="AccountReal.cs" />
     <Compile Include="Bar.cs" />
     <Compile Include="Currency.cs" />
