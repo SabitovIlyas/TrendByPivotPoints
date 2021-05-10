@@ -21,12 +21,24 @@ namespace TrendByPivotPointsStrategy
         PatternPivotPoints_1g2g3 patternPivotPoints_1g2g3;
         PatternPivotPoints_1g2l3 patternPivotPoints_1g2l3;
         PatternPivotPoints_1l2l3 patternPivotPoints_1l2l3;
-
-
         Double takeProfitLong;
         Double takeProfitShort;
         int counter;
-        DateTime previousBarDateTime;
+
+        public Logger Logger
+        {
+            get
+            {
+                return logger;
+            }
+
+            set
+            {
+                logger = value;
+            }
+        }
+
+        Logger logger = new NullLogger();
 
         public TradingSystem(List<Bar> bars, LocalMoneyManager localMoneyManager, Account account)
         {
@@ -54,12 +66,16 @@ namespace TrendByPivotPointsStrategy
         {
             var le = sec.Positions.GetLastActiveForSignal("LE");
             counter++;
-            TrendByPivotPointsStrategy.ctx.Log("counter " + counter.ToString());
+            logger.Log("counter " + counter.ToString());
             var subBars = GetSubBars(barNumber);
 
             var lastBar = subBars.Last();
 
+            logger.Log("subBars.Count = " + subBars.Count.ToString());
+            logger.Log("barNumber = " + barNumber.ToString());
             var lows = pivotPointsIndicator.GetLows(subBars, 3, 3);
+            logger.Log("1 lows.Count = " + lows.Count.ToString());
+
             var lowsValues = new List<double>();
             foreach (var low in lows)
                 lowsValues.Add(low.Value);
@@ -89,52 +105,10 @@ namespace TrendByPivotPointsStrategy
 
             if (le == null)
             {
-              
-
-                #region Закомментированный код с фильтрами
-
-
-
-                //var compressedSec2 = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
-                //var compressedBars2 = new List<Bar>();
-
-                //foreach (var compressedBar in compressedSec2.Bars)
-                //    if (compressedBar.Date < sec.Bars[barNumber].Date)
-                //    {
-                //        compressedBars2.Add(new Bar() { Open = compressedBar.Open, High = compressedBar.High, Low = compressedBar.Low, Close = compressedBar.Close, Date = compressedBar.Date });
-                //    }
-
-                //var lowsFilter2 = pivotPointsIndicator.GetLows(compressedBars2, 3, 3);
-
-                //var valuesFilterLows2 = new List<double>();
-                //foreach (var low in lowsFilter2)
-                //    valuesFilterLows2.Add(low.Value);
-
-                //var highsFilter2 = pivotPointsIndicator.GetHighs(compressedBars2, 3, 3);
-
-                //var valuesFilterHighs2 = new List<double>();
-                //foreach (var high in highsFilter2)
-                //    valuesFilterHighs2.Add(high.Value);
-
-
-                #endregion
-
-
-                //TrendByPivotPointsStrategy.ctx.Log("values.Count = " + valuesFilterHighs.Count.ToString());
-
-
                 if (!IsAboutEndOfSession(lastBar.Date))
                 {
-                    //if (patternPivotPoints_1l2g3.Check(values)
-                    //    && patternPivotPoints_1l2g3.Check(valuesFilterLows)
-                    //    && patternPivotPoints_1l2g3.Check(valuesFilterLows2))
-                    //if (patternPivotPoints_1l2g3.Check(values) && patternPivotPoints_1g2.Check(valuesFilterLows) && !patternPivotPoints_1l2.Check(valuesFilterHighs))
-                      //if (patternPivotPoints_1l2g3.Check(lowsValues) && patternPivotPoints_1g2g3.Check(valuesFilterLows) && !patternPivotPoints_1l2.Check(valuesFilterHighs))
-                        //if (patternPivotPoints_1l2g3.Check(values) && patternPivotPoints_1g2.Check(valuesFilterLows))
-                        //if (patternPivotPoints_1l2g3.Check(values))
-
-                        if (patternPivotPoints_1g2.Check(lowsValues) && patternPivotPoints_1g2g3.Check(valuesFilterLows) && !patternPivotPoints_1l2.Check(valuesFilterHighs))
-                        {
+                    if (patternPivotPoints_1g2.Check(lowsValues) && patternPivotPoints_1g2g3.Check(valuesFilterLows) && !patternPivotPoints_1l2.Check(valuesFilterHighs))
+                    {
                         if (barNumber == lows.Last().BarNumber + 3)
                         {
                             var lowLast = lows.Last();
@@ -142,8 +116,8 @@ namespace TrendByPivotPointsStrategy
                             var lastPrice = subBars.Last().Close;
                             if (lastPrice > stopPrice)
                             {
-                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
-                                //var contracts = 1;
+                                //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                                var contracts = 1;
                                 sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                 takeProfitLong = 0;
                             }
@@ -153,26 +127,39 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
-                TrendByPivotPointsStrategy.ctx.Log("le.EntryPrice = " + le.EntryPrice.ToString());
-
+                logger.Log("le.EntryPrice = " + le.EntryPrice.ToString());
+                logger.Log("lows.Count = " + lows.Count.ToString());
+                if (lows.Count == 0)
+                    return;
                 var low = lows.Last();
 
-                var riskValue = le.EntryPrice - (low.Value - 1);
+                logger.Log("Добрался до сюда.");
+
+                var stopLoss = low.Value - 1;
+                var riskValue = le.EntryPrice - stopLoss;
 
                 if (takeProfitLong == 0)
-                    takeProfitLong = le.EntryPrice + riskValue*2;
-                var stopLoss = low.Value - 1;
-                //var stopLoss = low.Value - riskValue * 2;
-
+                    takeProfitLong = le.EntryPrice + riskValue * 2;
 
                 if (IsAboutEndOfSession(lastBar.Date))
                     le.CloseAtMarket(barNumber + 1, "LXT");
 
                 le.CloseAtStop(barNumber + 1, stopLoss, "LXS");
+
+                logger.Log("low.Value = " + low.Value.ToString());
+                logger.Log("stopLoss = " + stopLoss.ToString());
+
+                logger.Log("riskValue = " + riskValue.ToString());
+                logger.Log("riskValue * 2 = " + (riskValue * 2).ToString());
+                logger.Log("le.EntryPrice = " + le.EntryPrice.ToString());
+                logger.Log("takeProfitLong = " + takeProfitLong.ToString());
+
                 le.CloseAtProfit(barNumber + 1, takeProfitLong, "LXP");
             }
 
             #endregion
+
+            #region Short
 
             var se = sec.Positions.GetLastActiveForSignal("SE");
 
@@ -186,7 +173,6 @@ namespace TrendByPivotPointsStrategy
             {
                 if (!IsAboutEndOfSession(lastBar.Date))
                 {
-                    //if (patternPivotPoints_1g2l3.Check(highsValues) && patternPivotPoints_1l2l3.Check(valuesFilterHighs) && !patternPivotPoints_1g2.Check(valuesFilterLows))
                     if (patternPivotPoints_1l2.Check(highsValues) && patternPivotPoints_1l2l3.Check(valuesFilterHighs) && !patternPivotPoints_1g2.Check(valuesFilterLows))
                     {
                         if (barNumber == highs.Last().BarNumber + 3)
@@ -196,8 +182,8 @@ namespace TrendByPivotPointsStrategy
                             var lastPrice = subBars.Last().Close;
                             if (lastPrice < stopPrice)
                             {
-                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
-                                //var contracts = 1;
+                                //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
+                                var contracts = 1;
                                 sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
                                 takeProfitShort = 0;
                             }
@@ -207,23 +193,34 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
+                if (highs.Count == 0)
+                    return;
+
                 var high = highs.Last();
 
-                var riskValue = (high.Value + 1) - se.EntryPrice;
+                var stopLoss = high.Value + 1;
+                var riskValue = stopLoss - se.EntryPrice;
 
                 if (takeProfitShort == 0)
                     takeProfitShort = se.EntryPrice - riskValue * 2;
-                var stopLoss = high.Value + 1;
-                //var stopLoss = high.Value + riskValue * 2;
 
                 if (IsAboutEndOfSession(lastBar.Date))
                     se.CloseAtMarket(barNumber + 1, "SXT");
 
                 se.CloseAtStop(barNumber + 1, stopLoss, "SXS");
+
+                logger.Log("high.Value = " + high.Value.ToString());
+                logger.Log("stopLoss = " + stopLoss.ToString());
+
+                logger.Log("riskValue = " + riskValue.ToString());
+                logger.Log("riskValue * 2 = " + (riskValue * 2).ToString());
+                logger.Log("se.EntryPrice = " + se.EntryPrice.ToString());
+                logger.Log("takeProfitShort = " + takeProfitShort.ToString());
+
                 se.CloseAtProfit(barNumber + 1, takeProfitShort, "SXP");
             }
 
-            previousBarDateTime = lastBar.Date;
+            #endregion
         }
 
         private List<Bar> GetSubBars(int barNumber)
@@ -240,14 +237,6 @@ namespace TrendByPivotPointsStrategy
             if (barDateTime.Hour >= 23 && barDateTime.Minute >= 40)
                 return true;
             return false;
-        }
-
-        private bool IsNewTradingSession(DateTime currentBarDateTime)
-        {
-            if (currentBarDateTime.Date > previousBarDateTime.Date)               
-                return true;            
-
-            return false;
-        }
+        }        
     }
 }

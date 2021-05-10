@@ -16,14 +16,14 @@ namespace TrendByPivotPointsStrategy
     {
         TradingSystem tradingSystem;
         List<Bar> bars;
-        public void Initialize(ISecurity sec, List<Bar> bars)
+        public void Initialize(ISecurity sec, IContext ctx, List<Bar> bars)
         {
             var account = new AccountLab(sec);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account);
+            tradingSystem.Logger = new RealLogger(ctx);
             this.bars = bars;           
-
         }
         
         public void Run()

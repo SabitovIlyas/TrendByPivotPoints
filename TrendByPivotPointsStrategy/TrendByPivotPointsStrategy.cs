@@ -17,7 +17,7 @@ namespace TrendByPivotPointsStrategy
             var system = new MainSystem();
             var bars = GetBars(sec);
             TrendByPivotPointsStrategy.ctx = ctx;
-            system.Initialize(sec, bars);            
+            system.Initialize(sec, ctx, bars);            
             system.Run();
             system.Paint(ctx, sec);            
         }
