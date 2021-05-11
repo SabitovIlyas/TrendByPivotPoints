@@ -55,14 +55,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="AccountLab.cs" />
     <Compile Include="AccountReal.cs" />
     <Compile Include="Bar.cs" />
     <Compile Include="Currency.cs" />
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
     <Compile Include="Indicator.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MainSystem.cs" />
     <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="NullDataBar.cs" />
+    <Compile Include="NullLogger.cs" />
     <Compile Include="PatternPivotPoints.cs" />
     <Compile Include="PatternPivotPoints_1g2.cs" />
     <Compile Include="PatternPivotPoints_1g2l3.cs" />
@@ -72,6 +76,8 @@
     <Compile Include="Position.cs" />
     <Compile Include="PositionOpenCasePatternPivotPoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RealLogger.cs" />
+    <Compile Include="RealSecurity.cs" />
     <Compile Include="TradingSystem.cs" />
     <Compile Include="TrendByPivotPointsStrategy.cs" />
   </ItemGroup>

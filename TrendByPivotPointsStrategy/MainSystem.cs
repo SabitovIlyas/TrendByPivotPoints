@@ -16,20 +16,21 @@ namespace TrendByPivotPointsStrategy
     {
         TradingSystem tradingSystem;
         List<Bar> bars;
-        public void Initialize(ISecurity sec, List<Bar> bars)
+        public void Initialize(ISecurity sec, IContext ctx, List<Bar> bars)
         {
-            var account = new AccountReal(sec);
+            var account = new AccountLab(sec);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account);
-            this.bars = bars;
+            tradingSystem.Logger = new RealLogger(ctx);
+            this.bars = bars;           
         }
         
         public void Run()
         {
             for (var i = 0; i < bars.Count; i++)
-            {
-                tradingSystem.Update(i, lo);
+            {                
+                tradingSystem.Update(i);
             }
         }
 
@@ -37,14 +38,15 @@ namespace TrendByPivotPointsStrategy
         {
             var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
             var color = new TsLabColor(SystemColor.Green.ToArgb());
-            pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);           
+            pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);            
 
             var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
+            pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);            
+            pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);            
 
-            pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);            
-            pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-
-            
+            //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
+            //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
+            //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
         }
     }
 }
