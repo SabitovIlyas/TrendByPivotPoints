@@ -8,7 +8,7 @@ using TSLab.Script;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystem    
+    public class TradingSystem
     {
         List<Bar> bars;
         LocalMoneyManager localMoneyManager;
@@ -61,10 +61,10 @@ namespace TrendByPivotPointsStrategy
             patternPivotPoints_1g2l3 = new PatternPivotPoints_1g2l3();
             patternPivotPoints_1l2l3 = new PatternPivotPoints_1l2l3();
         }
-        
+
         public void Update(int barNumber)
         {
-            var le = sec.Positions.GetLastActiveForSignal("LE");
+            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
             counter++;
             logger.Log("counter " + counter.ToString());
             var subBars = GetSubBars(barNumber);
@@ -123,45 +123,42 @@ namespace TrendByPivotPointsStrategy
                             }
                         }
                     }
-                }                
+                }
             }
             else
             {
-                logger.Log("le.EntryPrice = " + le.EntryPrice.ToString());
-                logger.Log("lows.Count = " + lows.Count.ToString());
                 if (lows.Count == 0)
                     return;
                 var low = lows.Last();
-
-                logger.Log("Добрался до сюда.");
-
                 var stopLoss = low.Value - 1;
                 var riskValue = le.EntryPrice - stopLoss;
 
-                if (takeProfitLong == 0)
-                    takeProfitLong = le.EntryPrice + riskValue * 2;
-
-                if (IsAboutEndOfSession(lastBar.Date))
-                    le.CloseAtMarket(barNumber + 1, "LXT");
-
-                le.CloseAtStop(barNumber + 1, stopLoss, "LXS");
-
                 logger.Log("low.Value = " + low.Value.ToString());
                 logger.Log("stopLoss = " + stopLoss.ToString());
-
                 logger.Log("riskValue = " + riskValue.ToString());
                 logger.Log("riskValue * 2 = " + (riskValue * 2).ToString());
                 logger.Log("le.EntryPrice = " + le.EntryPrice.ToString());
                 logger.Log("takeProfitLong = " + takeProfitLong.ToString());
 
-                le.CloseAtProfit(barNumber + 1, takeProfitLong, "LXP");
+                if (takeProfitLong == 0)
+                    takeProfitLong = le.EntryPrice + riskValue * 2;
+
+                logger.Log("takeProfitLong = " + takeProfitLong.ToString());
+
+                if (IsAboutEndOfSession(lastBar.Date))
+                    le.CloseAtMarket(barNumber + 1, "LXT");
+
+                //le.CloseAtStop(barNumber + 1, stopLoss, "LXS");
+                le.CloseAtStop(barNumber + 1, stopLoss, 100, "LXS");
+                //le.CloseAtProfit(barNumber + 1, takeProfitLong, "LXP");
+                le.CloseAtProfit(barNumber + 1, takeProfitLong, 100, "LXP");
             }
 
             #endregion
 
             #region Short
 
-            var se = sec.Positions.GetLastActiveForSignal("SE");
+            var se = sec.Positions.GetLastActiveForSignal("SE", barNumber);
 
             var highs = pivotPointsIndicator.GetHighs(subBars, 3, 3);
             var highsValues = new List<double>();
@@ -201,23 +198,25 @@ namespace TrendByPivotPointsStrategy
                 var stopLoss = high.Value + 1;
                 var riskValue = stopLoss - se.EntryPrice;
 
-                if (takeProfitShort == 0)
-                    takeProfitShort = se.EntryPrice - riskValue * 2;
-
-                if (IsAboutEndOfSession(lastBar.Date))
-                    se.CloseAtMarket(barNumber + 1, "SXT");
-
-                se.CloseAtStop(barNumber + 1, stopLoss, "SXS");
-
                 logger.Log("high.Value = " + high.Value.ToString());
                 logger.Log("stopLoss = " + stopLoss.ToString());
-
                 logger.Log("riskValue = " + riskValue.ToString());
                 logger.Log("riskValue * 2 = " + (riskValue * 2).ToString());
                 logger.Log("se.EntryPrice = " + se.EntryPrice.ToString());
                 logger.Log("takeProfitShort = " + takeProfitShort.ToString());
 
-                se.CloseAtProfit(barNumber + 1, takeProfitShort, "SXP");
+                if (takeProfitShort == 0)
+                    takeProfitShort = se.EntryPrice - riskValue * 2;
+
+                logger.Log("takeProfitShort = " + takeProfitShort.ToString());
+
+                if (IsAboutEndOfSession(lastBar.Date))
+                    se.CloseAtMarket(barNumber + 1, "SXT");
+
+                //se.CloseAtStop(barNumber + 1, stopLoss, "SXS");
+                se.CloseAtStop(barNumber + 1, stopLoss, 100, "SXS");
+                //se.CloseAtProfit(barNumber + 1, takeProfitShort, "SXP");
+                se.CloseAtProfit(barNumber + 1, takeProfitShort, 100, "SXP");  
             }
 
             #endregion
@@ -237,6 +236,6 @@ namespace TrendByPivotPointsStrategy
             if (barDateTime.Hour >= 23 && barDateTime.Minute >= 40)
                 return true;
             return false;
-        }        
+        }
     }
 }

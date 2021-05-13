@@ -33,13 +33,18 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
+        public double? StepPrice => finInfo.StepPrice;
+        public double? SellDeposit => finInfo.SellDeposit;
+
         private ISecurity security;
         private int barNumber = 0;        
         private IDataBar nullDataBar = new NullDataBar();
+        private FinInfo finInfo;
         
         public RealSecurity(ISecurity security)
         {
             this.security = security;
+            finInfo = security.FinInfo;
         }
 
         public double GetBarOpen(int barNumber)
