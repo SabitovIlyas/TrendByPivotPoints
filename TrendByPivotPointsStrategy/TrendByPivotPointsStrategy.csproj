@@ -78,6 +78,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealLogger.cs" />
     <Compile Include="RealSecurity.cs" />
+    <Compile Include="Security.cs" />
+    <Compile Include="SecurityLab.cs" />
     <Compile Include="TradingSystem.cs" />
     <Compile Include="TrendByPivotPointsStrategy.cs" />
   </ItemGroup>

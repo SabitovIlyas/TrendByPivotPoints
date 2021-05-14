@@ -4,7 +4,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class RealSecurity
+    public class RealSecurity : Security
     {
         public int BarNumber
         {
@@ -37,10 +37,10 @@ namespace TrendByPivotPointsStrategy
         public double? SellDeposit => finInfo.SellDeposit;
 
         private ISecurity security;
-        private int barNumber = 0;        
+        private int barNumber = 0;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
-        
+
         public RealSecurity(ISecurity security)
         {
             this.security = security;
@@ -54,9 +54,9 @@ namespace TrendByPivotPointsStrategy
         }
 
         public double GetBarLow(int barNumber)
-        {           
-                var bar = GetBar(barNumber);
-                return bar.Low;           
+        {
+            var bar = GetBar(barNumber);
+            return bar.Low;
         }
 
         public double GetBarHigh(int barNumber)

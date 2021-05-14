@@ -9,6 +9,7 @@ using TSLab.Script.Handlers;
 using SystemColor = System.Drawing.Color;
 using TsLabColor = TSLab.Script.Color;
 using TSLab.DataSource;
+using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -18,10 +19,22 @@ namespace TrendByPivotPointsStrategy
         List<Bar> bars;
         public void Initialize(ISecurity sec, IContext ctx, List<Bar> bars)
         {
-            var account = new AccountLab(sec);
+            Account account;
+            Security security;
+            if (IsLaboratory(sec))
+            {
+                account = new AccountLab(sec);
+                security = new SecurityLab(sec);
+            }
+            else
+            {
+                account = new AccountReal(sec);
+                security = new RealSecurity(sec);
+            }
+            
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
-            tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account);
+            tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account, security);
             tradingSystem.Logger = new RealLogger(ctx);
             this.bars = bars;           
         }
@@ -47,6 +60,12 @@ namespace TrendByPivotPointsStrategy
             //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
             //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
             //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+        }
+
+        private bool IsLaboratory(ISecurity security)
+        {
+            var realTimeSecurity = security as ISecurityRt;
+            return realTimeSecurity == null;
         }
     }
 }

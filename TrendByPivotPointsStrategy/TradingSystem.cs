@@ -24,6 +24,7 @@ namespace TrendByPivotPointsStrategy
         Double takeProfitLong;
         Double takeProfitShort;
         int counter;
+        Security security;
 
         public Logger Logger
         {
@@ -40,7 +41,7 @@ namespace TrendByPivotPointsStrategy
 
         Logger logger = new NullLogger();
 
-        public TradingSystem(List<Bar> bars, LocalMoneyManager localMoneyManager, Account account)
+        public TradingSystem(List<Bar> bars, LocalMoneyManager localMoneyManager, Account account, Security security)
         {
             this.bars = bars;
             if (bars == null)
@@ -52,7 +53,7 @@ namespace TrendByPivotPointsStrategy
             this.localMoneyManager = localMoneyManager;
             this.account = account;
             sec = account.Security;
-
+            this.security = security;
             pivotPointsIndicator = new PivotPointsIndicator();
             patternPivotPoints_1l2g3 = new PatternPivotPoints_1l2g3();
             patternPivotPoints_1g2 = new PatternPivotPoints_1g2();
@@ -147,10 +148,8 @@ namespace TrendByPivotPointsStrategy
 
                 if (IsAboutEndOfSession(lastBar.Date))
                     le.CloseAtMarket(barNumber + 1, "LXT");
-
-                //le.CloseAtStop(barNumber + 1, stopLoss, "LXS");
-                le.CloseAtStop(barNumber + 1, stopLoss, 100, "LXS");
-                //le.CloseAtProfit(barNumber + 1, takeProfitLong, "LXP");
+                
+                le.CloseAtStop(barNumber + 1, stopLoss, 100, "LXS");                
                 le.CloseAtProfit(barNumber + 1, takeProfitLong, 100, "LXP");
             }
 
@@ -182,7 +181,7 @@ namespace TrendByPivotPointsStrategy
                                 //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
                                 var contracts = 1;
                                 sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
-                                takeProfitShort = 0;
+                                takeProfitShort = 0;                                
                             }
                         }
                     }
@@ -213,9 +212,7 @@ namespace TrendByPivotPointsStrategy
                 if (IsAboutEndOfSession(lastBar.Date))
                     se.CloseAtMarket(barNumber + 1, "SXT");
 
-                //se.CloseAtStop(barNumber + 1, stopLoss, "SXS");
                 se.CloseAtStop(barNumber + 1, stopLoss, 100, "SXS");
-                //se.CloseAtProfit(barNumber + 1, takeProfitShort, "SXP");
                 se.CloseAtProfit(barNumber + 1, takeProfitShort, 100, "SXP");  
             }
 
