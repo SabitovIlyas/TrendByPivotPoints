@@ -2,10 +2,10 @@
 
 namespace TrendByPivotPointsStrategy
 {
-    public class RealLogger:Logger
+    public class LoggerSystem:Logger
     {
         IContext context;
-        public RealLogger(IContext context)
+        public LoggerSystem(IContext context)
         {
             this.context = context;
         }

@@ -9,16 +9,57 @@ namespace TrendByPivotPointsStrategy
 {
     public class PivotPointsIndicator
     {
+        public List<Indicator> GetLows(Security security, int leftLocal, int rightLocal)
+        {
+            var result = new List<Indicator>();
+            var count = security.GetSecurityCount();
+
+            for (var i = leftLocal; i < count - rightLocal; i++)
+            {
+                double low1 = security.GetBarLow(i);
+                double low2;
+
+                var low = true;
+                for (var j = i - leftLocal; j < i; j++)
+                {
+                    low2 = security.GetBarLow(j);
+                    if (low1 >= low2)
+                    {
+                        low = false;
+                        break;
+                    }
+                }
+
+                if (low == true)
+                {
+                    for (var j = i + 1; j <= i + rightLocal; j++)
+                    {
+                        low2 = security.GetBarLow(j);
+                        if (low2 < low1)
+                        {
+                            low = false;
+                            break;
+                        }                        
+                    }
+                }
+
+                if (low == true)
+                    result.Add(new Indicator() { BarNumber = i, Value = low1 });
+            }
+
+            return result;
+        }
+
         public List<Indicator> GetLows(List<Bar> bars, int leftLocal, int rightLocal)
         {
-            var result = new List<Indicator>();            
+            var result = new List<Indicator>();
 
-            for (var i = leftLocal; i<bars.Count - rightLocal ;i++)
+            for (var i = leftLocal; i < bars.Count - rightLocal; i++)
             {
                 var low = true;
-                for(var j = i-leftLocal; j<i;j++)
+                for (var j = i - leftLocal; j < i; j++)
                 {
-                    if (bars[i].Low>=bars[j].Low)
+                    if (bars[i].Low >= bars[j].Low)
                     {
                         low = false;
                         break;
@@ -33,7 +74,7 @@ namespace TrendByPivotPointsStrategy
                         {
                             low = false;
                             break;
-                        }                        
+                        }
                     }
                 }
 

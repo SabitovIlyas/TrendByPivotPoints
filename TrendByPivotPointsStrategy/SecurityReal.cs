@@ -4,7 +4,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class RealSecurity : Security
+    public class SecurityReal : Security
     {
         public int BarNumber
         {
@@ -35,13 +35,22 @@ namespace TrendByPivotPointsStrategy
 
         public double? StepPrice => finInfo.StepPrice;
         public double? SellDeposit => finInfo.SellDeposit;
+        public double? BuyDeposit => finInfo.BuyDeposit;
+        public Bar LastBar
+        {
+            get
+            {
+                var bar = GetBar(barNumber);
+                return new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date };
+            }
+        }
 
         private ISecurity security;
         private int barNumber = 0;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
 
-        public RealSecurity(ISecurity security)
+        public SecurityReal(ISecurity security)
         {
             this.security = security;
             finInfo = security.FinInfo;
@@ -71,7 +80,7 @@ namespace TrendByPivotPointsStrategy
             return bar.Close;
         }
 
-        private int GetSecurityCount()
+        public int GetSecurityCount()
         {
             var bars = GetBars();
             return bars.Count;
@@ -89,7 +98,7 @@ namespace TrendByPivotPointsStrategy
 
         private bool IsBarNumberCorrect(int barNumber)
         {
-            if (barNumber < 0 || barNumber >= this.barNumber)
+            if (barNumber < 0 || barNumber > this.barNumber)
                 return false;
             return true;
         }
@@ -97,6 +106,15 @@ namespace TrendByPivotPointsStrategy
         private IReadOnlyList<TSLab.DataSource.IDataBar> GetBars()
         {
             return security.Bars;
-        }
+        }       
+
+        public List<Bar> GetBars(int barNumber)
+        {
+            var bars = new List<Bar>();
+            for (var i = 0; i <= barNumber; i++)            
+                bars.Add(new Bar() { Open = GetBar(i).Open, High = GetBar(i).High, Low = GetBar(i).Low, Close = GetBar(i).Close, Date = GetBar(i).Date });            
+            
+            return bars;
+        }        
     }
 }

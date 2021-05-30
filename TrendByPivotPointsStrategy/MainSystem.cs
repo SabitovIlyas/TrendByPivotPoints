@@ -16,35 +16,32 @@ namespace TrendByPivotPointsStrategy
     public class MainSystem
     {
         TradingSystem tradingSystem;
-        List<Bar> bars;
-        public void Initialize(ISecurity sec, IContext ctx, List<Bar> bars)
+        Security security;
+        public void Initialize(ISecurity sec, IContext ctx)
         {
             Account account;
-            Security security;
             if (IsLaboratory(sec))
             {
                 account = new AccountLab(sec);
-                security = new SecurityLab(sec);
+                //security = new SecurityLab(sec);
+                security = new SecurityReal(sec);
             }
             else
             {
                 account = new AccountReal(sec);
-                security = new RealSecurity(sec);
+                security = new SecurityReal(sec);
             }
             
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
-            tradingSystem = new TradingSystem(bars, localMoneyManagerRuble, account, security);
-            tradingSystem.Logger = new RealLogger(ctx);
-            this.bars = bars;           
+            tradingSystem = new TradingSystem(localMoneyManagerRuble, account, security);
+            tradingSystem.Logger = new LoggerSystem(ctx);            
         }
         
         public void Run()
         {
-            for (var i = 0; i < bars.Count; i++)
-            {                
-                tradingSystem.Update(i);
-            }
+            for (var i = 0; i < security.GetSecurityCount(); i++)                            
+                tradingSystem.Update(i);            
         }
 
         public void Paint(IContext ctx, ISecurity sec)

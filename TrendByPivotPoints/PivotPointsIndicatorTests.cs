@@ -36,7 +36,7 @@ namespace TrendByPivotPoints.Tests
 
             //assert
             var check = true;
-            if (expected!=null && actual!=null && expected.Count == actual.Count)
+            if (expected != null && actual != null && expected.Count == actual.Count)
                 for (var i = 0; i < expected.Count; i++)
                 {
                     if ((actual[i].BarNumber != expected[i].BarNumber) || (actual[i].Value != expected[i].Value))
@@ -44,6 +44,32 @@ namespace TrendByPivotPoints.Tests
                         check = false;
                         break;
                     }                    
+                }
+            else
+                check = false;
+
+            Assert.IsTrue(check);
+        }
+
+        [TestMethod()]
+        public void GetLowsSecurityTest()
+        {
+            //arrange            
+            var expected = dataBarsForTesting.GetExpectedLows_lefLocal3_rightLocal3();
+
+            //act
+            var actual = pivotPointsIndicator.GetLows(bars, 3, 3);
+
+            //assert
+            var check = true;
+            if (expected != null && actual != null && expected.Count == actual.Count)
+                for (var i = 0; i < expected.Count; i++)
+                {
+                    if ((actual[i].BarNumber != expected[i].BarNumber) || (actual[i].Value != expected[i].Value))
+                    {
+                        check = false;
+                        break;
+                    }
                 }
             else
                 check = false;

@@ -1,4 +1,5 @@
-﻿using TSLab.Script;
+﻿using System.Collections.Generic;
+using TSLab.Script;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -13,9 +14,13 @@ namespace TrendByPivotPointsStrategy
 
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
-        public double? SellDeposit => throw new System.NotImplementedException();
+        public double? SellDeposit => 4500;
 
-        public double? StepPrice => throw new System.NotImplementedException();
+        public double? StepPrice => 1;
+
+        public double? BuyDeposit => 4400;
+
+        public Bar LastBar => throw new System.NotImplementedException();
 
         public double GetBarClose(int barNumber)
         {
@@ -33,6 +38,16 @@ namespace TrendByPivotPointsStrategy
         }
 
         public double GetBarOpen(int barNumber)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public List<Bar> GetBars(int barNumber)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int GetSecurityCount()
         {
             throw new System.NotImplementedException();
         }
