@@ -9,7 +9,10 @@ namespace TrendByPivotPointsStrategy
 {
     public class PivotPointsIndicator
     {
-        public List<Indicator> GetLows(Security security, int leftLocal, int rightLocal)
+        private List<Indicator> lows = new List<Indicator>();
+        private Security security;
+
+        public void CalculateLows(Security security, int leftLocal, int rightLocal)
         {
             var result = new List<Indicator>();
             var count = security.GetSecurityCount();
@@ -45,6 +48,21 @@ namespace TrendByPivotPointsStrategy
 
                 if (low == true)
                     result.Add(new Indicator() { BarNumber = i, Value = low1 });
+            }
+
+            this.security = security;
+            lows = result;
+        }
+
+        public List<Indicator> GetLows(int barNumber)
+        {
+            var result = new List<Indicator>();
+            
+            foreach (var low in lows)
+            {
+                if (low.BarNumber > barNumber)
+                    break;
+                result.Add(low);
             }
 
             return result;

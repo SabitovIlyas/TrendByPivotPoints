@@ -83,8 +83,8 @@ namespace TrendByPivotPointsStrategy
 
             //logger.Log("subBars.Count = " + subBars.Count.ToString());
             //logger.Log("barNumber = " + barNumber.ToString());
-            var lows = pivotPointsIndicator.GetLows(subBars, 3, 3);
-            //var lows = pivotPointsIndicator.GetLows(security, 3, 3);
+            //var lows = pivotPointsIndicator.GetLows(subBars, 3, 3);
+            var lows = pivotPointsIndicator.GetLows(barNumber);
             logger.Log("lows.Count = " + lows.Count.ToString());
 
             var lowsValues = new List<double>();
@@ -247,6 +247,11 @@ namespace TrendByPivotPointsStrategy
 
         //    return subBars;
         //}
+
+        public void CalculateIndicators()
+        {
+            pivotPointsIndicator.CalculateLows(security, 3, 3);
+        }
 
         private bool IsAboutEndOfSession(DateTime barDateTime)
         {

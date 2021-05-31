@@ -40,6 +40,7 @@ namespace TrendByPivotPointsStrategy
         
         public void Run()
         {
+            tradingSystem.CalculateIndicators();
             for (var i = 0; i < security.GetSecurityCount(); i++)                            
                 tradingSystem.Update(i);            
         }
