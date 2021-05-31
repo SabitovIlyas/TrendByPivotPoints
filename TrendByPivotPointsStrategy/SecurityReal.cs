@@ -46,7 +46,8 @@ namespace TrendByPivotPointsStrategy
         }
 
         private ISecurity security;
-        private int barNumber = 0;
+        //private int barNumber = 0;
+        private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
 
@@ -54,6 +55,7 @@ namespace TrendByPivotPointsStrategy
         {
             this.security = security;
             finInfo = security.FinInfo;
+            barNumber = security.Bars.Count - 1; //заглушил
         }
 
         public double GetBarOpen(int barNumber)
