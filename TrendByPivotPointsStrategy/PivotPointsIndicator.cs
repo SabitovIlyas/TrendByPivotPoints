@@ -52,6 +52,7 @@ namespace TrendByPivotPointsStrategy
 
             this.security = security;
             lows = result;
+            
         }
 
         public List<Indicator> GetLows(int barNumber)

@@ -53,7 +53,7 @@ namespace TrendByPivotPointsStrategy
 
         public SecurityReal(ISecurity security)
         {
-            this.security = security;
+            this.security = security;            
             finInfo = security.FinInfo;
             barNumber = security.Bars.Count - 1; //заглушил
         }

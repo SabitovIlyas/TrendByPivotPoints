@@ -251,6 +251,9 @@ namespace TrendByPivotPointsStrategy
         public void CalculateIndicators()
         {
             pivotPointsIndicator.CalculateLows(security, 3, 3);
+            var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
+            //var compressedSecurity = new SecurityReal(compressedSec);
+            //pivotPointsIndicator.CalculateLows(compressedSecurity, 3, 3);
         }
 
         private bool IsAboutEndOfSession(DateTime barDateTime)
