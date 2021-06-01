@@ -46,16 +46,41 @@ namespace TrendByPivotPointsStrategy
         }
 
         private ISecurity security;
-        //private int barNumber = 0;
+        //private int barNumber = 0; //заглушил
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
+        private ISecurity baseSecurity;
 
         public SecurityReal(ISecurity security)
         {
             this.security = security;            
             finInfo = security.FinInfo;
             barNumber = security.Bars.Count - 1; //заглушил
+        }
+
+        public SecurityReal(ISecurity compressedSecurity, ISecurity baseSecurity)
+        {
+            this.security = compressedSecurity;
+            this.baseSecurity = baseSecurity;
+            finInfo = baseSecurity.FinInfo;            
+            barNumber = compressedSecurity.Bars.Count - 1; //заглушил
+        }
+
+        private List<List<int>> barsBaseSecurityInBarsCompressedSecurity;
+        private void cc()
+        {
+            barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
+            for (var i = 0; i < baseSecurity.Bars.Count-1; i++)
+            {
+                for (var j = 0; j < baseSecurity.Bars.Count; j++)
+                {
+                    if (baseSecurity.Bars[j].Date >= security.Bars[i].Date && baseSecurity.Bars[j].Date < security.Bars[i+1].Date)
+                    {
+                        //barsBaseSecurityInBarsCompressedSecurity.Add()
+                    }
+                }
+            }                
         }
 
         public double GetBarOpen(int barNumber)
