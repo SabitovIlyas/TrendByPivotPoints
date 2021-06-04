@@ -8,6 +8,7 @@ namespace TrendByPivotPointsStrategy
         private double riskValuePrcnt;
         private double riskValue;
         private Account account;
+        private Logger logger = new NullLogger();
 
         public GlobalMoneyManagerReal(Account account, double riskValuePrcnt)
         {
@@ -19,7 +20,7 @@ namespace TrendByPivotPointsStrategy
         public double GetMoney()
         {
             var deposit = account.Deposit;
-            TrendByPivotPointsStrategy.ctx.Log("deposit = " + deposit.ToString());
+            logger.Log("deposit = " + deposit.ToString());
 
             var freeBalance = account.FreeBalance;
             var partofDeposit = riskValue * deposit;

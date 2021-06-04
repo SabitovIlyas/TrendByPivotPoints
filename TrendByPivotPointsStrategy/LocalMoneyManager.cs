@@ -11,6 +11,7 @@ namespace TrendByPivotPointsStrategy
         Currency currency;
         Account account;
         GlobalMoneyManager globalMoneyManager;
+        private Logger logger = new NullLogger();
 
         public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency)
         {
@@ -21,10 +22,9 @@ namespace TrendByPivotPointsStrategy
 
         public virtual int GetQntContracts(double enterPrice, double stopPrice, Position position)
         {
-            TrendByPivotPointsStrategy.ctx.Log("enterPrice = " + enterPrice.ToString());
-            TrendByPivotPointsStrategy.ctx.Log("stopPrice = " + stopPrice.ToString());
-            TrendByPivotPointsStrategy.ctx.Log("position = " + position.ToString());
-
+            logger.Log("enterPrice = " + enterPrice.ToString());
+            logger.Log("stopPrice = " + stopPrice.ToString());
+            logger.Log("position = " + position.ToString());
 
             var go = 0.0;
             switch (position)
@@ -34,9 +34,8 @@ namespace TrendByPivotPointsStrategy
                         if (stopPrice >= enterPrice)
                             return 0;
 
-                        go = account.GObying;
-                        TrendByPivotPointsStrategy.ctx.Log("go = " + go.ToString());
-
+                        go = account.GObying;                        
+                        logger.Log("go = " + go.ToString());
                     }
                     break;
                 case Position.Short:
@@ -50,27 +49,21 @@ namespace TrendByPivotPointsStrategy
                     break;
             }            
 
-            var money = globalMoneyManager.GetMoney();
-
-            TrendByPivotPointsStrategy.ctx.Log("money = " + money.ToString());
-
-            var riskMoney = Math.Abs(enterPrice - stopPrice);
-
-            TrendByPivotPointsStrategy.ctx.Log("riskMoney = " + riskMoney.ToString());
+            var money = globalMoneyManager.GetMoney();            
+            logger.Log("money = " + money.ToString());
+            var riskMoney = Math.Abs(enterPrice - stopPrice);            
+            logger.Log("riskMoney = " + riskMoney.ToString());
 
             //var contractsByGO = (int)(money / go); // надо вычислять это значение исходя из общего депозита
-            var contractsByGO = 1000000;
-
-            TrendByPivotPointsStrategy.ctx.Log("contractsByGO = " + contractsByGO.ToString());
-
+            var contractsByGO = 1000000;            
+            logger.Log("contractsByGO = " + contractsByGO.ToString());
             if (currency == Currency.USD)
                 money = money / account.Rate;
-
-            TrendByPivotPointsStrategy.ctx.Log("money = " + money.ToString());
-
-            var contractsByRiskMoney = (int)(money / riskMoney);
-
-            TrendByPivotPointsStrategy.ctx.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
+                        
+            logger.Log("money = " + money.ToString());
+            
+            var contractsByRiskMoney = (int)(money / riskMoney);            
+            logger.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
 
             return Math.Min(contractsByRiskMoney, contractsByGO);
         }
