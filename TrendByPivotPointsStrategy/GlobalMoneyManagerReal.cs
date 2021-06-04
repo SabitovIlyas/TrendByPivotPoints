@@ -17,14 +17,13 @@ namespace TrendByPivotPointsStrategy
             riskValue = riskValuePrcnt / 100.0;
         }
 
-        public double GetMoney()
+        public double GetMoneyForDeal()
         {
-            var deposit = account.Deposit;
-            logger.Log("deposit = " + deposit.ToString());
-
-            var freeBalance = account.FreeBalance;
+            var deposit = account.Deposit;            
             var partofDeposit = riskValue * deposit;
-            return Math.Min(partofDeposit, freeBalance);
+            return partofDeposit;
         }
+
+        public double FreeBalance => account.FreeBalance;
     }
 }

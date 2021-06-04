@@ -4,6 +4,8 @@
     {
         double RiskValuePrcnt { get; }
 
-        double GetMoney();
+        double GetMoneyForDeal();
+        double FreeBalance { get; }
+
     }
 }

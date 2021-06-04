@@ -8,12 +8,27 @@ namespace TrendByPivotPointsStrategy
 {
     class GlobalMoneyManagerFake : GlobalMoneyManager
     {
-        public double RiskValuePrcnt { get; set; }
+        public double RiskValuePrcnt { get { return riskValuePrcnt; } }
         public double Money { get; set; }
+        public double FreeBalance { get { return freeMoney; } }
 
-        public double GetMoney()
+        private double riskValuePrcnt;
+        private double riskValue;
+        private double deposit;
+        private double freeMoney;
+
+        public GlobalMoneyManagerFake(Account account, double deposit, double freeMoney)
         {
-            return Money;
+            //this.riskValuePrcnt = riskValuePrcnt;
+            riskValue = riskValuePrcnt / 100.0;
+            this.deposit = deposit;
+            this.freeMoney = freeMoney;
+        }
+
+        public double GetMoneyForDeal()
+        {            
+            var partofDeposit = riskValue * deposit;
+            return partofDeposit;            
         }
     }
 }

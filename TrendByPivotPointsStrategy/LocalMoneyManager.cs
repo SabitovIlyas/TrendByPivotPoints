@@ -49,13 +49,12 @@ namespace TrendByPivotPointsStrategy
                     break;
             }            
 
-            var money = globalMoneyManager.GetMoney();            
+            var money = globalMoneyManager.GetMoneyForDeal();
             logger.Log("money = " + money.ToString());
             var riskMoney = Math.Abs(enterPrice - stopPrice);            
             logger.Log("riskMoney = " + riskMoney.ToString());
 
-            //var contractsByGO = (int)(money / go); // надо вычислять это значение исходя из общего депозита
-            var contractsByGO = 1000000;            
+            var contractsByGO = (int)(globalMoneyManager.FreeBalance / go); // надо вычислять это значение исходя из общего депозита            
             logger.Log("contractsByGO = " + contractsByGO.ToString());
             if (currency == Currency.USD)
                 money = money / account.Rate;
@@ -65,7 +64,7 @@ namespace TrendByPivotPointsStrategy
             var contractsByRiskMoney = (int)(money / riskMoney);            
             logger.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
 
-            return Math.Min(contractsByRiskMoney, contractsByGO);
+            return Math.Min(contractsByRiskMoney, contractsByGO);            
         }
     }
 }

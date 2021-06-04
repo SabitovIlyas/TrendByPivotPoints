@@ -30,7 +30,7 @@ namespace TrendByPivotPoints.Tests
             account.FreeBalance = 100;
 
             //act
-            var actual = globalMoneyManager.GetMoney();
+            var actual = globalMoneyManager.GetMoneyForDeal();
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -43,7 +43,7 @@ namespace TrendByPivotPoints.Tests
             account.FreeBalance = 25;
 
             //act
-            var actual = globalMoneyManager.GetMoney();
+            var actual = globalMoneyManager.GetMoneyForDeal();
             //assert
             Assert.AreEqual(expected, actual);
         }
