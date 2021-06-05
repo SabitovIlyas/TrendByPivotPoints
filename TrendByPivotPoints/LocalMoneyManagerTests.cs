@@ -13,7 +13,7 @@ namespace TrendByPivotPoints.Tests
     {
         AccountFake account;
         LocalMoneyManager localMoneyManager;
-        GlobalMoneyManagerFake globalMoneyManager;
+        GlobalMoneyManagerReal globalMoneyManager;
         
         [TestInitialize]
         public void TestInitialize()
@@ -22,8 +22,10 @@ namespace TrendByPivotPoints.Tests
             account.GObying = 4500;
             account.GOselling = 4000;
             account.Rate = 50;
-            globalMoneyManager = new GlobalMoneyManagerFake();
-            globalMoneyManager.Money = 50000;
+            account.FreeBalance = 50000;
+            account.Deposit = 1000000;            
+            globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 5);            
+            //globalMoneyManager.Money = 50000;
         }
 
         #region Testing Ruble

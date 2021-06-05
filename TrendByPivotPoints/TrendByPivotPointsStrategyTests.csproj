@@ -63,7 +63,6 @@
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
     <Compile Include="DataBarsForTesting.cs" />
-    <Compile Include="GlobalMoneyManagerFake.cs" />
     <Compile Include="GlobalMoneyManagerTests.cs" />
     <Compile Include="LocalMoneyManagerTests.cs" />
     <Compile Include="PatternPivotPoints_1g2Tests.cs" />

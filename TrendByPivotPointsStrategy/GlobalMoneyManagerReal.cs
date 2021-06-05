@@ -21,7 +21,8 @@ namespace TrendByPivotPointsStrategy
         {
             var deposit = account.Deposit;            
             var partofDeposit = riskValue * deposit;
-            return partofDeposit;
+            var result = Math.Min(partofDeposit, FreeBalance);
+            return result;
         }
 
         public double FreeBalance => account.FreeBalance;
