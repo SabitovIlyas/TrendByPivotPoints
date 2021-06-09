@@ -65,12 +65,12 @@ namespace TrendByPivotPointsStrategy
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;            
             barNumber = compressedSecurity.Bars.Count - 1; //заглушил
+            CompareBarsBaseSecurityWithCompressedSecurity();
         }
 
-        private List<List<int>> barsBaseSecurityInBarsCompressedSecurity;
-        private void cc()
-        {
-            barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
+        private List<List<int>> barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
+        private void CompareBarsBaseSecurityWithCompressedSecurity()
+        {            
             for (var i = 0; i < baseSecurity.Bars.Count-1; i++)
             {
                 for (var j = 0; j < baseSecurity.Bars.Count; j++)
