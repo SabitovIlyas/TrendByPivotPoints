@@ -83,6 +83,13 @@ namespace TrendByPivotPointsStrategy
             }                
         }
 
+        public int GetBarNumberCompressed()
+        {
+            return 0;
+        }
+
+        
+
         public double GetBarOpen(int barNumber)
         {
             var bar = GetBar(barNumber);
