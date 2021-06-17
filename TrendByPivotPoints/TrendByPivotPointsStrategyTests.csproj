@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
+    <Compile Include="DataBarFake.cs" />
     <Compile Include="DataBarsForTesting.cs" />
     <Compile Include="GlobalMoneyManagerTests.cs" />
     <Compile Include="LocalMoneyManagerTests.cs" />

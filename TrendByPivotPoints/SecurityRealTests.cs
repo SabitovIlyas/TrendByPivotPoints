@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
-using System;
 using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.DataSource;
@@ -12,13 +11,22 @@ using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy.Tests
 {
+
     [TestClass()]
     public class SecurityRealTests
     {
         [TestInitialize]
         public void TestInitialize()
         {
-            //IReadOnlyList<IDataBar> bars = new ReadOnlyList<IDataBar>();
+            IReadOnlyList<IDataBar> bars = new ReadOnlyList<IDataBar>();
+            var barsAccessAdding = (ReadOnlyList<IDataBar>)bars;
+            
+            IDataBar bar;
+            //bar = new DataBarFake(new DateTime( );
+            //barsAccessAdding.Add(bar);
+            //bar = new DataBarFake();
+            //barsAccessAdding.Add(bar);
+
 
             //foreach (var bar in bars)
             //    double c = bar.Close;
