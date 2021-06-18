@@ -18,14 +18,33 @@ namespace TrendByPivotPointsStrategy.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            IReadOnlyList<IDataBar> bars = new ReadOnlyList<IDataBar>();
-            var barsAccessAdding = (ReadOnlyList<IDataBar>)bars;
+            IReadOnlyList<IDataBar> barsBase = new ReadOnlyList<IDataBar>();
+            var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
             
             IDataBar bar;
-            //bar = new DataBarFake(new DateTime( );
-            //barsAccessAdding.Add(bar);
-            //bar = new DataBarFake();
-            //barsAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 5, 0));
+            barsBaseAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 10, 0));
+            barsBaseAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 15, 0));
+            barsBaseAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 20, 0));
+            barsBaseAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 25, 0));
+            barsBaseAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 30, 0));
+            barsBaseAccessAdding.Add(bar);
+
+            IReadOnlyList<IDataBar> barsCompressed = new ReadOnlyList<IDataBar>();
+            var barsCompressedAccessAdding = (ReadOnlyList<IDataBar>)barsCompressed;
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 5, 0));
+            barsCompressedAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 15, 0));
+            barsCompressedAccessAdding.Add(bar);
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 30, 0));
+            barsCompressedAccessAdding.Add(bar);
+
+
 
 
             //foreach (var bar in bars)
