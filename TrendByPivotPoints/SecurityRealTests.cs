@@ -35,6 +35,9 @@ namespace TrendByPivotPointsStrategy.Tests
             bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 30, 0));
             barsBaseAccessAdding.Add(bar);
 
+            ISecurity securityBase = new SecurityISecurityFake();
+            securityBase.Bars
+
             IReadOnlyList<IDataBar> barsCompressed = new ReadOnlyList<IDataBar>();
             var barsCompressedAccessAdding = (ReadOnlyList<IDataBar>)barsCompressed;
             bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 5, 0));
