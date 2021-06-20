@@ -15,6 +15,8 @@ namespace TrendByPivotPointsStrategy.Tests
     [TestClass()]
     public class SecurityRealTests
     {
+        Security security;
+
         [TestInitialize]
         public void TestInitialize()
         {
@@ -36,7 +38,8 @@ namespace TrendByPivotPointsStrategy.Tests
             barsBaseAccessAdding.Add(bar);
 
             ISecurity securityBase = new SecurityISecurityFake();
-            securityBase.Bars
+            var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
+            securityBaseAccessAdding.Bars = barsBaseAccessAdding;
 
             IReadOnlyList<IDataBar> barsCompressed = new ReadOnlyList<IDataBar>();
             var barsCompressedAccessAdding = (ReadOnlyList<IDataBar>)barsCompressed;
@@ -47,40 +50,77 @@ namespace TrendByPivotPointsStrategy.Tests
             bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 30, 0));
             barsCompressedAccessAdding.Add(bar);
 
+            ISecurity securityCompressed = new SecurityISecurityFake();
+            var securityCompressedAccessAdding = (SecurityISecurityFake)securityCompressed;
+            securityCompressedAccessAdding.Bars = barsCompressedAccessAdding;
 
-
-
-            //foreach (var bar in bars)
-            //    double c = bar.Close;
-
-            //ISecurity sec = new 
-            //Security security = new SecurityReal()
+            security = new SecurityReal(securityCompressed, securityBase);
         }
 
         [TestMethod()]
-        public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance100_returned50()
+        public void GetBarsBaseFromBarCompressedTest_barNumber0_returned0_1()
         {
-            IReadOnlyList<IDataBar> bars = new ReadOnlyList<IDataBar>();
-            ((ReadOnlyList<IDataBar>)bars).Add(new NullDataBar());
-
-            List<int> list = new List<int>();
-            foreach (var l in list)
-                Console.WriteLine(l);
-
-            foreach (var bar in bars)
-                Console.WriteLine(bar.High);
-                
-
-
-
             //arrange            
-            //var expected = 50;
-            //account.FreeBalance = 100;
+            var expected = new List<int>() { 0, 1 };
 
-            ////act
-            //var actual = globalMoneyManager.GetMoneyForDeal();
-            ////assert
-            //Assert.AreEqual(expected, actual);
+            //act
+            var actual = security.GetBarsBaseFromBarCompressed(barNumber: 0);
+
+            //assert
+            var countIsEqual = actual.Count == expected.Count;
+            var counter = 0;
+            for (var i = 0; i < expected.Count; i++)
+            {
+                if (expected[i] == actual[i])
+                    counter++;
+            }
+            var elementsIsEqual = counter == expected.Count;
+            var result = countIsEqual && elementsIsEqual;
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod()]
+        public void GetBarsBaseFromBarCompressedTest_barNumber1_returned2_3_4()
+        {
+            //arrange            
+            var expected = new List<int>() { 2, 3, 4 };
+
+            //act
+            var actual = security.GetBarsBaseFromBarCompressed(barNumber: 1);
+
+            //assert
+            var countIsEqual = actual.Count == expected.Count;
+            var counter = 0;
+            for (var i = 0; i < expected.Count; i++)
+            {
+                if (expected[i] == actual[i])
+                    counter++;
+            }
+            var elementsIsEqual = counter == expected.Count;
+            var result = countIsEqual && elementsIsEqual;
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod()]
+        public void GetBarsBaseFromBarCompressedTest_barNumber2_returned5()
+        {
+            //arrange            
+            var expected = new List<int>() { 5 };
+
+            //act
+            var actual = security.GetBarsBaseFromBarCompressed(barNumber: 2);
+
+            //assert
+            var countIsEqual = actual.Count == expected.Count;
+            var counter = 0;
+            for (var i = 0; i < expected.Count; i++)
+            {
+                if (expected[i] == actual[i])
+                    counter++;
+            }
+            var elementsIsEqual = counter == expected.Count;
+            var result = countIsEqual && elementsIsEqual;
+            Assert.IsTrue(result);
         }
     }
 }

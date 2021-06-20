@@ -10,7 +10,7 @@ using TSLab.Utils;
 using TSLab.Script.Handlers;
 
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TrendByPivotPointsStrategy
 {
     public class ReadOnlyList<IDataBar> : IReadOnlyList<IDataBar>, IEnumerator<IDataBar>
     {

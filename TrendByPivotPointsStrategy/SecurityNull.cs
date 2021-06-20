@@ -1,27 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using TSLab.Script;
 using TSLab.DataSource;
-using TSLab.Utils;
+using TSLab.Script;
 using TSLab.Script.Handlers;
+using TSLab.Utils;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TrendByPivotPointsStrategy
 {
-    public class SecurityISecurityFake : ISecurity
+    public class SecurityNull : ISecurity
     {
-        public IReadOnlyList<IDataBar> Bars
-        {
-            get { return bars; }
-            set { bars = value; }
-        }
-
-        private IReadOnlyList<IDataBar> bars;
-
+        IReadOnlyList<IDataBar> bars = new ReadOnlyList<DataBar>();
         public string Symbol => throw new NotImplementedException();
 
         public IDataSourceSecurity SecurityDescription => throw new NotImplementedException();
 
         public FinInfo FinInfo => throw new NotImplementedException();
+
+        public IReadOnlyList<IDataBar> Bars => bars;
 
         public bool IsBarsLoaded => throw new NotImplementedException();
 
@@ -191,6 +186,6 @@ namespace TrendByPivotPointsStrategy.Tests
         public void UpdateQueueData()
         {
             throw new NotImplementedException();
-        }
+        }        
     }
 }

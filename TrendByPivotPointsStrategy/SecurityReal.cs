@@ -50,7 +50,7 @@ namespace TrendByPivotPointsStrategy
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
-        private ISecurity baseSecurity;
+        private ISecurity baseSecurity = new SecurityNull();
 
         public SecurityReal(ISecurity security)
         {
@@ -61,7 +61,7 @@ namespace TrendByPivotPointsStrategy
 
         public SecurityReal(ISecurity compressedSecurity, ISecurity baseSecurity)
         {
-            this.security = compressedSecurity;
+            security = compressedSecurity;
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;            
             barNumber = compressedSecurity.Bars.Count - 1; //заглушил
@@ -70,17 +70,43 @@ namespace TrendByPivotPointsStrategy
 
         private List<List<int>> barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
         private void CompareBarsBaseSecurityWithCompressedSecurity()
-        {            
-            for (var i = 0; i < baseSecurity.Bars.Count-1; i++)
+        {
+            var lastBarNumber = GetSecurityCount() - 1;
+            var securityBaseCount = GetSecurityBaseCount();
+            List<int> barsInCompressedBar;
+
+            for (var i = 0; i < lastBarNumber; i++)
             {
-                for (var j = 0; j < baseSecurity.Bars.Count; j++)
+                barsInCompressedBar = new List<int>();
+
+                for (var j = 0; j < securityBaseCount; j++)
                 {
-                    if (baseSecurity.Bars[j].Date >= security.Bars[i].Date && baseSecurity.Bars[j].Date < security.Bars[i+1].Date)
-                    {
-                        //barsBaseSecurityInBarsCompressedSecurity.Add()
-                    }
-                }
-            }                
+                    if (baseSecurity.Bars[j].Date >= security.Bars[i].Date && baseSecurity.Bars[j].Date < security.Bars[i + 1].Date)
+                        barsInCompressedBar.Add(j);                
+                }               
+
+                barsBaseSecurityInBarsCompressedSecurity.Add(barsInCompressedBar);
+            }
+
+            barsInCompressedBar = new List<int>();
+            for (var j = 0; j < securityBaseCount; j++)
+            {                
+                if (baseSecurity.Bars[j].Date >= security.Bars[lastBarNumber].Date)
+                    barsInCompressedBar.Add(j);
+            }
+
+            barsBaseSecurityInBarsCompressedSecurity.Add(barsInCompressedBar);
+        }
+
+        public List<int> GetBarsBaseFromBarCompressed(int barNumber)
+        {
+            return barsBaseSecurityInBarsCompressedSecurity[barNumber];
+        }
+
+        private int GetSecurityBaseCount()
+        {
+            var bars = baseSecurity.Bars;
+            return bars.Count;
         }
 
         public int GetBarNumberCompressed()
@@ -137,7 +163,7 @@ namespace TrendByPivotPointsStrategy
             return true;
         }
 
-        private IReadOnlyList<TSLab.DataSource.IDataBar> GetBars()
+        private IReadOnlyList<IDataBar> GetBars()
         {
             return security.Bars;
         }       

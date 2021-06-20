@@ -72,8 +72,7 @@
     <Compile Include="PatternPivotPoints_1l2Tests.cs" />
     <Compile Include="PivotPointsIndicatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadOnlyList.cs" />
-    <Compile Include="SecurityFake.cs" />
+    <Compile Include="SecurityISecurityFake.cs" />
     <Compile Include="SecurityRealTests.cs" />
   </ItemGroup>
   <ItemGroup>

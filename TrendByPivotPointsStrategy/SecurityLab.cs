@@ -47,6 +47,11 @@ namespace TrendByPivotPointsStrategy
             throw new System.NotImplementedException();
         }
 
+        public List<int> GetBarsBaseFromBarCompressed(int barNumber)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public int GetSecurityCount()
         {
             throw new System.NotImplementedException();

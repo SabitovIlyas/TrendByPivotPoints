@@ -16,5 +16,6 @@ namespace TrendByPivotPointsStrategy
         double GetBarLow(int barNumber);
         double GetBarOpen(int barNumber);
         int GetSecurityCount();
+        List<int> GetBarsBaseFromBarCompressed(int barNumber);
     }
 }
