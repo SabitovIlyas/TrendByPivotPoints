@@ -15,6 +15,7 @@ namespace TrendByPivotPointsStrategy
         Account account;
         ISecurity sec;
         PivotPointsIndicator pivotPointsIndicator;
+        PivotPointsIndicator pivotPointsIndicatorFilter;
         PatternPivotPoints_1l2g3 patternPivotPoints_1l2g3;
         PatternPivotPoints_1g2 patternPivotPoints_1g2;
         PatternPivotPoints_1l2 patternPivotPoints_1l2;
@@ -53,6 +54,7 @@ namespace TrendByPivotPointsStrategy
             sec = account.Security;
             this.security = security;
             pivotPointsIndicator = new PivotPointsIndicator();
+            pivotPointsIndicatorFilter = new PivotPointsIndicator();
             patternPivotPoints_1l2g3 = new PatternPivotPoints_1l2g3();
             patternPivotPoints_1g2 = new PatternPivotPoints_1g2();
             patternPivotPoints_1l2 = new PatternPivotPoints_1l2();
@@ -251,9 +253,9 @@ namespace TrendByPivotPointsStrategy
         public void CalculateIndicators()
         {
             pivotPointsIndicator.CalculateLows(security, 3, 3);
-            var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
-            //var compressedSecurity = new SecurityReal(compressedSec);
-            //pivotPointsIndicator.CalculateLows(compressedSecurity, 3, 3);
+            var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));            
+            var compressedSecurity = new SecurityReal(compressedSec, sec);            
+            pivotPointsIndicatorFilter.CalculateLows(compressedSecurity, 3, 3);
         }
 
         private bool IsAboutEndOfSession(DateTime barDateTime)
