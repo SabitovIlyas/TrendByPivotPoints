@@ -22,6 +22,10 @@ namespace TrendByPivotPointsStrategy
 
         public Bar LastBar => throw new System.NotImplementedException();
 
+        public bool IsLaboratory => throw new System.NotImplementedException();
+
+        public bool IsRealTimeTrading => throw new System.NotImplementedException();
+
         public double GetBarClose(int barNumber)
         {
             throw new System.NotImplementedException();

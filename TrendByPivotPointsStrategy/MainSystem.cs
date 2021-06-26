@@ -17,6 +17,7 @@ namespace TrendByPivotPointsStrategy
     {
         TradingSystem tradingSystem;
         Security security;
+        IContext ctx;
         public void Initialize(ISecurity sec, IContext ctx)
         {
             Account account;
@@ -35,15 +36,21 @@ namespace TrendByPivotPointsStrategy
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             tradingSystem = new TradingSystem(localMoneyManagerRuble, account, security);
-            tradingSystem.Logger = new LoggerSystem(ctx);            
+            tradingSystem.Logger = new LoggerSystem(ctx);
+            this.ctx = ctx;
         }
         
         public void Run()
         {            
             tradingSystem.CalculateIndicators();
 
-            for (var i = 0; i < security.GetSecurityCount(); i++)                            
-                tradingSystem.Update(i);            
+            for (var i = 0; i < security.GetSecurityCount(); i++)
+            {  
+                if(IsRealTimeTrading()&&!IsLastBarClosed())
+                    tradingSystem.CheckPositionCloseCase(i);                
+                else
+                    tradingSystem.Update(i);
+            }
         }
 
         public void Paint(IContext ctx, ISecurity sec)
@@ -68,6 +75,15 @@ namespace TrendByPivotPointsStrategy
         {
             var realTimeSecurity = security as ISecurityRt;
             return realTimeSecurity == null;
+        }
+
+        private bool IsLastBarClosed()
+        {
+            return ctx.IsLastBarClosed;                
+        }
+        private bool IsRealTimeTrading()
+        {
+            return security.IsRealTimeTrading;
         }
     }
 }

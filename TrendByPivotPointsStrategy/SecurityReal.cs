@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.DataSource;
+using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -54,18 +55,23 @@ namespace TrendByPivotPointsStrategy
 
         public SecurityReal(ISecurity security)
         {
-            this.security = security;            
             finInfo = security.FinInfo;
-            barNumber = security.Bars.Count - 1; //заглушил
+            InitializeSecurity(security);
         }
 
         public SecurityReal(ISecurity compressedSecurity, ISecurity baseSecurity)
         {
-            security = compressedSecurity;
             this.baseSecurity = baseSecurity;
-            finInfo = baseSecurity.FinInfo;            
-            barNumber = compressedSecurity.Bars.Count - 1; //заглушил
+            finInfo = baseSecurity.FinInfo;
+            InitializeSecurity(compressedSecurity);            
             CompareBarsBaseSecurityWithCompressedSecurity();
+        }
+
+        private void InitializeSecurity(ISecurity security)
+        {
+            this.security = security;            
+            barNumber = security.Bars.Count - 1; //заглушил
+            DefineIsLaboratory();
         }
 
         private List<List<int>> barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
@@ -112,9 +118,7 @@ namespace TrendByPivotPointsStrategy
         public int GetBarNumberCompressed()
         {
             return 0;
-        }
-
-        
+        }        
 
         public double GetBarOpen(int barNumber)
         {
@@ -175,6 +179,15 @@ namespace TrendByPivotPointsStrategy
                 bars.Add(new Bar() { Open = GetBar(i).Open, High = GetBar(i).High, Low = GetBar(i).Low, Close = GetBar(i).Close, Date = GetBar(i).Date });            
             
             return bars;
-        }        
+        }
+        public bool IsLaboratory => isLaboratory;
+        public bool IsRealTimeTrading => !isLaboratory;
+
+        private bool isLaboratory;
+        private void DefineIsLaboratory()
+        {
+            var realTimeSecurity = security as ISecurityRt;
+            isLaboratory = realTimeSecurity == null;
+        }
     }
 }

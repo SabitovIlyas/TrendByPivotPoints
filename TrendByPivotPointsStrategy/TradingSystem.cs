@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TSLab.DataSource;
 using TSLab.Script;
 
@@ -25,6 +23,8 @@ namespace TrendByPivotPointsStrategy
         double takeProfitLong;
         double takeProfitShort;
         Security security;
+        double stopLossLong;
+        double stopLossShort;
 
         public Logger Logger
         {
@@ -42,13 +42,7 @@ namespace TrendByPivotPointsStrategy
         Logger logger = new NullLogger();
 
         public TradingSystem(LocalMoneyManager localMoneyManager, Account account, Security security)
-        {
-            //if (bars == null)
-            //    throw new ArgumentNullException("List<Bar> bars", "В конструктор передан null вместо списка баров");
-
-            //if (bars.Count == 0)
-            //    throw new Exception("В конструктор передан пустой список баров");
-
+        {   
             this.localMoneyManager = localMoneyManager;
             this.account = account;
             sec = account.Security;
@@ -72,20 +66,12 @@ namespace TrendByPivotPointsStrategy
                 var message = string.Format("ГО на покупку: {0}; ГО на продажу: {1}; Шаг цены: {2}", security.BuyDeposit, security.SellDeposit, security.StepPrice);                
                 logger.Log(message);
                 flagToDebugLog = true;
-            }
+            }            
 
-            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
-            //counter++;
-            //logger.Log("counter " + counter.ToString());
-
-            //var subBars = GetSubBars(barNumber);
+            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);            
             var subBars = security.GetBars(barNumber);
 
-            var lastBar = security.LastBar;
-
-            //logger.Log("subBars.Count = " + subBars.Count.ToString());
-            //logger.Log("barNumber = " + barNumber.ToString());
-            //var lows = pivotPointsIndicator.GetLows(subBars, 3, 3);
+            var lastBar = security.LastBar;           
             var lows = pivotPointsIndicator.GetLows(barNumber);
             logger.Log("lows.Count = " + lows.Count.ToString());
 
@@ -134,8 +120,7 @@ namespace TrendByPivotPointsStrategy
                         if (barNumber == lows.Last().BarNumber + 3)
                         {
                             var lowLast = lows.Last();
-                            var stopPrice = lowLast.Value - 1;
-                            //var lastPrice = subBars.Last().Close;
+                            var stopPrice = lowLast.Value - 1;                            
                             var lastPrice = lastBar.Close;
                             if (lastPrice > stopPrice)
                             {
@@ -153,25 +138,16 @@ namespace TrendByPivotPointsStrategy
                 if (lows.Count == 0)
                     return;
                 var low = lows.Last();
-                var stopLoss = low.Value - 1;
-                var riskValue = le.EntryPrice - stopLoss;
-
-                //logger.Log("low.Value = " + low.Value.ToString());
-                //logger.Log("stopLoss = " + stopLoss.ToString());
-                //logger.Log("riskValue = " + riskValue.ToString());
-                //logger.Log("riskValue * 2 = " + (riskValue * 2).ToString());
-                //logger.Log("le.EntryPrice = " + le.EntryPrice.ToString());
-                //logger.Log("takeProfitLong = " + takeProfitLong.ToString());
+                stopLossLong = low.Value - 1;
+                var riskValue = le.EntryPrice - stopLossLong;             
 
                 if (takeProfitLong == 0)
                     takeProfitLong = le.EntryPrice + riskValue * 2;
-
-                //logger.Log("takeProfitLong = " + takeProfitLong.ToString());
-
+              
                 if (IsAboutEndOfSession(lastBar.Date))
                     le.CloseAtMarket(barNumber + 1, "LXT");
                 
-                le.CloseAtStop(barNumber + 1, stopLoss, 100, "LXS");                
+                le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");                
                 le.CloseAtProfit(barNumber + 1, takeProfitLong, 100, "LXP");
             }
 
@@ -195,8 +171,7 @@ namespace TrendByPivotPointsStrategy
                         if (barNumber == highs.Last().BarNumber + 3)
                         {
                             var highLast = highs.Last();
-                            var stopPrice = highLast.Value + 1;
-                            //var lastPrice = subBars.Last().Close;
+                            var stopPrice = highLast.Value + 1;                            
                             var lastPrice = lastBar.Close;
                             if (lastPrice < stopPrice)
                             {
@@ -216,39 +191,42 @@ namespace TrendByPivotPointsStrategy
 
                 var high = highs.Last();
 
-                var stopLoss = high.Value + 1;
-                var riskValue = stopLoss - se.EntryPrice;
-
-                //logger.Log("high.Value = " + high.Value.ToString());
-                //logger.Log("stopLoss = " + stopLoss.ToString());
-                //logger.Log("riskValue = " + riskValue.ToString());
-                //logger.Log("riskValue * 2 = " + (riskValue * 2).ToString());
-                //logger.Log("se.EntryPrice = " + se.EntryPrice.ToString());
-                //logger.Log("takeProfitShort = " + takeProfitShort.ToString());
+                stopLossShort = high.Value + 1;
+                var riskValue = stopLossShort - se.EntryPrice;               
 
                 if (takeProfitShort == 0)
-                    takeProfitShort = se.EntryPrice - riskValue * 2;
-
-                //logger.Log("takeProfitShort = " + takeProfitShort.ToString());
+                    takeProfitShort = se.EntryPrice - riskValue * 2;               
 
                 if (IsAboutEndOfSession(lastBar.Date))
                     se.CloseAtMarket(barNumber + 1, "SXT");
 
-                se.CloseAtStop(barNumber + 1, stopLoss, 100, "SXS");
+                se.CloseAtStop(barNumber + 1, stopLossShort, 100, "SXS");
                 se.CloseAtProfit(barNumber + 1, takeProfitShort, 100, "SXP");  
             }
 
             #endregion
-        }
+        }     
+        
+        public void CheckPositionCloseCase(int barNumber)
+        {
+            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
+            if (le != null)
+            {
+                var bar = security.LastBar;
 
-        //private List<Bar> GetSubBars(int barNumber)
-        //{
-        //    var subBars = new List<Bar>();
-        //    for (var i = 0; i <= barNumber; i++)
-        //        subBars.Add(bars[i]);
+                if (bar.Low < stopLossLong)
+                    le.CloseAtMarket(barNumber, "LXS");
+            }                       
 
-        //    return subBars;
-        //}
+            var se = sec.Positions.GetLastActiveForSignal("SE", barNumber);
+            if (se != null)
+            {
+                var bar = security.LastBar;
+
+                if (bar.High > stopLossShort)
+                    se.CloseAtMarket(barNumber, "SXS");               
+            }
+        }    
 
         public void CalculateIndicators()
         {
