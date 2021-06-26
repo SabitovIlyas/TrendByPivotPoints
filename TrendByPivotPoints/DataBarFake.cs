@@ -7,10 +7,10 @@ namespace TrendByPivotPointsStrategy.Tests
     class DataBarFake : IDataBar
     {
         DateTime date;
-        public DataBarFake(DateTime date)
-        {
-            this.date = date;
-        }
+        double open;
+        double low;
+        double high;
+        double close;        
 
         public double Volume => throw new NotImplementedException();
 
@@ -20,13 +20,13 @@ namespace TrendByPivotPointsStrategy.Tests
 
         public double PotensialOpen => throw new NotImplementedException();
 
-        public double Open => throw new NotImplementedException();
+        public double Open { get => open; set => open = value; }
 
-        public double Low => throw new NotImplementedException();
+        public double Low { get => low; set => low = value; }
 
-        public double High => throw new NotImplementedException();
+        public double High { get => high; set => high = value; }
 
-        public double Close => throw new NotImplementedException();
+        public double Close { get => close; set => close = value; }
 
         public bool IsAdditional => throw new NotImplementedException();
 
@@ -36,7 +36,7 @@ namespace TrendByPivotPointsStrategy.Tests
 
         public int OriginalFirstIndex { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int OriginalLastIndex { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public DateTime Date { get => date; set => throw new NotImplementedException(); }
+        public DateTime Date { get => date; set => date = value; }
         public long Ticks { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void Add(IBaseBar b2)

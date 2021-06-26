@@ -26,8 +26,11 @@ namespace TrendByPivotPointsStrategy.Tests
             var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
 
             IDataBar bar;
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 5, 0));
-            barsBaseAccessAdding.Add(bar);
+            foreach (var b in bars)
+            {
+                bar = new DataBarFake() { Open = b.Open, High = b.High, Low = b.Low, Close = b.Close };
+                barsBaseAccessAdding.Add(bar);
+            }
             ISecurity securityBase = new SecurityISecurityFake();
             var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
             securityBaseAccessAdding.Bars = barsBaseAccessAdding;
@@ -116,29 +119,30 @@ namespace TrendByPivotPointsStrategy.Tests
             Assert.IsTrue(check);
         }
 
-        //public void GetHighsSecurityTest()
-        //{
-        //    //arrange            
-        //    var expected = dataBarsForTesting.GetExpectedHighs_lefLocal3_rightLocal3();
+        [TestMethod()]
+        public void GetHighsSecurityTest()
+        {
+            //arrange            
+            var expected = dataBarsForTesting.GetExpectedHighs_lefLocal3_rightLocal3();
 
-        //    //act
-        //    var actual = pivotPointsIndicator.GetHighs(bars, 3, 3);
+            //act
+            var actual = pivotPointsIndicator.GetHighs(bars, 3, 3);
 
-        //    //assert
-        //    var check = true;
-        //    if (expected != null && actual != null && expected.Count == actual.Count)
-        //        for (var i = 0; i < expected.Count; i++)
-        //        {
-        //            if ((actual[i].BarNumber != expected[i].BarNumber) || (actual[i].Value != expected[i].Value))
-        //            {
-        //                check = false;
-        //                break;
-        //            }
-        //        }
-        //    else
-        //        check = false;
+            //assert
+            var check = true;
+            if (expected != null && actual != null && expected.Count == actual.Count)
+                for (var i = 0; i < expected.Count; i++)
+                {
+                    if ((actual[i].BarNumber != expected[i].BarNumber) || (actual[i].Value != expected[i].Value))
+                    {
+                        check = false;
+                        break;
+                    }
+                }
+            else
+                check = false;
 
-        //    Assert.IsTrue(check);
-        //}
+            Assert.IsTrue(check);
+        }
     }
 }

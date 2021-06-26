@@ -18,17 +18,17 @@ namespace TrendByPivotPointsStrategy.Tests
             var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
             
             IDataBar bar;
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 5, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 5, 0) };
             barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 10, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 10, 0) };
             barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 15, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 15, 0) };
             barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 20, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 20, 0) };
             barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 25, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 25, 0) };
             barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 30, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 30, 0) };
             barsBaseAccessAdding.Add(bar);
 
             ISecurity securityBase = new SecurityISecurityFake();
@@ -37,11 +37,11 @@ namespace TrendByPivotPointsStrategy.Tests
 
             IReadOnlyList<IDataBar> barsCompressed = new ReadOnlyList<IDataBar>();
             var barsCompressedAccessAdding = (ReadOnlyList<IDataBar>)barsCompressed;
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 5, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 5, 0) };
             barsCompressedAccessAdding.Add(bar);
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 15, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 15, 0) };
             barsCompressedAccessAdding.Add(bar);
-            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 30, 0));
+            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 30, 0) };
             barsCompressedAccessAdding.Add(bar);
 
             ISecurity securityCompressed = new SecurityISecurityFake();
