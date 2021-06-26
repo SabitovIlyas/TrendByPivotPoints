@@ -43,14 +43,14 @@ namespace TrendByPivotPointsStrategy
         public void Run()
         {            
             tradingSystem.CalculateIndicators();
+            var lastBarNmber = security.GetBarsCount() - 1;
 
-            for (var i = 0; i < security.GetSecurityCount(); i++)
-            {  
-                if(IsRealTimeTrading()&&!IsLastBarClosed())
-                    tradingSystem.CheckPositionCloseCase(i);                
-                else
-                    tradingSystem.Update(i);
-            }
+            for (var i = 0; i < lastBarNmber; i++)
+                tradingSystem.Update(i);
+            
+            if (IsRealTimeTrading())
+                tradingSystem.CheckPositionCloseCase(lastBarNmber);
+            tradingSystem.Update(lastBarNmber);
         }
 
         public void Paint(IContext ctx, ISecurity sec)

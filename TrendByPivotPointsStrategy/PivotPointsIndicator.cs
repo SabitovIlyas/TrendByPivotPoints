@@ -15,7 +15,7 @@ namespace TrendByPivotPointsStrategy
         public void CalculateLows(Security security, int leftLocal, int rightLocal)
         {
             var result = new List<Indicator>();
-            var count = security.GetSecurityCount();
+            var count = security.GetBarsCount();
 
             for (var i = leftLocal; i < count - rightLocal; i++)
             {

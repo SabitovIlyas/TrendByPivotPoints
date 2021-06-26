@@ -1,20 +1,19 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TrendByPivotPointsStrategy;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TSLab.Script;
+using TSLab.DataSource;
 
-namespace TrendByPivotPoints.Tests
+namespace TrendByPivotPointsStrategy.Tests
 {
     [TestClass()]
     public class PivotPointsIndicatorTests
     {
-
         DataBarsForTesting dataBarsForTesting;
         List<Bar> bars;
         PivotPointsIndicator pivotPointsIndicator;
+        Security security;
+        int lastBarNumber;
 
         [TestInitialize]
         public void TestInitialize()
@@ -22,6 +21,19 @@ namespace TrendByPivotPoints.Tests
             dataBarsForTesting = new DataBarsForTesting();
             bars = dataBarsForTesting.GetBars();
             pivotPointsIndicator = new PivotPointsIndicator();
+
+            IReadOnlyList<IDataBar> barsBase = new ReadOnlyList<IDataBar>();
+            var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
+
+            IDataBar bar;
+            bar = new DataBarFake(new DateTime(2021, 6, 18, 14, 5, 0));
+            barsBaseAccessAdding.Add(bar);
+            ISecurity securityBase = new SecurityISecurityFake();
+            var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
+            securityBaseAccessAdding.Bars = barsBaseAccessAdding;
+
+            security = new SecurityReal(securityBase);
+            lastBarNumber = security.GetBarsCount() - 1;
         }
 
 
@@ -58,7 +70,8 @@ namespace TrendByPivotPoints.Tests
             var expected = dataBarsForTesting.GetExpectedLows_lefLocal3_rightLocal3();
 
             //act
-            var actual = pivotPointsIndicator.GetLows(bars, 3, 3);
+            pivotPointsIndicator.CalculateLows(security, 3, 3);
+            var actual = pivotPointsIndicator.GetLows(lastBarNumber);
 
             //assert
             var check = true;
@@ -102,5 +115,30 @@ namespace TrendByPivotPoints.Tests
 
             Assert.IsTrue(check);
         }
+
+        //public void GetHighsSecurityTest()
+        //{
+        //    //arrange            
+        //    var expected = dataBarsForTesting.GetExpectedHighs_lefLocal3_rightLocal3();
+
+        //    //act
+        //    var actual = pivotPointsIndicator.GetHighs(bars, 3, 3);
+
+        //    //assert
+        //    var check = true;
+        //    if (expected != null && actual != null && expected.Count == actual.Count)
+        //        for (var i = 0; i < expected.Count; i++)
+        //        {
+        //            if ((actual[i].BarNumber != expected[i].BarNumber) || (actual[i].Value != expected[i].Value))
+        //            {
+        //                check = false;
+        //                break;
+        //            }
+        //        }
+        //    else
+        //        check = false;
+
+        //    Assert.IsTrue(check);
+        //}
     }
 }

@@ -56,7 +56,7 @@ namespace TrendByPivotPointsStrategy
             throw new System.NotImplementedException();
         }
 
-        public int GetSecurityCount()
+        public int GetBarsCount()
         {
             throw new System.NotImplementedException();
         }

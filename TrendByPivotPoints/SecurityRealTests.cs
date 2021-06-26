@@ -6,7 +6,6 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy.Tests
 {
-
     [TestClass()]
     public class SecurityRealTests
     {

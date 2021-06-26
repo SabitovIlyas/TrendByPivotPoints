@@ -20,7 +20,7 @@ namespace TrendByPivotPointsStrategy
                     barNumber = 0;
                 else
                 {
-                    var securityCount = GetSecurityCount();
+                    var securityCount = GetBarsCount();
                     if (securityCount == 0)
                         barNumber = 0;
                     else
@@ -77,7 +77,7 @@ namespace TrendByPivotPointsStrategy
         private List<List<int>> barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
         private void CompareBarsBaseSecurityWithCompressedSecurity()
         {
-            var lastBarNumber = GetSecurityCount() - 1;
+            var lastBarNumber = GetBarsCount() - 1;
             var securityBaseCount = GetSecurityBaseCount();
             List<int> barsInCompressedBar;
 
@@ -144,7 +144,7 @@ namespace TrendByPivotPointsStrategy
             return bar.Close;
         }
 
-        public int GetSecurityCount()
+        public int GetBarsCount()
         {
             var bars = GetBars();
             return bars.Count;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TrendByPivotPointsStrategy;
 using TSLab.DataSource;
 
-namespace TrendByPivotPoints.Tests
+namespace TrendByPivotPointsStrategy.Tests
 {
     class DataBarsForTesting
     {

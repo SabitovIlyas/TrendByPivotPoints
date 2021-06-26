@@ -42,15 +42,15 @@
     <Reference Include="System.Xml" />
     <Reference Include="TSLab.DataSource, Version=2.1.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\TSLab.DataSource.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.DataSource.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Script, Version=2.1.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\TSLab.Script.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Script.Handlers, Version=2.1.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\TSLab.Script.Handlers.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.Handlers.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Utility, Version=2.1.12.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
