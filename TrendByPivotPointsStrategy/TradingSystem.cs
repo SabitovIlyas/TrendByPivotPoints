@@ -88,7 +88,8 @@ namespace TrendByPivotPointsStrategy
                     compressedBars.Add(new Bar() { Open = compressedBar.Open, High = compressedBar.High, Low = compressedBar.Low, Close = compressedBar.Close, Date = compressedBar.Date });
                 }
 
-            var lowsFilter = pivotPointsIndicator.GetLows(compressedBars, 3, 3);
+            //var lowsFilter = pivotPointsIndicator.GetLows(compressedBars, 3, 3);
+            var lowsFilter = pivotPointsIndicator.GetLows(barNumber);
 
             var valuesFilterLows = new List<double>();
             foreach (var low in lowsFilter)
