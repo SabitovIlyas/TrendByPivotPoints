@@ -23,6 +23,7 @@ namespace TrendByPivotPointsStrategy
         double takeProfitLong;
         double takeProfitShort;
         Security security;
+        Security compressedSecurity;
         double stopLossLong;
         double stopLossShort;
 
@@ -89,7 +90,8 @@ namespace TrendByPivotPointsStrategy
                 }
 
             //var lowsFilter = pivotPointsIndicator.GetLows(compressedBars, 3, 3);
-            var lowsFilter = pivotPointsIndicator.GetLows(barNumber);
+            var filterBarNumber = compressedSecurity.GetBarCompressedNumberFromBarBaseNumber(barNumber);
+            var lowsFilter = pivotPointsIndicatorFilter.GetLows(filterBarNumber - 1);
 
             var valuesFilterLows = new List<double>();
             foreach (var low in lowsFilter)
@@ -233,9 +235,15 @@ namespace TrendByPivotPointsStrategy
         {
             pivotPointsIndicator.CalculateLows(security, 3, 3);
             var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));            
-            var compressedSecurity = new SecurityReal(compressedSec, sec);            
+            compressedSecurity = new SecurityReal(compressedSec, sec);            
             pivotPointsIndicatorFilter.CalculateLows(compressedSecurity, 3, 3);
         }
+
+        //private int GetFilterBarNumber()
+        //{
+        //    compressedSecurity.GetBarsBaseFromBarCompressed
+
+        //}
 
         private bool IsAboutEndOfSession(DateTime barDateTime)
         {

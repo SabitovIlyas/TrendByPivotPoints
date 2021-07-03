@@ -2,6 +2,7 @@
 using TSLab.Script;
 using TSLab.DataSource;
 using TSLab.Script.Realtime;
+using System;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -107,6 +108,20 @@ namespace TrendByPivotPointsStrategy
         public List<int> GetBarsBaseFromBarCompressed(int barNumber)
         {
             return barsBaseSecurityInBarsCompressedSecurity[barNumber];
+        }
+
+        public int GetBarCompressedNumberFromBarBaseNumber(int barNumber)
+        {
+            List<int> bars;
+            for (var i=0;i<barsBaseSecurityInBarsCompressedSecurity.Count;i++)
+            {
+                bars = barsBaseSecurityInBarsCompressedSecurity[i];
+                for (var j = 0; j < bars.Count; j++)
+                    if (bars[j] == barNumber)
+                        return i;                                
+            }
+
+            throw new Exception("Номеру базового бара не соответствует ни один сжатый бар");
         }
 
         private int GetSecurityBaseCount()

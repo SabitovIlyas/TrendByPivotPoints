@@ -19,5 +19,7 @@ namespace TrendByPivotPointsStrategy
         List<int> GetBarsBaseFromBarCompressed(int barNumber);
         bool IsLaboratory { get;}
         bool IsRealTimeTrading { get; }
+
+        int GetBarCompressedNumberFromBarBaseNumber(int barNumber);
     }
 }

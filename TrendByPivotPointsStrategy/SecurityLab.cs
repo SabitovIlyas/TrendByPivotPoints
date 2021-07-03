@@ -31,6 +31,11 @@ namespace TrendByPivotPointsStrategy
             throw new System.NotImplementedException();
         }
 
+        public int GetBarCompressedNumberFromBarBaseNumber(int barNumber)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public double GetBarHigh(int barNumber)
         {
             throw new System.NotImplementedException();

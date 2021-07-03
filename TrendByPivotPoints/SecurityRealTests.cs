@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using TrendByPivotPointsStrategy;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using TSLab.Script;
@@ -16,7 +17,7 @@ namespace TrendByPivotPointsStrategy.Tests
         {
             IReadOnlyList<IDataBar> barsBase = new ReadOnlyList<IDataBar>();
             var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
-            
+
             IDataBar bar;
             bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 5, 0) };
             barsBaseAccessAdding.Add(bar);
@@ -115,6 +116,84 @@ namespace TrendByPivotPointsStrategy.Tests
             var elementsIsEqual = counter == expected.Count;
             var result = countIsEqual && elementsIsEqual;
             Assert.IsTrue(result);
+        }        
+
+        [TestMethod()]
+        public void GetBarCompressedNumberFromBarBaseNumberTest_barNumber0_returned0()
+        {
+            //arrange            
+            var expected = 0;
+
+            //act            
+            var actual = security.GetBarCompressedNumberFromBarBaseNumber(0);
+
+            //assert            
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetBarCompressedNumberFromBarBaseNumberTest_barNumber1_returned0()
+        {
+            //arrange            
+            var expected = 0;
+
+            //act            
+            var actual = security.GetBarCompressedNumberFromBarBaseNumber(1);
+
+            //assert            
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetBarCompressedNumberFromBarBaseNumberTest_barNumber2_returned0()
+        {
+            //arrange            
+            var expected = 1;
+
+            //act            
+            var actual = security.GetBarCompressedNumberFromBarBaseNumber(2);
+
+            //assert            
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetBarCompressedNumberFromBarBaseNumberTest_barNumber3_returned0()
+        {
+            //arrange            
+            var expected = 1;
+
+            //act            
+            var actual = security.GetBarCompressedNumberFromBarBaseNumber(3);
+
+            //assert            
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetBarCompressedNumberFromBarBaseNumberTest_barNumber4_returned0()
+        {
+            //arrange            
+            var expected = 1;
+
+            //act            
+            var actual = security.GetBarCompressedNumberFromBarBaseNumber(4);
+
+            //assert            
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetBarCompressedNumberFromBarBaseNumberTest_barNumber5_returned0()
+        {
+            //arrange            
+            var expected = 2;
+
+            //act            
+            var actual = security.GetBarCompressedNumberFromBarBaseNumber(5);
+
+            //assert            
+            Assert.AreEqual(expected, actual);
         }
     }
 }
