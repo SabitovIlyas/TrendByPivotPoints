@@ -97,7 +97,7 @@ namespace TrendByPivotPointsStrategy
             foreach (var low in lowsFilter)
                 valuesFilterLows.Add(low.Value);
 
-            var highsFilter = pivotPointsIndicator.GetHighs(compressedBars, 3, 3);
+            var highsFilter = pivotPointsIndicatorFilter.GetHighs(filterBarNumber - 1);
 
             var valuesFilterHighs = new List<double>();
             foreach (var high in highsFilter)
@@ -160,7 +160,7 @@ namespace TrendByPivotPointsStrategy
 
             var se = sec.Positions.GetLastActiveForSignal("SE", barNumber);
 
-            var highs = pivotPointsIndicator.GetHighs(subBars, 3, 3);
+            var highs = pivotPointsIndicator.GetHighs(barNumber);
             var highsValues = new List<double>();
             foreach (var high in highs)
                 highsValues.Add(high.Value);
@@ -240,13 +240,7 @@ namespace TrendByPivotPointsStrategy
 
             pivotPointsIndicator.CalculateHighs(security, 3, 3);                        
             pivotPointsIndicatorFilter.CalculateHighs(compressedSecurity, 3, 3);
-        }
-
-        //private int GetFilterBarNumber()
-        //{
-        //    compressedSecurity.GetBarsBaseFromBarCompressed
-
-        //}
+        }        
 
         private bool IsAboutEndOfSession(DateTime barDateTime)
         {
