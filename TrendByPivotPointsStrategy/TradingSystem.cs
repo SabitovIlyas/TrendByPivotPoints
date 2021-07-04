@@ -237,6 +237,9 @@ namespace TrendByPivotPointsStrategy
             var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));            
             compressedSecurity = new SecurityReal(compressedSec, sec);            
             pivotPointsIndicatorFilter.CalculateLows(compressedSecurity, 3, 3);
+
+            pivotPointsIndicator.CalculateHighs(security, 3, 3);                        
+            pivotPointsIndicatorFilter.CalculateHighs(compressedSecurity, 3, 3);
         }
 
         //private int GetFilterBarNumber()

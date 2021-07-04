@@ -39,7 +39,6 @@ namespace TrendByPivotPointsStrategy.Tests
             lastBarNumber = security.GetBarsCount() - 1;
         }
 
-
         [TestMethod()]
         public void GetLowsTest()
         {
@@ -123,10 +122,11 @@ namespace TrendByPivotPointsStrategy.Tests
         public void GetHighsSecurityTest()
         {
             //arrange            
-            var expected = dataBarsForTesting.GetExpectedHighs_lefLocal3_rightLocal3();
+            var expected = dataBarsForTesting.GetExpectedLows_lefLocal3_rightLocal3();
 
             //act
-            var actual = pivotPointsIndicator.GetHighs(bars, 3, 3);
+            pivotPointsIndicator.CalculateHighs(security, 3, 3);
+            var actual = pivotPointsIndicator.GetHighs(lastBarNumber);
 
             //assert
             var check = true;
@@ -143,6 +143,6 @@ namespace TrendByPivotPointsStrategy.Tests
                 check = false;
 
             Assert.IsTrue(check);
-        }
+        }       
     }
 }
