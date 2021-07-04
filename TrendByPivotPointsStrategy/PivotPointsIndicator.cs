@@ -51,7 +51,7 @@ namespace TrendByPivotPointsStrategy
                     result.Add(new Indicator() { BarNumber = i, Value = low1 });
             }
 
-            this.security = security;
+            //this.security = security;
             lows = result;            
         }
 
@@ -139,7 +139,7 @@ namespace TrendByPivotPointsStrategy
             return result;
         }
 
-        internal void CalculateHighs(Security security, int leftLocal, int rightLocal)
+        public void CalculateHighs(Security security, int leftLocal, int rightLocal)
         {
             var result = new List<Indicator>();
             var count = security.GetBarsCount();
@@ -153,7 +153,7 @@ namespace TrendByPivotPointsStrategy
                 for (var j = i - leftLocal; j < i; j++)
                 {
                     high2 = security.GetBarHigh(j);
-                    if (low1 >= low2)
+                    if (high1 <= high2)
                     {
                         high = false;
                         break;
@@ -165,7 +165,7 @@ namespace TrendByPivotPointsStrategy
                     for (var j = i + 1; j <= i + rightLocal; j++)
                     {
                         high2 = security.GetBarHigh(j);
-                        if (low2 < low1)
+                        if (high2 > high1)
                         {
                             high = false;
                             break;
@@ -177,8 +177,22 @@ namespace TrendByPivotPointsStrategy
                     result.Add(new Indicator() { BarNumber = i, Value = high1 });
             }
 
-            this.security = security;
+            //this.security = security;
             highs = result;
+        }
+
+        public List<Indicator> GetHighs(int barNumber)
+        {
+            var result = new List<Indicator>();
+
+            foreach (var high in highs)
+            {
+                if (high.BarNumber > barNumber)
+                    break;
+                result.Add(high);
+            }
+
+            return result;
         }
     }
 }

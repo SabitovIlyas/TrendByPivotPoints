@@ -122,7 +122,7 @@ namespace TrendByPivotPointsStrategy.Tests
         public void GetHighsSecurityTest()
         {
             //arrange            
-            var expected = dataBarsForTesting.GetExpectedLows_lefLocal3_rightLocal3();
+            var expected = dataBarsForTesting.GetExpectedHighs_lefLocal3_rightLocal3();
 
             //act
             pivotPointsIndicator.CalculateHighs(security, 3, 3);
