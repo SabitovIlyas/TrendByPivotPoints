@@ -38,6 +38,8 @@ namespace TrendByPivotPointsStrategy
             tradingSystem = new TradingSystem(localMoneyManagerRuble, account, security);
             tradingSystem.Logger = new LoggerSystem(ctx);
             this.ctx = ctx;
+            var comis = new AbsolutCommission() { Commission = 2.3 };
+            comis.Execute(sec);
         }
         
         public void Run()
