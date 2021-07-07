@@ -71,12 +71,15 @@ namespace TrendByPivotPointsStrategy
             //pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);
             pane = ctx.CreateGraphPane("Инструмент  (с. т.)", "Инструмент (средний таймфрейм)");
             pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-            
+
 
 
             //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
             //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
             //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+
+            Context context = new ContextTSLab(ctx);
+            tradingSystem.Paint(context);
         }
 
         private bool IsLaboratory(ISecurity security)
@@ -93,5 +96,28 @@ namespace TrendByPivotPointsStrategy
         {
             return security.IsRealTimeTrading;
         }
+    }
+
+    public interface Context
+    {
+        void CreateGraphPane(string v1, string v2);
+    }
+
+    public class ContextTSLab: Context
+    {
+        private IContext context;
+        public ContextTSLab(IContext context)
+        {
+            this.context = context;
+        }
+
+        public void CreateGraphPane(string name, string title)
+        {
+            var pane = context.CreateGraphPane(name, title);
+        }
+    }
+    
+    public interface Pane
+    {        
     }
 }

@@ -208,8 +208,8 @@ namespace TrendByPivotPointsStrategy
             }
 
             #endregion
-        }     
-        
+        }        
+
         public void CheckPositionCloseCase(int barNumber)
         {
             var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
@@ -248,5 +248,28 @@ namespace TrendByPivotPointsStrategy
                 return true;
             return false;
         }
+
+        public void Paint(Context context)
+        {
+        }
+
+        //public void Paint(Context context)
+        //{
+        //    //var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
+        //    var pane = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
+        //    var color = new TsLabColor(SystemColor.Green.ToArgb());
+        //    pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+
+        //    var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
+        //    //pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);
+        //    pane = context.CreateGraphPane("Инструмент  (с. т.)", "Инструмент (средний таймфрейм)");
+        //    pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+
+
+
+        //    //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
+        //    //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
+        //    //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+        //}
     }
 }
