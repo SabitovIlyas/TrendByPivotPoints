@@ -256,6 +256,7 @@ namespace TrendByPivotPointsStrategy
         //public void Paint(Context context)
         //{
         //    //var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
+            
         //    var pane = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
         //    var color = new TsLabColor(SystemColor.Green.ToArgb());
         //    pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);

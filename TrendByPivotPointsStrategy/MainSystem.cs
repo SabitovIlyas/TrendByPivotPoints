@@ -78,7 +78,7 @@ namespace TrendByPivotPointsStrategy
             //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
             //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
 
-            Context context = new ContextTSLab(ctx);
+            Context context = new ContextTSLab(ctx);            
             tradingSystem.Paint(context);
         }
 
@@ -100,7 +100,7 @@ namespace TrendByPivotPointsStrategy
 
     public interface Context
     {
-        void CreateGraphPane(string v1, string v2);
+        Pane CreateGraphPane(string v1, string v2);
     }
 
     public class ContextTSLab: Context
@@ -111,13 +111,26 @@ namespace TrendByPivotPointsStrategy
             this.context = context;
         }
 
-        public void CreateGraphPane(string name, string title)
+        public Pane CreateGraphPane(string name, string title)
         {
             var pane = context.CreateGraphPane(name, title);
+            return new PaneTSLab(pane);
         }
     }
     
     public interface Pane
     {        
     }
+
+    public class PaneTSLab: Pane
+    {
+        private IGraphPane pane;
+
+        public PaneTSLab(IGraphPane pane)
+        {
+            this.pane = pane;
+        }
+    }
+
+
 }
