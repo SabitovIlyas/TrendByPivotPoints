@@ -102,7 +102,7 @@ namespace TrendByPivotPointsStrategy
 
     public interface Context
     {
-        Pane CreateGraphPane(string v1, string v2);
+        Pane CreateGraphPane(string name, string title);
     }
 
     public class ContextTSLab: Context
@@ -118,10 +118,13 @@ namespace TrendByPivotPointsStrategy
             var pane = context.CreateGraphPane(name, title);
             return new PaneTSLab(pane);
         }
+
+
     }
     
     public interface Pane
-    {        
+    {
+        void AddList(string name, Security security, CandleStyles listSlyle, TsLabColor color, PaneSides side);
     }
 
     public class PaneTSLab: Pane
@@ -130,9 +133,12 @@ namespace TrendByPivotPointsStrategy
 
         public PaneTSLab(IGraphPane pane)
         {
-            this.pane = pane;
+            this.pane = pane;            
+        }
+
+        public void AddList(string name, Security security, CandleStyles listSlyle, TsLabColor color, PaneSides side)
+        {
+            //pane.AddList(name, security.se., listSlyle, color, side);
         }
     }
-
-
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TSLab.DataSource;
 using TSLab.Script;
+using TsLabColor = TSLab.Script.Color;
+using SystemColor = System.Drawing.Color;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -256,9 +258,12 @@ namespace TrendByPivotPointsStrategy
         //public void Paint(Context context)
         //{
         //    //var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
-            
+
         //    var pane = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
         //    var color = new TsLabColor(SystemColor.Green.ToArgb());
+
+        //    var p = context.CreateGraphPane()
+
         //    pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
 
         //    var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
