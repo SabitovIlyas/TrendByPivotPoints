@@ -237,7 +237,7 @@ namespace TrendByPivotPointsStrategy
         {
             pivotPointsIndicator.CalculateLows(security, 3, 3);
             var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));            
-            compressedSecurity = new SecurityReal(compressedSec, sec);            
+            compressedSecurity = new SecurityTSlab(compressedSec, sec);            
             pivotPointsIndicatorFilter.CalculateLows(compressedSecurity, 3, 3);
 
             pivotPointsIndicator.CalculateHighs(security, 3, 3);                        
@@ -251,31 +251,29 @@ namespace TrendByPivotPointsStrategy
             return false;
         }
 
-        public void Paint(Context context)
-        {
-        }
-
         //public void Paint(Context context)
         //{
-        //    //var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
-
-        //    var pane = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
-        //    var color = new TsLabColor(SystemColor.Green.ToArgb());
-
-        //    var p = context.CreateGraphPane()
-
-        //    pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-
-        //    var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
-        //    //pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);
-        //    pane = context.CreateGraphPane("Инструмент  (с. т.)", "Инструмент (средний таймфрейм)");
-        //    pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-
-
-
-        //    //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
-        //    //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
-        //    //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
         //}
+
+        public void Paint(Context context)
+        {
+            //var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
+
+            var pane = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
+            var color = new TsLabColor(SystemColor.Green.ToArgb());           
+
+            pane.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+
+            var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
+            //pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);
+            pane = context.CreateGraphPane("Инструмент  (с. т.)", "Инструмент (средний таймфрейм)");
+            pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+
+
+
+            //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
+            //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
+            //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+        }
     }
 }

@@ -79,7 +79,7 @@
     <Compile Include="LoggerSystem.cs" />
     <Compile Include="ReadOnlyList.cs" />
     <Compile Include="SecurityNull.cs" />
-    <Compile Include="SecurityReal.cs" />
+    <Compile Include="SecurityTSlab.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
     <Compile Include="TradingSystem.cs" />

@@ -35,7 +35,7 @@ namespace TrendByPivotPointsStrategy.Tests
             var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
             securityBaseAccessAdding.Bars = barsBaseAccessAdding;
 
-            security = new SecurityReal(securityBase);
+            security = new SecurityTSlab(securityBase);
             lastBarNumber = security.GetBarsCount() - 1;
         }
 

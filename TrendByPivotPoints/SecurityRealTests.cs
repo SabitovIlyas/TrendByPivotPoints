@@ -49,7 +49,7 @@ namespace TrendByPivotPointsStrategy.Tests
             var securityCompressedAccessAdding = (SecurityISecurityFake)securityCompressed;
             securityCompressedAccessAdding.Bars = barsCompressedAccessAdding;
 
-            security = new SecurityReal(securityCompressed, securityBase);
+            security = new SecurityTSlab(securityCompressed, securityBase);
         }
 
         [TestMethod()]

@@ -6,7 +6,7 @@ using System;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class SecurityReal : Security
+    public class SecurityTSlab : Security
     {
         public int BarNumber
         {
@@ -47,20 +47,20 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private ISecurity security;
+        public ISecurity security;
         //private int barNumber = 0; //заглушил
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
         private ISecurity baseSecurity = new SecurityNull();
 
-        public SecurityReal(ISecurity security)
+        public SecurityTSlab(ISecurity security)
         {
             finInfo = security.FinInfo;
             InitializeSecurity(security);
         }
 
-        public SecurityReal(ISecurity compressedSecurity, ISecurity baseSecurity)
+        public SecurityTSlab(ISecurity compressedSecurity, ISecurity baseSecurity)
         {
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;

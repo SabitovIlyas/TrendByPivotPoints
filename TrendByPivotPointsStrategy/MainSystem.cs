@@ -21,18 +21,13 @@ namespace TrendByPivotPointsStrategy
         public void Initialize(ISecurity sec, IContext ctx)
         {
             Account account;
-            if (IsLaboratory(sec))
-            {
-                account = new AccountLab(sec);
-                //security = new SecurityLab(sec);
-                security = new SecurityReal(sec);
-            }
-            else
-            {
+
+            if (IsLaboratory(sec))            
+                account = new AccountLab(sec);            
+            else            
                 account = new AccountReal(sec);
-                security = new SecurityReal(sec);
-            }
-            
+
+            security = new SecurityTSlab(sec);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             tradingSystem = new TradingSystem(localMoneyManagerRuble, account, security);
@@ -138,7 +133,8 @@ namespace TrendByPivotPointsStrategy
 
         public void AddList(string name, Security security, CandleStyles listSlyle, TsLabColor color, PaneSides side)
         {
-            //pane.AddList(name, security.se., listSlyle, color, side);
+            var securityTSLab = (SecurityTSlab)security;
+            pane.AddList(name, securityTSLab.security, listSlyle, color, side);
         }
     }
 }
