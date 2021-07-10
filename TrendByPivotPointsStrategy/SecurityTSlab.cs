@@ -159,6 +159,12 @@ namespace TrendByPivotPointsStrategy
             return bar.Close;
         }
 
+        public DateTime GetBarDateTime(int barNumber)
+        {
+            var bar = GetBar(barNumber);
+            return bar.Date;
+        }
+
         public int GetBarsCount()
         {
             var bars = GetBars();

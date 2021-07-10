@@ -5,6 +5,7 @@ using TSLab.DataSource;
 using TSLab.Script;
 using TsLabColor = TSLab.Script.Color;
 using SystemColor = System.Drawing.Color;
+using TSLab.Script.GraphPane;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -82,16 +83,7 @@ namespace TrendByPivotPointsStrategy
             foreach (var low in lows)
                 lowsValues.Add(low.Value);
 
-            var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
-
-            var compressedBars = new List<Bar>();
-            foreach (var compressedBar in compressedSec.Bars)
-                if (compressedBar.Date < sec.Bars[barNumber].Date)
-                {
-                    compressedBars.Add(new Bar() { Open = compressedBar.Open, High = compressedBar.High, Low = compressedBar.Low, Close = compressedBar.Close, Date = compressedBar.Date });
-                }
-
-            //var lowsFilter = pivotPointsIndicator.GetLows(compressedBars, 3, 3);
+            var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));                        
             var filterBarNumber = compressedSecurity.GetBarCompressedNumberFromBarBaseNumber(barNumber);
             var lowsFilter = pivotPointsIndicatorFilter.GetLows(filterBarNumber - 1);
 
@@ -249,31 +241,71 @@ namespace TrendByPivotPointsStrategy
             if (barDateTime.Hour >= 23 && barDateTime.Minute >= 40)
                 return true;
             return false;
-        }
-
-        //public void Paint(Context context)
-        //{
-        //}
+        }        
 
         public void Paint(Context context)
-        {
-            //var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
+        {           
+            var pane1 = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
+            var color = SystemColor.Green;                       
 
-            var pane = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
-            var color = new TsLabColor(SystemColor.Green.ToArgb());           
+            pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);           
+            
+            var pane2 = context.CreateGraphPane("Инструмент  (с. т.)", "Инструмент (средний таймфрейм)");
+            pane2.AddList(compressedSecurity.ToString(), compressedSecurity, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
 
-            pane.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+            pane1.ClearInteractiveObjects();
+            pane2.ClearInteractiveObjects();
 
-            var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
-            //pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);
-            pane = context.CreateGraphPane("Инструмент  (с. т.)", "Инструмент (средний таймфрейм)");
-            pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+            color = SystemColor.Blue;
+            DateTime x;
+            double y;
+            MarketPoint position;
+            int id = 0;
 
+            var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
 
+            foreach(var low in lows)
+            {
+                x = security.GetBarDateTime(low.BarNumber);
+                y = low.Value - 50;
+                position = new MarketPoint(x, y);                
+                pane1.AddInteractivePoint(id.ToString(), PaneSides.RIGHT, false, color, position);
+                id++;
+            }
 
-            //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
-            //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
-            //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+            var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
+
+            foreach (var high in highs)
+            {
+                x = security.GetBarDateTime(high.BarNumber);
+                y = high.Value + 50;
+                position = new MarketPoint(x, y);
+                pane1.AddInteractivePoint(id.ToString(), PaneSides.RIGHT, false, color, position);
+                id++;
+            }
+
+            var filterBarNumber = compressedSecurity.GetBarCompressedNumberFromBarBaseNumber(security.BarNumber);
+            lows = pivotPointsIndicatorFilter.GetLows(filterBarNumber);
+
+            foreach (var low in lows)
+            {
+                x = compressedSecurity.GetBarDateTime(low.BarNumber);
+                y = low.Value - 50;
+                position = new MarketPoint(x, y);
+                pane2.AddInteractivePoint(id.ToString(), PaneSides.RIGHT, false, color, position);
+                id++;
+            }
+
+            highs = pivotPointsIndicatorFilter.GetHighs(filterBarNumber);
+
+            foreach (var high in highs)
+            {
+                x = compressedSecurity.GetBarDateTime(high.BarNumber);
+                y = high.Value + 50;
+                position = new MarketPoint(x, y);
+                pane2.AddInteractivePoint(id.ToString(), PaneSides.RIGHT, false, color, position);
+                id++;
+            }
         }
     }
 }

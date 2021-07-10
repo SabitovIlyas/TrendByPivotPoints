@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TSLab.DataSource;
 using TSLab.Script;
 
@@ -15,6 +16,7 @@ namespace TrendByPivotPointsStrategy
         double GetBarHigh(int barNumber);
         double GetBarLow(int barNumber);
         double GetBarOpen(int barNumber);
+        DateTime GetBarDateTime(int barNumber);
         int GetBarsCount();
         List<int> GetBarsBaseFromBarCompressed(int barNumber);
         bool IsLaboratory { get;}

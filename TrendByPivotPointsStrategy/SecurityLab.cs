@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TSLab.Script;
 
 namespace TrendByPivotPointsStrategy
@@ -34,6 +35,11 @@ namespace TrendByPivotPointsStrategy
         public int GetBarCompressedNumberFromBarBaseNumber(int barNumber)
         {
             throw new System.NotImplementedException();
+        }
+
+        public DateTime GetBarDateTime(int barNumber)
+        {
+            throw new NotImplementedException();
         }
 
         public double GetBarHigh(int barNumber)
