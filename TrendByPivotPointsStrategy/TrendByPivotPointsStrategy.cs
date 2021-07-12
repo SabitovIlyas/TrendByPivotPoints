@@ -28,14 +28,6 @@ namespace TrendByPivotPointsStrategy
             var timeStop = DateTime.Now;
             var time = timeStop - timeStart;
             logger.Log(time.ToString());
-        }
-
-        //public List<Bar> GetBars(ISecurity sec)
-        //{
-        //    var bars = new List<Bar>();
-        //    foreach (var bar in sec.Bars)
-        //        bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date });
-        //    return bars;
-        //}
+        }        
     }
 }

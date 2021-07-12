@@ -26,6 +26,16 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
+        public double Depo
+        {
+            get
+            {
+                //var l = sec.Positions.GetLastPosition(5);
+                //l.Profit();
+                return 0;
+            }
+        }
+
         public double GObying => 4500;
 
         public double GOselling => 4500;

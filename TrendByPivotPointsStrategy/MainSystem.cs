@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 using System.Drawing;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using SystemColor = System.Drawing.Color;
-using TsLabColor = TSLab.Script.Color;
 using TSLab.DataSource;
 using TSLab.Script.Realtime;
-using TSLab.Script.GraphPane;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -37,9 +34,7 @@ namespace TrendByPivotPointsStrategy
             this.ctx = ctx;
             var comis = new AbsolutCommission() { Commission = 2.3 };
             comis.Execute(sec);
-            context = new ContextTSLab(ctx);
-            //var comis = new AbsolutCommission() { Commission = 0 };
-            //comis.Execute(sec);
+            context = new ContextTSLab(ctx);            
         }
 
         public void Run()
@@ -63,29 +58,7 @@ namespace TrendByPivotPointsStrategy
         public void Paint(IContext ctx, ISecurity sec)
         {
             tradingSystem.Paint(context);
-        }
-
-        //public void Paint(IContext ctx, ISecurity sec)
-        //{
-        //    //var pane = ctx.CreatePane("Инструмент (основной таймфрейм)", 50, false);
-        //    var pane = ctx.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");      
-        //    var color = new TsLabColor(SystemColor.Green.ToArgb());
-        //    pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);            
-
-        //    var compressedSec = sec.CompressTo(new Interval(30, DataIntervals.MINUTE));
-        //    //pane = ctx.CreatePane("Инструмент (средний таймфрейм)", 50, false);
-        //    pane = ctx.CreateGraphPane("Инструмент  (с. т.)", "Инструмент (средний таймфрейм)");
-        //    pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-
-
-
-        //    //compressedSec = sec.CompressTo(new Interval(120, DataIntervals.MINUTE));
-        //    //pane = ctx.CreatePane("Инструмент (старший таймфрейм)", 50, false);
-        //    //pane.AddList(compressedSec.ToString(), compressedSec, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-
-        //    Context context = new ContextTSLab(ctx);            
-        //    tradingSystem.Paint(context);
-        //}
+        }        
 
         private bool IsLaboratory(ISecurity security)
         {
@@ -102,61 +75,4 @@ namespace TrendByPivotPointsStrategy
             return security.IsRealTimeTrading;
         }
     }
-
-    public interface Context
-    {
-        Pane CreateGraphPane(string name, string title);
-    }
-
-    public class ContextTSLab: Context
-    {
-        private IContext context;
-        public ContextTSLab(IContext context)
-        {
-            this.context = context;
-        }
-
-        public Pane CreateGraphPane(string name, string title)
-        {
-            var pane = context.CreateGraphPane(name, title);
-            return new PaneTSLab(pane);
-        }
-
-
-    }
-    
-    public interface Pane
-    {
-        void AddList(string name, Security security, CandleStyles listSlyle, SystemColor color, PaneSides side);
-        void AddInteractivePoint(string id, PaneSides side, bool isRemovable, SystemColor color, MarketPoint position);
-        void ClearInteractiveObjects();
-    }
-
-    public class PaneTSLab: Pane
-    {
-        private IGraphPane pane;
-
-        public PaneTSLab(IGraphPane pane)
-        {
-            this.pane = pane;            
-        }
-
-        public void AddList(string name, Security security, CandleStyles listSlyle, SystemColor color, PaneSides side)
-        {
-            var colorTSlab = new TsLabColor(color.ToArgb());
-            var securityTSLab = (SecurityTSlab)security;
-            pane.AddList(name, securityTSLab.security, listSlyle, colorTSlab, side);
-        }
-
-        public void ClearInteractiveObjects()
-        {
-            pane.ClearInteractiveObjects();
-        }
-
-        public void AddInteractivePoint(string id, PaneSides side, bool isRemovable, SystemColor color, MarketPoint position)
-        {            
-            var colorTSlab = new TsLabColor(color.ToArgb());
-            pane.AddInteractivePoint(id, side, isRemovable, colorTSlab, position);            
-        }
-    }    
 }

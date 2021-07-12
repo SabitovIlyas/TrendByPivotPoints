@@ -23,6 +23,9 @@ namespace TrendByPivotPointsStrategy
             var partofDeposit = riskValue * deposit;
             var result = Math.Min(partofDeposit, FreeBalance);
             return result;
+
+            //var currDepo = sec.InitDeposit + sec.Positions.TotalProfit(ctx.BarsCount - 1);
+
         }
 
         public double FreeBalance => account.FreeBalance;
