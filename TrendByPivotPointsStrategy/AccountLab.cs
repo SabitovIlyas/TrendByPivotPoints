@@ -57,6 +57,20 @@ namespace TrendByPivotPointsStrategy
         public AccountLab(ISecurity sec)
         {
             this.sec = sec;
+            equity = sec.InitDeposit;
         }
+
+        public void Update(int barNumber)
+        {
+            var positions = sec.Positions;
+            var lastPosition = positions.GetLastPosition(barNumber);
+            lastPosition.IsActiveForBar(barNumber);
+
+            //equity=equity+
+            //var l = sec.Positions.GetLastPosition(5);
+            //l.Profit();
+        }
+
+        private double equity;
     }
 }
