@@ -22,7 +22,7 @@ namespace TrendByPivotPointsStrategy
             Account account;
 
             if (IsLaboratory(sec))            
-                account = new AccountLab(sec);            
+                account = new AccountLab(sec, ctx);            
             else            
                 account = new AccountReal(sec);
 

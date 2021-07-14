@@ -1,11 +1,14 @@
 ﻿using System;
 using TSLab.Script;
+using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
     public class AccountLab : Account
     {
         private ISecurity sec;
+        Logger logger = new NullLogger();
+
         public double Deposit
         {
             get
@@ -54,23 +57,34 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        public AccountLab(ISecurity sec)
+        public AccountLab(ISecurity sec, IContext context)
         {
             this.sec = sec;
             equity = sec.InitDeposit;
+            logger = new LoggerSystem(context);
         }
 
         public void Update(int barNumber)
         {
             var positions = sec.Positions;
             var lastPosition = positions.GetLastPosition(barNumber);
-            lastPosition.IsActiveForBar(barNumber);
 
-            //equity=equity+
-            //var l = sec.Positions.GetLastPosition(5);
-            //l.Profit();
+            if (lastClosedPosition != lastPosition)
+            {
+                var message = string.Format("AccountLab.Update: barNumber = {0}; lastClosedPosition != lastPosition; lastClosedPosition = {1}, lastPosition = {2}",
+                    barNumber, lastClosedPosition, lastPosition);
+                logger.Log(message);
+                if (!lastPosition.IsActiveForBar(barNumber))
+                {
+                    lastClosedPosition = lastPosition;                    
+                    logger.Log("Активная позиция закрылась");
+
+                    equity = equity + lastClosedPosition.Profit();
+                }
+            }                     
         }
 
         private double equity;
+        private IPosition lastClosedPosition;
     }
 }
