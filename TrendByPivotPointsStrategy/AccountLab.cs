@@ -7,9 +7,24 @@ namespace TrendByPivotPointsStrategy
     public class AccountLab : Account
     {
         private ISecurity sec;
+        private double equity;
+        private IPosition lastClosedPosition;
         Logger logger = new NullLogger();
 
-        public double Deposit
+        public Logger Logger
+        {
+            get
+            {
+                return logger;
+            }
+
+            set
+            {
+                logger = value;
+            }
+        }        
+
+        public double InitDeposit
         {
             get
             {
@@ -19,25 +34,15 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        public double FreeBalance
+        public double Equity
         {
             get
             {
                 if (sec == null)
                     return 0;
-                return sec.InitDeposit;
+                return equity;
             }
-        }
-
-        public double Depo
-        {
-            get
-            {
-                //var l = sec.Positions.GetLastPosition(5);
-                //l.Profit();
-                return 0;
-            }
-        }
+        }        
 
         public double GObying => 4500;
 
@@ -57,11 +62,10 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        public AccountLab(ISecurity sec, IContext context)
+        public AccountLab(ISecurity sec)
         {
             this.sec = sec;
-            equity = sec.InitDeposit;
-            logger = new LoggerSystem(context);
+            equity = sec.InitDeposit;            
         }
 
         public void Update(int barNumber)
@@ -71,20 +75,20 @@ namespace TrendByPivotPointsStrategy
 
             if (lastClosedPosition != lastPosition)
             {
-                var message = string.Format("AccountLab.Update: barNumber = {0}; lastClosedPosition != lastPosition; lastClosedPosition = {1}, lastPosition = {2}",
-                    barNumber, lastClosedPosition, lastPosition);
+                var message = string.Format("AccountLab.Update: barNumber = {0}; lastClosedPosition != lastPosition; lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
+                    barNumber, lastClosedPosition, lastPosition, equity);
                 logger.Log(message);
                 if (!lastPosition.IsActiveForBar(barNumber))
                 {
                     lastClosedPosition = lastPosition;                    
                     logger.Log("Активная позиция закрылась");
-
                     equity = equity + lastClosedPosition.Profit();
+
+                    message = string.Format("AccountLab.Update: barNumber = {0}; !lastPosition.IsActiveForBar(barNumber); lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
+                    barNumber, lastClosedPosition, lastPosition, equity);
+                    logger.Log(message);
                 }
             }                     
         }
-
-        private double equity;
-        private IPosition lastClosedPosition;
     }
 }

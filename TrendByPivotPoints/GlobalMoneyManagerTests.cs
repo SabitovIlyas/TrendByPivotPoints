@@ -18,7 +18,7 @@ namespace TrendByPivotPoints.Tests
         public void TestInitialize()
         {
             account = new AccountFake();
-            account.Deposit = 1000.0;
+            account.InitDeposit = 1000.0;
             globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 5.00); ;
         }
 
@@ -27,7 +27,7 @@ namespace TrendByPivotPoints.Tests
         {
             //arrange            
             var expected = 50;
-            account.FreeBalance = 100;
+            account.Equity = 100;
 
             //act
             var actual = globalMoneyManager.GetMoneyForDeal();
@@ -40,7 +40,7 @@ namespace TrendByPivotPoints.Tests
         {
             //arrange            
             var expected = 25;
-            account.FreeBalance = 25;
+            account.Equity = 25;
 
             //act
             var actual = globalMoneyManager.GetMoneyForDeal();

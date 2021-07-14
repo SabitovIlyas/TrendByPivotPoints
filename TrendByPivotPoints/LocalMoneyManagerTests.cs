@@ -22,8 +22,8 @@ namespace TrendByPivotPoints.Tests
             account.GObying = 4500;
             account.GOselling = 4000;
             account.Rate = 50;
-            account.FreeBalance = 50000;
-            account.Deposit = 1000000;            
+            account.Equity = 50000;
+            account.InitDeposit = 1000000;            
             globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 5);            
             //globalMoneyManager.Money = 50000;
         }

@@ -6,8 +6,8 @@ namespace TrendByPivotPointsStrategy
 {
     public interface Account
     {
-        double Deposit { get;}
-        double FreeBalance { get;}
+        double InitDeposit { get;}
+        double Equity { get;}
 
         double GObying { get; }
 
@@ -16,5 +16,8 @@ namespace TrendByPivotPointsStrategy
         double Rate { get; set; }
 
         ISecurity Security { get; }
+        void Update(int barNumber);
+
+        Logger Logger { get; set; }
     }
 }

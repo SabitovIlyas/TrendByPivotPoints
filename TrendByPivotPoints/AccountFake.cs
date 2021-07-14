@@ -6,8 +6,8 @@ namespace TrendByPivotPointsStrategy
 {
     public class AccountFake : Account
     {
-        public double Deposit { get; set; }
-        public double FreeBalance { get; set; }
+        public double InitDeposit { get; set; }
+        public double Equity { get; set; }
 
         public double GObying { get; set; }
 
@@ -15,5 +15,10 @@ namespace TrendByPivotPointsStrategy
         public double Rate { get; set; }
 
         public ISecurity Security { get; set; }
+        public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public void Update(int barNumber)
+        {            
+        }
     }
 }

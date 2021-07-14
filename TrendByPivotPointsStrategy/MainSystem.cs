@@ -17,33 +17,39 @@ namespace TrendByPivotPointsStrategy
         Security security;
         IContext ctx;
         ContextTSLab context;
+        Account account;
         public void Initialize(ISecurity sec, IContext ctx)
         {
-            Account account;
-
-            if (IsLaboratory(sec))            
-                account = new AccountLab(sec, ctx);            
-            else            
+            if (IsLaboratory(sec))
+                account = new AccountLab(sec);
+            else
                 account = new AccountReal(sec);
 
             security = new SecurityTSlab(sec);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             tradingSystem = new TradingSystem(localMoneyManagerRuble, account, security);
-            tradingSystem.Logger = new LoggerSystem(ctx);
+            var logger = new LoggerSystem(ctx);
+            //tradingSystem.Logger = logger;
+            account.Logger = logger;
             this.ctx = ctx;
-            var comis = new AbsolutCommission() { Commission = 2.3 };
+            //var comission = 1.15 * 2;
+            var comission = 1 * 2;
+            var comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(sec);
-            context = new ContextTSLab(ctx);            
+            context = new ContextTSLab(ctx);
         }
 
         public void Run()
-        {            
+        {
             tradingSystem.CalculateIndicators();
             var lastBarNmber = security.GetBarsCount() - 1;
 
             for (var i = 0; i < lastBarNmber; i++)
+            {
                 tradingSystem.Update(i);
+                account.Update(i);
+            }
 
             if (IsRealTimeTrading())
             {
@@ -53,12 +59,14 @@ namespace TrendByPivotPointsStrategy
             }
             else
                 tradingSystem.Update(lastBarNmber);
+
+            account.Update(lastBarNmber);
         }
 
         public void Paint(IContext ctx, ISecurity sec)
         {
             tradingSystem.Paint(context);
-        }        
+        }
 
         private bool IsLaboratory(ISecurity security)
         {
@@ -68,7 +76,7 @@ namespace TrendByPivotPointsStrategy
 
         private bool IsLastBarClosed()
         {
-            return ctx.IsLastBarClosed;                
+            return ctx.IsLastBarClosed;
         }
         private bool IsRealTimeTrading()
         {

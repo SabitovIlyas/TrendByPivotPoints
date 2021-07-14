@@ -19,7 +19,7 @@ namespace TrendByPivotPointsStrategy
 
         public double GetMoneyForDeal()
         {
-            var deposit = account.Deposit;            
+            var deposit = account.InitDeposit;            
             var partofDeposit = riskValue * deposit;
             var result = Math.Min(partofDeposit, FreeBalance);
             return result;
@@ -28,6 +28,6 @@ namespace TrendByPivotPointsStrategy
 
         }
 
-        public double FreeBalance => account.FreeBalance;
+        public double FreeBalance => account.Equity;
     }
 }
