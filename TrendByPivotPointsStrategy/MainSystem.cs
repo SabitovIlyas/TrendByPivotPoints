@@ -18,25 +18,34 @@ namespace TrendByPivotPointsStrategy
         IContext ctx;
         ContextTSLab context;
         Account account;
-        public void Initialize(ISecurity sec, IContext ctx)
+        TradingSystem[] tradingSystems;
+        public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            if (IsLaboratory(sec))
-                account = new AccountLab(sec);
+            var securityFirst = securities.First();
+            if (IsLaboratory(securityFirst))
+                account = new AccountLab(securityFirst);
             else
-                account = new AccountReal(sec);
+                account = new AccountReal(securityFirst);
 
-            security = new SecurityTSlab(sec);
+            security = new SecurityTSlab(securityFirst);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
-            tradingSystem = new TradingSystem(localMoneyManagerRuble, account, security);
+                        
+            tradingSystems = new TradingSystem[securities.Length];
+
+            tradingSystems[0] = new TradingSystem(localMoneyManagerRuble, account, security);
+            //var comission = 1.15 * 2;
+            var comission = 1 * 2;
+            var comis = new AbsolutCommission() { Commission = comission };
+            comis.Execute(securities[0]);
+
+
+
+
             var logger = new LoggerSystem(ctx);
             //tradingSystem.Logger = logger;
             account.Logger = logger;
             this.ctx = ctx;
-            //var comission = 1.15 * 2;
-            var comission = 1 * 2;
-            var comis = new AbsolutCommission() { Commission = comission };
-            comis.Execute(sec);
             context = new ContextTSLab(ctx);
         }
 

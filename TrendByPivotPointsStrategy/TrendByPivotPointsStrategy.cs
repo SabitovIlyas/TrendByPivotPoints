@@ -22,14 +22,18 @@ namespace TrendByPivotPointsStrategy
             var logger = new LoggerSystem(context);
             //var bars = GetBars(security);            
             MainSystem system = null;
-            foreach (var security in securities)
-            {
-                system = new MainSystem();
-                system.Initialize(security, context);
-                system.Run();
-                break;
-            }
+            //foreach (var security in securities)
+            //{
+            //    system = new MainSystem();
+            //    system.Initialize(security, context);
+            //    system.Run();
+            //    break;
+            //}
 
+
+            system = new MainSystem();
+            system.Initialize(securities, context);
+            system.Run();
 
             //system.Initialize(securities.First(), context);
             //system.Run();                
