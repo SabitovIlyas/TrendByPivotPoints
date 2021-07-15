@@ -39,6 +39,14 @@ namespace TrendByPivotPointsStrategy
             var comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[0]);
 
+            tradingSystems[1] = new TradingSystem(localMoneyManagerRuble, account, security);
+            //var comission = 1.15 * 2;
+            comission = 1 * 2;
+            comis = new AbsolutCommission() { Commission = comission };
+            comis.Execute(securities[1]);
+
+
+
 
 
 

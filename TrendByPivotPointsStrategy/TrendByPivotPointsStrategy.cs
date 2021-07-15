@@ -21,7 +21,8 @@ namespace TrendByPivotPointsStrategy
             var timeStart = DateTime.Now;
             var logger = new LoggerSystem(context);
             //var bars = GetBars(security);            
-            MainSystem system = null;
+            //MainSystem system = null;
+
             //foreach (var security in securities)
             //{
             //    system = new MainSystem();
@@ -31,7 +32,7 @@ namespace TrendByPivotPointsStrategy
             //}
 
 
-            system = new MainSystem();
+            var system = new MainSystem();
             system.Initialize(securities, context);
             system.Run();
 
