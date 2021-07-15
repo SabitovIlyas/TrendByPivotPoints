@@ -13,12 +13,12 @@ namespace TrendByPivotPointsStrategy
 {
     public class MainSystem
     {
-        TradingSystem tradingSystem;
-        Security security;
+        TradingSystem tradingSystem1;
+        Security securityFirst;
         IContext ctx;
         ContextTSLab context;
         Account account;
-        TradingSystem[] tradingSystems;
+        List<TradingSystem> tradingSystems;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
             var securityFirst = securities.First();
@@ -27,21 +27,24 @@ namespace TrendByPivotPointsStrategy
             else
                 account = new AccountReal(securityFirst);
 
-            security = new SecurityTSlab(securityFirst);
+            this.securityFirst = new SecurityTSlab(securityFirst);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
                         
-            tradingSystems = new TradingSystem[securities.Length];
+            tradingSystems = new List<TradingSystem>();
 
-            tradingSystems[0] = new TradingSystem(localMoneyManagerRuble, account, security);
-            //var comission = 1.15 * 2;
-            var comission = 1 * 2;
-            var comis = new AbsolutCommission() { Commission = comission };
-            comis.Execute(securities[0]);
+            double comission;
+            AbsolutCommission comis;
 
-            tradingSystems[1] = new TradingSystem(localMoneyManagerRuble, account, security);
+            tradingSystems.Add(new TradingSystem(localMoneyManagerRuble, account, this.securityFirst));
             //var comission = 1.15 * 2;
             comission = 1 * 2;
+            comis = new AbsolutCommission() { Commission = comission };
+            comis.Execute(securities[0]);
+
+            tradingSystems.Add(new TradingSystem(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));
+            //var comission = 1.15 * 2;
+            comission = 2 * 2;
             comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[1]);
 
@@ -59,30 +62,40 @@ namespace TrendByPivotPointsStrategy
 
         public void Run()
         {
-            tradingSystem.CalculateIndicators();
-            var lastBarNmber = security.GetBarsCount() - 1;
+            foreach(var tradingSystem in tradingSystems)            
+                tradingSystem.CalculateIndicators();            
+            
+            var lastBarNmber = securityFirst.GetBarsCount() - 1;
 
             for (var i = 0; i < lastBarNmber; i++)
             {
-                tradingSystem.Update(i);
-                account.Update(i);
+                foreach (var tradingSystem in tradingSystems)
+                {                    
+                    tradingSystem.Update(i);
+                    account.Update(i);
+                }
             }
 
             if (IsRealTimeTrading())
             {
-                tradingSystem.CheckPositionCloseCase(lastBarNmber);
-                if (IsLastBarClosed())
-                    tradingSystem.Update(lastBarNmber);
+                foreach (var tradingSystem in tradingSystems)
+                    tradingSystem.CheckPositionCloseCase(lastBarNmber);
+
+                if (IsLastBarClosed())                
+                    foreach (var tradingSystem in tradingSystems)
+                        tradingSystem.Update(lastBarNmber);                
             }
             else
-                tradingSystem.Update(lastBarNmber);
+                foreach (var tradingSystem in tradingSystems)
+                    tradingSystem.Update(lastBarNmber);
 
             account.Update(lastBarNmber);
         }
 
         public void Paint(IContext ctx, ISecurity sec)
         {
-            tradingSystem.Paint(context);
+            var firstTradingSystem = tradingSystems.First();
+            firstTradingSystem.Paint(context);
         }
 
         private bool IsLaboratory(ISecurity security)
@@ -97,7 +110,7 @@ namespace TrendByPivotPointsStrategy
         }
         private bool IsRealTimeTrading()
         {
-            return security.IsRealTimeTrading;
+            return securityFirst.IsRealTimeTrading;
         }
     }
 }
