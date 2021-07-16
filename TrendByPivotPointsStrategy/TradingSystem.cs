@@ -49,7 +49,8 @@ namespace TrendByPivotPointsStrategy
         {   
             this.localMoneyManager = localMoneyManager;
             this.account = account;
-            sec = account.Security;
+            var securityTSLab = security as SecurityTSlab;
+            sec = securityTSLab.security;
             this.security = security;
             pivotPointsIndicator = new PivotPointsIndicator();
             pivotPointsIndicatorFilter = new PivotPointsIndicator();

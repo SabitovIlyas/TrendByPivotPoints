@@ -37,14 +37,14 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission comis;
 
             tradingSystems.Add(new TradingSystem(localMoneyManagerRuble, account, this.securityFirst));
-            //var comission = 1.15 * 2;
-            comission = 1 * 2;
+            comission = 1.15 * 2;
+            //comission = 1 * 2;
             comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[0]);
 
-            tradingSystems.Add(new TradingSystem(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));
-            //var comission = 1.15 * 2;
-            comission = 2 * 2;
+            tradingSystems.Add(new TradingSystem(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));            
+            comission = 2.02 * 2;
+            //comission = 2 * 2;
             comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[1]);
 
@@ -94,7 +94,7 @@ namespace TrendByPivotPointsStrategy
 
         public void Paint(IContext ctx, ISecurity sec)
         {
-            var firstTradingSystem = tradingSystems.First();
+            var firstTradingSystem = tradingSystems.Last();
             firstTradingSystem.Paint(context);
         }
 

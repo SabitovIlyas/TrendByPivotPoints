@@ -12,16 +12,15 @@ namespace TrendByPivotPointsStrategy
         double? StepPrice { get; }
         double? BuyDeposit { get; }
         Bar LastBar { get; }
-        List<Bar> GetBars(int barNumber);             
+        List<Bar> GetBars(int barNumber);
         double GetBarHigh(int barNumber);
         double GetBarLow(int barNumber);
         double GetBarOpen(int barNumber);
         DateTime GetBarDateTime(int barNumber);
         int GetBarsCount();
         List<int> GetBarsBaseFromBarCompressed(int barNumber);
-        bool IsLaboratory { get;}
+        bool IsLaboratory { get; }
         bool IsRealTimeTrading { get; }
-
         int GetBarCompressedNumberFromBarBaseNumber(int barNumber);
     }
 }

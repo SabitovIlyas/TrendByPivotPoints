@@ -86,6 +86,7 @@
     <Compile Include="SecurityTSlab.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
+    <Compile Include="TradingSystemPivotPoints.cs" />
     <Compile Include="TradingSystem.cs" />
     <Compile Include="TrendByPivotPointsStrategy.cs" />
   </ItemGroup>
