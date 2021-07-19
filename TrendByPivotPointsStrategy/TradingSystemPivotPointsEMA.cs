@@ -4,10 +4,11 @@ using System.Linq;
 using TSLab.Script;
 using SystemColor = System.Drawing.Color;
 using TSLab.Script.GraphPane;
+using TSLab.Script.Helpers;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystemPivotPoints
+    public class TradingSystemPivotPointsEMA
     {
         LocalMoneyManager localMoneyManager;
         ISecurity sec;
@@ -25,7 +26,7 @@ namespace TrendByPivotPointsStrategy
         public Logger Logger { get; set; } = new NullLogger();
         bool flagToDebugLog = false;
 
-        public TradingSystemPivotPoints(LocalMoneyManager localMoneyManager, Account account, Security security)
+        public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security)
         {   
             this.localMoneyManager = localMoneyManager;            
             var securityTSLab = security as SecurityTSlab;
@@ -167,9 +168,10 @@ namespace TrendByPivotPointsStrategy
         public void CalculateIndicators()
         {
             pivotPointsIndicator.CalculateLows(security, 3, 3);
-            pivotPointsIndicator.CalculateHighs(security, 3, 3);                        
-            
-        }                        
+            pivotPointsIndicator.CalculateHighs(security, 3, 3);
+            var ema = Series.EMA(sec.ClosePrices, 12);
+            var atr = Series.AverageTrueRange(sec.Bars, 12);                
+        }
 
         public void Paint(Context context)
         {           

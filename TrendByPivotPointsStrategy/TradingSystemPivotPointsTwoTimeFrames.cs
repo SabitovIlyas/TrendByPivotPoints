@@ -9,7 +9,7 @@ using TSLab.Script.GraphPane;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystem
+    public class TradingSystemPivotPointsTwoTimeFrames
     {
         List<Bar> bars;
         LocalMoneyManager localMoneyManager;
@@ -45,7 +45,7 @@ namespace TrendByPivotPointsStrategy
 
         Logger logger = new NullLogger();
 
-        public TradingSystem(LocalMoneyManager localMoneyManager, Account account, Security security)
+        public TradingSystemPivotPointsTwoTimeFrames(LocalMoneyManager localMoneyManager, Account account, Security security)
         {   
             this.localMoneyManager = localMoneyManager;
             this.account = account;

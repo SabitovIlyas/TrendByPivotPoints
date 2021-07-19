@@ -9,7 +9,7 @@ using TSLab.Script.Optimization;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TrendByPivotPointsStrategy : IExternalScriptMultiSec
+    public class ScriptTrendByPivotPoints : IExternalScriptMultiSec
     {   
         public OptimProperty leftLocal = new OptimProperty(3, 1, 10, 1);
         public OptimProperty rightLocal = new OptimProperty(3, 1, 10, 1);

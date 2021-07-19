@@ -13,12 +13,12 @@ namespace TrendByPivotPointsStrategy
 {
     public class MainSystem
     {
-        TradingSystem tradingSystem1;
+        TradingSystemPivotPointsTwoTimeFrames tradingSystem1;
         Security securityFirst;
         IContext ctx;
         ContextTSLab context;
         Account account;
-        List<TradingSystem> tradingSystems;
+        List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
             var securityFirst = securities.First();
@@ -31,18 +31,18 @@ namespace TrendByPivotPointsStrategy
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
                         
-            tradingSystems = new List<TradingSystem>();
+            tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
 
             double comission;
             AbsolutCommission comis;
 
-            tradingSystems.Add(new TradingSystem(localMoneyManagerRuble, account, this.securityFirst));
+            tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));
             comission = 1.15 * 2;
             //comission = 1 * 2;
             comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[0]);
 
-            tradingSystems.Add(new TradingSystem(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));            
+            tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));            
             comission = 2.02 * 2;
             //comission = 2 * 2;
             comis = new AbsolutCommission() { Commission = comission };
