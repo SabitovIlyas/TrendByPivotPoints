@@ -2,6 +2,7 @@
 using SystemColor = System.Drawing.Color;
 using TsLabColor = TSLab.Script.Color;
 using TSLab.Script.GraphPane;
+using System.Collections.Generic;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -19,6 +20,13 @@ namespace TrendByPivotPointsStrategy
             var colorTSlab = new TsLabColor(color.ToArgb());
             var securityTSLab = (SecurityTSlab)security;
             pane.AddList(name, securityTSLab.security, listSlyle, colorTSlab, side);
+        }
+
+        public void AddList(string name, IList<double> values, SystemColor color, PaneSides side)
+        {
+            var colorTSlab = new TsLabColor(color.ToArgb());
+            var lst = pane.AddList(name, values, ListStyles.LINE, colorTSlab, LineStyles.SOLID, side);
+            lst.Thickness = 3;
         }
 
         public void ClearInteractiveObjects()

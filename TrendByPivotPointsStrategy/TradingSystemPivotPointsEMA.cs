@@ -16,8 +16,10 @@ namespace TrendByPivotPointsStrategy
         Security security;
 
         PatternPivotPoints_1g2 patternPivotPoints_1g2;
-        PatternPivotPoints_1l2 patternPivotPoints_1l2;                
-        
+        PatternPivotPoints_1l2 patternPivotPoints_1l2;
+        IList<double> ema;
+        IList<double> atr;
+
         double takeProfitLong;
         double takeProfitShort;
         double stopLossLong;
@@ -58,41 +60,31 @@ namespace TrendByPivotPointsStrategy
             foreach (var low in lows)
                 lowsValues.Add(low.Value);
 
+            var lastPrice = lastBar.Close;
+
             #region Long
 
             if (le == null)
             {
-                if (patternPivotPoints_1g2.Check(lowsValues))
+                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema.Last()))
                 {
                     Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено!");
-                    if (barNumber == lows.Last().BarNumber + 3)
+                    var lowLast = lows.Last();
+                    var stopPrice = lowLast.Value - atr.Last();                    
+                    if (lastPrice > stopPrice)
                     {
-                        var lowLast = lows.Last();
-                        var stopPrice = lowLast.Value - 1;
-                        var lastPrice = lastBar.Close;
-                        if (lastPrice > stopPrice)
-                        {
-                            var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
-                            sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
-                            takeProfitLong = 0;
-                        }
+                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                        sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                     }
                 }
-
             }
             else
             {
                 if (lows.Count == 0)
                     return;
                 var low = lows.Last();
-                stopLossLong = low.Value - 1;
-                var riskValue = le.EntryPrice - stopLossLong;             
-
-                if (takeProfitLong == 0)
-                    takeProfitLong = le.EntryPrice + riskValue * 2;
-                
-                le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");                
-                le.CloseAtProfit(barNumber + 1, takeProfitLong, 100, "LXP");
+                stopLossLong = low.Value - atr.Last();
+                le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");                                
             }
 
             #endregion
@@ -108,19 +100,14 @@ namespace TrendByPivotPointsStrategy
 
             if (se == null)
             {
-                if (patternPivotPoints_1l2.Check(highsValues))
+                if (patternPivotPoints_1l2.Check(highsValues) && (lastPrice < ema.Last()))
                 {
-                    if (barNumber == highs.Last().BarNumber + 3)
+                    var highLast = highs.Last();
+                    var stopPrice = highLast.Value + atr.Last();
+                    if (lastPrice < stopPrice)
                     {
-                        var highLast = highs.Last();
-                        var stopPrice = highLast.Value + 1;
-                        var lastPrice = lastBar.Close;
-                        if (lastPrice < stopPrice)
-                        {
-                            var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);                 
-                            sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
-                            takeProfitShort = 0;
-                        }
+                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
+                        sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
                     }
                 }
             }
@@ -131,14 +118,8 @@ namespace TrendByPivotPointsStrategy
 
                 var high = highs.Last();
 
-                stopLossShort = high.Value + 1;
-                var riskValue = stopLossShort - se.EntryPrice;               
-
-                if (takeProfitShort == 0)
-                    takeProfitShort = se.EntryPrice - riskValue * 2;                               
-
-                se.CloseAtStop(barNumber + 1, stopLossShort, 100, "SXS");
-                se.CloseAtProfit(barNumber + 1, takeProfitShort, 100, "SXP");  
+                stopLossShort = high.Value + atr.Last();
+                se.CloseAtStop(barNumber + 1, stopLossShort, 100, "SXS");                
             }
 
             #endregion
@@ -167,25 +148,26 @@ namespace TrendByPivotPointsStrategy
 
         public void CalculateIndicators()
         {
-            pivotPointsIndicator.CalculateLows(security, 3, 3);
-            pivotPointsIndicator.CalculateHighs(security, 3, 3);
-            var ema = Series.EMA(sec.ClosePrices, 12);
-            var atr = Series.AverageTrueRange(sec.Bars, 12);                
+            pivotPointsIndicator.CalculateLows(security, 6, 5);
+            pivotPointsIndicator.CalculateHighs(security, 5, 4);
+            ema = Series.EMA(sec.ClosePrices, 100);
+            atr = Series.AverageTrueRange(sec.Bars, 2);                
         }
+        private static int id = 0;
 
         public void Paint(Context context)
         {           
-            var pane1 = context.CreateGraphPane("Инструмент (о. т.)", "Инструмент (основной таймфрейм)");
+            var pane1 = context.CreateGraphPane(sec.ToString(), "Инструмент (основной таймфрейм)");
             var color = SystemColor.Green;                       
 
-            pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);           
-            pane1.ClearInteractiveObjects();            
+            pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+            if (id == 0) pane1.ClearInteractiveObjects();
 
             color = SystemColor.Blue;
             DateTime x;
             double y;
             MarketPoint position;
-            int id = 0;
+            //id = 0;
             
             var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
 
@@ -208,6 +190,9 @@ namespace TrendByPivotPointsStrategy
                 pane1.AddInteractivePoint(id.ToString(), PaneSides.RIGHT, false, color, position);
                 id++;
             }
+
+            //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+            pane1.AddList("ClosePrices", ema, color, PaneSides.RIGHT);
         }
     }
 }

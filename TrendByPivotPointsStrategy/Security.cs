@@ -16,6 +16,7 @@ namespace TrendByPivotPointsStrategy
         double GetBarHigh(int barNumber);
         double GetBarLow(int barNumber);
         double GetBarOpen(int barNumber);
+        double GetBarClose(int barNumber);
         DateTime GetBarDateTime(int barNumber);
         int GetBarsCount();
         List<int> GetBarsBaseFromBarCompressed(int barNumber);

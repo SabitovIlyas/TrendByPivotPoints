@@ -11,33 +11,24 @@ namespace TrendByPivotPointsStrategy
 {
     public class ScriptTrendByPivotPoints : IExternalScriptMultiSec
     {   
-        public OptimProperty leftLocal = new OptimProperty(3, 1, 10, 1);
-        public OptimProperty rightLocal = new OptimProperty(3, 1, 10, 1);
-        public OptimProperty pivotPointBreakDown = new OptimProperty(100, 10, 200, 10);        
-        public OptimProperty EmaPeriod = new OptimProperty(200, 10, 300, 10);
+        public OptimProperty leftLocalSideLong = new OptimProperty(10, 4, 10, 2);
+        public OptimProperty rightLocalSideLong = new OptimProperty(10, 4, 10, 2);
+        public OptimProperty pivotPointBreakDownSideLong = new OptimProperty(100, 100, 200, 100);        
+        public OptimProperty EmaPeriodSideLong = new OptimProperty(200, 50, 200, 50);
+
+        public OptimProperty leftLocalSideShort = new OptimProperty(10, 4, 10, 2);
+        public OptimProperty rightLocalSideShort = new OptimProperty(10, 4, 10, 2);
+        public OptimProperty pivotPointBreakDownSideShort = new OptimProperty(100, 100, 200, 100);
+        public OptimProperty EmaPeriodSideShort = new OptimProperty(200, 50, 200, 50);
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
             var timeStart = DateTime.Now;
             var logger = new LoggerSystem(context);
-            //var bars = GetBars(security);            
-            //MainSystem system = null;
-
-            //foreach (var security in securities)
-            //{
-            //    system = new MainSystem();
-            //    system.Initialize(security, context);
-            //    system.Run();
-            //    break;
-            //}
-
 
             var system = new MainSystem();
             system.Initialize(securities, context);
             system.Run();
-
-            //system.Initialize(securities.First(), context);
-            //system.Run();                
 
             system.Paint(context, securities.First());
             var timeStop = DateTime.Now;

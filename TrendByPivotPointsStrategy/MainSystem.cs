@@ -13,12 +13,14 @@ namespace TrendByPivotPointsStrategy
 {
     public class MainSystem
     {
-        TradingSystemPivotPointsTwoTimeFrames tradingSystem1;
+        //TradingSystemPivotPointsTwoTimeFrames tradingSystem1;
+        TradingSystemPivotPointsEMA tradingSystem1;
         Security securityFirst;
         IContext ctx;
         ContextTSLab context;
         Account account;
-        List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
+        //List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
+        List<TradingSystemPivotPointsEMA> tradingSystems;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
             var securityFirst = securities.First();
@@ -31,18 +33,21 @@ namespace TrendByPivotPointsStrategy
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
                         
-            tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
+            //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
+            tradingSystems = new List<TradingSystemPivotPointsEMA>();
 
             double comission;
             AbsolutCommission comis;
 
-            tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));
+            //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));
+            tradingSystems.Add(new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst));
             comission = 1.15 * 2;
             //comission = 1 * 2;
             comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[0]);
 
-            tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));            
+            //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));
+            tradingSystems.Add(new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));
             comission = 2.02 * 2;
             //comission = 2 * 2;
             comis = new AbsolutCommission() { Commission = comission };
@@ -94,8 +99,10 @@ namespace TrendByPivotPointsStrategy
 
         public void Paint(IContext ctx, ISecurity sec)
         {
-            var firstTradingSystem = tradingSystems.Last();
+            var firstTradingSystem = tradingSystems.First();
             firstTradingSystem.Paint(context);
+            //var lastTradingSystem = tradingSystems.Last();
+            //lastTradingSystem.Paint(context);
         }
 
         private bool IsLaboratory(ISecurity security)
