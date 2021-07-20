@@ -66,9 +66,9 @@ namespace TrendByPivotPointsStrategy
 
             if (le == null)
             {
-                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema.Last()))
+                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]))
                 {
-                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено!");
+                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено! ema.Last() = " + ema[barNumber]);
                     var lowLast = lows.Last();
                     var stopPrice = lowLast.Value - atr.Last();                    
                     if (lastPrice > stopPrice)
@@ -80,6 +80,12 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
+                //if (lastPrice <= ema[barNumber])
+                //{
+                //    le.CloseAtMarket(barNumber + 1, "LXF");
+                //    return;
+                //}
+
                 if (lows.Count == 0)
                     return;
                 var low = lows.Last();
@@ -100,8 +106,9 @@ namespace TrendByPivotPointsStrategy
 
             if (se == null)
             {
-                if (patternPivotPoints_1l2.Check(highsValues) && (lastPrice < ema.Last()))
+                if (patternPivotPoints_1l2.Check(highsValues) && (lastPrice < ema[barNumber]))
                 {
+                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено! ema.Last() = " + ema[barNumber]);
                     var highLast = highs.Last();
                     var stopPrice = highLast.Value + atr.Last();
                     if (lastPrice < stopPrice)
@@ -113,6 +120,12 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
+                //if (lastPrice >= ema[barNumber])
+                //{
+                //    se.CloseAtMarket(barNumber + 1, "SXF");
+                //    return;
+                //}
+
                 if (highs.Count == 0)
                     return;
 
@@ -152,8 +165,7 @@ namespace TrendByPivotPointsStrategy
             pivotPointsIndicator.CalculateHighs(security, 5, 4);
             ema = Series.EMA(sec.ClosePrices, 100);
             atr = Series.AverageTrueRange(sec.Bars, 2);                
-        }
-        private static int id = 0;
+        }       
 
         public void Paint(Context context)
         {           
@@ -161,23 +173,24 @@ namespace TrendByPivotPointsStrategy
             var color = SystemColor.Green;                       
 
             pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-            if (id == 0) pane1.ClearInteractiveObjects();
-
+            //if (id == 0) pane1.ClearInteractiveObjects();
+            pane1.ClearInteractiveObjects();
             color = SystemColor.Blue;
             DateTime x;
             double y;
-            MarketPoint position;
-            //id = 0;
+            MarketPoint position; 
             
             var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
 
             foreach(var low in lows)
             {
                 x = security.GetBarDateTime(low.BarNumber);
+                //y = low.Value - 50;
                 y = low.Value - 50;
-                position = new MarketPoint(x, y);                
-                pane1.AddInteractivePoint(id.ToString(), PaneSides.RIGHT, false, color, position);
-                id++;
+                position = new MarketPoint(x, y);
+                var id = low.BarNumber.ToString()+ " " + x.ToLongTimeString() + " " + low.Value.ToString();
+                //Logger.Log("id: " + id.ToString());
+                pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
             }
 
             var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
@@ -185,14 +198,16 @@ namespace TrendByPivotPointsStrategy
             foreach (var high in highs)
             {
                 x = security.GetBarDateTime(high.BarNumber);
+                //y = high.Value + 50;
                 y = high.Value + 50;
                 position = new MarketPoint(x, y);
-                pane1.AddInteractivePoint(id.ToString(), PaneSides.RIGHT, false, color, position);
-                id++;
+                var id = high.BarNumber.ToString() + " " + x.ToLongTimeString() + " " + high.Value.ToString();
+                //Logger.Log("id: " + id.ToString());
+                pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
             }
 
             //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-            pane1.AddList("ClosePrices", ema, color, PaneSides.RIGHT);
+            pane1.AddList("EMA", ema, color, PaneSides.RIGHT);
         }
     }
 }

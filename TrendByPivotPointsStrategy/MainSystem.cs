@@ -38,29 +38,30 @@ namespace TrendByPivotPointsStrategy
 
             double comission;
             AbsolutCommission comis;
+            var logger = new LoggerSystem(ctx);
+            TradingSystemPivotPointsEMA ts;
 
             //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));
-            tradingSystems.Add(new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst));
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst);
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
             comission = 1.15 * 2;
             //comission = 1 * 2;
             comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[0]);
 
-            //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));
-            tradingSystems.Add(new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1])));
-            comission = 2.02 * 2;
-            //comission = 2 * 2;
-            comis = new AbsolutCommission() { Commission = comission };
-            comis.Execute(securities[1]);
+            ////tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new Se)curityTSlab(securities[1])));
+            //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]));
+            //tradingSystems.Add(ts);
+            //ts.Logger = logger;
+            //tradingSystems.Add(ts);
+            //comission = 2.02 * 2;
+            ////comission = 2 * 2;
+            //comis = new AbsolutCommission() { Commission = comission };
+            //comis.Execute(securities[1]);
 
-
-
-
-
-
-            var logger = new LoggerSystem(ctx);
             //tradingSystem.Logger = logger;
-            account.Logger = logger;
+            //account.Logger = logger;
             this.ctx = ctx;
             context = new ContextTSLab(ctx);
         }
