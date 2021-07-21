@@ -78,10 +78,9 @@ namespace TrendByPivotPointsStrategy
 
             var lastLowValueString = "";
             if (lows.Count != 0)
-                lastLowValueString = lowsValues.Last().ToString();
+                lastLowValueString = lowsValues.Last().ToString();//185: 78644
 
-            #region Long
-
+            #region Long            
             //if (le == null)
             if ((lastOpenPositionLong == null) || ((lastOpenPositionLong!=null) && (lastOpenPositionLong.EntryNotes != lastLowValueString)))
             {
@@ -92,8 +91,11 @@ namespace TrendByPivotPointsStrategy
                     var stopPrice = lowLast.Value - atr.Last();                    
                     if (lastPrice > stopPrice)
                     {
-                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
-                        sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE", lastLowValueString);
+                        //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                        var contracts = 1;
+                        sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE", lastLowValueString);//174: 78583
+                        if (lastLowValueString == "78644")
+                            le.ChangeAtMarket(barNumber + 1, 2, "LE", lastLowValueString);
                     }
                 }
             }
