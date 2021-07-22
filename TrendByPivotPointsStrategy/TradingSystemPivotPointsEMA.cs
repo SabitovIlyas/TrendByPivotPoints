@@ -27,6 +27,9 @@ namespace TrendByPivotPointsStrategy
 
         public Logger Logger { get; set; } = new NullLogger();
         bool flagToDebugLog = false;
+        double lastLowCaseLongOpen = 0;
+        double lastLowCaseLongClose = 0;
+
 
         public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security)
         {   
@@ -77,43 +80,69 @@ namespace TrendByPivotPointsStrategy
             var lastPrice = lastBar.Close;
 
             var lastLowValueString = "";
+            var lastLowValue = 0d;
             if (lows.Count != 0)
+            {
                 lastLowValueString = lowsValues.Last().ToString();//185: 78644
+                lastLowValue = lowsValues.Last();
+            }
 
             #region Long            
-            //if (le == null)
-            if ((lastOpenPositionLong == null) || ((lastOpenPositionLong!=null) && (lastOpenPositionLong.EntryNotes != lastLowValueString)))
+            if (le == null)
+            //if ((lastOpenPositionLong == null) || ((lastOpenPositionLong!=null) && (lastOpenPositionLong.EntryNotes != lastLowValueString)))
             {
-                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]))
+                lastLowCaseLongClose = lastLowCaseLongOpen;
+                lastLowCaseLongOpen = 0;
+                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowValue != lastLowCaseLongClose))
                 {
+                    lastLowCaseLongOpen = lastLowValue;
                     Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено! ema = " + ema[barNumber]);
                     var lowLast = lows.Last();
                     var stopPrice = lowLast.Value - atr.Last();                    
                     if (lastPrice > stopPrice)
                     {
-                        //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
-                        var contracts = 1;
+                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                        //var contracts = 1;
                         sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE", lastLowValueString);//174: 78583
-                        if (lastLowValueString == "78644")
-                            le.ChangeAtMarket(barNumber + 1, 2, "LE", lastLowValueString);
-                    }
-                }
+                        //if (lastLowValueString == "78644")
+                        //{
+                        //    le.ChangeAtMarket(barNumber + 1, 2, "LE", lastLowValueString);                         
+                        //}
+                    }                    
+                }                
             }
             else
             {
-                //if (lastPrice <= ema[barNumber])
-                //{
-                //    le.CloseAtMarket(barNumber + 1, "LXF");
-                //    return;
-                //}
+                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowCaseLongOpen != lastLowValue))
+                {
+                    lastLowCaseLongOpen = lastLowValue;
+                    
+                    var lowLast = lows.Last();
+                    var stopPrice = lowLast.Value - atr.Last();
+                    if (lastPrice > stopPrice)
+                    {
+                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                        var shares = le.Shares + contracts;
+                        le.ChangeAtMarket(barNumber + 1, shares, "LE", lastLowValueString);
+                    }
+                }
+                
+                else
+                {
+                    //if (lastPrice <= ema[barNumber])
+                    //{
+                    //    le.CloseAtMarket(barNumber + 1, "LXF");
+                    //    return;
+                    //}
 
-                if (lows.Count == 0)
-                    return;
-                var low = lows.Last();
-                stopLossLong = low.Value - atr.Last();
-                //if (stopLoss > stopLossLong) stopLossLong = stopLoss;
+                    if (lows.Count == 0)
+                        return;
+                    var low = lows.Last();
+                    stopLossLong = low.Value - atr.Last();
+                    //if (stopLoss > stopLossLong) stopLossLong = stopLoss;
 
-                le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");                                
+                    le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
+                }                
             }
 
             #endregion
