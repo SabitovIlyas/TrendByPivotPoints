@@ -29,6 +29,7 @@ namespace TrendByPivotPointsStrategy
         bool flagToDebugLog = false;
         double lastLowCaseLongOpen = 0;
         double lastLowCaseLongClose = 0;
+        double lastPriceOpenLongPosition = 0;
 
 
         public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security)
@@ -104,6 +105,7 @@ namespace TrendByPivotPointsStrategy
                         var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
                         //var contracts = 1;
                         sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE", lastLowValueString);//174: 78583
+                        lastPriceOpenLongPosition = lastPrice;
                         //if (lastLowValueString == "78644")
                         //{
                         //    le.ChangeAtMarket(barNumber + 1, 2, "LE", lastLowValueString);                         
@@ -113,7 +115,8 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
-                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowCaseLongOpen != lastLowValue))
+                //if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowCaseLongOpen != lastLowValue))
+                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowCaseLongOpen != lastLowValue) && (lastPrice > lastPriceOpenLongPosition))
                 {
                     lastLowCaseLongOpen = lastLowValue;
                     
