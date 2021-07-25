@@ -19,18 +19,20 @@ namespace TrendByPivotPointsStrategy
         PatternPivotPoints_1l2 patternPivotPoints_1l2;
         IList<double> ema;
         IList<double> atr;
-
-        double takeProfitLong;
-        double takeProfitShort;
+        
         double stopLossLong;
         double stopLossShort;
 
         public Logger Logger { get; set; } = new NullLogger();
         bool flagToDebugLog = false;
-        double lastLowCaseLongOpen = 0;
+        
+        double lastLowForOpenLongPosition = 0;
         double lastLowCaseLongClose = 0;
         double lastPriceOpenLongPosition = 0;
 
+        double lastHighForOpenShortPosition = 0;
+        double lastHighCaseShortClose = 0;
+        double lastPriceOpenShortPosition = 0;
 
         public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security)
         {   
@@ -53,26 +55,11 @@ namespace TrendByPivotPointsStrategy
                 flagToDebugLog = true;
             }            
 
-            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
-            //var openPositions = sec.Positions.GetActiveForBar(barNumber);            
-
-            //var openPoisionsLong = new List<IPosition>();
-            //var openPoisionsShort = new List<IPosition>();
-            //foreach (var openPosition in openPositions)
-            //{
-            //    if (openPosition.IsLong)
-            //        openPoisionsLong.Add(openPosition);
-            //    else
-            //        openPoisionsShort.Add(openPosition);
-            //}
-
-
-            var lastOpenPositionLong = sec.Positions.GetLastLongPositionActive(barNumber);
-            var lastOpenPositionShort = sec.Positions.GetLastShortPositionActive(barNumber);
+            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);           
 
             var lastBar = security.LastBar;           
             var lows = pivotPointsIndicator.GetLows(barNumber);
-            Logger.Log("lows.Count = " + lows.Count.ToString());
+            //Logger.Log("lows.Count = " + lows.Count.ToString());
 
             var lowsValues = new List<double>();
             foreach (var low in lows)
@@ -80,70 +67,61 @@ namespace TrendByPivotPointsStrategy
 
             var lastPrice = lastBar.Close;
 
-            var lastLowValueString = "";
             var lastLowValue = 0d;
-            if (lows.Count != 0)
-            {
-                lastLowValueString = lowsValues.Last().ToString();//185: 78644
+            if (lows.Count != 0)            
                 lastLowValue = lowsValues.Last();
-            }
+            
 
             #region Long            
-            if (le == null)
-            //if ((lastOpenPositionLong == null) || ((lastOpenPositionLong!=null) && (lastOpenPositionLong.EntryNotes != lastLowValueString)))
+            if (le == null)            
             {
-                lastLowCaseLongClose = lastLowCaseLongOpen;
-                lastLowCaseLongOpen = 0;
+                if (lastLowForOpenLongPosition != 0)
+                    lastLowCaseLongClose = lastLowForOpenLongPosition;
+                lastLowForOpenLongPosition = 0;
                 if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowValue != lastLowCaseLongClose))
                 {
-                    lastLowCaseLongOpen = lastLowValue;
-                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено! ema = " + ema[barNumber]);
+                    lastLowForOpenLongPosition = lastLowValue;
+                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено!");
                     var lowLast = lows.Last();
                     var stopPrice = lowLast.Value - atr.Last();                    
                     if (lastPrice > stopPrice)
                     {
                         var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
                         //var contracts = 1;
-                        sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE", lastLowValueString);//174: 78583
+                        sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");//174: 78583
                         lastPriceOpenLongPosition = lastPrice;
-                        //if (lastLowValueString == "78644")
-                        //{
-                        //    le.ChangeAtMarket(barNumber + 1, 2, "LE", lastLowValueString);                         
-                        //}
+                        stopLossLong = 0;                        
                     }                    
                 }                
             }
             else
             {
-                //if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowCaseLongOpen != lastLowValue))
-                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowCaseLongOpen != lastLowValue) && (lastPrice > lastPriceOpenLongPosition))
+                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowForOpenLongPosition != lastLowValue))
                 {
-                    lastLowCaseLongOpen = lastLowValue;
-                    
-                    var lowLast = lows.Last();
-                    var stopPrice = lowLast.Value - atr.Last();
-                    if (lastPrice > stopPrice)
+                    lastLowForOpenLongPosition = lastLowValue; //минимум для открытия (в том числе и потенциального)
+                    if (lastPrice > lastPriceOpenLongPosition)
                     {
-                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
-                        var shares = le.Shares + contracts;
-                        le.ChangeAtMarket(barNumber + 1, shares, "LE", lastLowValueString);
+                        var lowLast = lows.Last();
+                        var stopPrice = lowLast.Value - atr.Last();
+                        if (lastPrice > stopPrice)
+                        {
+                            Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции выполнено!");
+                            var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                            var shares = le.Shares + contracts;
+                            le.ChangeAtMarket(barNumber + 1, shares, "LE");
+                            lastPriceOpenLongPosition = lastPrice;
+                        }
                     }
-                }
+                }                
                 
                 else
                 {
-                    //if (lastPrice <= ema[barNumber])
-                    //{
-                    //    le.CloseAtMarket(barNumber + 1, "LXF");
-                    //    return;
-                    //}
-
                     if (lows.Count == 0)
                         return;
-                    var low = lows.Last();
-                    stopLossLong = low.Value - atr.Last();
-                    //if (stopLoss > stopLossLong) stopLossLong = stopLoss;
 
+                    var low = lows.Last();                    
+                    var stopLoss = low.Value - atr.Last();
+                    if (stopLoss > stopLossLong) stopLossLong = stopLoss;
                     le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
                 }                
             }
@@ -159,35 +137,62 @@ namespace TrendByPivotPointsStrategy
             foreach (var high in highs)
                 highsValues.Add(high.Value);
 
+            var lastHighValue = 0d;
+            if (highs.Count != 0)
+                lastHighValue = highsValues.Last();
+
             if (se == null)
             {
-                if (patternPivotPoints_1l2.Check(highsValues) && (lastPrice < ema[barNumber]))
+                if (lastHighForOpenShortPosition != 0)
+                    lastHighCaseShortClose = lastHighForOpenShortPosition;
+                lastHighForOpenShortPosition = 0;
+                if (patternPivotPoints_1l2.Check(highsValues) && (lastPrice < ema[barNumber]) && (lastHighValue != lastHighCaseShortClose))
                 {
-                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено! ema = " + ema[barNumber]);
+                    lastHighForOpenShortPosition = lastHighValue;
+                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено!");
                     var highLast = highs.Last();
                     var stopPrice = highLast.Value + atr.Last();
                     if (lastPrice < stopPrice)
                     {
+                        Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции выполнено!");
                         var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
+                        //var contracts = 1;
                         sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
+                        lastPriceOpenShortPosition = lastPrice;
+                        stopLossShort = double.MaxValue;
                     }
                 }
             }
             else
             {
-                //if (lastPrice >= ema[barNumber])
-                //{
-                //    se.CloseAtMarket(barNumber + 1, "SXF");
-                //    return;
-                //}
+                if (patternPivotPoints_1l2.Check(highsValues) && (lastPrice < ema[barNumber]) && (lastHighForOpenShortPosition != lastHighValue))
+                {
+                    lastHighForOpenShortPosition = lastHighValue; //максимум для открытия (в том числе и потенциального)
+                    if (lastPrice < lastPriceOpenShortPosition)
+                    {
+                        var highLast = highs.Last();
+                        var stopPrice = highLast.Value + atr.Last();
+                        if (lastPrice < stopPrice)
+                        {
+                            var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
+                            //var contracts = 1;
+                            var shares = se.Shares + contracts;
+                            se.ChangeAtMarket(barNumber + 1, -shares, "SE");
+                            lastPriceOpenShortPosition = lastPrice;
+                        }
+                    }
+                }
 
-                if (highs.Count == 0)
-                    return;
+                else
+                {
+                    if (highs.Count == 0)
+                        return;
 
-                var high = highs.Last();
-
-                stopLossShort = high.Value + atr.Last();
-                se.CloseAtStop(barNumber + 1, stopLossShort, 100, "SXS");                
+                    var high = highs.Last();
+                    var stopLoss = high.Value + atr.Last();
+                    if (stopLoss < stopLossShort) stopLossShort = stopLoss;
+                    se.CloseAtStop(barNumber + 1, stopLossShort, 100, "SXS");
+                }
             }
 
             #endregion
@@ -263,6 +268,8 @@ namespace TrendByPivotPointsStrategy
 
             //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
             pane1.AddList("EMA", ema, color, PaneSides.RIGHT);
+
+            //var pane2 = context.CreateGraphPane(sec.ToString(), "Equity");            
         }
     }
 }

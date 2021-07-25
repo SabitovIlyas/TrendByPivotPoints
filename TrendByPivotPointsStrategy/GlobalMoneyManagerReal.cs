@@ -9,6 +9,7 @@ namespace TrendByPivotPointsStrategy
         private double riskValue;
         private Account account;
         private Logger logger = new NullLogger();
+        public Logger Logger { get { return logger; } set { logger = value; } }
 
         public GlobalMoneyManagerReal(Account account, double riskValuePrcnt)
         {
@@ -17,15 +18,21 @@ namespace TrendByPivotPointsStrategy
             riskValue = riskValuePrcnt / 100.0;
         }
 
+        //public double GetMoneyForDeal()
+        //{
+        //    var deposit = account.InitDeposit;            
+        //    var partofDeposit = riskValue * deposit;
+        //    var result = Math.Min(partofDeposit, FreeBalance);
+        //    return result;
+
+        //    //var currDepo = sec.InitDeposit + sec.Positions.TotalProfit(ctx.BarsCount - 1);
+
+        //}
+
         public double GetMoneyForDeal()
-        {
-            var deposit = account.InitDeposit;            
-            var partofDeposit = riskValue * deposit;
-            var result = Math.Min(partofDeposit, FreeBalance);
-            return result;
-
-            //var currDepo = sec.InitDeposit + sec.Positions.TotalProfit(ctx.BarsCount - 1);
-
+        {            
+            logger.Log("FreeBalance = " + FreeBalance.ToString());
+            return riskValue * FreeBalance;                       
         }
 
         public double FreeBalance => account.Equity;

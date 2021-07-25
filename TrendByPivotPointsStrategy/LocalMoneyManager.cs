@@ -64,7 +64,9 @@ namespace TrendByPivotPointsStrategy
             var contractsByRiskMoney = (int)(money / riskMoney);            
             logger.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
 
-            return Math.Min(contractsByRiskMoney, contractsByGO);            
+            var min =  Math.Min(contractsByRiskMoney, contractsByGO);
+            if (min >= 0) return min;
+            else return 0;
         }
     }
 }

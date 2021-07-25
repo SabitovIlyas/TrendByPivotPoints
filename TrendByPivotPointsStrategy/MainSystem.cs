@@ -23,6 +23,7 @@ namespace TrendByPivotPointsStrategy
         List<TradingSystemPivotPointsEMA> tradingSystems;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
+            var logger = new LoggerSystem(ctx);
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -31,6 +32,7 @@ namespace TrendByPivotPointsStrategy
 
             this.securityFirst = new SecurityTSlab(securityFirst);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
+            globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
                         
             //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
@@ -38,7 +40,6 @@ namespace TrendByPivotPointsStrategy
 
             double comission;
             AbsolutCommission comis;
-            var logger = new LoggerSystem(ctx);
             TradingSystemPivotPointsEMA ts;
 
             //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));            
@@ -100,7 +101,7 @@ namespace TrendByPivotPointsStrategy
 
 
             //tradingSystem.Logger = logger;
-            //account.Logger = logger;
+            account.Logger = logger;
             this.ctx = ctx;
             context = new ContextTSLab(ctx);
         }
