@@ -75,17 +75,20 @@ namespace TrendByPivotPointsStrategy
 
             if (lastClosedPosition != lastPosition)
             {
-                var message = string.Format("AccountLab.Update: barNumber = {0}; lastClosedPosition != lastPosition; lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
-                    barNumber, lastClosedPosition, lastPosition, equity);
-                logger.Log(message);
+                //var message = string.Format("AccountLab.Update: barNumber = {0}; lastClosedPosition != lastPosition; lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
+                //    barNumber, lastClosedPosition, lastPosition, equity);
+                //logger.Log(message);
                 if (!lastPosition.IsActiveForBar(barNumber))
                 {
                     lastClosedPosition = lastPosition;                    
                     logger.Log("Активная позиция закрылась");
                     equity = equity + lastClosedPosition.Profit();
 
-                    message = string.Format("AccountLab.Update: barNumber = {0}; !lastPosition.IsActiveForBar(barNumber); lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
-                    barNumber, lastClosedPosition, lastPosition, equity);
+                    //message = string.Format("AccountLab.Update: barNumber = {0}; !lastPosition.IsActiveForBar(barNumber); lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
+                    //barNumber, lastClosedPosition, lastPosition, equity);
+                    //logger.Log(message);
+
+                    var message = string.Format("AccountLab.Update: barNumber = {0}; equity = {1}", barNumber, equity);
                     logger.Log(message);
                 }
             }                     

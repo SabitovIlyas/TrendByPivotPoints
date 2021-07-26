@@ -81,7 +81,7 @@ namespace TrendByPivotPointsStrategy
                 if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowValue != lastLowCaseLongClose))
                 {
                     lastLowForOpenLongPosition = lastLowValue;
-                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено!");
+                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа в лонг выполнено!");
                     var lowLast = lows.Last();
                     var stopPrice = lowLast.Value - atr.Last();                    
                     if (lastPrice > stopPrice)
@@ -105,7 +105,7 @@ namespace TrendByPivotPointsStrategy
                         var stopPrice = lowLast.Value - atr.Last();
                         if (lastPrice > stopPrice)
                         {
-                            Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции выполнено!");
+                            Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции лонг выполнено!");
                             var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
                             var shares = le.Shares + contracts;
                             le.ChangeAtMarket(barNumber + 1, shares, "LE");
@@ -149,12 +149,12 @@ namespace TrendByPivotPointsStrategy
                 if (patternPivotPoints_1l2.Check(highsValues) && (lastPrice < ema[barNumber]) && (lastHighValue != lastHighCaseShortClose))
                 {
                     lastHighForOpenShortPosition = lastHighValue;
-                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа выполнено!");
+                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа в шорт выполнено!");
                     var highLast = highs.Last();
                     var stopPrice = highLast.Value + atr.Last();
                     if (lastPrice < stopPrice)
                     {
-                        Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции выполнено!");
+                        Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции шорт выполнено!");
                         var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
                         //var contracts = 1;
                         sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");

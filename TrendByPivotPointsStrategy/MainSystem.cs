@@ -106,6 +106,7 @@ namespace TrendByPivotPointsStrategy
             context = new ContextTSLab(ctx);
         }
 
+        bool leSeNullPreviousBar = false;        
         public void Run()
         {
             foreach(var tradingSystem in tradingSystems)            
@@ -118,7 +119,22 @@ namespace TrendByPivotPointsStrategy
                 foreach (var tradingSystem in tradingSystems)
                 {                    
                     tradingSystem.Update(i);
+
+                    var sec = securityFirst as SecurityTSlab;
+
+                    var le = sec.security.Positions.GetLastActiveForSignal("LE", i);
+                    var se = sec.security.Positions.GetLastActiveForSignal("SE", i);
+
+
+                    var leSeNullCurrentBar = (le == null) && (se == null);
+                    var moneyBefore = account.Equity;
+
                     account.Update(i);
+
+                    var moneyAfter = account.Equity;
+                    var br = (leSeNullCurrentBar && leSeNullPreviousBar && (moneyAfter != moneyBefore));
+
+                    leSeNullPreviousBar = leSeNullCurrentBar;
                 }
             }
 
