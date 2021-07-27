@@ -210,5 +210,40 @@ namespace TrendByPivotPointsStrategy
             var realTimeSecurity = security as ISecurityRt;
             isLaboratory = realTimeSecurity == null;
         }
+
+        public Position GetLastClosedLongPosition(int barNumber)
+        {
+            var positions = security.Positions;
+            var position = positions.GetLastLongPositionClosed(barNumber);
+            if (position == null)
+                return null;
+            if (lastLongPositionClosed == null)
+                lastLongPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+
+            if (position.EntryPrice == lastLongPositionClosed.entryPrice && position.EntryBarNum == lastLongPositionClosed.barNumber && position.Profit() == lastLongPositionClosed.profit)
+                return lastLongPositionClosed;
+
+            lastLongPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+            return lastLongPositionClosed;
+        }
+
+        public Position GetLastClosedShortPosition(int barNumber)
+        {
+            var positions = security.Positions;
+            var position = positions.GetLastShortPositionClosed(barNumber);
+            if (position == null)
+                return null;
+            if (lastShortPositionClosed == null)
+                lastShortPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+
+            if (position.EntryPrice == lastShortPositionClosed.entryPrice && position.EntryBarNum == lastShortPositionClosed.barNumber && position.Profit() == lastShortPositionClosed.profit)
+                return lastShortPositionClosed;
+
+            lastShortPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+            return lastShortPositionClosed;
+        }
+
+        private Position lastLongPositionClosed;
+        private Position lastShortPositionClosed;
     }
 }

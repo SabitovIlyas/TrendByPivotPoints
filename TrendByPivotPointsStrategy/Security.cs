@@ -23,5 +23,7 @@ namespace TrendByPivotPointsStrategy
         bool IsLaboratory { get; }
         bool IsRealTimeTrading { get; }
         int GetBarCompressedNumberFromBarBaseNumber(int barNumber);
+        Position GetLastClosedLongPosition(int barNumber);
+        Position GetLastClosedShortPosition(int barNumber);
     }
 }

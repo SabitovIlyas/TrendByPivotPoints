@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -68,30 +69,107 @@ namespace TrendByPivotPointsStrategy
             equity = sec.InitDeposit;            
         }
 
+        //public void Update(int barNumber)
+        //{
+        //    var positions = sec.Positions;
+        //    var lastPosition = positions.GetLastPosition(barNumber);
+
+        //    if (lastClosedPosition != lastPosition)
+        //    {
+        //        //var message = string.Format("AccountLab.Update: barNumber = {0}; lastClosedPosition != lastPosition; lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
+        //        //    barNumber, lastClosedPosition, lastPosition, equity);
+        //        //logger.Log(message);
+        //        if (!lastPosition.IsActiveForBar(barNumber))
+        //        {
+        //            lastClosedPosition = lastPosition;                    
+        //            logger.Log("Активная позиция закрылась");
+        //            equity = equity + lastClosedPosition.Profit();
+
+        //            //message = string.Format("AccountLab.Update: barNumber = {0}; !lastPosition.IsActiveForBar(barNumber); lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
+        //            //barNumber, lastClosedPosition, lastPosition, equity);
+        //            //logger.Log(message);
+
+        //            var message = string.Format("AccountLab.Update: barNumber = {0}; equity = {1}", barNumber, equity);
+        //            logger.Log(message);
+        //        }
+        //    }                     
+        //}
+
+        public void Initialize(List<Security> securities)
+        {
+            this.securities = securities;
+            var securityFirst = securities[0];
+            var security = securityFirst as SecurityTSlab;
+            sec = security.security;
+            equity = sec.InitDeposit;
+            lastLongPositionsClosed = new Dictionary<Security, Position>();
+            lastShortPositionsClosed = new Dictionary<Security,Position>();
+        }
+
         public void Update(int barNumber)
         {
-            var positions = sec.Positions;
-            var lastPosition = positions.GetLastPosition(barNumber);
-
-            if (lastClosedPosition != lastPosition)
+            foreach(var security in securities)
             {
-                //var message = string.Format("AccountLab.Update: barNumber = {0}; lastClosedPosition != lastPosition; lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
-                //    barNumber, lastClosedPosition, lastPosition, equity);
-                //logger.Log(message);
-                if (!lastPosition.IsActiveForBar(barNumber))
+                Position lastLongPositionClosedPrevious;
+                if (lastLongPositionsClosed.TryGetValue(security, out lastLongPositionClosedPrevious))
                 {
-                    lastClosedPosition = lastPosition;                    
-                    logger.Log("Активная позиция закрылась");
-                    equity = equity + lastClosedPosition.Profit();
+                    var lastLongPositionClosed = security.GetLastClosedLongPosition(barNumber);
+                    if (lastLongPositionClosed != lastLongPositionClosedPrevious)
+                    {
+                        lastLongPositionsClosed.Remove(security);
+                        lastLongPositionsClosed.Add(security, lastLongPositionClosed);
 
-                    //message = string.Format("AccountLab.Update: barNumber = {0}; !lastPosition.IsActiveForBar(barNumber); lastClosedPosition = {1}, lastPosition = {2}, equity = {3}",
-                    //barNumber, lastClosedPosition, lastPosition, equity);
-                    //logger.Log(message);
-
-                    var message = string.Format("AccountLab.Update: barNumber = {0}; equity = {1}", barNumber, equity);
-                    logger.Log(message);
+                        equity = equity + lastLongPositionClosed.profit;
+                        var message = string.Format("Активная длинная позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
+                            lastLongPositionClosed.barNumber, lastLongPositionClosed.entryPrice, lastLongPositionClosed.profit, equity);
+                        logger.Log(message);                                                
+                    }                   
                 }
-            }                     
+                else
+                {
+                    var lastLongPositionClosed = security.GetLastClosedLongPosition(barNumber);
+                    if (lastLongPositionClosed != null)
+                    {
+                        lastLongPositionsClosed.Add(security, lastLongPositionClosed);
+                        equity = equity + lastLongPositionClosed.profit;
+                        var message = string.Format("Активная длинная позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
+                            lastLongPositionClosed.barNumber, lastLongPositionClosed.entryPrice, lastLongPositionClosed.profit, equity);
+                        logger.Log(message);
+                    }
+                }
+
+                Position lastShortPositionClosedPrevious;
+                if (lastShortPositionsClosed.TryGetValue(security, out lastShortPositionClosedPrevious))
+                {
+                    var lastShortPositionClosed = security.GetLastClosedShortPosition(barNumber);
+                    if (lastShortPositionClosed != lastShortPositionClosedPrevious)
+                    {
+                        lastShortPositionsClosed.Remove(security);
+                        lastShortPositionsClosed.Add(security, lastShortPositionClosed);
+
+                        equity = equity + lastShortPositionClosed.profit;
+                        var message = string.Format("Активная короткая позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
+                            lastShortPositionClosed.barNumber, lastShortPositionClosed.entryPrice, lastShortPositionClosed.profit, equity);
+                        logger.Log(message);
+                    }
+                }
+                else
+                {
+                    var lastShortPositionClosed = security.GetLastClosedShortPosition(barNumber);
+                    if (lastShortPositionClosed != null)
+                    {
+                        lastShortPositionsClosed.Add(security, lastShortPositionClosed);
+                        equity = equity + lastShortPositionClosed.profit;
+                        var message = string.Format("Активная короткая позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
+                            lastShortPositionClosed.barNumber, lastShortPositionClosed.entryPrice, lastShortPositionClosed.profit, equity);
+                        logger.Log(message);
+                    }
+                }
+            }
         }
+        
+        private List<Security> securities;
+        private Dictionary<Security, Position> lastLongPositionsClosed;
+        private Dictionary<Security, Position> lastShortPositionsClosed;
     }
 }

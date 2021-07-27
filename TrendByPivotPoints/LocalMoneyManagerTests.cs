@@ -37,7 +37,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 69000;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -55,7 +55,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 60000;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -73,7 +73,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 71000;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -91,7 +91,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 80000;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -112,7 +112,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 69000;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -130,7 +130,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 60000;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -148,7 +148,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 71000;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -166,7 +166,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 70000;
             var stopPrice = 80000;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.Ruble;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -191,7 +191,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1090;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -209,7 +209,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1000;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -227,7 +227,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1110;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -245,7 +245,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1200;
-            var position = Position.Long;
+            var position = PositionSide.Long;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -266,7 +266,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1090;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -284,7 +284,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1000;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -302,7 +302,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1110;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 
@@ -320,7 +320,7 @@ namespace TrendByPivotPoints.Tests
             //arrange            
             var enterPrice = 1100;
             var stopPrice = 1200;
-            var position = Position.Short;
+            var position = PositionSide.Short;
             var currency = Currency.USD;
             localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
 

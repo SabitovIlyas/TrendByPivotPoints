@@ -71,5 +71,15 @@ namespace TrendByPivotPointsStrategy
         {
             throw new System.NotImplementedException();
         }
+
+        public Position GetLastClosedLongPosition(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Position GetLastClosedShortPosition(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

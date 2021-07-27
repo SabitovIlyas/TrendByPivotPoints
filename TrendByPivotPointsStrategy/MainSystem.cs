@@ -30,7 +30,11 @@ namespace TrendByPivotPointsStrategy
             else
                 account = new AccountReal(securityFirst);
 
+            var securityList = new List<Security>();
+
             this.securityFirst = new SecurityTSlab(securityFirst);
+            securityList.Add(this.securityFirst);
+
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
@@ -104,6 +108,8 @@ namespace TrendByPivotPointsStrategy
             account.Logger = logger;
             this.ctx = ctx;
             context = new ContextTSLab(ctx);
+            var acc = account as AccountLab;
+            acc.Initialize(securityList);
         }
 
         bool leSeNullPreviousBar = false;        

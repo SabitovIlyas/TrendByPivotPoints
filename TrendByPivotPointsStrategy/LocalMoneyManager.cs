@@ -20,7 +20,7 @@ namespace TrendByPivotPointsStrategy
             this.currency = currency;
         }
 
-        public virtual int GetQntContracts(double enterPrice, double stopPrice, Position position)
+        public virtual int GetQntContracts(double enterPrice, double stopPrice, PositionSide position)
         {
             logger.Log("enterPrice = " + enterPrice.ToString());
             logger.Log("stopPrice = " + stopPrice.ToString());
@@ -29,7 +29,7 @@ namespace TrendByPivotPointsStrategy
             var go = 0.0;
             switch (position)
             {
-                case Position.Long:
+                case PositionSide.Long:
                     {
                         if (stopPrice >= enterPrice)
                             return 0;
@@ -38,14 +38,14 @@ namespace TrendByPivotPointsStrategy
                         logger.Log("go = " + go.ToString());
                     }
                     break;
-                case Position.Short:
+                case PositionSide.Short:
                     {
                         if (stopPrice <= enterPrice)
                             return 0;
                         go = account.GOselling;
                     }
                     break;
-                case Position.LongAndShort:                    
+                case PositionSide.LongAndShort:                    
                     break;
             }            
 

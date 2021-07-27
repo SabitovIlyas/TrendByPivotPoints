@@ -122,7 +122,7 @@ namespace TrendByPivotPointsStrategy
                             var lastPrice = lastBar.Close;
                             if (lastPrice > stopPrice)
                             {
-                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Long);
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
                                 //var contracts = 1;
                                 sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                 takeProfitLong = 0;
@@ -173,7 +173,7 @@ namespace TrendByPivotPointsStrategy
                             var lastPrice = lastBar.Close;
                             if (lastPrice < stopPrice)
                             {
-                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, Position.Short);
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Short);
                                 //var contracts = 1;
                                 sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
                                 takeProfitShort = 0;                                

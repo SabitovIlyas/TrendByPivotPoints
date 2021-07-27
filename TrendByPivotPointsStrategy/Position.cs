@@ -1,7 +1,10 @@
 ﻿namespace TrendByPivotPointsStrategy
 {
-    public enum Position
+    public class Position
     {
-        Long, Short, LongAndShort
+        public Security security;
+        public int barNumber;
+        public double entryPrice;
+        public double profit;
     }
 }
