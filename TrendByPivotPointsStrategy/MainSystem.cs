@@ -23,7 +23,8 @@ namespace TrendByPivotPointsStrategy
         List<TradingSystemPivotPointsEMA> tradingSystems;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            var logger = new LoggerSystem(ctx);
+            //var logger = new LoggerSystem(ctx);
+            var logger = new NullLogger();
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -47,13 +48,15 @@ namespace TrendByPivotPointsStrategy
             TradingSystemPivotPointsEMA ts;
 
             //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));            
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst);//si-5min
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);//si-5min            
             ts.Logger = logger;
             tradingSystems.Add(ts);
-            comission = 1.15 * 2;
+            comission = 0;
+            //comission = 1.15 * 2;
             //comission = 1 * 2;
             comis = new AbsolutCommission() { Commission = comission };
             comis.Execute(securities[0]);
+            ts.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
 
             ////tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new Se)curityTSlab(securities[1])));
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]));//sbrf-5min
@@ -126,21 +129,21 @@ namespace TrendByPivotPointsStrategy
                 {                    
                     tradingSystem.Update(i);
 
-                    var sec = securityFirst as SecurityTSlab;
+                    //var sec = securityFirst as SecurityTSlab;
 
-                    var le = sec.security.Positions.GetLastActiveForSignal("LE", i);
-                    var se = sec.security.Positions.GetLastActiveForSignal("SE", i);
+                    //var le = sec.security.Positions.GetLastActiveForSignal("LE", i);
+                    //var se = sec.security.Positions.GetLastActiveForSignal("SE", i);
 
 
-                    var leSeNullCurrentBar = (le == null) && (se == null);
-                    var moneyBefore = account.Equity;
+                    //var leSeNullCurrentBar = (le == null) && (se == null);
+                    //var moneyBefore = account.Equity;
 
                     account.Update(i);
 
-                    var moneyAfter = account.Equity;
-                    var br = (leSeNullCurrentBar && leSeNullPreviousBar && (moneyAfter != moneyBefore));
+                    //var moneyAfter = account.Equity;
+                    //var br = (leSeNullCurrentBar && leSeNullPreviousBar && (moneyAfter != moneyBefore));
 
-                    leSeNullPreviousBar = leSeNullCurrentBar;
+                    //leSeNullPreviousBar = leSeNullCurrentBar;
                 }
             }
 
@@ -182,5 +185,18 @@ namespace TrendByPivotPointsStrategy
         {
             return securityFirst.IsRealTimeTrading;
         }
+
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide)
+        {
+            this.leftLocalSide = leftLocalSide;
+            this.rightLocalSide = rightLocalSide;
+            this.pivotPointBreakDownSide = pivotPointBreakDownSide;
+            this.EmaPeriodSide = EmaPeriodSide;
+        }
+
+        private double leftLocalSide;
+        private double rightLocalSide;
+        private double pivotPointBreakDownSide;
+        private double EmaPeriodSide;
     }
 }
