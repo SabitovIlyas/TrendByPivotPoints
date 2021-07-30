@@ -43,19 +43,19 @@ namespace TrendByPivotPointsStrategy
             //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
             tradingSystems = new List<TradingSystemPivotPointsEMA>();
 
-            double comission;
-            AbsolutCommission comis;
+            double totalComission;
+            AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
             //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));            
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);//si-5min            
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             ts.Logger = logger;
             tradingSystems.Add(ts);
-            comission = 0;
-            //comission = 1.15 * 2;
+            //comission = 0;
+            totalComission = comission * 2;
             //comission = 1 * 2;
-            comis = new AbsolutCommission() { Commission = comission };
-            comis.Execute(securities[0]);
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[0]);
             ts.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
 
             ////tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new Se)curityTSlab(securities[1])));
@@ -186,17 +186,23 @@ namespace TrendByPivotPointsStrategy
             return securityFirst.IsRealTimeTrading;
         }
 
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide)
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
             this.pivotPointBreakDownSide = pivotPointBreakDownSide;
             this.EmaPeriodSide = EmaPeriodSide;
+            this.rateUSD = rateUSD;
+            this.positionSide = positionSide;
+            this.comission = comission;
         }
 
         private double leftLocalSide;
         private double rightLocalSide;
         private double pivotPointBreakDownSide;
         private double EmaPeriodSide;
+        private double rateUSD;
+        private double positionSide;
+        private double comission;
     }
 }

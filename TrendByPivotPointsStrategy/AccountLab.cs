@@ -49,7 +49,8 @@ namespace TrendByPivotPointsStrategy
 
         public double GOselling => 4500;
 
-        public double Rate { get => 1; set => throw new NotImplementedException(); }
+        public double Rate { get { return rate; } set { rate = value; } }
+        private double rate;
 
         public ISecurity Security
         {

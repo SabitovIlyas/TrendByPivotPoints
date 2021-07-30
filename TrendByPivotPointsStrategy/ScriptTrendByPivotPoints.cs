@@ -21,11 +21,16 @@ namespace TrendByPivotPointsStrategy
         //public OptimProperty pivotPointBreakDownSideShort = new OptimProperty(100, 100, 200, 100);
         //public OptimProperty EmaPeriodSideShort = new OptimProperty(200, 50, 200, 50);
 
+        //long: 4, 7, 25, 120
 
-        public OptimProperty leftLocalSide = new OptimProperty(10, 5, 15, 5);
-        public OptimProperty rightLocalSide = new OptimProperty(10, 5, 15, 5);
-        public OptimProperty pivotPointBreakDownSide = new OptimProperty(2, 1, 3, 100);
-        public OptimProperty EmaPeriodSide = new OptimProperty(200, 50, 200, 50);
+        public OptimProperty leftLocalSide = new OptimProperty(1, 1, 16, 3);
+        public OptimProperty rightLocalSide = new OptimProperty(1, 1, 16, 3);
+        public OptimProperty pivotPointBreakDownSide = new OptimProperty(10, 10, 100, 10);
+        public OptimProperty emaPeriodSide = new OptimProperty(20, 20, 200, 20);
+        public OptimProperty rateUSD = new OptimProperty(75, 1, 1000, 1);
+        public OptimProperty positionSide = new OptimProperty(0, 1, 2, 1);
+        public OptimProperty comission = new OptimProperty(0.565, 0.001, 100, 0.001);
+
 
         public void Execute(IContext context, ISecurity[] securities)        
         {            
@@ -33,7 +38,7 @@ namespace TrendByPivotPointsStrategy
             //var logger = new LoggerSystem(context);
 
             var system = new MainSystem();
-            system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
+            system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission);
             system.Initialize(securities, context);
             system.Run();
 
