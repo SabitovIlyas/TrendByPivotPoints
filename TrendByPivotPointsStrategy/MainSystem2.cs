@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.DataSource;
 using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystem : IMainSystem
+    public class MainSystem2 : IMainSystem
     {
         //TradingSystemPivotPointsTwoTimeFrames tradingSystem1;
         TradingSystemPivotPointsEMA tradingSystem1;
@@ -47,16 +42,22 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
-            //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));            
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);//si-5min            
             ts.Logger = logger;
-            tradingSystems.Add(ts);
-            //comission = 0;
-            totalComission = comission * 2;
-            //comission = 1 * 2;
+            tradingSystems.Add(ts);            
+            totalComission = 1.13 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[0]);
-            ts.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
+            ts.SetParameters(13, 1, 10, 60);
+
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Short);
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.13 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[1]);
+            ts.SetParameters(16, 4, 70, 40);
+
 
             ////tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new Se)curityTSlab(securities[1])));
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]));//sbrf-5min

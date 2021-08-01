@@ -63,10 +63,12 @@
     <Compile Include="Currency.cs" />
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
+    <Compile Include="IMainSystem.cs" />
     <Compile Include="Indicator.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MainSystem.cs" />
     <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="MainSystem2.cs" />
     <Compile Include="NullDataBar.cs" />
     <Compile Include="NullLogger.cs" />
     <Compile Include="Pane.cs" />

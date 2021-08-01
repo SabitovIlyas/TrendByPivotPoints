@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TSLab.Script;
@@ -30,14 +28,18 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty rateUSD = new OptimProperty(75, 1, 1000, 1);
         public OptimProperty positionSide = new OptimProperty(0, 1, 2, 1);
         public OptimProperty comission = new OptimProperty(0.565, 0.001, 100, 0.001);
-
+        public OptimProperty isOptimization = new OptimProperty(1, 0, 1, 1);
 
         public void Execute(IContext context, ISecurity[] securities)        
-        {            
+        {
             //var timeStart = DateTime.Now;
             //var logger = new LoggerSystem(context);
 
-            var system = new MainSystem();
+            IMainSystem system;
+            if (isOptimization == 1)
+                system = new MainSystem();
+            else
+                system = new MainSystem2();
             system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission);
             system.Initialize(securities, context);
             system.Run();
@@ -46,6 +48,6 @@ namespace TrendByPivotPointsStrategy
             //var timeStop = DateTime.Now;
             //var time = timeStop - timeStart;
             //logger.Log(time.ToString());
-        }        
+        }       
     }
 }
