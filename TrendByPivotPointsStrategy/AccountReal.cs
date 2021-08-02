@@ -18,7 +18,20 @@ namespace TrendByPivotPointsStrategy
         public double GOselling => throw new NotImplementedException();
 
         public double Rate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Logger logger = new NullLogger();
+
+        public Logger Logger
+        {
+            get
+            {
+                return logger;
+            }
+
+            set
+            {
+                logger = value;
+            }
+        }
 
         public AccountReal(ISecurity sec)
         {
