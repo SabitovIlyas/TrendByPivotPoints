@@ -6,7 +6,7 @@ using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystem2 : IMainSystem
+    public class MainSystemForTrading : MainSystem
     {
         //TradingSystemPivotPointsTwoTimeFrames tradingSystem1;
         TradingSystemPivotPointsEMA tradingSystem1;
@@ -31,7 +31,7 @@ namespace TrendByPivotPointsStrategy
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 1.00);
+            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
 
@@ -187,7 +187,7 @@ namespace TrendByPivotPointsStrategy
             return securityFirst.IsRealTimeTrading;
         }
 
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission)
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
@@ -196,6 +196,7 @@ namespace TrendByPivotPointsStrategy
             this.rateUSD = rateUSD;
             this.positionSide = positionSide;
             this.comission = comission;
+            this.riskValuePrcnt = riskValuePrcnt;
         }
 
         private double leftLocalSide;
@@ -205,5 +206,6 @@ namespace TrendByPivotPointsStrategy
         private double rateUSD;
         private double positionSide;
         private double comission;
+        private double riskValuePrcnt;
     }
 }

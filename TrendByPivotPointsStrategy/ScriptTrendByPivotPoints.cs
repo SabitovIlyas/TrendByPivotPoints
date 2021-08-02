@@ -29,18 +29,19 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty positionSide = new OptimProperty(0, 1, 2, 1);
         public OptimProperty comission = new OptimProperty(0.565, 0.001, 100, 0.001);
         public OptimProperty isOptimization = new OptimProperty(1, 0, 1, 1);
+        public OptimProperty riskValuePrcnt = new OptimProperty(1, 0, 1, 100);
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
             //var timeStart = DateTime.Now;
             //var logger = new LoggerSystem(context);
 
-            IMainSystem system;
+            MainSystem system;
             if (isOptimization == 1)
-                system = new MainSystem();
+                system = new MainSystemForOptimization();
             else
-                system = new MainSystem2();
-            system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission);
+                system = new MainSystemForTrading();
+            system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission, riskValuePrcnt);
             system.Initialize(securities, context);
             system.Run();
 
