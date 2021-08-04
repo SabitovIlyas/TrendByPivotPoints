@@ -18,8 +18,8 @@ namespace TrendByPivotPointsStrategy
         List<TradingSystemPivotPointsEMA> tradingSystems;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
+            var logger = new LoggerSystem(ctx);
+            //var logger = new NullLogger();
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -42,6 +42,8 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
+            logger.Log("Создание торговой системы...");
+
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);//si-5min            
             ts.Logger = logger;
             tradingSystems.Add(ts);            
@@ -50,13 +52,15 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(13, 1, 10, 60);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Short);
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 1.13 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[1]);
-            ts.SetParameters(16, 4, 70, 40);
+            logger.Log("Торговая система успешно создана!");
+
+            //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Short);
+            //ts.Logger = logger;
+            //tradingSystems.Add(ts);
+            //totalComission = 1.13 * 2;
+            //absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            //absoluteComission.Execute(securities[1]);
+            //ts.SetParameters(16, 4, 70, 40);
 
 
             ////tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new Se)curityTSlab(securities[1])));
@@ -111,9 +115,8 @@ namespace TrendByPivotPointsStrategy
             //tradingSystem.Logger = logger;
             account.Logger = logger;
             this.ctx = ctx;
-            context = new ContextTSLab(ctx);
-            var acc = account as AccountLab;
-            acc.Initialize(securityList);
+            context = new ContextTSLab(ctx);            
+            account.Initialize(securityList);
         }
 
         bool leSeNullPreviousBar = false;

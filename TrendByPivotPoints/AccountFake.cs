@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TrendByPivotPoints;
 using TSLab.Script;
 
@@ -16,6 +17,10 @@ namespace TrendByPivotPointsStrategy
 
         public ISecurity Security { get; set; }
         public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public void Initialize(List<Security> securities)
+        {
+        }
 
         public void Update(int barNumber)
         {            

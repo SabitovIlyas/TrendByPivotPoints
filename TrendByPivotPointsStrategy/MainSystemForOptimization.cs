@@ -111,8 +111,7 @@ namespace TrendByPivotPointsStrategy
             account.Logger = logger;
             this.ctx = ctx;
             context = new ContextTSLab(ctx);
-            var acc = account as AccountLab;
-            acc.Initialize(securityList);
+            account.Initialize(securityList);
         }
 
         bool leSeNullPreviousBar = false;

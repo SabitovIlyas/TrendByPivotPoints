@@ -17,6 +17,7 @@ namespace TrendByPivotPointsStrategy
 
         ISecurity Security { get; }
         void Update(int barNumber);
+        void Initialize(List<Security> securities);
 
         Logger Logger { get; set; }
     }

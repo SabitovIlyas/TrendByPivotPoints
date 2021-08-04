@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -40,6 +41,9 @@ namespace TrendByPivotPointsStrategy
 
         public void Update(int barNumber)
         {         
+        }
+        public void Initialize(List<Security> securities)
+        {            
         }
     }
 }
