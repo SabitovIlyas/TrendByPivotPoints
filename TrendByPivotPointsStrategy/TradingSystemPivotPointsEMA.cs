@@ -104,12 +104,23 @@ namespace TrendByPivotPointsStrategy
 
             breakdownLong = (pivotPointBreakDownSide / 100) * atr[barNumber];
 
+            //var highs = pivotPointsIndicator.GetHighs(barNumber);
+
+            //var lastHighValue = double.MaxValue;
+
+            //if (highs.Count != 0)
+            //{
+            //    var lastHigh = highs.Last();
+            //    lastHighValue = lastHigh.Value;
+            //}
+
+
             if (le == null)
             {
                 if (lastLowForOpenLongPosition != 0)
                     lastLowCaseLongClose = lastLowForOpenLongPosition;
                 lastLowForOpenLongPosition = 0;
-                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowValue != lastLowCaseLongClose))
+                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowValue != lastLowCaseLongClose))// && (lastPrice > lastHighValue))
                 {
                     lastLowForOpenLongPosition = lastLowValue;
                     Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа в лонг выполнено!");
@@ -264,9 +275,30 @@ namespace TrendByPivotPointsStrategy
 
         public void CalculateIndicators()
         {
-            pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);
-            pivotPointsIndicator.CalculateHighs(security, (int)leftLocalSide, (int)rightLocalSide);
+            switch (positionSide)
+            {
+                case PositionSide.LongAndShort:
+                    {
+                        pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);
+                        pivotPointsIndicator.CalculateHighs(security, (int)leftLocalSide, (int)rightLocalSide);
+                        break;
+                    }
+                case PositionSide.Long:
+                    {
+                        pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);
+                        //pivotPointsIndicator.CalculateLows(security, 10, 10);
+                        //pivotPointsIndicator.CalculateHighs(security, 10, 10);
+                        break;
+                    }
+                case PositionSide.Short:
+                    {
+                        pivotPointsIndicator.CalculateHighs(security, (int)leftLocalSide, (int)rightLocalSide);                        
+                        break;
+                    }
+
+            }            
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
+            //ema = Series.EMA(sec.ClosePrices, 50);
             atr = Series.AverageTrueRange(sec.Bars, 20);                     
         }       
 

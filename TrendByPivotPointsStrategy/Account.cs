@@ -20,5 +20,6 @@ namespace TrendByPivotPointsStrategy
         void Initialize(List<Security> securities);
 
         Logger Logger { get; set; }
+        double FreeBalance { get; }
     }
 }

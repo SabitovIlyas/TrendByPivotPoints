@@ -33,8 +33,8 @@ namespace TrendByPivotPointsStrategy
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
-            //var timeStart = DateTime.Now;
-            //var logger = new LoggerSystem(context);
+            var timeStart = DateTime.Now;
+            var logger = new LoggerSystem(context);
 
             MainSystem system;
             if (isOptimization == 1)
@@ -45,10 +45,10 @@ namespace TrendByPivotPointsStrategy
             system.Initialize(securities, context);
             system.Run();
 
-            //system.Paint(context, securities.First());
-            //var timeStop = DateTime.Now;
-            //var time = timeStop - timeStart;
-            //logger.Log(time.ToString());
+            system.Paint(context, securities[0]);
+            var timeStop = DateTime.Now;
+            var time = timeStop - timeStart;
+            logger.Log(time.ToString());
         }       
     }
 }

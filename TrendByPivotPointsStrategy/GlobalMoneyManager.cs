@@ -4,7 +4,8 @@
     {
         double RiskValuePrcnt { get; }
         double GetMoneyForDeal();
-        double FreeBalance { get; }
+        double Equity { get; }
         Logger Logger { get; set; }
+        double FreeBalance { get; }
     }
 }

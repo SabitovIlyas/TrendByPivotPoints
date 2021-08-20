@@ -18,6 +18,8 @@ namespace TrendByPivotPointsStrategy
         public ISecurity Security { get; set; }
         public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public double FreeBalance { get; set; }
+
         public void Initialize(List<Security> securities)
         {
         }

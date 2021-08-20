@@ -30,11 +30,14 @@ namespace TrendByPivotPointsStrategy
         //}
 
         public double GetMoneyForDeal()
-        {            
-            logger.Log("FreeBalance = " + FreeBalance.ToString());
-            return riskValue * FreeBalance;                       
+        {          
+            
+            logger.Log("FreeBalance = " + Equity.ToString());
+            return riskValue * Equity;                       
         }
 
-        public double FreeBalance => account.Equity;
+        public double Equity => account.Equity;
+
+        public double FreeBalance => throw new NotImplementedException();
     }
 }

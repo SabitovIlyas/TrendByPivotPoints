@@ -64,6 +64,8 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
+        public double FreeBalance => throw new NotImplementedException();
+
         public AccountLab(ISecurity sec)
         {
             this.sec = sec;

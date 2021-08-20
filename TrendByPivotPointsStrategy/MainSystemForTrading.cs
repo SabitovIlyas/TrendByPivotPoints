@@ -54,13 +54,13 @@ namespace TrendByPivotPointsStrategy
 
             logger.Log("Торговая система успешно создана!");
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //sbrf-5min
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 2.12 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[1]);
-            ts.SetParameters(13, 13, 60, 20);
+            //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //sbrf-5min
+            //ts.Logger = logger;
+            //tradingSystems.Add(ts);
+            //totalComission = 2.12 * 2;
+            //absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            //absoluteComission.Execute(securities[1]);
+            //ts.SetParameters(13, 13, 60, 20);
 
 
             ////tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new Se)curityTSlab(securities[1])));
