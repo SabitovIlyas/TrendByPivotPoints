@@ -18,8 +18,8 @@ namespace TrendByPivotPointsStrategy
         List<TradingSystemPivotPointsEMA> tradingSystems;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
+            var logger = new LoggerSystem(ctx);
+            //var logger = new NullLogger();
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);

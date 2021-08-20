@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Handlers;
+using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -10,13 +11,22 @@ namespace TrendByPivotPointsStrategy
         public ISecurity Security { get => sec;}
         ISecurity sec;
 
-        public double InitDeposit => throw new NotImplementedException();
+        public double InitDeposit => sec.InitDeposit;
 
-        public double Equity => throw new NotImplementedException();
+        public double Equity 
+        {
+            get
+            {
+                var rtSec = sec as ISecurityRt;
+                if (rtSec != null)
+                    return rtSec.EstimatedBalance;
+                return 0;
+            } 
+        }
 
-        public double GObying => throw new NotImplementedException();
+        public double GObying => sec.FinInfo.BuyDeposit ?? double.MaxValue;
 
-        public double GOselling => throw new NotImplementedException();
+        public double GOselling => sec.FinInfo.SellDeposit ?? double.MaxValue;
 
         public double Rate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         Logger logger = new NullLogger();

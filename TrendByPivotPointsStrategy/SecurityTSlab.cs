@@ -176,6 +176,8 @@ namespace TrendByPivotPointsStrategy
             if (IsBarNumberCorrect(barNumber))
             {
                 var bars = GetBars();
+                if (bars.Count == 0)
+                    throw new Exception("Баров нет");
                 return bars[barNumber];
             }
             return nullDataBar;
@@ -183,6 +185,9 @@ namespace TrendByPivotPointsStrategy
 
         private bool IsBarNumberCorrect(int barNumber)
         {
+            var bars = GetBars();
+
+            //if (barNumber < 0 || barNumber > this.barNumber || barNumber >= bars.Count)
             if (barNumber < 0 || barNumber > this.barNumber)
                 return false;
             return true;

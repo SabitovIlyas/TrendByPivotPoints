@@ -54,37 +54,46 @@ namespace TrendByPivotPointsStrategy
 
         public void Update(int barNumber)
         {
-            security.BarNumber = barNumber;
-            if (!flagToDebugLog)
+            try
             {
-                var message = string.Format("ГО на покупку: {0}; ГО на продажу: {1}; Шаг цены: {2}", security.BuyDeposit, security.SellDeposit, security.StepPrice);                
-                Logger.Log(message);
-                flagToDebugLog = true;
+                security.BarNumber = barNumber;
+                if (!flagToDebugLog)
+                {
+                    var message = string.Format("ГО на покупку: {0}; ГО на продажу: {1}; Шаг цены: {2}", security.BuyDeposit, security.SellDeposit, security.StepPrice);
+                    Logger.Log(message);
+                    flagToDebugLog = true;
+                }
+
+                var lastBar = security.LastBar;
+                var lastPrice = lastBar.Close;
+
+                switch (positionSide)
+                {
+                    case PositionSide.LongAndShort:
+                        {
+                            CheckPositionOpenLongCase(lastPrice, barNumber);
+                            CheckPositionOpenShortCase(lastPrice, barNumber);
+                            break;
+                        }
+                    case PositionSide.Long:
+                        {
+                            CheckPositionOpenLongCase(lastPrice, barNumber);
+                            break;
+                        }
+                    case PositionSide.Short:
+                        {
+                            CheckPositionOpenShortCase(lastPrice, barNumber);
+                            break;
+                        }
+
+                }
             }
 
-            var lastBar = security.LastBar;
-            var lastPrice = lastBar.Close;            
-
-            switch (positionSide)
+            catch (Exception e)
             {
-                case PositionSide.LongAndShort:
-                    {
-                        CheckPositionOpenLongCase(lastPrice, barNumber);
-                        CheckPositionOpenShortCase(lastPrice, barNumber);
-                        break;
-                    }
-                case PositionSide.Long:
-                    {
-                        CheckPositionOpenLongCase(lastPrice, barNumber);
-                        break;
-                    }
-                case PositionSide.Short:
-                    {
-                        CheckPositionOpenShortCase(lastPrice, barNumber);
-                        break;
-                    }
-
+                Logger.Log(e.ToString());
             }
+           
         }
         
         public void CheckPositionOpenLongCase(double lastPrice, int barNumber)
@@ -128,8 +137,8 @@ namespace TrendByPivotPointsStrategy
                     var stopPrice = lowLast.Value - breakdownLong;
                     if (lastPrice > stopPrice)
                     {
-                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
-                        //var contracts = 1;
+                        //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
+                        var contracts = 1;
                         sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");//174: 78583
                         lastPriceOpenLongPosition = lastPrice;
                         stopLossLong = 0;
@@ -198,8 +207,8 @@ namespace TrendByPivotPointsStrategy
                     if (lastPrice < stopPrice)
                     {
                         Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции шорт выполнено!");
-                        var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Short);
-                        //var contracts = 1;
+                        //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Short);
+                        var contracts = 1;
                         sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
                         lastPriceOpenShortPosition = lastPrice;
                         stopLossShort = double.MaxValue;
