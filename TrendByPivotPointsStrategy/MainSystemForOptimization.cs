@@ -120,13 +120,16 @@ namespace TrendByPivotPointsStrategy
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
 
-            var lastBarNmber = securityFirst.GetBarsCount() - 1;
+            var lastBarNumber = securityFirst.GetBarsCount() - 1;
+            if (lastBarNumber < 1)
+                return;
 
-            for (var i = 0; i < lastBarNmber; i++)
+            for (var i = 1; i < lastBarNumber; i++)
             {
+                var lastClosedBarNumberInRealTrading = i - 1;
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    tradingSystem.Update(i);
+                    tradingSystem.Update(lastClosedBarNumberInRealTrading);
 
                     //var sec = securityFirst as SecurityTSlab;
 
@@ -137,7 +140,7 @@ namespace TrendByPivotPointsStrategy
                     //var leSeNullCurrentBar = (le == null) && (se == null);
                     //var moneyBefore = account.Equity;
 
-                    account.Update(i);
+                    account.Update(lastClosedBarNumberInRealTrading);
 
                     //var moneyAfter = account.Equity;
                     //var br = (leSeNullCurrentBar && leSeNullPreviousBar && (moneyAfter != moneyBefore));
@@ -149,17 +152,17 @@ namespace TrendByPivotPointsStrategy
             if (IsRealTimeTrading())
             {
                 foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.CheckPositionCloseCase(lastBarNmber);
+                    tradingSystem.CheckPositionCloseCase(lastBarNumber);
 
                 if (IsLastBarClosed())
                     foreach (var tradingSystem in tradingSystems)
-                        tradingSystem.Update(lastBarNmber);
+                        tradingSystem.Update(lastBarNumber);
             }
             else
                 foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.Update(lastBarNmber);
+                    tradingSystem.Update(lastBarNumber);
 
-            account.Update(lastBarNmber);
+            account.Update(lastBarNumber);
         }
 
         public void Paint(IContext ctx, ISecurity sec)
