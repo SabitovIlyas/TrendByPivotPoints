@@ -6,6 +6,7 @@ using SystemColor = System.Drawing.Color;
 using TSLab.Script.GraphPane;
 using TSLab.Script.Helpers;
 using TSLab.Script.Optimization;
+using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -137,8 +138,11 @@ namespace TrendByPivotPointsStrategy
                     var stopPrice = lowLast.Value - breakdownLong;
                     if (lastPrice > stopPrice)
                     {
-                        //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
                         var contracts = 1;
+                        var s = sec as ISecurityRt;
+                        if (s == null)
+                            contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
+                        
                         sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");//174: 78583
                         lastPriceOpenLongPosition = lastPrice;
                         stopLossLong = 0;
@@ -205,10 +209,12 @@ namespace TrendByPivotPointsStrategy
                     var highLast = highs.Last();
                     var stopPrice = highLast.Value + breakdownShort;
                     if (lastPrice < stopPrice)
-                    {
-                        Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции шорт выполнено!");
-                        //var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Short);
+                    {                        
                         var contracts = 1;
+                        var s = sec as ISecurityRt;
+                        if (s == null)
+                            contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Short);
+
                         sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
                         lastPriceOpenShortPosition = lastPrice;
                         stopLossShort = double.MaxValue;
@@ -226,8 +232,8 @@ namespace TrendByPivotPointsStrategy
                         var stopPrice = highLast.Value + breakdownShort;
                         if (lastPrice < stopPrice)
                         {
-                            var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Short);
-                            //var contracts = 1;
+                            Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции шорт выполнено!");
+                            var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Short);                            
                             var shares = se.Shares + contracts;
                             se.ChangeAtMarket(barNumber + 1, -shares, "SE");
                             lastPriceOpenShortPosition = lastPrice;
