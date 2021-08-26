@@ -86,15 +86,13 @@ namespace TrendByPivotPointsStrategy
                             CheckPositionOpenShortCase(lastPrice, barNumber);
                             break;
                         }
-
                 }
             }
 
             catch (Exception e)
             {
                 Logger.Log(e.ToString());
-            }
-           
+            }           
         }
         
         public void CheckPositionOpenLongCase(double lastPrice, int barNumber)
@@ -132,8 +130,7 @@ namespace TrendByPivotPointsStrategy
                 lastLowForOpenLongPosition = 0;
                 if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowValue != lastLowCaseLongClose))// && (lastPrice > lastHighValue))
                 {
-                    lastLowForOpenLongPosition = lastLowValue;
-                    Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие входа в лонг выполнено!");
+                    lastLowForOpenLongPosition = lastLowValue;                    
                     var lowLast = lows.Last();
                     var stopPrice = lowLast.Value - breakdownLong;
                     if (lastPrice > stopPrice)
@@ -146,6 +143,11 @@ namespace TrendByPivotPointsStrategy
                         sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");//174: 78583
                         lastPriceOpenLongPosition = lastPrice;
                         stopLossLong = 0;
+
+                        var message = string.Format("Номер бара = {0}; Условие входа в лонг выполнено!", barNumber.ToString());                        
+                        message = message + string.Format("Последний минимум {0} выше предыдущего {1}.", lastLowValue, lowsValues[lowsValues.Count-2]);
+                        message = message + string.Format("Цена закрытия последнего бара {0} выше EMA {1}.", lastPrice, ema[barNumber]);
+                        Logger.Log(message);
                     }
                 }
             }
