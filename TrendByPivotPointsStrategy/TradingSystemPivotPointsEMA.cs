@@ -114,8 +114,6 @@ namespace TrendByPivotPointsStrategy
             foreach (var low in lows)
                 lowsValues.Add(low.Value);                        
             
-            
-
             breakdownLong = (pivotPointBreakDownSide / 100) * atr[barNumber];
 
             //var highs = pivotPointsIndicator.GetHighs(barNumber);
@@ -139,35 +137,61 @@ namespace TrendByPivotPointsStrategy
                     lastLowCaseLongClose = lastLowForOpenLongPosition;
                 lastLowForOpenLongPosition = null;
 
-                if (patternPivotPoints_1g2.Check(lowsValues))
+                if (patternPivotPoints_1g2.Check(lowsValues))   //1
                 {
                     messageForLog = string.Format("Да, выполняется: последний минимум б. №{0}: {1} выше предыдущего б. №{2}: {3}. " +
                         "Использовался ли последний минимум в попытке открыть длинную позицию ранее?",
                         barNumber, lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
                     Logger.Log(messageForLog);
 
-                    if (lastLow.BarNumber != lastLowCaseLongClose.BarNumber)
+                    if (lastLow.BarNumber != lastLowCaseLongClose.BarNumber)    //2
                     {
                         messageForLog = string.Format("Нет, не использовался. Последний минимум, который использовался в попытке " +
-                            "открыть длинную позицию ранее -- б. №{0}: {1}. Не отсеивается ли потенциальная сделка фильтром EMA?", lastLowCaseLongClose.BarNumber, lastLowCaseLongClose.Value);
+                            "открыть длинную позицию ранее -- б. №{0}: {1}. Запоминаем попытку открытия длинной позиции. " +
+                            "Не отсеивается ли потенциальная сделка фильтром EMA?", lastLowCaseLongClose.BarNumber, lastLowCaseLongClose.Value);
                         Logger.Log(messageForLog);
 
-                        if (lastPrice > ema[barNumber])
+                        lastLowForOpenLongPosition = lastLow;
+
+                        if (lastPrice > ema[barNumber]) //3
                         {
                             messageForLog = string.Format("Нет, потенциальная сделка не отсеивается фильтром. Последняя цена закрытия {0} выше EMA: {1}. " +
-                                "Запоминаем попытку открытия длинной позиции. Вычисляем стоп-цену. Последняя цена выше стоп-цены?", lastPrice, ema[barNumber]);
+                                "Вычисляем стоп-цену...", lastPrice, ema[barNumber]);
                             Logger.Log(messageForLog);
 
-                            lastLowCaseLongClose = lastLow;
+                            var stopPrice = lastLow.Value - breakdownLong;
 
-                            lastLowForOpenLongPosition = lastLow;                            
-                            var lowLast = lows.Last();
-                            var stopPrice = lowLast.Value - breakdownLong;
+                            messageForLog = string.Format("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
+                                "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Последняя цена выше стоп-цены?", atr[barNumber], pivotPointBreakDownSide,
+                                breakdownLong, lastLow.Value, stopPrice);
+                            Logger.Log(messageForLog);
 
-                            if (lastPrice > stopPrice)
+                            if (lastPrice > stopPrice)  //4
                             {
-                                messageForLog = string.Format("Да, последняя цена выше стоп-цены. Открываем длинную позицию.");
+                                messageForLog = string.Format("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
                                 Logger.Log(messageForLog);
+                                                                
+                                Logger.Log("Определяем количество контрактов...");
+
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
+
+                                Logger.Log("Торгуем в лаборатории или в режиме реального времени?");
+                                var s = sec as ISecurityRt;
+                                if (s != null)
+                                {
+                                    contracts = 1;
+                                    messageForLog = string.Format("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
+                                    Logger.Log(messageForLog);                                    
+                                }
+                                else
+                                {
+                                    Logger.Log("Торгуем в лаборатории.");
+                                }
+
+                                sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
+                                lastPriceOpenLongPosition = lastPrice;
+                                stopLossLong = 0;
+                                Logger.Log("Открываем длинную позицию! Отправляем ордер.");
                             }
                             else
                             {                                
@@ -189,64 +213,104 @@ namespace TrendByPivotPointsStrategy
                 else
                 {                    
                     Logger.Log("Нет, не выполняется");
-                }
-
-
-                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLow.Value != lastLowCaseLongClose.Value))// && (lastPrice > lastHighValue))
-                {
-                    lastLowForOpenLongPosition = lastLow;
-                    //lastLowForOpenLongPositionValue = lastLow.Value;
-                    var lowLast = lows.Last();
-                    var stopPrice = lowLast.Value - breakdownLong;
-                    if (lastPrice > stopPrice)
-                    {
-                        var contracts = 1;
-                        var s = sec as ISecurityRt;
-                        if (s == null)
-                            contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
-                        
-                        sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");//174: 78583
-                        lastPriceOpenLongPosition = lastPrice;
-                        stopLossLong = 0;
-
-                        var message = string.Format("Номер бара = {0}; Условие входа в лонг выполнено!", barNumber.ToString());                        
-                        message = message + string.Format("Последний минимум {0} выше предыдущего {1}.", lastLow.Value, lowsValues[lowsValues.Count-2]);
-                        message = message + string.Format("Цена закрытия последнего бара {0} выше EMA {1}.", lastPrice, ema[barNumber]);
-                        Logger.Log(message);
-                    }
-                }
+                }                
             }
             else
             {
-                if (patternPivotPoints_1g2.Check(lowsValues) && (lastPrice > ema[barNumber]) && (lastLowForOpenLongPositionValue != lastLowValue))
+                Logger.Log("Длинная позиция открыта. Проверяем условия наращивания позиции: выполняется ли условие двух последовательных повышающихся минимумов?");
+
+                if (patternPivotPoints_1g2.Check(lowsValues))   //1
                 {
-                    lastLowForOpenLongPositionValue = lastLow.Value; //минимум для открытия (в том числе и потенциального)
-                    if (lastPrice > lastPriceOpenLongPosition)
+                    messageForLog = string.Format("Да, выполняется: последний минимум б. №{0}: {1} выше предыдущего б. №{2}: {3}. " +
+                        "Использовался ли последний минимум в попытке открыть длинную позицию ранее?",
+                        barNumber, lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
+                    Logger.Log(messageForLog);
+
+                    if (lastLow.BarNumber != lastLowForOpenLongPosition.BarNumber)    //2
                     {
-                        var lowLast = lows.Last();
-                        var stopPrice = lowLast.Value - breakdownLong;
-                        if (lastPrice > stopPrice)
+                        messageForLog = string.Format("Нет, не использовался. Последний минимум, который использовался в попытке " +
+                            "открыть длинную позицию ранее -- б. №{0}: {1}. Запоминаем попытку открытия длинной позиции. " +
+                            "Не отсеивается ли потенциальная сделка фильтром EMA?", lastLowCaseLongClose.BarNumber, lastLowCaseLongClose.Value);
+                        Logger.Log(messageForLog);
+
+                        lastLowForOpenLongPosition = lastLow;
+
+                        if (lastPrice > ema[barNumber]) //3
                         {
-                            Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции лонг выполнено!");
-                            var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
-                            var shares = le.Shares + contracts;
-                            le.ChangeAtMarket(barNumber + 1, shares, "LE");
-                            lastPriceOpenLongPosition = lastPrice;
+                            messageForLog = string.Format("Нет, потенциальная сделка не отсеивается фильтром. Последняя цена закрытия {0} выше EMA: {1}. " +
+                                "Вычисляем стоп-цену...", lastPrice, ema[barNumber]);
+                            Logger.Log(messageForLog);
+
+                            var stopPrice = lastLow.Value - breakdownLong;
+
+                            messageForLog = string.Format("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
+                                "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Последняя цена выше стоп-цены?", atr[barNumber], pivotPointBreakDownSide,
+                                breakdownLong, lastLow.Value, stopPrice);
+                            Logger.Log(messageForLog);
+
+                            if (lastPrice > stopPrice)  //4
+                            {
+                                messageForLog = string.Format("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
+                                Logger.Log(messageForLog);
+
+                                Logger.Log("Определяем количество контрактов...");
+
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
+
+                                Logger.Log("Торгуем в лаборатории или в режиме реального времени?");
+                                var s = sec as ISecurityRt;
+                                if (s != null)
+                                {
+                                    contracts = 1;
+                                    messageForLog = string.Format("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
+                                    Logger.Log(messageForLog);
+                                }
+                                else
+                                {
+                                    Logger.Log("Торгуем в лаборатории.");
+                                }                                
+
+                                Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции лонг выполнено!");                                
+                                var shares = le.Shares + contracts;
+                                le.ChangeAtMarket(barNumber + 1, shares, "LE");
+                                lastPriceOpenLongPosition = lastPrice;
+                                Logger.Log("Наращиваем длинную позицию! Отправляем ордер.");
+                            }
+                            else
+                            {
+                                Logger.Log("Последняя цена ниже стоп-цены. Длинную позицию не открываем.");
+                            }
                         }
                     }
+                    else
+                    {
+                        messageForLog = string.Format("Да, последний минимум использовался в попытке открыть длинную позицию ранее.");
+                        Logger.Log(messageForLog);
+                    }
                 }
-
                 else
                 {
-                    if (lows.Count == 0)
-                        return;
-
-                    var low = lows.Last();
-                    var stopLoss = low.Value - breakdownLong;
-                    if (stopLoss > stopLossLong) stopLossLong = stopLoss;
-                    le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
+                    Logger.Log("Нет, не выполняется");
                 }
-            }
+                                
+                Logger.Log("Обновляем стоп...");
+
+
+                if (lows.Count == 0)
+                {
+                    Logger.Log("Это условие никогда не должно отрабатывать. Проверить и впоследствии убрать.");
+                    return;
+                }
+
+                messageForLog = string.Format("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
+                                "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Последняя цена выше стоп-цены?", atr[barNumber], pivotPointBreakDownSide,
+                                breakdownLong, lastLow.Value, stopPrice);
+                Logger.Log(messageForLog);
+
+                var stopLoss = lastLow.Value - breakdownLong;
+                if (stopLoss > stopLossLong) stopLossLong = stopLoss;
+                le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
+            }            
         }
 
         public void CheckPositionOpenShortCase(double lastPrice, int barNumber)
