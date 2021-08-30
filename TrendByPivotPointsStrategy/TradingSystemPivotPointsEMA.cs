@@ -133,7 +133,7 @@ namespace TrendByPivotPointsStrategy
 
             if (le == null)
             {                
-                Logger.Log("Длинная позиция не открыта. Выполняется ли условие последовательных повышающихся минимумов?");
+                Logger.Log("Длинная позиция не открыта. Выполняется ли условие двух последовательных повышающихся минимумов?");
 
                 if (lastLowForOpenLongPosition != null)
                     lastLowCaseLongClose = lastLowForOpenLongPosition;
@@ -154,13 +154,25 @@ namespace TrendByPivotPointsStrategy
 
                         if (lastPrice > ema[barNumber])
                         {
-                            messageForLog = string.Format("Нет, потенциальная сделка не отсеивается фильтром. Последняя цена закрытия {0} выше EMA: {1}.", lastPrice, ema[barNumber]);
+                            messageForLog = string.Format("Нет, потенциальная сделка не отсеивается фильтром. Последняя цена закрытия {0} выше EMA: {1}. " +
+                                "Запоминаем попытку открытия длинной позиции. Вычисляем стоп-цену. Последняя цена выше стоп-цены?", lastPrice, ema[barNumber]);
                             Logger.Log(messageForLog);
 
-                            //if (lastLow.Value != lastLowCaseLongClose)
-                            //{
+                            lastLowCaseLongClose = lastLow;
 
-                            //}
+                            lastLowForOpenLongPosition = lastLow;                            
+                            var lowLast = lows.Last();
+                            var stopPrice = lowLast.Value - breakdownLong;
+
+                            if (lastPrice > stopPrice)
+                            {
+                                messageForLog = string.Format("Да, последняя цена выше стоп-цены. Открываем длинную позицию.");
+                                Logger.Log(messageForLog);
+                            }
+                            else
+                            {                                
+                                Logger.Log("Последняя цена ниже стоп-цены. Длинную позицию не открываем.");
+                            }
                         }
                         else
                         {
