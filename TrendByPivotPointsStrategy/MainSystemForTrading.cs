@@ -45,7 +45,7 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
-            logger.Log("Создание торговой системы...");
+            //logger.Log("Создание торговой системы...");
 
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //si-5min            
             ts.Logger = logger;
@@ -55,7 +55,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(13, 1, 10, 60);
 
-            logger.Log("Торговая система успешно создана!");
+            //logger.Log("Торговая система успешно создана!");
 
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //sbrf-5min
             //ts.Logger = logger;
@@ -125,8 +125,8 @@ namespace TrendByPivotPointsStrategy
         bool leSeNullPreviousBar = false;
         public void Run()
         {
-            logger.SwitchOff();
-            var localLogger = new LoggerSystem(ctx);
+            //logger.SwitchOff();
+            var localLogger = new LoggerSystem(ctx);            
 
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
@@ -146,8 +146,9 @@ namespace TrendByPivotPointsStrategy
             }
 
             if (IsRealTimeTrading())
-            {
-                localLogger.Log("Тут!");
+            {                                
+                localLogger.Log(((SecurityTSlab)securityFirst).security.Bars.Last().Close.ToString());
+                //localLogger.Log(securityFirst.LastBar.Close.ToString());
 
                 var prevLastBarNumber = lastBarNumber - 1;
 
@@ -160,10 +161,13 @@ namespace TrendByPivotPointsStrategy
                     UpdateLoggerStatus(lastBarNumber);
                     foreach (var tradingSystem in tradingSystems)
                         tradingSystem.Update(lastBarNumber);                    
-                }                
+                }
 
                 foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.CheckPositionCloseCase(lastBarNumber);                
+                {
+                    localLogger.Log("CheckPositionCloseCase");
+                    tradingSystem.CheckPositionCloseCase(lastBarNumber); 
+                }
             }
             else
             {
@@ -176,12 +180,12 @@ namespace TrendByPivotPointsStrategy
 
         private void UpdateLoggerStatus(int barNumber)
         {
-            if (lastClosedBarNumber < barNumber)
-                logger.SwitchOn();
-            else
-                logger.SwitchOff();
+            //if (lastClosedBarNumber < barNumber)
+            //    logger.SwitchOn();
+            //else
+            //    logger.SwitchOff();
 
-            lastClosedBarNumber = barNumber;
+            //lastClosedBarNumber = barNumber;
         }
 
        

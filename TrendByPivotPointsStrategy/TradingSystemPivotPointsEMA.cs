@@ -417,6 +417,10 @@ namespace TrendByPivotPointsStrategy
                 if (bar.High > stopLossShort)
                     se.CloseAtMarket(barNumber, "SXS");               
             }
+
+            //var debugLog = new LoggerSystem(con)
+            //Logger.Log("123");
+            //var bar = security.LastBar;
         }
 
         public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide)
