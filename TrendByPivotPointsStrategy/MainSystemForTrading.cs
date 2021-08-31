@@ -126,6 +126,7 @@ namespace TrendByPivotPointsStrategy
         public void Run()
         {
             logger.SwitchOff();
+            var localLogger = new LoggerSystem(ctx);
 
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
@@ -146,7 +147,9 @@ namespace TrendByPivotPointsStrategy
 
             if (IsRealTimeTrading())
             {
-                var prevLastBarNumber = lastBarNumber - 1;   //этот бар надо обработать особенно. Для логов в реальном времени.
+                localLogger.Log("Тут!");
+
+                var prevLastBarNumber = lastBarNumber - 1;
 
                 UpdateLoggerStatus(prevLastBarNumber);
                 foreach (var tradingSystem in tradingSystems)
