@@ -146,21 +146,42 @@ namespace TrendByPivotPointsStrategy
 
             if (IsRealTimeTrading())
             {
-                var tmp = lastBarNumber - 1;    //этот бар надо обработать особенно. Для логов в реальном времени.
+                var prevLastBarNumber = lastBarNumber - 1;   //этот бар надо обработать особенно. Для логов в реальном времени.
 
+                UpdateLoggerStatus(prevLastBarNumber);
                 foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.CheckPositionCloseCase(lastBarNumber);
+                    tradingSystem.Update(prevLastBarNumber);
 
                 if (IsLastBarClosed())
+                {
+                    UpdateLoggerStatus(lastBarNumber);
                     foreach (var tradingSystem in tradingSystems)
-                        tradingSystem.Update(lastBarNumber);
+                        tradingSystem.Update(lastBarNumber);                    
+                }                
+
+                foreach (var tradingSystem in tradingSystems)
+                    tradingSystem.CheckPositionCloseCase(lastBarNumber);                
             }
             else
+            {
                 foreach (var tradingSystem in tradingSystems)
                     tradingSystem.Update(lastBarNumber);
 
-            account.Update(lastBarNumber);
+                account.Update(lastBarNumber);
+            }                
         }
+
+        private void UpdateLoggerStatus(int barNumber)
+        {
+            if (lastClosedBarNumber < barNumber)
+                logger.SwitchOn();
+            else
+                logger.SwitchOff();
+
+            lastClosedBarNumber = barNumber;
+        }
+
+       
 
         public void Paint(IContext ctx, ISecurity sec)
         {

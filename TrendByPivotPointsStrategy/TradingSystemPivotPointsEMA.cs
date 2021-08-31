@@ -175,9 +175,8 @@ namespace TrendByPivotPointsStrategy
 
                                 var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
 
-                                Logger.Log("Торгуем в лаборатории или в режиме реального времени?");
-                                var s = sec as ISecurityRt;
-                                if (s != null)
+                                Logger.Log("Торгуем в лаборатории или в режиме реального времени?");                                
+                                if (security.IsRealTimeTrading)
                                 {
                                     contracts = 1;
                                     messageForLog = string.Format("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
@@ -322,7 +321,8 @@ namespace TrendByPivotPointsStrategy
                     Logger.Log(messageForLog);
                 }
 
-                le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
+                if (security.IsRealTimeTrading)
+                    le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
             }            
         }
 
