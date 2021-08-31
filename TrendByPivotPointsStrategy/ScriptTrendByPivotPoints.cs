@@ -49,6 +49,6 @@ namespace TrendByPivotPointsStrategy
             //var timeStop = DateTime.Now;
             //var time = timeStop - timeStart;
             //logger.Log(time.ToString());
-        }       
+        }
     }
 }

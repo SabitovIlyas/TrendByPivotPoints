@@ -107,7 +107,7 @@ namespace TrendByPivotPointsStrategy
             if (lows.Count < 2)
                 return;
 
-            var lastLow = lows[lows.Count - 1];
+            var lastLow = lows[lows.Count - 1];            
             var prevLastLow = lows[lows.Count - 2];
 
             var lowsValues = new List<double>();
@@ -130,7 +130,7 @@ namespace TrendByPivotPointsStrategy
             Logger.Log(messageForLog);
 
             if (le == null)
-            {                
+            {
                 Logger.Log("Длинная позиция не открыта. Выполняется ли условие двух последовательных повышающихся минимумов?");
 
                 if (lastLowForOpenLongPosition != null)
@@ -144,11 +144,19 @@ namespace TrendByPivotPointsStrategy
                         barNumber, lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
                     Logger.Log(messageForLog);
 
-                    if (lastLow.BarNumber != lastLowCaseLongClose.BarNumber)    //2
+                    var isLastLowCaseLongCloseNotExist = lastLowCaseLongClose == null;                        
+                    
+                    if (isLastLowCaseLongCloseNotExist || (lastLow.BarNumber != lastLowCaseLongClose.BarNumber))    //2
                     {
-                        messageForLog = string.Format("Нет, не использовался. Последний минимум, который использовался в попытке " +
+                        if (isLastLowCaseLongCloseNotExist)                        
+                            Logger.Log("Последняя попытка открыть длинную позицию не обнаружена. Запоминаем попытку открытия длинной позиции. " +
+                            "Не отсеивается ли потенциальная сделка фильтром EMA?");
+                        
+                        else                        
+                            messageForLog = string.Format("Нет, не использовался. Последний минимум, который использовался в попытке " +
                             "открыть длинную позицию ранее -- б. №{0}: {1}. Запоминаем попытку открытия длинной позиции. " +
                             "Не отсеивается ли потенциальная сделка фильтром EMA?", lastLowCaseLongClose.BarNumber, lastLowCaseLongClose.Value);
+                                                
                         Logger.Log(messageForLog);
 
                         lastLowForOpenLongPosition = lastLow;
@@ -401,26 +409,21 @@ namespace TrendByPivotPointsStrategy
         public void CheckPositionCloseCase(int barNumber)
         {
             var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
-            if (le != null)
-            {
-                var bar = security.LastBar;
+            var se = sec.Positions.GetLastActiveForSignal("SE", barNumber);
+            var bar = security.LastBar;
 
+            if (le != null)
                 if (bar.Low < stopLossLong)
                     le.CloseAtMarket(barNumber, "LXS");
-            }                       
-
-            var se = sec.Positions.GetLastActiveForSignal("SE", barNumber);
+                                   
             if (se != null)
-            {
-                var bar = security.LastBar;
-
                 if (bar.High > stopLossShort)
                     se.CloseAtMarket(barNumber, "SXS");               
-            }
-
-            //var debugLog = new LoggerSystem(con)
-            //Logger.Log("123");
-            //var bar = security.LastBar;
+            
+            Logger.SwitchOn();
+            Logger.Log("bar.High = " + bar.High.ToString());
+            Logger.Log("bar.Low = " + bar.Low.ToString());            
+            Logger.SwitchOff();
         }
 
         public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide)
@@ -478,31 +481,31 @@ namespace TrendByPivotPointsStrategy
             double y;
             MarketPoint position; 
             
-            var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
+            //var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
 
-            foreach(var low in lows)
-            {
-                x = security.GetBarDateTime(low.BarNumber);
-                //y = low.Value - 50;
-                y = low.Value - 50;
-                position = new MarketPoint(x, y);
-                var id = low.BarNumber.ToString()+ " " + x.ToLongTimeString() + " " + low.Value.ToString();
-                //Logger.Log("id: " + id.ToString());
-                pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
-            }
+            //foreach(var low in lows)
+            //{
+            //    x = security.GetBarDateTime(low.BarNumber);
+            //    //y = low.Value - 50;
+            //    y = low.Value - 50;
+            //    position = new MarketPoint(x, y);
+            //    var id = low.BarNumber.ToString()+ " " + x.ToLongTimeString() + " " + low.Value.ToString();
+            //    //Logger.Log("id: " + id.ToString());
+            //    pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
+            //}
 
-            var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
+            //var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
 
-            foreach (var high in highs)
-            {
-                x = security.GetBarDateTime(high.BarNumber);
-                //y = high.Value + 50;
-                y = high.Value + 50;
-                position = new MarketPoint(x, y);
-                var id = high.BarNumber.ToString() + " " + x.ToLongTimeString() + " " + high.Value.ToString();
-                //Logger.Log("id: " + id.ToString());
-                pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
-            }
+            //foreach (var high in highs)
+            //{
+            //    x = security.GetBarDateTime(high.BarNumber);
+            //    //y = high.Value + 50;
+            //    y = high.Value + 50;
+            //    position = new MarketPoint(x, y);
+            //    var id = high.BarNumber.ToString() + " " + x.ToLongTimeString() + " " + high.Value.ToString();
+            //    //Logger.Log("id: " + id.ToString());
+            //    pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
+            //}
 
             //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
             pane1.AddList("EMA", ema, color, PaneSides.RIGHT);

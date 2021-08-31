@@ -125,7 +125,7 @@ namespace TrendByPivotPointsStrategy
         bool leSeNullPreviousBar = false;
         public void Run()
         {
-            //logger.SwitchOff();
+            logger.SwitchOff();
             var localLogger = new LoggerSystem(ctx);            
 
             foreach (var tradingSystem in tradingSystems)

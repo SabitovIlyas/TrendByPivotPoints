@@ -167,8 +167,8 @@ namespace TrendByPivotPointsStrategy
 
         public void Paint(IContext ctx, ISecurity sec)
         {
-            var firstTradingSystem = tradingSystems.First();
-            firstTradingSystem.Paint(context);
+            //var firstTradingSystem = tradingSystems.First();
+            //firstTradingSystem.Paint(context);
             //var lastTradingSystem = tradingSystems.Last();
             //lastTradingSystem.Paint(context);
         }
