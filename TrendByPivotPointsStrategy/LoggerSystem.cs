@@ -5,6 +5,7 @@ namespace TrendByPivotPointsStrategy
     public class LoggerSystem:Logger
     {
         IContext context;
+        bool switchOn = true;
         public LoggerSystem(IContext context)
         {
             this.context = context;
@@ -12,7 +13,18 @@ namespace TrendByPivotPointsStrategy
 
         public void Log(string text)
         {
-            context.Log(text);
+            if (switchOn)
+                context.Log(text);
+        }
+
+        public void SwitchOff()
+        {
+            switchOn = false;
+        }
+
+        public void SwitchOn()
+        {
+            switchOn = true;
         }
     }
 }

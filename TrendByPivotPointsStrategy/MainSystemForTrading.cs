@@ -16,9 +16,12 @@ namespace TrendByPivotPointsStrategy
         Account account;
         //List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
         List<TradingSystemPivotPointsEMA> tradingSystems;
+        Logger logger;
+
+        static int lastClosedBarNumber = -1;
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            var logger = new LoggerSystem(ctx);
+            logger = new LoggerSystem(ctx);
             //var logger = new NullLogger();
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
@@ -122,6 +125,8 @@ namespace TrendByPivotPointsStrategy
         bool leSeNullPreviousBar = false;
         public void Run()
         {
+            logger.SwitchOff();
+
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
 
@@ -135,27 +140,14 @@ namespace TrendByPivotPointsStrategy
                 foreach (var tradingSystem in tradingSystems)
                 {
                     tradingSystem.Update(lastClosedBarNumberInRealTrading);
-
-                    //var sec = securityFirst as SecurityTSlab;
-
-                    //var le = sec.security.Positions.GetLastActiveForSignal("LE", i);
-                    //var se = sec.security.Positions.GetLastActiveForSignal("SE", i);
-
-
-                    //var leSeNullCurrentBar = (le == null) && (se == null);
-                    //var moneyBefore = account.Equity;
-
                     account.Update(lastClosedBarNumberInRealTrading);
-
-                    //var moneyAfter = account.Equity;
-                    //var br = (leSeNullCurrentBar && leSeNullPreviousBar && (moneyAfter != moneyBefore));
-
-                    //leSeNullPreviousBar = leSeNullCurrentBar;
                 }
             }
 
             if (IsRealTimeTrading())
             {
+                var tmp = lastBarNumber - 1;    //этот бар надо обработать особенно. Для логов в реальном времени.
+
                 foreach (var tradingSystem in tradingSystems)
                     tradingSystem.CheckPositionCloseCase(lastBarNumber);
 

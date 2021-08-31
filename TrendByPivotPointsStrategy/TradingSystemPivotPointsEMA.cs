@@ -302,13 +302,26 @@ namespace TrendByPivotPointsStrategy
                     return;
                 }
 
+                var stopLoss = lastLow.Value - breakdownLong;
+
                 messageForLog = string.Format("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
-                                "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Последняя цена выше стоп-цены?", atr[barNumber], pivotPointBreakDownSide,
-                                breakdownLong, lastLow.Value, stopPrice);
+                                "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Новый стоп-лосс выше прежнего?", atr[barNumber], pivotPointBreakDownSide,
+                                breakdownLong, lastLow.Value, stopLoss);
                 Logger.Log(messageForLog);
 
-                var stopLoss = lastLow.Value - breakdownLong;
-                if (stopLoss > stopLossLong) stopLossLong = stopLoss;
+                if (stopLoss > stopLossLong)
+                {                    
+                    messageForLog = string.Format("Да, новый стоп-лосс ({0}) выше прежнего ({1}). Обновляем стоп-лосс.", stopLoss, stopLossLong);
+                    
+                    Logger.Log(messageForLog);
+                    stopLossLong = stopLoss;
+                }
+                else
+                {
+                    messageForLog = string.Format("Нет, новый стоп-лосс ({0}) не выше прежнего ({1}). Стоп-лосс оставляем прежним.", stopLoss, stopLossLong);
+                    Logger.Log(messageForLog);
+                }
+
                 le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
             }            
         }

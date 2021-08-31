@@ -14,6 +14,10 @@ namespace TrendByPivotPointsStrategy
         private int barNumber;
         private double value;
 
+        public Indicator()
+        {         
+        }
+
         public Indicator(int barNumber, double value)
         {
             this.barNumber = barNumber;
