@@ -146,9 +146,20 @@ namespace TrendByPivotPointsStrategy
             }
 
             if (IsRealTimeTrading())
-            {                                
-                localLogger.Log(((SecurityTSlab)securityFirst).security.Bars.Last().Close.ToString());
+            {
+                //localLogger.Log("1: " + ((SecurityTSlab)securityFirst).security.Bars.Last().Close.ToString());
+                //localLogger.Log("2: " + securityFirst.GetBarClose(securityFirst.GetBarsCount() - 2).ToString());
                 //localLogger.Log(securityFirst.LastBar.Close.ToString());
+
+                var lbc = ((SecurityTSlab)securityFirst).security.Bars.Count - 1;
+                var lb = ((SecurityTSlab)securityFirst).security.Bars[lbc];
+                localLogger.Log("1: " + lbc.ToString() + "; " + lb.Close.ToString());
+
+                securityFirst.BarNumber = 249;
+                var lbc2 = securityFirst.GetBarsCount() -1;
+                var lbd2 = securityFirst.GetBarClose(lbc2).ToString();
+                localLogger.Log("2: " + lbc2.ToString() + "; " + lbd2.ToString());
+
 
                 var prevLastBarNumber = lastBarNumber - 1;
 
