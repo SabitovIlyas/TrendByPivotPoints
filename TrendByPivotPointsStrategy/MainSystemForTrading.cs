@@ -17,6 +17,7 @@ namespace TrendByPivotPointsStrategy
         //List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
         List<TradingSystemPivotPointsEMA> tradingSystems;
         Logger logger;
+        int securityNumber;
 
         static int lastClosedBarNumber = -1;
         public void Initialize(ISecurity[] securities, IContext ctx)
@@ -204,8 +205,12 @@ namespace TrendByPivotPointsStrategy
 
         public void Paint(IContext ctx, ISecurity sec)
         {
-            var firstTradingSystem = tradingSystems.First();
-            firstTradingSystem.Paint(context);
+            //var firstTradingSystem = tradingSystems.First();
+            //firstTradingSystem.Paint(context);
+
+            var tradingSystem = tradingSystems[securityNumber];
+            tradingSystem.Paint(context);
+
             //var lastTradingSystem = tradingSystems.Last();
             //lastTradingSystem.Paint(context);
         }
@@ -223,9 +228,10 @@ namespace TrendByPivotPointsStrategy
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
-        }
+        }        
 
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt)
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, 
+            double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
@@ -235,6 +241,7 @@ namespace TrendByPivotPointsStrategy
             this.positionSide = positionSide;
             this.comission = comission;
             this.riskValuePrcnt = riskValuePrcnt;
+            this.securityNumber = securityNumber;
         }
 
         private double leftLocalSide;

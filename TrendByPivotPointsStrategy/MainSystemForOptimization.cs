@@ -21,6 +21,8 @@ namespace TrendByPivotPointsStrategy
         Account account;
         //List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
         List<TradingSystemPivotPointsEMA> tradingSystems;
+        int securityNumber;
+
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
             //var logger = new LoggerSystem(ctx);
@@ -186,9 +188,9 @@ namespace TrendByPivotPointsStrategy
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
-        }
+        }       
 
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt)
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
@@ -198,6 +200,7 @@ namespace TrendByPivotPointsStrategy
             this.positionSide = positionSide;
             this.comission = comission;
             this.riskValuePrcnt = riskValuePrcnt;
+            this.securityNumber = securityNumber;
         }
 
         private double leftLocalSide;
