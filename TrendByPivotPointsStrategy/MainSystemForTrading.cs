@@ -153,12 +153,13 @@ namespace TrendByPivotPointsStrategy
 
                 var lbc = ((SecurityTSlab)securityFirst).security.Bars.Count - 1;
                 var lb = ((SecurityTSlab)securityFirst).security.Bars[lbc];
-                localLogger.Log("1: " + lbc.ToString() + "; " + lb.Close.ToString());
+                localLogger.Log("low: " + lbc.ToString() + "; " + lb.Low.ToString());
+                localLogger.Log("high: " + lbc.ToString() + "; " + lb.High.ToString());
 
-                securityFirst.BarNumber = 249;
-                var lbc2 = securityFirst.GetBarsCount() -1;
-                var lbd2 = securityFirst.GetBarClose(lbc2).ToString();
-                localLogger.Log("2: " + lbc2.ToString() + "; " + lbd2.ToString());
+                //securityFirst.BarNumber = 249;
+                //var lbc2 = securityFirst.GetBarsCount() - 1;
+                //var lbd2 = securityFirst.GetBarClose(lbc2).ToString();
+                //localLogger.Log("2: " + lbc2.ToString() + "; " + lbd2.ToString());
 
 
                 var prevLastBarNumber = lastBarNumber - 1;

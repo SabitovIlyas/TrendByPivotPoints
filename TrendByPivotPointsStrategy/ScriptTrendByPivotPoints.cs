@@ -45,7 +45,7 @@ namespace TrendByPivotPointsStrategy
             system.Initialize(securities, context);
             system.Run();
 
-            //system.Paint(context, securities[0]);
+            system.Paint(context, securities[0]);
             //var timeStop = DateTime.Now;
             //var time = timeStop - timeStart;
             //logger.Log(time.ToString());

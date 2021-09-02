@@ -408,6 +408,7 @@ namespace TrendByPivotPointsStrategy
 
         public void CheckPositionCloseCase(int barNumber)
         {
+            security.BarNumber = barNumber;
             var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
             var se = sec.Positions.GetLastActiveForSignal("SE", barNumber);
             var bar = security.LastBar;
@@ -421,8 +422,8 @@ namespace TrendByPivotPointsStrategy
                     se.CloseAtMarket(barNumber, "SXS");               
             
             Logger.SwitchOn();
-            Logger.Log("bar.High = " + bar.High.ToString());
-            Logger.Log("bar.Low = " + bar.Low.ToString());            
+            Logger.Log("bar.Low = " + bar.Low.ToString());
+            Logger.Log("bar.High = " + bar.High.ToString());                     
             Logger.SwitchOff();
         }
 
@@ -469,18 +470,99 @@ namespace TrendByPivotPointsStrategy
         }       
 
         public void Paint(Context context)
-        {           
-            var pane1 = context.CreateGraphPane(sec.ToString(), "Инструмент (основной таймфрейм)");
-            var color = SystemColor.Green;                       
+        {
+            //var pane1 = context.CreateGraphPane(sec.ToString()+" 1", "Инструмент (основной таймфрейм) 1");
+            //var color = SystemColor.Blue;
+            //pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+            //pane1.AddList("EMA", ema, color, PaneSides.RIGHT);
 
-            pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+
+
+
+            var contextTSLab = context as ContextTSLab;
+            var pane = contextTSLab.context.CreateGraphPane(sec.ToString() + " 2", "Инструмент (основной таймфрейм) 2");
+            var colorTSlab = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
+            var securityTSLab = (SecurityTSlab)security;
+            pane.AddList(sec.ToString(), securityTSLab.security, CandleStyles.BAR_CANDLE, colorTSlab, PaneSides.RIGHT);
+
+            colorTSlab = new TSLab.Script.Color(SystemColor.Gold.ToArgb());
+            pane.AddList("EMA", ema, ListStyles.LINE, colorTSlab, LineStyles.SOLID, PaneSides.RIGHT);
+
+
+            switch (positionSide)
+            {
+                case PositionSide.LongAndShort:
+                    {
+                        var lows = pivotPointsIndicator.GetLows(security.BarNumber);
+                        var listLows = new List<bool>();
+
+                        for (var i = 0; i <= security.BarNumber; i++)
+                            listLows.Add(false);
+
+                        foreach (var low in lows)
+                            listLows[low.BarNumber] = true;
+
+                        colorTSlab = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+                        pane.AddList("Lows", listLows, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
+
+                        var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
+                        var listHighs = new List<bool>();
+
+                        for (var i = 0; i <= security.BarNumber; i++)
+                            listHighs.Add(false);
+
+                        foreach (var high in highs)
+                            listHighs[high.BarNumber] = true;
+
+                        colorTSlab = new TSLab.Script.Color(SystemColor.Red.ToArgb());
+                        pane.AddList("Highs", listHighs, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
+                        break;
+                    }
+                case PositionSide.Long:
+                    {
+                        var lows = pivotPointsIndicator.GetLows(security.BarNumber);
+                        var listLows = new List<bool>();
+
+                        for (var i = 0; i <= security.BarNumber; i++)
+                            listLows.Add(false);
+
+                        foreach (var low in lows)
+                            listLows[low.BarNumber] = true;
+
+                        colorTSlab = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+                        pane.AddList("Lows", listLows, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
+                        break;
+                    }
+                case PositionSide.Short:
+                    {
+                        var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
+                        var listHighs = new List<bool>();
+
+                        for (var i = 0; i <= security.BarNumber; i++)
+                            listHighs.Add(false);
+
+                        foreach (var high in highs)
+                            listHighs[high.BarNumber] = true;
+
+                        colorTSlab = new TSLab.Script.Color(SystemColor.Red.ToArgb());
+                        pane.AddList("Highs", listHighs, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
+                        break;
+                    }
+            }
+
+
+
+           
+
+
+
             //if (id == 0) pane1.ClearInteractiveObjects();
-            pane1.ClearInteractiveObjects();
-            color = SystemColor.Blue;
-            DateTime x;
-            double y;
-            MarketPoint position; 
-            
+            //pane1.ClearInteractiveObjects();
+            //color = SystemColor.Blue;
+            //DateTime x;
+            //double y;
+            //MarketPoint position; 
+
             //var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
 
             //foreach(var low in lows)
@@ -508,9 +590,7 @@ namespace TrendByPivotPointsStrategy
             //}
 
             //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-            pane1.AddList("EMA", ema, color, PaneSides.RIGHT);
 
-            //var pane2 = context.CreateGraphPane(sec.ToString(), "Equity");            
         }
     }
 }
