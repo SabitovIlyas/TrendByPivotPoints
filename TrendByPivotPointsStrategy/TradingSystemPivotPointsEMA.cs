@@ -141,7 +141,7 @@ namespace TrendByPivotPointsStrategy
                 {
                     messageForLog = string.Format("Да, выполняется: последний минимум б. №{0}: {1} выше предыдущего б. №{2}: {3}. " +
                         "Использовался ли последний минимум в попытке открыть длинную позицию ранее?",
-                        barNumber, lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
+                        lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
                     Logger.Log(messageForLog);
 
                     var isLastLowCaseLongCloseNotExist = lastLowCaseLongClose == null;                        
@@ -149,13 +149,12 @@ namespace TrendByPivotPointsStrategy
                     if (isLastLowCaseLongCloseNotExist || (lastLow.BarNumber != lastLowCaseLongClose.BarNumber))    //2
                     {
                         if (isLastLowCaseLongCloseNotExist)                        
-                            Logger.Log("Последняя попытка открыть длинную позицию не обнаружена. Запоминаем попытку открытия длинной позиции. " +
-                            "Не отсеивается ли потенциальная сделка фильтром EMA?");
+                            Logger.Log("Последняя попытка открыть длинную позицию не обнаружена. Не отсеивается ли потенциальная сделка фильтром EMA?");
                         
                         else                        
                             messageForLog = string.Format("Нет, не использовался. Последний минимум, который использовался в попытке " +
-                            "открыть длинную позицию ранее -- б. №{0}: {1}. Запоминаем попытку открытия длинной позиции. " +
-                            "Не отсеивается ли потенциальная сделка фильтром EMA?", lastLowCaseLongClose.BarNumber, lastLowCaseLongClose.Value);
+                            "открыть длинную позицию ранее -- б. №{0}: {1}. Не отсеивается ли потенциальная сделка фильтром EMA?",
+                            lastLowCaseLongClose.BarNumber, lastLowCaseLongClose.Value);
                                                 
                         Logger.Log(messageForLog);
 
@@ -174,6 +173,11 @@ namespace TrendByPivotPointsStrategy
                                 breakdownLong, lastLow.Value, stopPrice);
                             Logger.Log(messageForLog);
 
+                            messageForLog = string.Format("Запоминаем минимум, использовавшийся для попытки открытия длинной позиции.");
+                            Logger.Log(messageForLog);
+
+                            lastLowForOpenLongPosition = lastLow;
+
                             if (lastPrice > stopPrice)  //4
                             {
                                 messageForLog = string.Format("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
@@ -186,13 +190,17 @@ namespace TrendByPivotPointsStrategy
                                 Logger.Log("Торгуем в лаборатории или в режиме реального времени?");                                
                                 if (security.IsRealTimeTrading)
                                 {
-                                    contracts = 1;
+                                    //contracts = 1;
                                     messageForLog = string.Format("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
-                                    Logger.Log(messageForLog);                                    
+                                    Logger.Log(messageForLog);
+
+                                    var price = lastPrice + atr[barNumber];
+                                    sec.Positions.BuyAtPrice(barNumber + 1, contracts, price, "LE");
                                 }
                                 else
                                 {
                                     Logger.Log("Торгуем в лаборатории.");
+                                    sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                 }
 
                                 sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
@@ -218,12 +226,15 @@ namespace TrendByPivotPointsStrategy
                     }                    
                 }
                 else
-                {                    
-                    Logger.Log("Нет, не выполняется");
+                {
+                    messageForLog = string.Format("Нет, не выполняется: последний минимум б. №{0}: {1} не выше предыдущего б. №{2}: {3}.",
+                        lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
+                    Logger.Log(messageForLog);
                 }                
             }
             else
             {
+                #region Наращивание позиции
                 Logger.Log("Длинная позиция открыта. Проверяем условия наращивания позиции: выполняется ли условие двух последовательных повышающихся минимумов?");
 
                 if (patternPivotPoints_1g2.Check(lowsValues))   //1
@@ -257,7 +268,7 @@ namespace TrendByPivotPointsStrategy
 
                             if (lastPrice > stopPrice)  //4
                             {
-                                messageForLog = string.Format("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
+                                messageForLog = string.Format("Да, последняя цена ({0}) выше стоп-цены ({1}).", lastPrice, stopPrice);
                                 Logger.Log(messageForLog);
 
                                 Logger.Log("Определяем количество контрактов...");
@@ -268,30 +279,33 @@ namespace TrendByPivotPointsStrategy
                                 var s = sec as ISecurityRt;
                                 if (s != null)
                                 {
-                                    contracts = 1;
+                                    //contracts = 1;
                                     messageForLog = string.Format("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
                                     Logger.Log(messageForLog);
+                                    var price = lastPrice + atr[barNumber];
+                                    var shares = le.Shares + contracts;
+                                    le.ChangeAtPrice(barNumber + 1, price, shares, "LE");
                                 }
                                 else
                                 {
                                     Logger.Log("Торгуем в лаборатории.");
+                                    var shares = le.Shares + contracts;
+                                    le.ChangeAtMarket(barNumber + 1, shares, "LE");
                                 }                                
-
-                                Logger.Log("Номер бара = " + barNumber.ToString() + "; Условие наращивания позиции лонг выполнено!");                                
-                                var shares = le.Shares + contracts;
-                                le.ChangeAtMarket(barNumber + 1, shares, "LE");
+                                
+                                
                                 lastPriceOpenLongPosition = lastPrice;
                                 Logger.Log("Наращиваем длинную позицию! Отправляем ордер.");
                             }
                             else
                             {
-                                Logger.Log("Последняя цена ниже стоп-цены. Длинную позицию не открываем.");
+                                Logger.Log("Последняя цена ниже стоп-цены. Длинную позицию не наращиваем.");
                             }
                         }
                     }
                     else
                     {
-                        messageForLog = string.Format("Да, последний минимум использовался в попытке открыть длинную позицию ранее.");
+                        messageForLog = string.Format("Да, последний минимум использовался в попытке открыть или нарастить длинную позицию ранее.");
                         Logger.Log(messageForLog);
                     }
                 }
@@ -299,9 +313,10 @@ namespace TrendByPivotPointsStrategy
                 {
                     Logger.Log("Нет, не выполняется");
                 }
-                                
-                Logger.Log("Обновляем стоп...");
 
+                #endregion
+
+                Logger.Log("Обновляем стоп...");
 
                 if (lows.Count == 0)
                 {
@@ -329,9 +344,10 @@ namespace TrendByPivotPointsStrategy
                     Logger.Log(messageForLog);
                 }
 
-                if (security.IsRealTimeTrading)
+                if (!security.IsRealTimeTrading)
                     le.CloseAtStop(barNumber + 1, stopLossLong, 100, "LXS");
-            }            
+                
+            }
         }
 
         public void CheckPositionOpenShortCase(double lastPrice, int barNumber)
@@ -421,10 +437,10 @@ namespace TrendByPivotPointsStrategy
                 if (bar.High > stopLossShort)
                     se.CloseAtMarket(barNumber, "SXS");               
             
-            Logger.SwitchOn();
-            Logger.Log("bar.Low = " + bar.Low.ToString());
-            Logger.Log("bar.High = " + bar.High.ToString());                     
-            Logger.SwitchOff();
+            //Logger.SwitchOn();
+            //Logger.Log("bar.Low = " + bar.Low.ToString());
+            //Logger.Log("bar.High = " + bar.High.ToString());                     
+            //Logger.SwitchOff();
         }
 
         public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide)

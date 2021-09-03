@@ -60,16 +60,14 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
 
-            ////tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, new Se)curityTSlab(securities[1])));
-            //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]));//sbrf-5min
-            //tradingSystems.Add(ts);
-            //ts.Logger = logger;
-            //tradingSystems.Add(ts);
-            //comission = 2.02 * 2;
-            ////comission = 2 * 2;
-            //comis = new AbsolutCommission() { Commission = comission };
-            //comis.Execute(securities[1]);
-
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //sbrf-5min
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 2.12 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[1]);
+            ts.SetParameters(13, 13, 60, 20);
+            
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]));//gazr-5min
             //tradingSystems.Add(ts);
             //ts.Logger = logger;
