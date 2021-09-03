@@ -30,7 +30,7 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty comission = new OptimProperty(0.565, 0.001, 100, 0.001);
         public OptimProperty mode = new OptimProperty(0, 0, 1, 1);
         public OptimProperty riskValuePrcnt = new OptimProperty(0.1, 0, 1, 100);
-        public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 100);
+        public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 100);        
 
         public void Execute(IContext context, ISecurity[] securities)        
         {

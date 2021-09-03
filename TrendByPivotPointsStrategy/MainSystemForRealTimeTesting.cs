@@ -45,7 +45,6 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
-
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //sv-5min            
             ts.Logger = logger;
             tradingSystems.Add(ts);            
@@ -100,10 +99,8 @@ namespace TrendByPivotPointsStrategy
                         tradingSystem.Update(lastBarNumber);
                 }
 
-                foreach (var tradingSystem in tradingSystems)
-                {
-                    tradingSystem.CheckPositionCloseCase(lastBarNumber);
-                }
+                foreach (var tradingSystem in tradingSystems)                
+                    tradingSystem.CheckPositionCloseCase(lastBarNumber);                
             }
             else
             {

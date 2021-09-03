@@ -11,6 +11,7 @@ namespace TrendByPivotPointsStrategy
         Currency currency;
         Account account;
         GlobalMoneyManager globalMoneyManager;
+        int shares = 1;
         private Logger logger = new NullLogger();
 
         public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency)
@@ -18,6 +19,14 @@ namespace TrendByPivotPointsStrategy
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
             this.currency = currency;
+        }
+
+        public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency, int shares)
+        {
+            this.globalMoneyManager = globalMoneyManager;
+            this.account = account;
+            this.currency = currency;
+            this.shares = shares;
         }
 
         public virtual int GetQntContracts(double enterPrice, double stopPrice, PositionSide position)
@@ -61,7 +70,8 @@ namespace TrendByPivotPointsStrategy
                         
             logger.Log("money = " + money.ToString());
             
-            var contractsByRiskMoney = (int)(money / riskMoney);            
+            var contractsByRiskMoney = (int)(money / riskMoney);
+            contractsByRiskMoney = contractsByRiskMoney / shares;
             logger.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
 
             var min =  Math.Min(contractsByRiskMoney, contractsByGO);
