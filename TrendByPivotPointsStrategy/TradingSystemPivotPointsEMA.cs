@@ -149,10 +149,10 @@ namespace TrendByPivotPointsStrategy
 
                     if (isLastLowCaseLongCloseNotExist || (lastLow.BarNumber != lastLowForOpenLongPosition.BarNumber))    //2
                     {
-                        if (isLastLowCaseLongCloseNotExist)                        
-                            Logger.Log("Последняя попытка открыть длинную позицию не обнаружена. Не отсеивается ли потенциальная сделка фильтром EMA?");
-                        
-                        else                        
+                        if (isLastLowCaseLongCloseNotExist)
+                            messageForLog = "Последняя попытка открыть длинную позицию не обнаружена. Не отсеивается ли потенциальная сделка фильтром EMA?";
+
+                        else
                             messageForLog = string.Format("Нет, не использовался. Последний минимум, который использовался в попытке " +
                             "открыть длинную позицию ранее -- б. №{0}: {1}. Не отсеивается ли потенциальная сделка фильтром EMA?",
                             lastLowForOpenLongPosition.BarNumber, lastLowForOpenLongPosition.Value);
@@ -514,7 +514,7 @@ namespace TrendByPivotPointsStrategy
 
         public void Paint(Context context)
         {
-            //var pane1 = context.CreateGraphPane(sec.ToString()+" 1", "Инструмент (основной таймфрейм) 1");
+            //var pane1 = context.CreateGraphPane(sec.ToString() + " 1", "Инструмент (основной таймфрейм) 1");
             //var color = SystemColor.Blue;
             //pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
             //pane1.AddList("EMA", ema, color, PaneSides.RIGHT);
@@ -523,6 +523,7 @@ namespace TrendByPivotPointsStrategy
 
 
             var contextTSLab = context as ContextTSLab;
+
             var pane = contextTSLab.context.CreateGraphPane(sec.ToString() + " 2", "Инструмент (основной таймфрейм) 2");
             var colorTSlab = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
             var securityTSLab = (SecurityTSlab)security;
