@@ -2,6 +2,7 @@
 {
     public enum PositionSide
     {
-        LongAndShort, Long, Short
+        LongAndShort, Long, Short,
+        Null
     }
 }

@@ -196,7 +196,8 @@ namespace TrendByPivotPointsStrategy
                                     Logger.Log(messageForLog);
 
                                     var price = lastPrice + atr[barNumber];
-                                    sec.Positions.BuyAtPrice(barNumber + 1, contracts, price, "LE");
+                                    //sec.Positions.BuyAtPrice(barNumber + 1, contracts, price, "LE");
+                                    sec.Positions.BuyAtMarket(barNumber + 2, contracts, "LE");
                                 }
                                 else
                                 {
@@ -204,7 +205,7 @@ namespace TrendByPivotPointsStrategy
                                     sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                 }
 
-                                sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
+                                //sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                 lastPriceOpenLongPosition = lastPrice;
                                 stopLossLong = 0;
                                 Logger.Log("Открываем длинную позицию! Отправляем ордер.");

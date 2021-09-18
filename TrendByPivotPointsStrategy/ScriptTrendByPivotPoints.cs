@@ -30,7 +30,8 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty comission = new OptimProperty(0.565, 0.001, 100, 0.001);
         public OptimProperty mode = new OptimProperty(2, 0, 1, 1);
         public OptimProperty riskValuePrcnt = new OptimProperty(0.1, 0, 1, 100);
-        public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 100);        
+        public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 1);
+        public OptimProperty instrumentsGroup = new OptimProperty(0, 0, 3, 1);
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
@@ -59,7 +60,7 @@ namespace TrendByPivotPointsStrategy
             }
             
             system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission, 
-                riskValuePrcnt, securityNumber);
+                riskValuePrcnt, securityNumber, instrumentsGroup);
             system.Initialize(securities, context);
             system.Run();
 

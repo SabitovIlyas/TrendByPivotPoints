@@ -188,7 +188,8 @@ namespace TrendByPivotPointsStrategy
             return securityFirst.IsRealTimeTrading;
         }       
 
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber)
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, 
+            double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
