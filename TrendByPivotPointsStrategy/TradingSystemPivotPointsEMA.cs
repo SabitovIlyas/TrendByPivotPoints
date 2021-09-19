@@ -236,6 +236,15 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
+                Logger.Log("Длинная позиция открыта. Проверяем надо ли закрыть позицию, если она не закрылась по стопу-лоссу автоматически...");
+                var check = CheckLongPositionCloseCase(le, barNumber);
+
+                if (check)
+                {
+                    Logger.Log("Позицию закрыли. Наращивать её уже не надо.");
+                    return;
+                }
+
                 #region Наращивание позиции
                 Logger.Log("Длинная позиция открыта. Проверяем условия наращивания позиции: выполняется ли условие двух последовательных повышающихся минимумов?");
 
@@ -448,6 +457,36 @@ namespace TrendByPivotPointsStrategy
                     se.CloseAtStop(barNumber + 1, stopLossShort, 100, "SXS");
                 }
             }
+        }
+
+        public bool CheckLongPositionCloseCase(IPosition le, int barNumber)
+        {
+            security.BarNumber = barNumber;            
+            var bar = security.LastBar;
+
+            if (le != null)
+                if (bar.Low < stopLossLong)
+                {
+                    le.CloseAtMarket(barNumber, "LXE");
+                    Logger.Log("Минимум бара ниже стоп-лосса для лонга. Закрываем позицию по рынку.");
+                    return true;
+                }
+            return false;
+        }
+
+        public bool CheckShortPositionCloseCase(IPosition se, int barNumber)
+        {
+            security.BarNumber = barNumber;
+            var bar = security.LastBar;
+
+            if (se != null)
+                if (bar.High > stopLossShort)
+                {
+                    se.CloseAtMarket(barNumber, "SXE");
+                    Logger.Log("Максимум бара выше стоп-лосса для шорта. Закрываем позицию по рынку.");
+                    return true;
+                }
+            return false;
         }
 
         public void CheckPositionCloseCase(int barNumber)
