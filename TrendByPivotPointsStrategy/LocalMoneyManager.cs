@@ -30,10 +30,8 @@ namespace TrendByPivotPointsStrategy
         }
 
         public virtual int GetQntContracts(double enterPrice, double stopPrice, PositionSide position)
-        {
-            logger.Log("enterPrice = " + enterPrice.ToString());
-            logger.Log("stopPrice = " + stopPrice.ToString());
-            logger.Log("position = " + position.ToString());
+        {            
+            logger.Log("Получаем количество контрактов для открываемой позиции...");
 
             var go = 0.0;
             switch (position)
@@ -56,12 +54,20 @@ namespace TrendByPivotPointsStrategy
                     break;
                 case PositionSide.LongAndShort:                    
                     break;
-            }            
-
+            }                       
+            
+            var message = string.Format("Направление открываемой позиции: {0}; предполагаемая цена входа: {1}; предполагаемая цена выхода: {2}.", 
+                position, enterPrice, stopPrice);
+            logger.Log(message);            
+            var riskMoney = Math.Abs(enterPrice - stopPrice);
+            logger.Log("Рискуем в одном контракте следующей суммой: " + riskMoney);
+                        
             var money = globalMoneyManager.GetMoneyForDeal();
-            logger.Log("money = " + money.ToString());
-            var riskMoney = Math.Abs(enterPrice - stopPrice);            
-            logger.Log("riskMoney = " + riskMoney.ToString());
+            var contractsByRiskMoney = (int)(money / riskMoney);
+            contractsByRiskMoney = contractsByRiskMoney / shares;
+            logger.Log("Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity и рискумой суммой в одном контракте, равно "
+                + contractsByRiskMoney);
+
 
             var contractsByGO = (int)(globalMoneyManager.Equity / go); // надо вычислять это значение исходя из общего депозита            
             logger.Log("contractsByGO = " + contractsByGO.ToString());
@@ -70,9 +76,7 @@ namespace TrendByPivotPointsStrategy
                         
             logger.Log("money = " + money.ToString());
             
-            var contractsByRiskMoney = (int)(money / riskMoney);
-            contractsByRiskMoney = contractsByRiskMoney / shares;
-            logger.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
+            
 
             var min =  Math.Min(contractsByRiskMoney, contractsByGO);
             if (min >= 0) return min;

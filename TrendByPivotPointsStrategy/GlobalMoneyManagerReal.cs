@@ -30,9 +30,12 @@ namespace TrendByPivotPointsStrategy
         //}
 
         public double GetMoneyForDeal()
-        {                      
-            logger.Log("FreeBalance = " + Equity.ToString());
-            return riskValue * Equity;                       
+        {
+            logger.Log("Получаем средства для совершения сделки...");
+            var moneyForDeal = riskValue * Equity;
+            var message = string.Format("Equity = {0}; риск в % от Equity = {1}; рискуем следующей суммой: {2}", Equity, riskValue, moneyForDeal);
+            logger.Log(message);
+            return moneyForDeal;
         }
 
         public double Equity => account.Equity;
