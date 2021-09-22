@@ -515,7 +515,7 @@ namespace TrendByPivotPointsStrategy
 
                                 //sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                 lastPriceOpenShortPosition = lastPrice;
-                                stopLossShort = 0;
+                                stopLossShort = double.MaxValue;
                                 Logger.Log("Открываем короткую позицию! Отправляем ордер.");
                             }
                             else
@@ -619,7 +619,7 @@ namespace TrendByPivotPointsStrategy
                                     {
                                         Logger.Log("Торгуем в лаборатории.");
                                         var shares = se.Shares + contracts;
-                                        se.ChangeAtMarket(barNumber + 1, -shares, "LE");
+                                        se.ChangeAtMarket(barNumber + 1, -shares, "SE");
                                     }
 
                                     lastPriceOpenShortPosition = lastPrice;
@@ -670,6 +670,8 @@ namespace TrendByPivotPointsStrategy
                 Logger.Log("Это условие никогда не должно отрабатывать. Проверить и впоследствии убрать.");
                 return;
             }
+
+            
 
             var stopLoss = lastHigh.Value + breakdownShort;
 

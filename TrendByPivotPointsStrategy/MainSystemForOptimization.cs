@@ -25,8 +25,8 @@ namespace TrendByPivotPointsStrategy
 
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
+            var logger = new LoggerSystem(ctx);
+            //var logger = new NullLogger();
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -60,13 +60,13 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //sbrf-5min
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 2.12 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[1]);
-            ts.SetParameters(13, 13, 60, 20);
+            //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //sbrf-5min
+            //ts.Logger = logger;
+            //tradingSystems.Add(ts);
+            //totalComission = 2.12 * 2;
+            //absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            //absoluteComission.Execute(securities[1]);
+            //ts.SetParameters(13, 13, 60, 20);
             
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]));//gazr-5min
             //tradingSystems.Add(ts);
@@ -112,6 +112,7 @@ namespace TrendByPivotPointsStrategy
             this.ctx = ctx;
             context = new ContextTSLab(ctx);
             account.Initialize(securityList);
+            logger.SwitchOff();
         }
 
         bool leSeNullPreviousBar = false;
