@@ -768,16 +768,16 @@ namespace TrendByPivotPointsStrategy
                 
         public bool CheckShortPositionCloseCase(IPosition se, int barNumber)
         {
-            //security.BarNumber = barNumber;
-            //var bar = security.LastBar;
+            security.BarNumber = barNumber;
+            var bar = security.LastBar;
 
-            //if (se != null)
-            //    if (bar.High > stopLossShort)
-            //    {
-            //        se.CloseAtMarket(barNumber, "SXE");
-            //        Logger.Log("Максимум бара выше стоп-лосса для шорта. Закрываем позицию по рынку.");
-            //        return true;
-            //    }
+            if (se != null)
+                if (bar.High > stopLossShort)
+                {
+                    se.CloseAtMarket(barNumber, "SXE");
+                    Logger.Log("Максимум бара выше стоп-лосса для шорта. Закрываем позицию по рынку.");
+                    return true;
+                }
             return false;
         }
 
