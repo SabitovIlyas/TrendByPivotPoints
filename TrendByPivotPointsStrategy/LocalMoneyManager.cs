@@ -75,7 +75,7 @@ namespace TrendByPivotPointsStrategy
                 var moneyRuble = money;
                 money = money / account.Rate;
                 message = string.Format("Так как в инструменте используются USD, вместо рублей, то полученную на сделку сумму в размере {0} нужно скорректировать " +
-                    "с учётом курса рубля к USD ({1}). Полученная сумма на сделку в USD равна {3}", moneyRuble, account.Rate, money);
+                    "с учётом курса рубля к USD ({1}). Полученная сумма на сделку в USD равна {2}", moneyRuble, account.Rate, money);
                 logger.Log(message);
             }
 

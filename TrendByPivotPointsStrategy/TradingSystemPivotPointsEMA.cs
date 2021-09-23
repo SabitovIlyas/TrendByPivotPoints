@@ -397,12 +397,23 @@ namespace TrendByPivotPointsStrategy
             var bar = security.LastBar;
 
             if (le != null)
-                if (bar.Low < stopLossLong)
+            {                
+                Logger.Log("Проверяем пробил ли вниз минимум последнего бара стоп-лосс для лонга?");
+                if (bar.Low <= stopLossLong)
                 {
-                    le.CloseAtMarket(barNumber, "LXE");
-                    Logger.Log("Минимум бара ниже стоп-лосса для лонга. Закрываем позицию по рынку.");
+                    le.CloseAtMarket(barNumber + 1, "LXE");
+
+                    var message = string.Format("Да, минимум последнего бара {0} пробил вниз стоп-лосс для лонга {1}. Закрываем позицию по рынку на следующем баре.", bar.Low, stopLossLong);
+                    Logger.Log(message);
+
                     return true;
                 }
+                else
+                {
+                    var message = string.Format("Нет, минимум последнего бара {0} выше стоп-лосса для лонга {1}. Оставляем позицию.", bar.Low, stopLossLong);
+                    Logger.Log(message);
+                }
+            }
             return false;
         }
 
@@ -774,12 +785,23 @@ namespace TrendByPivotPointsStrategy
             var bar = security.LastBar;
 
             if (se != null)
-                if (bar.High > stopLossShort)
+            {
+                Logger.Log("Проверяем пробил ли вверх максимум последнего бара стоп-лосс для шорта?");
+                if (bar.High >= stopLossShort)
                 {
-                    se.CloseAtMarket(barNumber, "SXE");
-                    Logger.Log("Максимум бара выше стоп-лосса для шорта. Закрываем позицию по рынку.");
+                    se.CloseAtMarket(barNumber + 1, "SXE");
+
+                    var message = string.Format("Да, максимум последнего бара {0} пробил вверх стоп-лосс для шорта {1}. Закрываем позицию по рынку на следующем баре.", bar.High, stopLossShort);
+                    Logger.Log(message);
+                    
                     return true;
                 }
+                else
+                {
+                    var message = string.Format("Нет, максимум последнего бара {0} ниже стоп-лосса для шорта {1}. Оставляем позицию.", bar.High, stopLossShort);
+                    Logger.Log(message);
+                }
+            }
             return false;
         }
 
