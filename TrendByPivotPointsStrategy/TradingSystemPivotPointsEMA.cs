@@ -240,14 +240,14 @@ namespace TrendByPivotPointsStrategy
                 //Logger.Log("Запрашиваем обновление стоп-лосса.");
                 //UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
 
-                Logger.Log("Проверяем надо ли закрыть позицию, если она не закрылась по стопу-лоссу автоматически...");
-                var check = CheckLongPositionCloseCase(le, barNumber);
+                //Logger.Log("Проверяем надо ли закрыть позицию, если она не закрылась по стопу-лоссу автоматически...");
+                //var check = CheckLongPositionCloseCase(le, barNumber);
 
-                if (check)
-                {
-                    Logger.Log("Позицию закрыли. Наращивать её уже не надо.");
-                    return;
-                }
+                //if (check)
+                //{
+                //    Logger.Log("Позицию закрыли. Наращивать её уже не надо.");
+                //    return;
+                //}
 
                 #region Наращивание позиции
                 Logger.Log("Длинная позиция открыта. Проверяем условия наращивания позиции: выполняется ли условие двух последовательных повышающихся минимумов?");
@@ -555,14 +555,14 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
-                Logger.Log("Короткая позиция открыта. Проверяем надо ли закрыть позицию, если она не закрылась по стопу-лоссу автоматически...");
-                var check = CheckShortPositionCloseCase(se, barNumber);
+                //Logger.Log("Короткая позиция открыта. Проверяем надо ли закрыть позицию, если она не закрылась по стопу-лоссу автоматически...");
+                //var check = CheckShortPositionCloseCase(se, barNumber);
 
-                if (check)
-                {
-                    Logger.Log("Позицию закрыли. Наращивать её уже не надо.");
-                    return;
-                }
+                //if (check)
+                //{
+                //    Logger.Log("Позицию закрыли. Наращивать её уже не надо.");
+                //    return;
+                //}
 
                 #region Наращивание позиции
                 Logger.Log("Короткая позиция открыта. Проверяем условия наращивания позиции: выполняется ли условие двух последовательных понижающихся максимумов?");

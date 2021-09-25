@@ -12,6 +12,7 @@ namespace TrendByPivotPointsStrategy
         Account account;
         GlobalMoneyManager globalMoneyManager;
         int shares = 1;
+        public Logger Logger { get { return logger; } set { logger = value; } }
         private Logger logger = new NullLogger();
 
         public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency)
