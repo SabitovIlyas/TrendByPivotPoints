@@ -79,11 +79,13 @@ namespace TrendByPivotPointsStrategy
                             break;
                         }
                     case PositionSide.Long:
+                    case PositionSide.CloseLong:
                         {
                             CheckPositionOpenLongCase(lastPrice, barNumber);
                             break;
                         }
                     case PositionSide.Short:
+                    case PositionSide.CloseShort:
                         {
                             CheckPositionOpenShortCase(lastPrice, barNumber);
                             break;
@@ -130,6 +132,12 @@ namespace TrendByPivotPointsStrategy
 
             if (le == null)
             {
+                 if (positionSide != PositionSide.CloseLong)
+                {
+                    Logger.Log("Длинная позиция не открыта, но пытаться открывать мы её не будем, так как на этом инструменте мы больше новые позиции не открываем.");
+                    return;
+                }
+
                 Logger.Log("Длинная позиция не открыта. Выполняется ли условие двух последовательных повышающихся минимумов?");
 
                 //if (lastLowForOpenLongPosition != null)
@@ -450,6 +458,12 @@ namespace TrendByPivotPointsStrategy
 
             if (se == null)
             {
+                if (positionSide != PositionSide.CloseShort)
+                {
+                    Logger.Log("Короткая позиция не открыта, но пытаться открывать мы её не будем, так как на этом инструменте мы больше новые позиции не открываем.");
+                    return;
+                }
+
                 Logger.Log("Короткая позиция не открыта. Выполняется ли условие двух последовательных понижающихся максимумов?");
 
                 //if (lastLowForOpenLongPosition != null)
