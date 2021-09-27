@@ -114,7 +114,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[2]);
             ts.SetParameters(10, 13, 40, 100);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD10Shares, account, new SecurityTSlab(securities[3]), PositionSide.CloseShort);   //brent-15min short      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD10Shares, account, new SecurityTSlab(securities[3]), PositionSide.Null);   //brent-15min short      
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.0033 * 2;
@@ -130,7 +130,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[4]);
             ts.SetParameters(13, 1, 10, 40);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD10Shares, account, new SecurityTSlab(securities[5]), PositionSide.CloseShort);   //silver-15min short
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD10Shares, account, new SecurityTSlab(securities[5]), PositionSide.Null);   //silver-15min short
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.0011 * 2;
@@ -176,7 +176,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(4, 13, 70, 140);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[1]), PositionSide.CloseLong);   //gold-5min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[1]), PositionSide.Null);   //gold-5min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.04 * 2;
@@ -200,7 +200,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[3]);
             ts.SetParameters(13, 10, 70, 100);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[4]), PositionSide.CloseShort);   //gold-5min short
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[4]), PositionSide.Null);   //gold-5min short
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.04 * 2;
@@ -208,7 +208,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[4]);
             ts.SetParameters(16, 16, 10, 20);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD10Shares, account, new SecurityTSlab(securities[5]), PositionSide.CloseShort);   //silver-5min short
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD10Shares, account, new SecurityTSlab(securities[5]), PositionSide.Null);   //silver-5min short
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.0011 * 2;
@@ -242,7 +242,7 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.CloseLong);   //eu-15min long      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Null);   //eu-15min long      
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.34 * 2;
@@ -250,7 +250,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(4, 1, 10, 120);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.CloseLong);   //gz-15min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Null);   //gz-15min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.9 * 2;
@@ -274,7 +274,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[3]);
             ts.SetParameters(4, 13, 30, 80);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[4]), PositionSide.CloseLong); //si-15min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[4]), PositionSide.Null); //si-15min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.13 * 2;
@@ -282,7 +282,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[4]);
             ts.SetParameters(4, 1, 40, 180);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[5]), PositionSide.CloseLong); //vtbr-15min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[5]), PositionSide.Null); //vtbr-15min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -322,7 +322,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[9]);
             ts.SetParameters(1, 7, 10, 80);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[10]), PositionSide.CloseShort); //si-15min short
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[10]), PositionSide.Null); //si-15min short
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.13 * 2;
@@ -364,7 +364,7 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.CloseLong);   //eu-5min long      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Null);   //eu-5min long      
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.34 * 2;
@@ -380,7 +380,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[1]);
             ts.SetParameters(16, 16, 80, 200);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]), PositionSide.CloseLong);   //lkoh-5min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]), PositionSide.Null);   //lkoh-5min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 4.15 * 2;
@@ -388,7 +388,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[2]);
             ts.SetParameters(10, 16, 80, 160);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[3]), PositionSide.CloseLong); //sbrf-5min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[3]), PositionSide.Null); //sbrf-5min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 2.03 * 2;
@@ -412,7 +412,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[5]);
             ts.SetParameters(16, 1, 80, 180);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[6]), PositionSide.CloseShort);   //eu-5min short      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[6]), PositionSide.Null);   //eu-5min short      
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.34 * 2;
@@ -504,11 +504,20 @@ namespace TrendByPivotPointsStrategy
             //var firstTradingSystem = tradingSystems.First();
             //firstTradingSystem.Paint(context);
 
-            var tradingSystem = tradingSystems[securityNumber];
-            tradingSystem.Paint(context);
+            //var tradingSystem = tradingSystems[0];
+            //tradingSystem.Paint(context);
+
+            //tradingSystem = tradingSystems[1];
+            //tradingSystem.Paint(context);
 
             //var lastTradingSystem = tradingSystems.Last();
             //lastTradingSystem.Paint(context);
+
+            foreach(var tradingSystem in tradingSystems)
+            {
+                if (tradingSystem.PositionSide == PositionSide.Long || tradingSystem.PositionSide == PositionSide.Short)
+                    tradingSystem.Paint(context);
+            }
         }
 
         private bool IsLaboratory(ISecurity security)

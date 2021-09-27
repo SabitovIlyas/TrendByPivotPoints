@@ -42,6 +42,7 @@ namespace TrendByPivotPointsStrategy
 
 
         PositionSide positionSide;
+        public PositionSide PositionSide { get { return positionSide; } }
 
         public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {   
@@ -78,14 +79,12 @@ namespace TrendByPivotPointsStrategy
                             CheckPositionOpenShortCase(lastPrice, barNumber);
                             break;
                         }
-                    case PositionSide.Long:
-                    case PositionSide.CloseLong:
+                    case PositionSide.Long:                    
                         {
                             CheckPositionOpenLongCase(lastPrice, barNumber);
                             break;
                         }
-                    case PositionSide.Short:
-                    case PositionSide.CloseShort:
+                    case PositionSide.Short:                    
                         {
                             CheckPositionOpenShortCase(lastPrice, barNumber);
                             break;
@@ -132,11 +131,11 @@ namespace TrendByPivotPointsStrategy
 
             if (le == null)
             {
-                 if (positionSide != PositionSide.CloseLong)
-                {
-                    Logger.Log("Длинная позиция не открыта, но пытаться открывать мы её не будем, так как на этом инструменте мы больше новые позиции не открываем.");
-                    return;
-                }
+                // if (positionSide != PositionSide.CloseLong)
+                //{
+                //    Logger.Log("Длинная позиция не открыта, но пытаться открывать мы её не будем, так как на этом инструменте мы больше новые позиции не открываем.");
+                //    return;
+                //}
 
                 Logger.Log("Длинная позиция не открыта. Выполняется ли условие двух последовательных повышающихся минимумов?");
 
@@ -458,11 +457,11 @@ namespace TrendByPivotPointsStrategy
 
             if (se == null)
             {
-                if (positionSide != PositionSide.CloseShort)
-                {
-                    Logger.Log("Короткая позиция не открыта, но пытаться открывать мы её не будем, так как на этом инструменте мы больше новые позиции не открываем.");
-                    return;
-                }
+                //if (positionSide != PositionSide.CloseShort)
+                //{
+                //    Logger.Log("Короткая позиция не открыта, но пытаться открывать мы её не будем, так как на этом инструменте мы больше новые позиции не открываем.");
+                //    return;
+                //}
 
                 Logger.Log("Короткая позиция не открыта. Выполняется ли условие двух последовательных понижающихся максимумов?");
 
@@ -893,15 +892,14 @@ namespace TrendByPivotPointsStrategy
 
 
             var contextTSLab = context as ContextTSLab;
-
-            var pane = contextTSLab.context.CreateGraphPane(sec.ToString() + " 2", "Инструмент (основной таймфрейм) 2");
+            var name = string.Format("{0} {1} {2}", sec.ToString(), positionSide, sec.Interval);
+            var pane = contextTSLab.context.CreateGraphPane(name: name, title: name);
             var colorTSlab = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
             var securityTSLab = (SecurityTSlab)security;
-            pane.AddList(sec.ToString(), securityTSLab.security, CandleStyles.BAR_CANDLE, colorTSlab, PaneSides.RIGHT);
+            pane.AddList(sec.ToString(), securityTSLab.security, CandleStyles.BAR_CANDLE, colorTSlab, PaneSides.RIGHT);            
 
             colorTSlab = new TSLab.Script.Color(SystemColor.Gold.ToArgb());
             pane.AddList("EMA", ema, ListStyles.LINE, colorTSlab, LineStyles.SOLID, PaneSides.RIGHT);
-
 
             switch (positionSide)
             {
