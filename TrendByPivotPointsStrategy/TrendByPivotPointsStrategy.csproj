@@ -90,9 +90,13 @@
     <Compile Include="SecurityTSlab.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
+    <Compile Include="TradingSystemPivotPointsEMAWithEnchancePosition.cs" />
     <Compile Include="TradingSystemPivotPointsEMA.cs" />
     <Compile Include="TradingSystemPivotPointsTwoTimeFrames.cs" />
     <Compile Include="ScriptTrendByPivotPoints.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
