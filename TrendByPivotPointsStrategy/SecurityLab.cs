@@ -29,6 +29,8 @@ namespace TrendByPivotPointsStrategy
 
         public string Name => throw new NotImplementedException();
 
+        public int RealTimeActualBarNumber => throw new NotImplementedException();
+
         public double GetBarClose(int barNumber)
         {
             throw new System.NotImplementedException();
@@ -80,6 +82,11 @@ namespace TrendByPivotPointsStrategy
         }
 
         public Position GetLastClosedShortPosition(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsRealTimeActualBar(int barNumber)
         {
             throw new NotImplementedException();
         }

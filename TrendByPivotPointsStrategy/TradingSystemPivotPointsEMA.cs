@@ -33,6 +33,12 @@ namespace TrendByPivotPointsStrategy
         string messageForLog = "";
 
         PositionSide positionSide;
+
+        private double leftLocalSide;
+        private double rightLocalSide;
+        private double pivotPointBreakDownSide;
+        private double EmaPeriodSide;
+
         public PositionSide PositionSide { get { return positionSide; } }
 
         public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
@@ -62,6 +68,11 @@ namespace TrendByPivotPointsStrategy
                 var lastBar = security.LastBar;
                 var lastPrice = lastBar.Close;
 
+                if (security.IsRealTimeActualBar(barNumber))
+                    Logger.SwitchOn();
+                else
+                    Logger.SwitchOff();
+
                 switch (positionSide)
                 {
                     case PositionSide.LongAndShort:
@@ -85,7 +96,7 @@ namespace TrendByPivotPointsStrategy
 
             catch (Exception e)
             {
-                Logger.Log(e.ToString());
+                Logger.Log("Исключение в методе Update(): " + e.ToString());
             }           
         }
         
@@ -419,13 +430,13 @@ namespace TrendByPivotPointsStrategy
 
         private bool IsOpenLongPositionCaseActual(Indicator lastLow, int barNumber)
         {
-            var previousBarNumber = barNumber - 1;
+            var previousBarNumber = security.RealTimeActualBarNumber - 1;
             return (barNumber == lastLow.BarNumber + rightLocalSide) || (security.GetBarClose(previousBarNumber) < ema[previousBarNumber]);
         }
 
         private bool IsOpenShortPositionCaseActual(Indicator lastHigh, int barNumber)
         {
-            var previousBarNumber = barNumber - 1;
+            var previousBarNumber = security.RealTimeActualBarNumber - 1;
             return (barNumber == lastHigh.BarNumber + rightLocalSide) || (security.GetBarClose(previousBarNumber) > ema[previousBarNumber]);
         }
 
@@ -510,12 +521,7 @@ namespace TrendByPivotPointsStrategy
             this.rightLocalSide = rightLocalSide;
             this.pivotPointBreakDownSide = pivotPointBreakDownSide;
             this.EmaPeriodSide = EmaPeriodSide;
-        }
-
-        private double leftLocalSide;
-        private double rightLocalSide;
-        private double pivotPointBreakDownSide;
-        private double EmaPeriodSide;
+        }        
 
         public void CalculateIndicators()
         {

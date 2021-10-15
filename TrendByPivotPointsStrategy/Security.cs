@@ -25,6 +25,9 @@ namespace TrendByPivotPointsStrategy
         int GetBarCompressedNumberFromBarBaseNumber(int barNumber);
         Position GetLastClosedLongPosition(int barNumber);
         Position GetLastClosedShortPosition(int barNumber);
+        bool IsRealTimeActualBar(int barNumber);
+
         String Name { get; }
+        int RealTimeActualBarNumber { get; }
     }
 }
