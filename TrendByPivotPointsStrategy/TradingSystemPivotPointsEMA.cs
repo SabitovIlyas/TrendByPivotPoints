@@ -229,6 +229,10 @@ namespace TrendByPivotPointsStrategy
             else
             {
                 Logger.Log("Длинная позиция открыта.");
+
+                if (stopLossLong==0)
+                    UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
+
                 if (!CheckLongPositionCloseCase(le, barNumber))
                     UpdateStopLossLongPosition(barNumber, lows, lastLow, le);                
             }
@@ -422,7 +426,11 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
-                Logger.Log("Короткая позиция открыта.");                
+                Logger.Log("Короткая позиция открыта.");
+
+                if (stopLossShort == 0)
+                    UpdateStopLossShortPosition(barNumber, highs, lastHigh, se);
+
                 if (!CheckShortPositionCloseCase(se, barNumber))
                     UpdateStopLossShortPosition(barNumber, highs, lastHigh, se);
             }
