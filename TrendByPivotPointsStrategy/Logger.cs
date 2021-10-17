@@ -8,6 +8,7 @@ namespace TrendByPivotPointsStrategy
 {
     public interface Logger
     {
+
         void Log(string text);
         void SwitchOn();
         void SwitchOff();

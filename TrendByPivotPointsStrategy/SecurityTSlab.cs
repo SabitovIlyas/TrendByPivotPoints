@@ -34,7 +34,6 @@ namespace TrendByPivotPointsStrategy
                 }
             }
         }
-
         public double? StepPrice => finInfo.StepPrice;
         public double? SellDeposit => finInfo.SellDeposit;
         public double? BuyDeposit => finInfo.BuyDeposit;
@@ -47,12 +46,42 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
+        public int RealTimeActualBarNumber
+        {
+            get
+            {
+                if (IsRealTimeTrading)
+                {
+                    var bars = GetBars();
+                    if (bars != null && bars.Count > 0)
+                        return bars.Count - 1;
+                    return 0;
+                }
+                return barNumber;                
+            }
+        }
+        public bool IsRealTimeActualBar(int barNumber)
+        {
+            if (IsRealTimeTrading)
+            {
+                var bars = GetBars();
+                if (bars != null)
+                {
+                    var lastBar = bars.Count - 1;
+                    if (lastBar == barNumber)
+                        return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
         public ISecurity security;
         //private int barNumber = 0; //заглушил
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
-        private ISecurity baseSecurity = new SecurityNull();
+        private ISecurity baseSecurity = new SecurityNull();        
 
         public SecurityTSlab(ISecurity security)
         {
@@ -215,7 +244,6 @@ namespace TrendByPivotPointsStrategy
             var realTimeSecurity = security as ISecurityRt;
             isLaboratory = realTimeSecurity == null;
         }
-
         public Position GetLastClosedLongPosition(int barNumber)
         {
             var positions = security.Positions;
@@ -231,7 +259,6 @@ namespace TrendByPivotPointsStrategy
             lastLongPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
             return lastLongPositionClosed;
         }
-
         public Position GetLastClosedShortPosition(int barNumber)
         {
             var positions = security.Positions;
