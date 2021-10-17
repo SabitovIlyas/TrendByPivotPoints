@@ -27,6 +27,8 @@ namespace TrendByPivotPointsStrategy
 
         public bool IsRealTimeTrading => throw new System.NotImplementedException();
 
+        public string Name => throw new NotImplementedException();
+
         public double GetBarClose(int barNumber)
         {
             throw new System.NotImplementedException();

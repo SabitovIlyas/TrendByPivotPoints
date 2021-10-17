@@ -68,6 +68,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="MainSystemForOptimization.cs" />
     <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="MainSystemForRealTimeTesting.cs" />
     <Compile Include="MainSystemForTrading.cs" />
     <Compile Include="NullDataBar.cs" />
     <Compile Include="NullLogger.cs" />

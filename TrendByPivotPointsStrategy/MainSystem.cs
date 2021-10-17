@@ -8,6 +8,6 @@ namespace TrendByPivotPointsStrategy
         void Initialize(ISecurity[] securities, IContext ctx);
         void Paint(IContext ctx, ISecurity sec);
         void Run();
-        void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt);
+        void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup);
     }
 }

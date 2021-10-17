@@ -28,7 +28,9 @@ namespace TrendByPivotPointsStrategy
 
         public double GOselling => sec.FinInfo.SellDeposit ?? double.MaxValue;
 
-        public double Rate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public double Rate { get { return rate; } set { rate = value; } }
+        private double rate;
+
         Logger logger = new NullLogger();
 
         public Logger Logger

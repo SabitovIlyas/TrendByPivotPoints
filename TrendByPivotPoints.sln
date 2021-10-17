@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStrategyT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStrategy", "TrendByPivotPointsStrategy\TrendByPivotPointsStrategy.csproj", "{B9A9953F-E415-44D8-ABA8-35A77304CCFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStarter", "TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj", "{A9C7C965-F0F0-48ED-986A-21D98A8221FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsOptimizator", "TrendByPivotPointsOptimizator\TrendByPivotPointsOptimizator.csproj", "{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{B9A9953F-E415-44D8-ABA8-35A77304CCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9A9953F-E415-44D8-ABA8-35A77304CCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9A9953F-E415-44D8-ABA8-35A77304CCFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9C7C965-F0F0-48ED-986A-21D98A8221FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C7C965-F0F0-48ED-986A-21D98A8221FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9C7C965-F0F0-48ED-986A-21D98A8221FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9C7C965-F0F0-48ED-986A-21D98A8221FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

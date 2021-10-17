@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -16,205 +17,16 @@ namespace TrendByPivotPointsStrategy
         Account account;
         //List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
         List<TradingSystemPivotPointsEMA> tradingSystems;
+        Logger logger;
+        int securityNumber;
+        int instrumentsGroup;
+
+        static DateTime lastClosedBarDateTime = DateTime.MinValue;
+
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
-
-            List<Security> securityList = null;
-
-            int tmp = 3;
-
-            switch (tmp)
-            {
-                case 0:
-                    {
-                        securityList = Initialize5minRubleScript(securities);
-                        break;
-                    }
-                case 1:
-                    {
-                        securityList = Initialize15minRubleScript(securities);
-                        break;
-                    }
-                case 2:
-                    {
-                        securityList = Initialize5minUSDScript(securities);
-                        break;
-                    }
-                case 3:
-                    {
-                        securityList = Initialize15minUSDScript(securities);                     
-                        break;
-                    }
-
-            }                                
-
-            //tradingSystem.Logger = logger;
-            account.Logger = logger;
-            this.ctx = ctx;
-            context = new ContextTSLab(ctx);            
-            account.Initialize(securityList);
-        }
-
-        private List<Security> Initialize15minUSDScript(ISecurity[] securities)
-        {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
-            var securityFirst = securities.First();
-            if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
-            else
-                account = new AccountReal(securityFirst);
-
-            var securityList = new List<Security>();
-
-            this.securityFirst = new SecurityTSlab(securityFirst);
-            securityList.Add(this.securityFirst);
-
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
-            globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);//заменить на USD
-
-            //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
-            tradingSystems = new List<TradingSystemPivotPointsEMA>();
-
-            double totalComission;
-            AbsolutCommission absoluteComission;
-            TradingSystemPivotPointsEMA ts;
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //brent-15min long      
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0033 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[0]);
-            ts.SetParameters(10, 13, 40, 100);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long);   //gold-15min long
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.04 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[1]);
-            ts.SetParameters(1, 13, 10, 120);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]), PositionSide.Long);   //silver-15min long
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0011 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[2]);
-            ts.SetParameters(10, 13, 40, 100);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[3]), PositionSide.Short);   //brent-15min short      
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0033 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[3]);
-            ts.SetParameters(1, 16, 40, 40);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[4]), PositionSide.Short);   //gold-15min short
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.04 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[4]);
-            ts.SetParameters(13, 1, 10, 40);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[5]), PositionSide.Short);   //silver-15min short
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0011 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[5]);
-            ts.SetParameters(1, 16, 40, 40);
-
-            return securityList;
-        }
-
-        private List<Security> Initialize5minUSDScript(ISecurity[] securities)
-        {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
-            var securityFirst = securities.First();
-            if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
-            else
-                account = new AccountReal(securityFirst);
-
-            var securityList = new List<Security>();
-
-            this.securityFirst = new SecurityTSlab(securityFirst);
-            securityList.Add(this.securityFirst);
-
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
-            globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble); //заменить на USD
-
-            //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
-            tradingSystems = new List<TradingSystemPivotPointsEMA>();
-
-            double totalComission;
-            AbsolutCommission absoluteComission;
-            TradingSystemPivotPointsEMA ts;
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Null);   //brent-5min long      
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0033 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[0]);
-            ts.SetParameters(4, 13, 70, 140);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long);   //gold-5min long
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.04 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[1]);
-            ts.SetParameters(7, 13, 70, 160);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]), PositionSide.Long);   //silver-5min long
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0011 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[2]);
-            ts.SetParameters(10, 4, 90, 160);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[3]), PositionSide.Null);   //brent-5min short      
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0033 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[3]);
-            ts.SetParameters(13, 10, 70, 100);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[4]), PositionSide.Short);   //gold-5min short
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.04 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[4]);
-            ts.SetParameters(16, 16, 10, 20);
-
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[5]), PositionSide.Short);   //silver-5min short
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            totalComission = 0.0011 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[5]);
-            ts.SetParameters(13, 16, 90, 180);           
-
-            return securityList;
-        }
-
-        private List<Security> Initialize15minRubleScript(ISecurity[] securities)
-        {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
+            var logger = new LoggerSystem(ctx);
+            //var logger = new NullLogger();
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -229,15 +41,14 @@ namespace TrendByPivotPointsStrategy
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
-
-            //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
+                        
             tradingSystems = new List<TradingSystemPivotPointsEMA>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //eu-15min long      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Null);   //eu-15min long      
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.34 * 2;
@@ -245,7 +56,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(4, 1, 10, 120);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long);   //gz-15min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Null);   //gz-15min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.9 * 2;
@@ -269,7 +80,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[3]);
             ts.SetParameters(4, 13, 30, 80);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[4]), PositionSide.Long); //si-15min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[4]), PositionSide.Null); //si-15min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.13 * 2;
@@ -277,7 +88,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[4]);
             ts.SetParameters(4, 1, 40, 180);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[5]), PositionSide.Long); //vtbr-15min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[5]), PositionSide.Null); //vtbr-15min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -317,7 +128,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[9]);
             ts.SetParameters(1, 7, 10, 80);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[10]), PositionSide.Short); //si-15min short
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[10]), PositionSide.Null); //si-15min short
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.13 * 2;
@@ -337,9 +148,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         private List<Security> Initialize5minRubleScript(ISecurity[] securities)
-        {
-            //var logger = new LoggerSystem(ctx);
-            var logger = new NullLogger();
+        {            
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -354,15 +163,14 @@ namespace TrendByPivotPointsStrategy
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
-
-            //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
+                        
             tradingSystems = new List<TradingSystemPivotPointsEMA>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
             TradingSystemPivotPointsEMA ts;
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //eu-5min long      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Null);   //eu-5min long      
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.34 * 2;
@@ -378,7 +186,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[1]);
             ts.SetParameters(16, 16, 80, 200);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]), PositionSide.Long);   //lkoh-5min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]), PositionSide.Null);   //lkoh-5min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 4.15 * 2;
@@ -386,7 +194,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[2]);
             ts.SetParameters(10, 16, 80, 160);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[3]), PositionSide.Long); //sbrf-5min long
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[3]), PositionSide.Null); //sbrf-5min long
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 2.03 * 2;
@@ -410,13 +218,14 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[5]);
             ts.SetParameters(16, 1, 80, 180);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[6]), PositionSide.Short);   //eu-5min short      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[6]), PositionSide.Null);   //eu-5min short      
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.34 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[6]);
             ts.SetParameters(13, 4, 100, 40);
+            //comis.Execute(securities[1]);
 
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[7]), PositionSide.Null);   //gz-5min short
             ts.Logger = logger;
@@ -464,6 +273,9 @@ namespace TrendByPivotPointsStrategy
         bool leSeNullPreviousBar = false;
         public void Run()
         {
+            //logger.SwitchOff();
+            //var localLogger = new LoggerSystem(ctx);
+
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
 
@@ -471,53 +283,48 @@ namespace TrendByPivotPointsStrategy
             if (lastBarNumber < 1)
                 return;
 
-            for (var i = 1; i < lastBarNumber; i++)
-            {
-                var lastClosedBarNumberInRealTrading = i - 1;
+            for (var i = 0; i <= lastBarNumber; i++)
+            {                
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    tradingSystem.Update(lastClosedBarNumberInRealTrading);
-
-                    //var sec = securityFirst as SecurityTSlab;
-
-                    //var le = sec.security.Positions.GetLastActiveForSignal("LE", i);
-                    //var se = sec.security.Positions.GetLastActiveForSignal("SE", i);
-
-
-                    //var leSeNullCurrentBar = (le == null) && (se == null);
-                    //var moneyBefore = account.Equity;
-
-                    account.Update(lastClosedBarNumberInRealTrading);
-
-                    //var moneyAfter = account.Equity;
-                    //var br = (leSeNullCurrentBar && leSeNullPreviousBar && (moneyAfter != moneyBefore));
-
-                    //leSeNullPreviousBar = leSeNullCurrentBar;
+                    tradingSystem.Update(i);
+                    account.Update(i);
                 }
-            }
-
-            if (IsRealTimeTrading())
-            {
-                foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.CheckPositionCloseCase(lastBarNumber);
-
-                if (IsLastBarClosed())
-                    foreach (var tradingSystem in tradingSystems)
-                        tradingSystem.Update(lastBarNumber);
-            }
-            else
-                foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.Update(lastBarNumber);
-
-            account.Update(lastBarNumber);
+            }                        
         }
 
+        private void UpdateLoggerStatus(int barNumber)
+        {
+            securityFirst.BarNumber = barNumber;
+            var dateTimePreviousLastBar = securityFirst.GetBarDateTime(barNumber);
+
+            if (lastClosedBarDateTime < dateTimePreviousLastBar)
+                logger.SwitchOn();
+            else
+                logger.SwitchOff();
+
+            lastClosedBarDateTime = dateTimePreviousLastBar;
+        }
+        
         public void Paint(IContext ctx, ISecurity sec)
         {
-            var firstTradingSystem = tradingSystems.First();
-            firstTradingSystem.Paint(context);
+            //var firstTradingSystem = tradingSystems.First();
+            //firstTradingSystem.Paint(context);
+
+            //var tradingSystem = tradingSystems[0];
+            //tradingSystem.Paint(context);
+
+            //tradingSystem = tradingSystems[1];
+            //tradingSystem.Paint(context);
+
             //var lastTradingSystem = tradingSystems.Last();
             //lastTradingSystem.Paint(context);
+
+            foreach(var tradingSystem in tradingSystems)
+            {
+                if (tradingSystem.PositionSide == PositionSide.Long || tradingSystem.PositionSide == PositionSide.Short)
+                    tradingSystem.Paint(context);
+            }
         }
 
         private bool IsLaboratory(ISecurity security)
@@ -535,7 +342,8 @@ namespace TrendByPivotPointsStrategy
             return securityFirst.IsRealTimeTrading;
         }
 
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, double comission, double riskValuePrcnt)
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide,
+            double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
@@ -545,6 +353,8 @@ namespace TrendByPivotPointsStrategy
             this.positionSide = positionSide;
             this.comission = comission;
             this.riskValuePrcnt = riskValuePrcnt;
+            this.securityNumber = securityNumber;
+            this.instrumentsGroup = instrumentsGroup;
         }
 
         private double leftLocalSide;

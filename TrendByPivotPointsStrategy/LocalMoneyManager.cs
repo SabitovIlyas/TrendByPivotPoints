@@ -11,6 +11,8 @@ namespace TrendByPivotPointsStrategy
         Currency currency;
         Account account;
         GlobalMoneyManager globalMoneyManager;
+        int shares = 1;
+        public Logger Logger { get { return logger; } set { logger = value; } }
         private Logger logger = new NullLogger();
 
         public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency)
@@ -20,11 +22,20 @@ namespace TrendByPivotPointsStrategy
             this.currency = currency;
         }
 
-        public virtual int GetQntContracts(double enterPrice, double stopPrice, PositionSide position)
+        public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency, int shares)
         {
-            logger.Log("enterPrice = " + enterPrice.ToString());
-            logger.Log("stopPrice = " + stopPrice.ToString());
-            logger.Log("position = " + position.ToString());
+            this.globalMoneyManager = globalMoneyManager;
+            this.account = account;
+            this.currency = currency;
+            this.shares = shares;
+        }
+
+        public virtual int GetQntContracts(double enterPrice, double stopPrice, PositionSide position)
+        {            
+            logger.Log("Получаем количество контрактов для открываемой позиции...");
+            var message = string.Format("Направление открываемой позиции: {0}; предполагаемая цена входа: {1}; расчётная цена выхода: {2}.",
+                position, enterPrice, stopPrice);
+            logger.Log(message);
 
             var go = 0.0;
             switch (position)
@@ -32,41 +43,62 @@ namespace TrendByPivotPointsStrategy
                 case PositionSide.Long:
                     {
                         if (stopPrice >= enterPrice)
+                        {
+                            logger.Log("Расчётная цена выхода больше либо равна цене входа. Сделку открывать не будем. Количество контрактов равно 0.");
                             return 0;
-
-                        go = account.GObying;                        
-                        logger.Log("go = " + go.ToString());
+                        }
+                        go = account.GObying;
+                        
                     }
                     break;
                 case PositionSide.Short:
                     {
                         if (stopPrice <= enterPrice)
-                            return 0;
+                        {
+                            logger.Log("Расчётная цена выхода меньше либо равна цене входа. Сделку открывать не будем. Количество контрактов равно 0.");
+                            return 0; 
+                        }
                         go = account.GOselling;
                     }
                     break;
-                case PositionSide.LongAndShort:                    
+                case PositionSide.LongAndShort:
                     break;
-            }            
+            }
 
-            var money = globalMoneyManager.GetMoneyForDeal();
-            logger.Log("money = " + money.ToString());
-            var riskMoney = Math.Abs(enterPrice - stopPrice);            
-            logger.Log("riskMoney = " + riskMoney.ToString());
-
-            var contractsByGO = (int)(globalMoneyManager.Equity / go); // надо вычислять это значение исходя из общего депозита            
-            logger.Log("contractsByGO = " + contractsByGO.ToString());
-            if (currency == Currency.USD)
-                money = money / account.Rate;
+                     
+            var riskMoney = Math.Abs(enterPrice - stopPrice);
+            logger.Log("Рискуем в одном контракте следующей суммой: " + riskMoney);
                         
-            logger.Log("money = " + money.ToString());
-            
-            var contractsByRiskMoney = (int)(money / riskMoney);            
-            logger.Log("contractsByRiskMoney = " + contractsByRiskMoney.ToString());
+            var money = globalMoneyManager.GetMoneyForDeal();
 
-            var min =  Math.Min(contractsByRiskMoney, contractsByGO);
+            if (currency == Currency.USD)
+            {
+                var moneyRuble = money;
+                money = money / account.Rate;
+                message = string.Format("Так как в инструменте используются USD, вместо рублей, то полученную на сделку сумму в размере {0} нужно скорректировать " +
+                    "с учётом курса рубля к USD ({1}). Полученная сумма на сделку в USD равна {2}", moneyRuble, account.Rate, money);
+                logger.Log(message);
+            }
+
+            var contractsByRiskMoney = (int)(money / riskMoney);            
+            contractsByRiskMoney = contractsByRiskMoney / shares;
+
+            message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity и рискумой суммой в одном контракте, равно {0}" +
+                "(с учётом цены контракта и количества лотов при открытии позиции {1}.", contractsByRiskMoney, shares);
+            logger.Log(message);
+            
+
+            logger.Log("Гарантийное обеспечение равно " + go);
+            var contractsByGO = (int)(globalMoneyManager.Equity / go);
+            logger.Log("Вариант №2. Количество контрактов открываемой позиции, исходя из ГО и свободных средств (пока использую Equity) равно " + contractsByGO);
+
+            var min = Math.Min(contractsByRiskMoney, contractsByGO);
+            logger.Log("Выбираем минимальное количество контрактов из двух вариантов. Оно равно " + min);
+                        
             if (min >= 0) return min;
-            else return 0;
+
+            logger.Log("Минимальное количество контрактов меньше 0, поэтому сделку открывать не будем. Устанавливаем количество контрактов равным 0.");
+            return 0;
         }
     }
 }

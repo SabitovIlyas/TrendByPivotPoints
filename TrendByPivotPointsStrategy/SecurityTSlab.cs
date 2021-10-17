@@ -250,5 +250,6 @@ namespace TrendByPivotPointsStrategy
 
         private Position lastLongPositionClosed;
         private Position lastShortPositionClosed;
+        public string Name => security.ToString();
     }
 }
