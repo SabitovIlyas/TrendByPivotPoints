@@ -25,8 +25,8 @@ namespace TrendByPivotPointsStrategy
 
         public void Initialize(ISecurity[] securities, IContext ctx)
         {
-            var logger = new LoggerSystem(ctx);
-            //var logger = new NullLogger();
+            //var logger = new LoggerSystem(ctx);
+            var logger = new NullLogger();
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -59,6 +59,7 @@ namespace TrendByPivotPointsStrategy
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[0]);
             ts.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
+            securities[0].Commission = CalculateCommission;
 
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //sbrf-5min
             //ts.Logger = logger;
@@ -67,7 +68,7 @@ namespace TrendByPivotPointsStrategy
             //absoluteComission = new AbsolutCommission() { Commission = totalComission };
             //absoluteComission.Execute(securities[1]);
             //ts.SetParameters(13, 13, 60, 20);
-            
+
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]));//gazr-5min
             //tradingSystems.Add(ts);
             //ts.Logger = logger;
@@ -113,6 +114,16 @@ namespace TrendByPivotPointsStrategy
             context = new ContextTSLab(ctx);
             account.Initialize(securityList);
             logger.SwitchOff();
+        }
+
+        private double CalculateCommission(IPosition pos, double price, double shares, bool isEntry, bool isPart)
+        {
+            var exchangeCommission = price * comission;
+            var brokerCommission = exchangeCommission;
+            var totalCommission = exchangeCommission + brokerCommission;
+            var reserve = 0.25 * totalCommission;
+
+            return totalCommission + reserve;
         }
 
         bool leSeNullPreviousBar = false;

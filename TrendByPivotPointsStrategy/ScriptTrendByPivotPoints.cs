@@ -32,6 +32,7 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty riskValuePrcnt = new OptimProperty(1, 0, 1, 100);
         public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 1);
         public OptimProperty instrumentsGroup = new OptimProperty(0, 0, 3, 1);
+        public OptimProperty isPaint = new OptimProperty(0, 0, 1, 1);
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
@@ -64,7 +65,8 @@ namespace TrendByPivotPointsStrategy
             system.Initialize(securities, context);
             system.Run();
 
-            system.Paint(context, securities[0]);
+            if ((int)isPaint == 1)
+                system.Paint(context, securities[0]);
             //var timeStop = DateTime.Now;
             //var time = timeStop - timeStart;
             //logger.Log(time.ToString());
