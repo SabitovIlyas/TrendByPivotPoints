@@ -152,7 +152,7 @@ namespace TrendByPivotPointsStrategy
 
                             Logger.Log("Проверяем актуально ли открытие длинной позиции?");
 
-                            if (IsOpenLongPositionCaseActual(lastLow, barNumber))
+                            if (true || IsOpenLongPositionCaseActual(lastLow, barNumber)) //заглушил
                             {
                                 Logger.Log("Открытие длинной позиции актуально.");
 
@@ -181,7 +181,7 @@ namespace TrendByPivotPointsStrategy
                                     Logger.Log("Торгуем в лаборатории или в режиме реального времени?");
                                     if (security.IsRealTimeTrading)
                                     {
-                                        contracts = 1;
+                                        //contracts = 1;
                                         messageForLog = string.Format("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
                                         Logger.Log(messageForLog);
 
@@ -194,7 +194,7 @@ namespace TrendByPivotPointsStrategy
                                         sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
                                     }
 
-                                    stopLossLong = 0;
+                                    stopLossLong = stopPrice;
                                     Logger.Log("Открываем длинную позицию! Отправляем ордер.");
                                 }
                                 else
@@ -229,12 +229,8 @@ namespace TrendByPivotPointsStrategy
             else
             {
                 Logger.Log("Длинная позиция открыта.");
-
-                if (stopLossLong==0)
-                    UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
-
-                if (!CheckLongPositionCloseCase(le, barNumber))
-                    UpdateStopLossLongPosition(barNumber, lows, lastLow, le);                
+                UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
+                CheckLongPositionCloseCase(le, barNumber);               
             }
         }
 
@@ -349,7 +345,7 @@ namespace TrendByPivotPointsStrategy
                             
                             Logger.Log("Проверяем актуально ли открытие короткой позиции?");
 
-                            if (IsOpenShortPositionCaseActual(lastHigh, barNumber))
+                            if (true || IsOpenShortPositionCaseActual(lastHigh, barNumber))//заглушил
                             {
                                 Logger.Log("Открытие короткой позции актуально?");
 
@@ -379,7 +375,7 @@ namespace TrendByPivotPointsStrategy
                                     Logger.Log("Торгуем в лаборатории или в режиме реального времени?");
                                     if (security.IsRealTimeTrading)
                                     {
-                                        contracts = 1;
+                                        //contracts = 1;
                                         messageForLog = string.Format("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
                                         Logger.Log(messageForLog);
 
@@ -392,7 +388,7 @@ namespace TrendByPivotPointsStrategy
                                         sec.Positions.SellAtMarket(barNumber + 1, contracts, "SE");
                                     }
 
-                                    stopLossShort = double.MaxValue;
+                                    stopLossShort = stopPrice;
                                     Logger.Log("Открываем короткую позицию! Отправляем ордер.");
                                 }
                                 else
@@ -427,12 +423,8 @@ namespace TrendByPivotPointsStrategy
             else
             {
                 Logger.Log("Короткая позиция открыта.");
-
-                if (stopLossShort == 0)
-                    UpdateStopLossShortPosition(barNumber, highs, lastHigh, se);
-
-                if (!CheckShortPositionCloseCase(se, barNumber))
-                    UpdateStopLossShortPosition(barNumber, highs, lastHigh, se);
+                UpdateStopLossShortPosition(barNumber, highs, lastHigh, se);
+                CheckShortPositionCloseCase(se, barNumber);               
             }
         }
 
