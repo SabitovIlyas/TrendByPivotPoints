@@ -19,7 +19,7 @@ namespace TrendByPivotPointsStrategy
             {
                 var rtSec = sec as ISecurityRt;
                 if (rtSec != null)
-                    return rtSec.EstimatedBalance;
+                    return rtSec.CurrencyBalance;
                 return 0;
             } 
         }
