@@ -19,7 +19,7 @@ namespace TrendByPivotPointsStrategy
             {
                 var rtSec = sec as ISecurityRt;
                 if (rtSec != null)
-                    return rtSec.CurrencyBalance;
+                    return rtSec.EstimatedBalance;
                 return 0;
             } 
         }
@@ -46,7 +46,16 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        public double FreeBalance => throw new NotImplementedException();
+        public double FreeBalance
+        {
+            get
+            {
+                var rtSec = sec as ISecurityRt;
+                if (rtSec != null)
+                    return rtSec.CurrencyBalance;
+                return 0;
+            }
+        }
 
         public AccountReal(ISecurity sec)
         {

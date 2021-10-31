@@ -83,14 +83,14 @@ namespace TrendByPivotPointsStrategy
             var contractsByRiskMoney = (int)(money / riskMoney);            
             contractsByRiskMoney = contractsByRiskMoney / shares;
 
-            message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity и рискумой суммой в одном контракте, равно {0}" +
+            message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity (Estimated Balance) и рискумой суммой в одном контракте, равно {0}" +
                 "(с учётом цены контракта и количества лотов при открытии позиции {1}.", contractsByRiskMoney, shares);
             logger.Log(message);
             
 
             logger.Log("Гарантийное обеспечение равно " + go);
-            var contractsByGO = (int)(globalMoneyManager.Equity / go);
-            logger.Log("Вариант №2. Количество контрактов открываемой позиции, исходя из ГО и свободных средств (пока использую Equity) равно " + contractsByGO);
+            var contractsByGO = (int)(globalMoneyManager.FreeBalance / go);
+            logger.Log("Вариант №2. Количество контрактов открываемой позиции, исходя из ГО и свободных средств (Free Balance) равно " + contractsByGO);
 
             var min = Math.Min(contractsByRiskMoney, contractsByGO);
             logger.Log("Выбираем минимальное количество контрактов из двух вариантов. Оно равно " + min);
