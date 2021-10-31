@@ -561,12 +561,18 @@ namespace TrendByPivotPointsStrategy
             //var lastTradingSystem = tradingSystems.Last();
             //lastTradingSystem.Paint(context);
 
-            foreach(var tradingSystem in tradingSystems)
-            {
-                if (tradingSystem.PositionSide == PositionSide.Long || tradingSystem.PositionSide == PositionSide.Short)
-                    tradingSystem.Paint(context);
-            }
-        }
+            //===
+            //foreach(var tradingSystem in tradingSystems)
+            //{
+            //    if (tradingSystem.PositionSide == PositionSide.Long || tradingSystem.PositionSide == PositionSide.Short)
+            //        tradingSystem.Paint(context);
+            //}
+            //==
+
+            foreach (var tradingSystem in tradingSystems)            
+                if (tradingSystem.HasOpenPosition())
+                    tradingSystem.Paint(context);            
+        }        
 
         private bool IsLaboratory(ISecurity security)
         {

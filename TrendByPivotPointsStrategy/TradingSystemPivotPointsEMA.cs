@@ -667,5 +667,15 @@ namespace TrendByPivotPointsStrategy
 
             //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
         }
+
+        public bool HasOpenPosition()
+        {
+            IPosition position = null;
+            if (positionSide == PositionSide.Long)
+                position = sec.Positions.GetLastActiveForSignal("LE");
+            else if (positionSide == PositionSide.Short)
+                position = sec.Positions.GetLastActiveForSignal("SE");
+            return position != null;
+        }
     }
 }
