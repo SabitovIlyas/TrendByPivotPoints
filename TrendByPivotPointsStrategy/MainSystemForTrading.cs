@@ -385,7 +385,25 @@ namespace TrendByPivotPointsStrategy
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
             ts.SetParameters(4, 13, 10, 200);
-            
+
+            securityNumber = 16;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //rosn-15min long
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 0.33 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(4, 1, 90, 20);
+
+            securityNumber = 17;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //rosn-15min short
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 0.33 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(13, 4, 30, 40);
+
             return securityList;
         }
 
