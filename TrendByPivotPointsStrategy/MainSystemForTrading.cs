@@ -467,14 +467,32 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[securityNumber]);
             ts.SetParameters(13, 1, 30, 40);
 
-            securityNumber = 25;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: NOTK Short 15min; LeftLocalSide: 4; RightLocalSide: 10; PivotPointBreakDown: 80; EmaPeriod: 140; optimizationResultBackward.PML: 1,88414; optimizationResultBackward.Range: 4; optimizationResultForward.PML: 3,64946; optimizationResultForward.Range: 223; optimizationResultTotal.Range: 227. 
+            securityNumber = 25;                                                                                                                      //Запрет Трейдера на открытие позиций по клиентскому счету
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: NOTK Short 15min; LeftLocalSide: 4; RightLocalSide: 10; PivotPointBreakDown: 80; EmaPeriod: 140; optimizationResultBackward.PML: 1,88414; optimizationResultBackward.Range: 4; optimizationResultForward.PML: 3,64946; optimizationResultForward.Range: 223; optimizationResultTotal.Range: 227. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
             ts.SetParameters(4, 10, 80, 140);
+
+            securityNumber = 26;                                                                                                                      
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //!Security: HYDR Long 15min; LeftLocalSide: 4; RightLocalSide: 16; PivotPointBreakDown: 10; EmaPeriod: 100; optimizationResultBackward.PML: 0,87255; optimizationResultBackward.Range: 117; optimizationResultForward.PML: -0,097863; optimizationResultForward.Range: 2; optimizationResultTotal.Range: 119. 
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 0.33 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(4, 16, 10, 100);
+
+            securityNumber = 27;                                                                                                                     
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: HYDR Short 15min; LeftLocalSide: 19; RightLocalSide: 4; PivotPointBreakDown: 30; EmaPeriod: 80; optimizationResultBackward.PML: 0,664194; optimizationResultBackward.Range: 135; optimizationResultForward.PML: 1,65009; optimizationResultForward.Range: 9; optimizationResultTotal.Range: 144. 
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 0.33 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(19, 4, 30, 80);
 
             return securityList;
         }
