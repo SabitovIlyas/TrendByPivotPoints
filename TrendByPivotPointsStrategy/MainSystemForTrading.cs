@@ -232,7 +232,8 @@ namespace TrendByPivotPointsStrategy
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            //var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.25);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
                         
@@ -315,7 +316,7 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(19, 4, 40, 100);
 
             securityNumber = 8;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short);   //!Security: LKOH Short 15min; LeftLocalSide: 4; RightLocalSide: 19; PivotPointBreakDown: 20; EmaPeriod: 200; optimizationResultBackward.PML: -0,0248474; optimizationResultBackward.Range: 131; optimizationResultForward.PML: 2,81219; optimizationResultForward.Range: 68; optimizationResultTotal.Range: 199. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);   //!Security: LKOH Short 15min; LeftLocalSide: 4; RightLocalSide: 19; PivotPointBreakDown: 20; EmaPeriod: 200; optimizationResultBackward.PML: -0,0248474; optimizationResultBackward.Range: 131; optimizationResultForward.PML: 2,81219; optimizationResultForward.Range: 68; optimizationResultTotal.Range: 199. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 4.15 * 2;
