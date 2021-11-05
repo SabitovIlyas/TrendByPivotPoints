@@ -460,7 +460,7 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(16, 13, 10, 200);
 
             securityNumber = 24;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: NOTK Long 15min; LeftLocalSide: 13; RightLocalSide: 1; PivotPointBreakDown: 30; EmaPeriod: 40; optimizationResultBackward.PML: 4,5607; optimizationResultBackward.Range: 19; optimizationResultForward.PML: 18,2134; optimizationResultForward.Range: 28; optimizationResultTotal.Range: 47. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: NOTK Long 15min; LeftLocalSide: 13; RightLocalSide: 1; PivotPointBreakDown: 30; EmaPeriod: 40; optimizationResultBackward.PML: 4,5607; optimizationResultBackward.Range: 19; optimizationResultForward.PML: 18,2134; optimizationResultForward.Range: 28; optimizationResultTotal.Range: 47. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -495,8 +495,8 @@ namespace TrendByPivotPointsStrategy
             absoluteComission.Execute(securities[securityNumber]);
             ts.SetParameters(19, 4, 30, 80);
 
-            securityNumber = 28;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: FEES Long 15min; LeftLocalSide: 16; RightLocalSide: 19; PivotPointBreakDown: 90; EmaPeriod: 40; optimizationResultBackward.PML: 1,64319; optimizationResultBackward.Range: 90; optimizationResultForward.PML: 0,499431; optimizationResultForward.Range: 186; optimizationResultTotal.Range: 276. 
+            securityNumber = 28;                                                                                                                     //Запрет Трейдера на открытие позиций по клиентскому счету
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: FEES Long 15min; LeftLocalSide: 16; RightLocalSide: 19; PivotPointBreakDown: 90; EmaPeriod: 40; optimizationResultBackward.PML: 1,64319; optimizationResultBackward.Range: 90; optimizationResultForward.PML: 0,499431; optimizationResultForward.Range: 186; optimizationResultTotal.Range: 276. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -505,7 +505,7 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(16, 19, 90, 40);
 
             securityNumber = 29;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: FEES Short 15min; LeftLocalSide: 13; RightLocalSide: 7; PivotPointBreakDown: 10; EmaPeriod: 140; optimizationResultBackward.PML: 1,87474; optimizationResultBackward.Range: 13; optimizationResultForward.PML: 3,09513; optimizationResultForward.Range: 140; optimizationResultTotal.Range: 153. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: FEES Short 15min; LeftLocalSide: 13; RightLocalSide: 7; PivotPointBreakDown: 10; EmaPeriod: 140; optimizationResultBackward.PML: 1,87474; optimizationResultBackward.Range: 13; optimizationResultForward.PML: 3,09513; optimizationResultForward.Range: 140; optimizationResultTotal.Range: 153. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
