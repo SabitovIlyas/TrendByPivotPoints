@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using TSLab.Script;
 using SystemColor = System.Drawing.Color;
 using TSLab.Script.Helpers;
+using TSLab.Script.Handlers;
+using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
     public class TradingSystemPivotPointsEMA
     {
+        public IContext ctx;
         LocalMoneyManager localMoneyManager;
         ISecurity sec;
         PivotPointsIndicator pivotPointsIndicator;
@@ -195,6 +198,10 @@ namespace TrendByPivotPointsStrategy
                                     }
 
                                     stopLossLong = stopPrice;
+
+                                    var container = new NotClearableContainer<double>(stopLossLong);
+                                    ctx.StoreObject("stopLossLong", container);
+                                    
                                     Logger.Log("Открываем длинную позицию! Отправляем ордер.");
                                 }
                                 else
@@ -250,6 +257,14 @@ namespace TrendByPivotPointsStrategy
                             "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Новый стоп-лосс выше прежнего?", atr[barNumber], pivotPointBreakDownSide,
                             breakdownLong, lastLow.Value, stopLoss);
             Logger.Log(messageForLog);
+
+            var container = ctx.LoadObject("stopLossLong") as NotClearableContainer<double>;
+            double value = 0d;
+            if (container != null)
+                value = container.Content;
+
+            if (value != 0d)
+                stopLossLong = value;            
 
             if (stopLoss > stopLossLong)
             {
@@ -389,6 +404,10 @@ namespace TrendByPivotPointsStrategy
                                     }
 
                                     stopLossShort = stopPrice;
+
+                                    var container = new NotClearableContainer<double>(stopLossLong);
+                                    ctx.StoreObject("stopLossShort", container);
+
                                     Logger.Log("Открываем короткую позицию! Отправляем ордер.");
                                 }
                                 else
@@ -456,6 +475,14 @@ namespace TrendByPivotPointsStrategy
                             "стоп-лосс = последний максимум {3} + допустимый уровень пробоя {2} = {4}. Новый стоп-лосс ниже прежнего?", atr[barNumber], pivotPointBreakDownSide,
                             breakdownShort, lastHigh.Value, stopLoss);
             Logger.Log(messageForLog);
+
+            var container = ctx.LoadObject("stopLossShort") as NotClearableContainer<double>;
+            double value = double.MaxValue;
+            if (container != null)
+                value = container.Content;
+
+            if (value != double.MaxValue)
+                stopLossShort = value;
 
             if (stopLoss < stopLossShort)
             {
