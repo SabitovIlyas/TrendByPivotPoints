@@ -199,9 +199,35 @@ namespace TrendByPivotPointsStrategy
 
                                     stopLossLong = stopPrice;
 
-                                    var container = new NotClearableContainer<double>(stopLossLong);
-                                    ctx.StoreObject("stopLossLong", container);
-                                    
+                                    Logger.Log("Проверяем актуальный ли это бар.");
+                                    if (security.IsRealTimeActualBar(barNumber))
+                                    {
+                                        Logger.Log("Бар актуальный.");
+
+                                        Logger.Log(string.Format("Сохраним stopLossLong = {0} в контейнере.", stopLossLong));
+                                        var container = new NotClearableContainer<double>(stopLossLong);
+                                        ctx.StoreObject("stopLossLong", container);
+
+                                        Logger.Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере.", stopLossLong));
+
+                                        container = ctx.LoadObject("stopLossLong") as NotClearableContainer<double>;
+                                        double value = 0d;
+                                        if (container != null)
+                                            value = container.Content;
+
+                                        if (value != 0d)
+                                            if (value == stopLossLong)                                            
+                                                Logger.Log(string.Format("stopLossLong сохранился в контейнере. Значение в контейнере: value = {0}.", value));
+                                            
+                                            else                                            
+                                                Logger.Log(string.Format("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
+                                        
+                                    }
+                                    else
+                                    {
+                                        Logger.Log("Бар не актуальный.");
+                                    }
+
                                     Logger.Log("Открываем длинную позицию! Отправляем ордер.");
                                 }
                                 else
@@ -258,13 +284,38 @@ namespace TrendByPivotPointsStrategy
                             breakdownLong, lastLow.Value, stopLoss);
             Logger.Log(messageForLog);
 
-            var container = ctx.LoadObject("stopLossLong") as NotClearableContainer<double>;
-            double value = 0d;
-            if (container != null)
-                value = container.Content;
+            Logger.Log("Проверяем актуальный ли это бар.");
+            if (security.IsRealTimeActualBar(barNumber))
+            {
+                Logger.Log("Бар актуальный.");
 
-            if (value != 0d)
-                stopLossLong = value;            
+                Logger.Log("Загружаем stopLossLong из контейнера.");
+                var container = ctx.LoadObject("stopLossLong") as NotClearableContainer<double>;                
+
+                if (container != null)
+                {
+                    Logger.Log("Загрузили контейнер.");
+                    var value = container.Content;
+                    Logger.Log(string.Format("Значение в контейнере: value = {0}", value));
+                    if (value != 0d)
+                    {
+                        Logger.Log("Записываем в stopLossLong ненулевое значение из контейнера.");
+                        stopLossLong = value;
+                    }
+                    else
+                    {
+                        Logger.Log("Значение в контейнере равно нулю! Значение из контейнера отбрасываем!");
+                    }
+                }
+                else
+                {
+                    Logger.Log("Не удалось загрузить контейнер.");
+                }
+            }            
+            else
+            {
+                Logger.Log("Бар не актуальный.");
+            }
 
             if (stopLoss > stopLossLong)
             {
@@ -405,8 +456,22 @@ namespace TrendByPivotPointsStrategy
 
                                     stopLossShort = stopPrice;
 
-                                    var container = new NotClearableContainer<double>(stopLossLong);
+                                    var container = new NotClearableContainer<double>(stopLossShort);
                                     ctx.StoreObject("stopLossShort", container);
+
+                                    Logger.Log(string.Format("Проверим, сохранился ли stopLossShort = {0} в контейнере.", stopLossShort));
+
+                                    container = ctx.LoadObject("stopLossShort") as NotClearableContainer<double>;
+                                    double value = 0d;
+                                    if (container != null)
+                                        value = container.Content;
+
+                                    if (value != 0d)
+                                        if (value == stopLossLong)
+                                            Logger.Log(string.Format("stopLossShort сохранился в контейнере. Значение в контейнере: value = {0}.", value));
+
+                                        else
+                                            Logger.Log(string.Format("stopLossShort НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
 
                                     Logger.Log("Открываем короткую позицию! Отправляем ордер.");
                                 }
@@ -476,13 +541,38 @@ namespace TrendByPivotPointsStrategy
                             breakdownShort, lastHigh.Value, stopLoss);
             Logger.Log(messageForLog);
 
-            var container = ctx.LoadObject("stopLossShort") as NotClearableContainer<double>;
-            double value = double.MaxValue;
-            if (container != null)
-                value = container.Content;
+            Logger.Log("Проверяем актуальный ли это бар.");
+            if (security.IsRealTimeActualBar(barNumber))
+            {
+                Logger.Log("Бар актуальный.");
 
-            if (value != double.MaxValue)
-                stopLossShort = value;
+                Logger.Log("Загружаем stopLossShort из контейнера.");
+                var container = ctx.LoadObject("stopLossShort") as NotClearableContainer<double>;
+                
+                if (container != null)
+                {
+                    Logger.Log("Загрузили контейнер.");
+                    var value = container.Content;
+                    Logger.Log(string.Format("Значение в контейнере: value = {0}", value));
+                    if (value != 0d)
+                    {
+                        Logger.Log("Записываем в stopLossShort ненулевое значение из контейнера.");
+                        stopLossLong = value;
+                    }
+                    else
+                    {
+                        Logger.Log("Значение в контейнере равно нулю! Значение из контейнера отбрасываем!");
+                    }
+                }
+                else
+                {
+                    Logger.Log("Не удалось загрузить контейнер.");
+                }
+            }
+            else
+            {
+                Logger.Log("Бар не актуальный.");
+            }            
 
             if (stopLoss < stopLossShort)
             {
