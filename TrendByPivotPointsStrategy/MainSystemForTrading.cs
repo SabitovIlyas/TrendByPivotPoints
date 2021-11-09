@@ -29,7 +29,8 @@ namespace TrendByPivotPointsStrategy
             //var logger = new NullLogger();
 
             List<Security> securityList = null;
-            
+            this.ctx = ctx;
+
             switch (instrumentsGroup)
             {
                 case 0:
@@ -57,8 +58,7 @@ namespace TrendByPivotPointsStrategy
 
             //tradingSystem.Logger = logger;
             account.Logger = logger;
-            account.Rate = rateUSD;
-            this.ctx = ctx;
+            account.Rate = rateUSD;            
             context = new ContextTSLab(ctx);
             account.Initialize(securityList);
         }
@@ -364,7 +364,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 12;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: TATN Long 15min; LeftLocalSide: 16; RightLocalSide: 16; PivotPointBreakDown: 10; EmaPeriod: 180; optimizationResultBackward.PML: 2,05025; optimizationResultBackward.Range: 63; optimizationResultForward.PML: 5,46902; optimizationResultForward.Range: 2; optimizationResultTotal.Range: 65. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: TATN Long 15min; LeftLocalSide: 16; RightLocalSide: 16; PivotPointBreakDown: 10; EmaPeriod: 180; optimizationResultBackward.PML: 2,05025; optimizationResultBackward.Range: 63; optimizationResultForward.PML: 5,46902; optimizationResultForward.Range: 2; optimizationResultTotal.Range: 65. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.13 * 2;
@@ -373,8 +373,8 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(16, 16, 10, 180);
             ts.ctx = ctx;
 
-            securityNumber = 13;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: TATN Short 15min; LeftLocalSide: 19; RightLocalSide: 16; PivotPointBreakDown: 10; EmaPeriod: 140; optimizationResultBackward.PML: 2,70446; optimizationResultBackward.Range: 14; optimizationResultForward.PML: 5,7412; optimizationResultForward.Range: 103; optimizationResultTotal.Range: 117. 
+            securityNumber = 13;                                                                                                                      //Запрет Трейдера на открытие позиций по клиентскому счету
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: TATN Short 15min; LeftLocalSide: 19; RightLocalSide: 16; PivotPointBreakDown: 10; EmaPeriod: 140; optimizationResultBackward.PML: 2,70446; optimizationResultBackward.Range: 14; optimizationResultForward.PML: 5,7412; optimizationResultForward.Range: 103; optimizationResultTotal.Range: 117. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -443,8 +443,8 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(7, 19, 50, 60);
             ts.ctx = ctx;
 
-            securityNumber = 20;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: SNGR Long 15min; LeftLocalSide: 4; RightLocalSide: 10; PivotPointBreakDown: 90; EmaPeriod: 140; optimizationResultBackward.PML: 3,79498; optimizationResultBackward.Range: 3; optimizationResultForward.PML: 3,29889; optimizationResultForward.Range: 30; optimizationResultTotal.Range: 33. 
+            securityNumber = 20;                                                                                                                     //неликвид
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: SNGR Long 15min; LeftLocalSide: 4; RightLocalSide: 10; PivotPointBreakDown: 90; EmaPeriod: 140; optimizationResultBackward.PML: 3,79498; optimizationResultBackward.Range: 3; optimizationResultForward.PML: 3,29889; optimizationResultForward.Range: 30; optimizationResultTotal.Range: 33. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -453,8 +453,8 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(4, 10, 90, 140);
             ts.ctx = ctx;
 
-            securityNumber = 21;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: SNGR Short 15min; LeftLocalSide: 16; RightLocalSide: 7; PivotPointBreakDown: 100; EmaPeriod: 120; optimizationResultBackward.PML: 2,56544; optimizationResultBackward.Range: 86; optimizationResultForward.PML: 2,44855; optimizationResultForward.Range: 7; optimizationResultTotal.Range: 93. 
+            securityNumber = 21;                                                                                                                      //неликвид
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: SNGR Short 15min; LeftLocalSide: 16; RightLocalSide: 7; PivotPointBreakDown: 100; EmaPeriod: 120; optimizationResultBackward.PML: 2,56544; optimizationResultBackward.Range: 86; optimizationResultForward.PML: 2,44855; optimizationResultForward.Range: 7; optimizationResultTotal.Range: 93. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -493,7 +493,7 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(13, 1, 30, 40);
             ts.ctx = ctx;
 
-            securityNumber = 25;                                                                                                                      //Запрет Трейдера на открытие позиций по клиентскому счету
+            securityNumber = 25;                                                                                                                     //Запрет Трейдера на открытие позиций по клиентскому счету
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: NOTK Short 15min; LeftLocalSide: 4; RightLocalSide: 10; PivotPointBreakDown: 80; EmaPeriod: 140; optimizationResultBackward.PML: 1,88414; optimizationResultBackward.Range: 4; optimizationResultForward.PML: 3,64946; optimizationResultForward.Range: 223; optimizationResultTotal.Range: 227. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
@@ -503,7 +503,7 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(4, 10, 80, 140);
             ts.ctx = ctx;
 
-            securityNumber = 26;                                                                                                                      
+            securityNumber = 26;                                                                                                                     //неликвид 
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //!Security: HYDR Long 15min; LeftLocalSide: 4; RightLocalSide: 16; PivotPointBreakDown: 10; EmaPeriod: 100; optimizationResultBackward.PML: 0,87255; optimizationResultBackward.Range: 117; optimizationResultForward.PML: -0,097863; optimizationResultForward.Range: 2; optimizationResultTotal.Range: 119. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
@@ -513,8 +513,8 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(4, 16, 10, 100);
             ts.ctx = ctx;
 
-            securityNumber = 27;                                                                                                                     
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: HYDR Short 15min; LeftLocalSide: 19; RightLocalSide: 4; PivotPointBreakDown: 30; EmaPeriod: 80; optimizationResultBackward.PML: 0,664194; optimizationResultBackward.Range: 135; optimizationResultForward.PML: 1,65009; optimizationResultForward.Range: 9; optimizationResultTotal.Range: 144. 
+            securityNumber = 27;                                                                                                                     //неликвид
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //Security: HYDR Short 15min; LeftLocalSide: 19; RightLocalSide: 4; PivotPointBreakDown: 30; EmaPeriod: 80; optimizationResultBackward.PML: 0,664194; optimizationResultBackward.Range: 135; optimizationResultForward.PML: 1,65009; optimizationResultForward.Range: 9; optimizationResultTotal.Range: 144. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
