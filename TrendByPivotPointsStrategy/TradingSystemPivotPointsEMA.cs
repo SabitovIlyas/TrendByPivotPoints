@@ -171,6 +171,39 @@ namespace TrendByPivotPointsStrategy
                                 Logger.Log(messageForLog);
 
                                 lastLowForOpenLongPosition = lastLow;
+                                
+                                //=======================
+
+                                //Logger.Log("Проверяем актуальный ли это бар.");
+                                //if (security.IsRealTimeActualBar(barNumber))
+                                //{
+                                //    Logger.Log("Бар актуальный.");
+
+                                //    var containerName = string.Format("lastLowForOpenLongPosition {0} {1}", security.Name, positionSide);
+                                //    Logger.Log(string.Format("Сохраним lastLowForOpenLongPosition = {0} в контейнере \"{1}\".", lastLowForOpenLongPosition, containerName));
+                                //    var container = new NotClearableContainer<Indicator>(lastLowForOpenLongPosition);
+
+                                //    ctx.StoreObject(containerName, container);
+                                //    Logger.Log(string.Format("Проверим, сохранился ли lastLowForOpenLongPosition = {0} в контейнере \"{1}\".", lastLowForOpenLongPosition, containerName));
+
+                                //    container = ctx.LoadObject(containerName) as NotClearableContainer<Indicator>;
+                                //    Indicator value = null;
+                                //    if (container != null)
+                                //        value = container.Content;
+
+                                //    if (value != null)
+                                //        if (value.Value == lastLowForOpenLongPosition.Value)
+                                //            Logger.Log(string.Format("lastLowForOpenLongPosition.Value сохранился в контейнере. Значение в контейнере: value.Value = {0}.", value.Value));
+
+                                //        else
+                                //            Logger.Log(string.Format("lastLowForOpenLongPosition.Value НЕ сохранился в контейнере!"));
+                                //}
+                                //else
+                                //{
+                                //    Logger.Log("Бар не актуальный.");
+                                //}
+
+                                //======================
 
                                 if (lastPrice > stopPrice)  //4
                                 {
@@ -461,6 +494,39 @@ namespace TrendByPivotPointsStrategy
                                 Logger.Log(messageForLog);
 
                                 lastHighForOpenShortPosition = lastHigh;
+
+                                ////=======================
+
+                                //Logger.Log("Проверяем актуальный ли это бар.");
+                                //if (security.IsRealTimeActualBar(barNumber))
+                                //{
+                                //    Logger.Log("Бар актуальный.");
+
+                                //    var containerName = string.Format("lastHighForOpenShortPosition {0} {1}", security.Name, positionSide);
+                                //    Logger.Log(string.Format("Сохраним lastHighForOpenShortPosition = {0} в контейнере \"{1}\".", lastHighForOpenShortPosition, containerName));
+                                //    var container = new NotClearableContainer<Indicator>(lastHighForOpenShortPosition);
+
+                                //    ctx.StoreObject(containerName, container);
+                                //    Logger.Log(string.Format("Проверим, сохранился ли lastHighForOpenShortPosition = {0} в контейнере \"{1}\".", lastHighForOpenShortPosition, containerName));
+
+                                //    container = ctx.LoadObject(containerName) as NotClearableContainer<Indicator>;
+                                //    Indicator value = null;
+                                //    if (container != null)
+                                //        value = container.Content;
+
+                                //    if (value != null)
+                                //        if (value.Value == lastHighForOpenShortPosition.Value)
+                                //            Logger.Log(string.Format("lastHighForOpenShortPosition.Value сохранился в контейнере. Значение в контейнере: value.Value = {0}.", value.Value));
+
+                                //        else
+                                //            Logger.Log(string.Format("lastHighForOpenShortPosition.Value НЕ сохранился в контейнере!"));
+                                //}
+                                //else
+                                //{
+                                //    Logger.Log("Бар не актуальный.");
+                                //}
+
+                                ////======================
 
                                 if (lastPrice < stopPrice)  //4
                                 {

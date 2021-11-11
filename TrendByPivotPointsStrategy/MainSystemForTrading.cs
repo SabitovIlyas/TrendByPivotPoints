@@ -53,7 +53,11 @@ namespace TrendByPivotPointsStrategy
                         securityList = Initialize15minUSDScript(securities);
                         break;
                     }
-
+                case 4:
+                    {
+                        securityList = Initialize15minRubleScript10Shares(securities);
+                        break;
+                    }
             }
 
             //tradingSystem.Logger = logger;
@@ -61,6 +65,53 @@ namespace TrendByPivotPointsStrategy
             account.Rate = rateUSD;            
             context = new ContextTSLab(ctx);
             account.Initialize(securityList);
+        }
+
+        private List<Security> Initialize15minRubleScript10Shares(ISecurity[] securities)
+        {
+            var securityFirst = securities.First();
+            if (IsLaboratory(securityFirst))
+                account = new AccountLab(securityFirst);
+            else
+                account = new AccountReal(securityFirst);
+
+            var securityList = new List<Security>();
+
+            this.securityFirst = new SecurityTSlab(securityFirst);
+            securityList.Add(this.securityFirst);
+
+            //var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.1);
+            globalMoneyManager.Logger = logger;
+            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares: 10);
+
+            tradingSystems = new List<TradingSystemPivotPointsEMA>();
+
+            double totalComission;
+            AbsolutCommission absoluteComission;
+            TradingSystemPivotPointsEMA ts;
+
+            var securityNumber = 0;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //Security: MXI Long 15min; LeftLocalSide: 4; RightLocalSide: 4; PivotPointBreakDown: 100; EmaPeriod: 180; optimizationResultBackward.PML: 2,99561; optimizationResultBackward.Range: 226; optimizationResultForward.PML: 9,58233; optimizationResultForward.Range: 41; optimizationResultTotal.Range: 267.       
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.34 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(4, 4, 100, 180);
+            ts.ctx = ctx;
+
+            securityNumber = 1;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);   //Security: MXI Short 15min; LeftLocalSide: 19; RightLocalSide: 1; PivotPointBreakDown: 100; EmaPeriod: 180; optimizationResultBackward.PML: -0,191297; optimizationResultBackward.Range: 150; optimizationResultForward.PML: 0,0233779; optimizationResultForward.Range: 61; optimizationResultTotal.Range: 211.
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.9 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(19, 1, 100, 180);
+            ts.ctx = ctx;            
+
+            return securityList;
         }
 
         private List<Security> Initialize15minUSDScript(ISecurity[] securities)
