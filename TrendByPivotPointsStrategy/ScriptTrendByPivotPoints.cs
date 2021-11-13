@@ -33,12 +33,14 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 1);
         public OptimProperty instrumentsGroup = new OptimProperty(0, 0, 3, 1);
         public OptimProperty isPaint = new OptimProperty(0, 0, 1, 1);
+        public OptimProperty isLoggerOn = new OptimProperty(1, 0, 1, 1);
+        public OptimProperty shares = new OptimProperty(1, 0, 1, 1);
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
             //var timeStart = DateTime.Now;
             //var logger = new LoggerSystem(context);
-
+            
             MainSystem system;
 
             switch ((int)mode)
@@ -59,9 +61,12 @@ namespace TrendByPivotPointsStrategy
                         break;
                     }                    
             }
-            
+
+            if ((int)isLoggerOn == 1)
+                system.Logger = new LoggerSystem(context);
+
             system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission, 
-                riskValuePrcnt, securityNumber, instrumentsGroup);
+                riskValuePrcnt, securityNumber, instrumentsGroup, shares);
             system.Initialize(securities, context);
             system.Run();
 
