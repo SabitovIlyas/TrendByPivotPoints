@@ -116,25 +116,25 @@ namespace TrendByPivotPointsStrategy
             ts.SetParameters(1, 13, 50, 120);
             ts.ctx = ctx;
 
-            //securityNumber = 2;
-            //ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long);   //Security: Brent Long 15min; LeftLocalSide: 10; RightLocalSide: 7; PivotPointBreakDown: 60; EmaPeriod: 60; optimizationResultBackward.PML: 8,00695; optimizationResultBackward.Range: 104; optimizationResultForward.PML: 1,02302; optimizationResultForward.Range: 82; optimizationResultTotal.Range: 186.
-            //ts.Logger = logger;
-            //tradingSystems.Add(ts);
-            //totalComission = 1.34 * 2;
-            //absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            //absoluteComission.Execute(securities[securityNumber]);
-            //ts.SetParameters(10, 7, 60, 60);
-            //ts.ctx = ctx;
+            securityNumber = 2;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long);   //Security: Brent Long 15min; LeftLocalSide: 10; RightLocalSide: 4; PivotPointBreakDown: 30; EmaPeriod: 20; optimizationResultBackward.PML: 11,0968; optimizationResultBackward.Range: 12; optimizationResultForward.PML: 14,2202; optimizationResultForward.Range: 24; optimizationResultTotal.Range: 36.
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.34 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(10, 4, 30, 20);
+            ts.ctx = ctx;
 
-            //securityNumber = 3;
-            //ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short);   //Security: Brent Short 15min; LeftLocalSide: 1; RightLocalSide: 13; PivotPointBreakDown: 50; EmaPeriod: 120; optimizationResultBackward.PML: 5,79696; optimizationResultBackward.Range: 49; optimizationResultForward.PML: 1,79083; optimizationResultForward.Range: 186; optimizationResultTotal.Range: 235.
-            //ts.Logger = logger;
-            //tradingSystems.Add(ts);
-            //totalComission = 1.9 * 2;
-            //absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            //absoluteComission.Execute(securities[securityNumber]);
-            //ts.SetParameters(1, 13, 50, 120);
-            //ts.ctx = ctx;
+            securityNumber = 3;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short);   //Security: Brent Short 15min; LeftLocalSide: 7; RightLocalSide: 19; PivotPointBreakDown: 80; EmaPeriod: 20; optimizationResultBackward.PML: 7,59971; optimizationResultBackward.Range: 47; optimizationResultForward.PML: 3,50507; optimizationResultForward.Range: 17; optimizationResultTotal.Range: 64.
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.9 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(7, 19, 80, 20);
+            ts.ctx = ctx;
 
             return securityList;
         }
