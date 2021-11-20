@@ -63,6 +63,11 @@ namespace TrendByPivotPointsStrategy
                         securityList = Initialize15minUSDScript10Shares(securities);
                         break;
                     }
+                case 6:
+                    {
+                        securityList = Initialize15minUSDScript1000Shares(securities);
+                        break;
+                    }
             }
 
             //tradingSystem.Logger = logger;
@@ -70,6 +75,92 @@ namespace TrendByPivotPointsStrategy
             account.Rate = rateUSD;            
             context = new ContextTSLab(ctx);
             account.Initialize(securityList);
+        }
+
+        private List<Security> Initialize15minUSDScript1000Shares(ISecurity[] securities)
+        {
+            var securityFirst = securities.First();
+            if (IsLaboratory(securityFirst))
+                account = new AccountLab(securityFirst);
+            else
+                account = new AccountReal(securityFirst);
+
+            var securityList = new List<Security>();
+
+            this.securityFirst = new SecurityTSlab(securityFirst);
+            securityList.Add(this.securityFirst);
+
+            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.1);
+            globalMoneyManager.Logger = logger;
+            var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, shares: 1000);
+            localMoneyManagerUSD.Logger = logger;
+
+            tradingSystems = new List<TradingSystemPivotPointsEMA>();
+
+            double totalComission;
+            AbsolutCommission absoluteComission;
+            TradingSystemPivotPointsEMA ts;
+
+            //Security: GBPU Long 15min; LeftLocalSide: 4; RightLocalSide: 4; PivotPointBreakDown: 10; EmaPeriod: 20;
+            //optimizationResultBackward.ProfitDealsPrcnt: 30,5603; optimizationResultBackward.PML: 3,98069; optimizationResultBackward.Range: 9;
+            //optimizationResultForward.ProfitDealsPrcnt: 30,1038; optimizationResultForward.PML: 2,63982; optimizationResultForward.Range: 29; optimizationResultTotal.Range: 38.
+
+            var securityNumber = 0;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, this.securityFirst, PositionSide.Long);
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.34 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(4, 4, 10, 20);
+            ts.ctx = ctx;
+
+            
+            //Security: GBPU Short 15min; LeftLocalSide: 13; RightLocalSide: 19; PivotPointBreakDown: 40; EmaPeriod: 40;
+            //optimizationResultBackward.ProfitDealsPrcnt: 30,8943; optimizationResultBackward.PML: 2,04893; optimizationResultBackward.Range: 161;
+            //optimizationResultForward.ProfitDealsPrcnt: 25,2874; optimizationResultForward.PML: -0,308342; optimizationResultForward.Range: 134; optimizationResultTotal.Range: 295.
+            
+            securityNumber = 1;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.9 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(13, 19, 40, 40);
+            ts.ctx = ctx;
+
+
+            //Security: ED Long 15min; LeftLocalSide: 16; RightLocalSide: 7; PivotPointBreakDown: 10; EmaPeriod: 100;
+            //optimizationResultBackward.ProfitDealsPrcnt: 28,4689; optimizationResultBackward.PML: 3,52304; optimizationResultBackward.Range: 66;
+            //optimizationResultForward.ProfitDealsPrcnt: 27,9279; optimizationResultForward.PML: -0,179606; optimizationResultForward.Range: 166; optimizationResultTotal.Range: 232.
+
+            securityNumber = 2;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.34 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(16, 7, 10, 100);
+            ts.ctx = ctx;
+
+
+            //Security: ED Short 15min; LeftLocalSide: 19; RightLocalSide: 4; PivotPointBreakDown: 10; EmaPeriod: 60;
+            //optimizationResultBackward.ProfitDealsPrcnt: 27,4699; optimizationResultBackward.PML: 0,85454; optimizationResultBackward.Range: 172;
+            //optimizationResultForward.ProfitDealsPrcnt: 28,7356; optimizationResultForward.PML: 0,334178; optimizationResultForward.Range: 57; optimizationResultTotal.Range: 229.
+
+            securityNumber = 3;
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);
+            ts.Logger = logger;
+            tradingSystems.Add(ts);
+            totalComission = 1.9 * 2;
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[securityNumber]);
+            ts.SetParameters(19, 4, 10, 60);
+            ts.ctx = ctx;
+
+            return securityList;
         }
 
         private List<Security> Initialize15minUSDScript10Shares(ISecurity[] securities)
