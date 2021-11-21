@@ -106,7 +106,7 @@ namespace TrendByPivotPointsStrategy
             //optimizationResultForward.ProfitDealsPrcnt: 30,1038; optimizationResultForward.PML: 2,63982; optimizationResultForward.Range: 29; optimizationResultTotal.Range: 38.
 
             var securityNumber = 0;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, this.securityFirst, PositionSide.Long);
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, this.securityFirst, PositionSide.Null);
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.34 * 2;
@@ -448,13 +448,13 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 2;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long);   //Security: Lkoh Long 15min; LeftLocalSide: 4; RightLocalSide: 16; PivotPointBreakDown: 30; EmaPeriod: 120; optimizationResultBackward.PML: 9,32719; optimizationResultBackward.Range: 17; optimizationResultForward.PML: 7,77447; optimizationResultForward.Range: 82; optimizationResultTotal.Range: 99. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long);   //Security: Lkoh Long 15min
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 4.15 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
-            ts.SetParameters(4, 16, 30, 120);
+            ts.SetParameters(7, 13, 10, 180);
             ts.ctx = ctx;
 
             securityNumber = 3;
@@ -508,13 +508,13 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 8;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);   //!Security: LKOH Short 15min; LeftLocalSide: 4; RightLocalSide: 19; PivotPointBreakDown: 20; EmaPeriod: 200; optimizationResultBackward.PML: -0,0248474; optimizationResultBackward.Range: 131; optimizationResultForward.PML: 2,81219; optimizationResultForward.Range: 68; optimizationResultTotal.Range: 199. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);   //!Security: LKOH Short 15min
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 4.15 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
-            ts.SetParameters(4, 19, 20, 200);
+            ts.SetParameters(1, 16, 10, 180);
             ts.ctx = ctx;
 
             securityNumber = 9;
