@@ -588,23 +588,23 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 16;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: ROSN Long 15min; LeftLocalSide: 4; RightLocalSide: 1; PivotPointBreakDown: 90; EmaPeriod: 20; optimizationResultBackward.PML: 5,17157; optimizationResultBackward.Range: 30; optimizationResultForward.PML: 16,275; optimizationResultForward.Range: 3; optimizationResultTotal.Range: 33. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long);
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
-            ts.SetParameters(4, 1, 90, 20);
+            ts.SetParameters(13, 16, 50, 80);
             ts.ctx = ctx;
 
             securityNumber = 17;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: ROSN Short 15min; LeftLocalSide: 13; RightLocalSide: 4; PivotPointBreakDown: 30; EmaPeriod: 40; optimizationResultBackward.PML: 2,03303; optimizationResultBackward.Range: 219; optimizationResultForward.PML: 4,42891; optimizationResultForward.Range: 151; optimizationResultTotal.Range: 370. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
-            ts.SetParameters(13, 4, 30, 40);
+            ts.SetParameters(1, 16, 10, 180);
             ts.ctx = ctx;
 
             securityNumber = 18;
