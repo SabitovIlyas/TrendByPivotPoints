@@ -458,13 +458,13 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 3;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: Sbrf Long 15min; LeftLocalSide: 1; RightLocalSide: 16; PivotPointBreakDown: 90; EmaPeriod: 100; optimizationResultBackward.PML: 5,35436; optimizationResultBackward.Range: 51; optimizationResultForward.PML: 3,44417; optimizationResultForward.Range: 174; optimizationResultTotal.Range: 225. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long);    //Security: SBRF Long 15min
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 2.03 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
-            ts.SetParameters(1, 16, 90, 100);
+            ts.SetParameters(1, 16, 80, 100);
             ts.ctx = ctx;
 
             securityNumber = 4;
@@ -518,13 +518,13 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 9;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //?Security: SBRF Short 15min; LeftLocalSide: 13; RightLocalSide: 1; PivotPointBreakDown: 10; EmaPeriod: 20; optimizationResultBackward.PML: 0,505005; optimizationResultBackward.Range: 5; optimizationResultForward.PML: 0,0753111; optimizationResultForward.Range: 119; optimizationResultTotal.Range: 124. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);    //Security: SBRF Short 15min
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 2.03 * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[securityNumber]);
-            ts.SetParameters(13, 1, 10, 20);
+            ts.SetParameters(13, 1, 20, 120);
             ts.ctx = ctx;
 
             securityNumber = 10;
