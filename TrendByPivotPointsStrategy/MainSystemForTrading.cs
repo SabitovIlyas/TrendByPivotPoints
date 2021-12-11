@@ -198,7 +198,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 1;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short);   //!Security: Silver Short 15min; LeftLocalSide: 1; RightLocalSide: 13; PivotPointBreakDown: 50; EmaPeriod: 120; optimizationResultBackward.PML: 5,79696; optimizationResultBackward.Range: 49; optimizationResultForward.PML: 1,79083; optimizationResultForward.Range: 186; optimizationResultTotal.Range: 235. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerUSD, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);   //!Security: Silver Short 15min; LeftLocalSide: 1; RightLocalSide: 13; PivotPointBreakDown: 50; EmaPeriod: 120; optimizationResultBackward.PML: 5,79696; optimizationResultBackward.Range: 49; optimizationResultForward.PML: 1,79083; optimizationResultForward.Range: 186; optimizationResultTotal.Range: 235. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.9 * 2;
@@ -468,7 +468,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 4;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //!Security: Si Long 15min; LeftLocalSide: 1; RightLocalSide: 16; PivotPointBreakDown: 100; EmaPeriod: 160; optimizationResultBackward.PML: 9,27828; optimizationResultBackward.Range: 88; optimizationResultForward.PML: 1,12731; optimizationResultForward.Range: 77; optimizationResultTotal.Range: 165. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //!Security: Si Long 15min; LeftLocalSide: 1; RightLocalSide: 16; PivotPointBreakDown: 100; EmaPeriod: 160; optimizationResultBackward.PML: 9,27828; optimizationResultBackward.Range: 88; optimizationResultForward.PML: 1,12731; optimizationResultForward.Range: 77; optimizationResultTotal.Range: 165. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.13 * 2;
@@ -608,7 +608,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 18;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: MGNT Long 15min; LeftLocalSide: 19; RightLocalSide: 10; PivotPointBreakDown: 10; EmaPeriod: 200; optimizationResultBackward.PML: 1,21523; optimizationResultBackward.Range: 15; optimizationResultForward.PML: 4,21244; optimizationResultForward.Range: 1; optimizationResultTotal.Range: 16. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //!Security: MGNT Long 15min; LeftLocalSide: 19; RightLocalSide: 10; PivotPointBreakDown: 10; EmaPeriod: 200; optimizationResultBackward.PML: 1,21523; optimizationResultBackward.Range: 15; optimizationResultForward.PML: 4,21244; optimizationResultForward.Range: 1; optimizationResultTotal.Range: 16. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -618,7 +618,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 19;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //Security: MGNT Short 15min; LeftLocalSide: 7; RightLocalSide: 19; PivotPointBreakDown: 50; EmaPeriod: 60; optimizationResultBackward.PML: 5,56438; optimizationResultBackward.Range: 85; optimizationResultForward.PML: 0,0181262; optimizationResultForward.Range: 46; optimizationResultTotal.Range: 131. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //!Security: MGNT Short 15min; LeftLocalSide: 7; RightLocalSide: 19; PivotPointBreakDown: 50; EmaPeriod: 60; optimizationResultBackward.PML: 5,56438; optimizationResultBackward.Range: 85; optimizationResultForward.PML: 0,0181262; optimizationResultForward.Range: 46; optimizationResultTotal.Range: 131. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
