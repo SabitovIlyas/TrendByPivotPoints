@@ -618,7 +618,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 19;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short); //!Security: MGNT Short 15min; LeftLocalSide: 7; RightLocalSide: 19; PivotPointBreakDown: 50; EmaPeriod: 60; optimizationResultBackward.PML: 5,56438; optimizationResultBackward.Range: 85; optimizationResultForward.PML: 0,0181262; optimizationResultForward.Range: 46; optimizationResultTotal.Range: 131. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //!Security: MGNT Short 15min; LeftLocalSide: 7; RightLocalSide: 19; PivotPointBreakDown: 50; EmaPeriod: 60; optimizationResultBackward.PML: 5,56438; optimizationResultBackward.Range: 85; optimizationResultForward.PML: 0,0181262; optimizationResultForward.Range: 46; optimizationResultTotal.Range: 131. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
