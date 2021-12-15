@@ -498,7 +498,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 7;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Short);   //!Security: GAZR Short 15min; LeftLocalSide: 19; RightLocalSide: 4; PivotPointBreakDown: 40; EmaPeriod: 100; optimizationResultBackward.PML: 2,63234; optimizationResultBackward.Range: 331; optimizationResultForward.PML: 0,755192; optimizationResultForward.Range: 36; optimizationResultTotal.Range: 367. 
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);   //!Security: GAZR Short 15min; LeftLocalSide: 19; RightLocalSide: 4; PivotPointBreakDown: 40; EmaPeriod: 100; optimizationResultBackward.PML: 2,63234; optimizationResultBackward.Range: 331; optimizationResultForward.PML: 0,755192; optimizationResultForward.Range: 36; optimizationResultTotal.Range: 367. 
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 1.9 * 2;
@@ -588,7 +588,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 16;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long);
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Long); //Security: ROSN Long 15min
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
@@ -598,7 +598,7 @@ namespace TrendByPivotPointsStrategy
             ts.ctx = ctx;
 
             securityNumber = 17;
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null);
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[securityNumber]), PositionSide.Null); //!Security: ROSN Short 15min
             ts.Logger = logger;
             tradingSystems.Add(ts);
             totalComission = 0.33 * 2;
