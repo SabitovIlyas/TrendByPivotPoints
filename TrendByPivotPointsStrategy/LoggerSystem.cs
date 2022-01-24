@@ -2,13 +2,19 @@
 
 namespace TrendByPivotPointsStrategy
 {
-    public class LoggerSystem:Logger
+    public class LoggerSystem : Logger
     {
         IContext context;
         bool switchOn = true;
+        bool locked = false;
         public LoggerSystem(IContext context)
         {
             this.context = context;
+        }
+
+        public void LockCurrentStatus()
+        {
+            locked = true;
         }
 
         public void Log(string text)
@@ -19,12 +25,19 @@ namespace TrendByPivotPointsStrategy
 
         public void SwitchOff()
         {
-            switchOn = false;
+            if (!locked)
+                switchOn = false;
         }
 
         public void SwitchOn()
         {
-            switchOn = true;
+            if (!locked)
+                switchOn = true;
+        }
+
+        public void UnlockCurrentStatus()
+        {
+            locked = false;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace TrendByPivotPointsStrategy
         double GetBarOpen(int barNumber);
         double GetBarClose(int barNumber);
         DateTime GetBarDateTime(int barNumber);
-        int GetBarsCount();
+        int GetBarsCountReal();
         List<int> GetBarsBaseFromBarCompressed(int barNumber);
         bool IsLaboratory { get; }
         bool IsRealTimeTrading { get; }
@@ -26,8 +26,10 @@ namespace TrendByPivotPointsStrategy
         Position GetLastClosedLongPosition(int barNumber);
         Position GetLastClosedShortPosition(int barNumber);
         bool IsRealTimeActualBar(int barNumber);
+        void ResetBarNumberToLastBarNumber();
 
         String Name { get; }
         int RealTimeActualBarNumber { get; }
+        Bar GetBar(int barNumer);
     }
 }

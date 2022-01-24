@@ -186,6 +186,6 @@ namespace TrendByPivotPointsStrategy
         public void UpdateQueueData()
         {
             throw new NotImplementedException();
-        }        
+        }
     }
 }

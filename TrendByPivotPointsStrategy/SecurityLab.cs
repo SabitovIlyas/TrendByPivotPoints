@@ -31,6 +31,11 @@ namespace TrendByPivotPointsStrategy
 
         public int RealTimeActualBarNumber => throw new NotImplementedException();
 
+        public Bar GetBar(int barNumer)
+        {
+            throw new NotImplementedException();
+        }
+
         public double GetBarClose(int barNumber)
         {
             throw new System.NotImplementedException();
@@ -71,7 +76,7 @@ namespace TrendByPivotPointsStrategy
             throw new System.NotImplementedException();
         }
 
-        public int GetBarsCount()
+        public int GetBarsCountReal()
         {
             throw new System.NotImplementedException();
         }
@@ -89,6 +94,12 @@ namespace TrendByPivotPointsStrategy
         public bool IsRealTimeActualBar(int barNumber)
         {
             throw new NotImplementedException();
+        }
+
+        public void ResetBarNumberToLastBarNumber()
+        {
+            //var barsCountReal = GetBarsCountReal();
+            //barNumber = barsCountReal - 1;
         }
     }
 }

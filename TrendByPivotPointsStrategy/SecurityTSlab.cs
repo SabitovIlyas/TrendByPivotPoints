@@ -3,6 +3,8 @@ using TSLab.Script;
 using TSLab.DataSource;
 using TSLab.Script.Realtime;
 using System;
+using TSLab.Script.Handlers;
+
 
 namespace TrendByPivotPointsStrategy
 {
@@ -21,7 +23,7 @@ namespace TrendByPivotPointsStrategy
                     barNumber = 0;
                 else
                 {
-                    var securityCount = GetBarsCount();
+                    var securityCount = GetBarsCountReal();
                     if (securityCount == 0)
                         barNumber = 0;
                     else
@@ -41,7 +43,7 @@ namespace TrendByPivotPointsStrategy
         {
             get
             {
-                var bar = GetBar(barNumber);
+                var bar = GetBarIDataBar(barNumber);
                 return new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date };
             }
         }
@@ -52,28 +54,13 @@ namespace TrendByPivotPointsStrategy
             {
                 if (IsRealTimeTrading)
                 {
-                    var bars = GetBars();
+                    var bars = GetBarsReal();
                     if (bars != null && bars.Count > 0)
                         return bars.Count - 1;
                     return 0;
                 }
-                return barNumber;                
+                return barNumber;
             }
-        }
-        public bool IsRealTimeActualBar(int barNumber)
-        {
-            if (IsRealTimeTrading)
-            {
-                var bars = GetBars();
-                if (bars != null)
-                {
-                    var lastBar = bars.Count - 1;
-                    if (lastBar == barNumber)
-                        return true;
-                }
-                return false;
-            }
-            return true;
         }
 
         public ISecurity security;
@@ -81,7 +68,8 @@ namespace TrendByPivotPointsStrategy
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
-        private ISecurity baseSecurity = new SecurityNull();        
+        private ISecurity baseSecurity = new SecurityNull();
+        private IContext context;
 
         public SecurityTSlab(ISecurity security)
         {
@@ -93,13 +81,44 @@ namespace TrendByPivotPointsStrategy
         {
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;
-            InitializeSecurity(compressedSecurity);            
+            InitializeSecurity(compressedSecurity);
             CompareBarsBaseSecurityWithCompressedSecurity();
+        }
+
+        public SecurityTSlab(ISecurity security, IContext context)
+        {
+            finInfo = baseSecurity.FinInfo;
+            InitializeSecurity(security);
+            this.context = context;
+        }
+
+        public bool IsRealTimeActualBar(int barNumber)
+        {
+            if (IsRealTimeTrading)
+            {
+                var bars = GetBarsReal();
+                if (bars != null)
+                {
+                    var lastBar = bars.Count - 1;
+                    if (lastBar == barNumber)
+                        return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsRealTimeActualBarNew(int barNumber)
+        {
+            if (context.IsLastBarClosed)
+                return IsRealTimeActualBar(barNumber);
+            else
+                return IsRealTimeActualBar(barNumber - 1);
         }
 
         private void InitializeSecurity(ISecurity security)
         {
-            this.security = security;            
+            this.security = security;
             barNumber = security.Bars.Count - 1; //заглушил
             DefineIsLaboratory();
         }
@@ -107,7 +126,7 @@ namespace TrendByPivotPointsStrategy
         private List<List<int>> barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
         private void CompareBarsBaseSecurityWithCompressedSecurity()
         {
-            var lastBarNumber = GetBarsCount() - 1;
+            var lastBarNumber = GetBarsCountReal() - 1;
             var securityBaseCount = GetSecurityBaseCount();
             List<int> barsInCompressedBar;
 
@@ -118,15 +137,15 @@ namespace TrendByPivotPointsStrategy
                 for (var j = 0; j < securityBaseCount; j++)
                 {
                     if (baseSecurity.Bars[j].Date >= security.Bars[i].Date && baseSecurity.Bars[j].Date < security.Bars[i + 1].Date)
-                        barsInCompressedBar.Add(j);                
-                }               
+                        barsInCompressedBar.Add(j);
+                }
 
                 barsBaseSecurityInBarsCompressedSecurity.Add(barsInCompressedBar);
             }
 
             barsInCompressedBar = new List<int>();
             for (var j = 0; j < securityBaseCount; j++)
-            {                
+            {
                 if (baseSecurity.Bars[j].Date >= security.Bars[lastBarNumber].Date)
                     barsInCompressedBar.Add(j);
             }
@@ -142,12 +161,12 @@ namespace TrendByPivotPointsStrategy
         public int GetBarCompressedNumberFromBarBaseNumber(int barNumber)
         {
             List<int> bars;
-            for (var i=0;i<barsBaseSecurityInBarsCompressedSecurity.Count;i++)
+            for (var i = 0; i < barsBaseSecurityInBarsCompressedSecurity.Count; i++)
             {
                 bars = barsBaseSecurityInBarsCompressedSecurity[i];
                 for (var j = 0; j < bars.Count; j++)
                     if (bars[j] == barNumber)
-                        return i;                                
+                        return i;
             }
 
             throw new Exception("Номеру базового бара не соответствует ни один сжатый бар");
@@ -162,49 +181,49 @@ namespace TrendByPivotPointsStrategy
         public int GetBarNumberCompressed()
         {
             return 0;
-        }        
+        }
 
         public double GetBarOpen(int barNumber)
         {
-            var bar = GetBar(barNumber);
+            var bar = GetBarIDataBar(barNumber);
             return bar.Open;
         }
 
         public double GetBarLow(int barNumber)
         {
-            var bar = GetBar(barNumber);
+            var bar = GetBarIDataBar(barNumber);
             return bar.Low;
         }
 
         public double GetBarHigh(int barNumber)
         {
-            var bar = GetBar(barNumber);
+            var bar = GetBarIDataBar(barNumber);
             return bar.High;
         }
 
         public double GetBarClose(int barNumber)
         {
-            var bar = GetBar(barNumber);
+            var bar = GetBarIDataBar(barNumber);
             return bar.Close;
         }
 
         public DateTime GetBarDateTime(int barNumber)
         {
-            var bar = GetBar(barNumber);
+            var bar = GetBarIDataBar(barNumber);
             return bar.Date;
         }
 
-        public int GetBarsCount()
+        public int GetBarsCountReal()
         {
-            var bars = GetBars();
+            var bars = GetBarsReal();
             return bars.Count;
         }
 
-        private IDataBar GetBar(int barNumber)
+        private IDataBar GetBarIDataBar(int barNumber)
         {
             if (IsBarNumberCorrect(barNumber))
             {
-                var bars = GetBars();
+                var bars = GetBarsReal();
                 if (bars.Count == 0)
                     throw new Exception("Баров нет");
                 return bars[barNumber];
@@ -214,7 +233,7 @@ namespace TrendByPivotPointsStrategy
 
         private bool IsBarNumberCorrect(int barNumber)
         {
-            var bars = GetBars();
+            var bars = GetBarsReal();
 
             //if (barNumber < 0 || barNumber > this.barNumber || barNumber >= bars.Count)
             if (barNumber < 0 || barNumber > this.barNumber)
@@ -222,17 +241,23 @@ namespace TrendByPivotPointsStrategy
             return true;
         }
 
-        private IReadOnlyList<IDataBar> GetBars()
+        private IReadOnlyList<IDataBar> GetBarsReal()
         {
             return security.Bars;
-        }       
+        }
+
+        public void ResetBarNumberToLastBarNumber()
+        {
+            var barsCountReal = GetBarsCountReal();
+            barNumber = barsCountReal - 1;
+        }
 
         public List<Bar> GetBars(int barNumber)
         {
             var bars = new List<Bar>();
-            for (var i = 0; i <= barNumber; i++)            
-                bars.Add(new Bar() { Open = GetBar(i).Open, High = GetBar(i).High, Low = GetBar(i).Low, Close = GetBar(i).Close, Date = GetBar(i).Date });            
-            
+            for (var i = 0; i <= barNumber; i++)
+                bars.Add(new Bar() { Open = GetBarIDataBar(i).Open, High = GetBarIDataBar(i).High, Low = GetBarIDataBar(i).Low, Close = GetBarIDataBar(i).Close, Date = GetBarIDataBar(i).Date });
+
             return bars;
         }
         public bool IsLaboratory => isLaboratory;
@@ -278,5 +303,16 @@ namespace TrendByPivotPointsStrategy
         private Position lastLongPositionClosed;
         private Position lastShortPositionClosed;
         public string Name => security.ToString();
+        public Bar GetBar(int barNumber)
+        {
+            if (IsBarNumberCorrect(barNumber))
+            {
+                var bars = GetBars(barNumber);
+                if (bars.Count == 0)
+                    throw new Exception("Баров нет");
+                return bars[barNumber];
+            }
+            return new Bar();
+        }
     }
 }

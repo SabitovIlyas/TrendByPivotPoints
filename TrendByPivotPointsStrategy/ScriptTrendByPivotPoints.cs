@@ -36,7 +36,7 @@ namespace TrendByPivotPointsStrategy
         public void Execute(IContext context, ISecurity[] securities)        
         {
             //var timeStart = DateTime.Now;
-            //var logger = new LoggerSystem(context);
+            var logger = new LoggerSystem(context);
 
             MainSystem system;
 
@@ -61,10 +61,17 @@ namespace TrendByPivotPointsStrategy
             
             system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission, 
                 riskValuePrcnt, securityNumber, instrumentsGroup);
-            system.Initialize(securities, context);
-            system.Run();
+            try
+            {
+                system.Initialize(securities, context);
+                system.Run();
+                system.Paint(context, securities[0]);
+            }
+            catch(Exception e)
+            {
+                logger.Log(e.ToString());
+            }
 
-            system.Paint(context, securities[0]);
             //var timeStop = DateTime.Now;
             //var time = timeStop - timeStart;
             //logger.Log(time.ToString());

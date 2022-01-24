@@ -67,7 +67,7 @@ namespace TrendByPivotPointsStrategy
             //absoluteComission = new AbsolutCommission() { Commission = totalComission };
             //absoluteComission.Execute(securities[1]);
             //ts.SetParameters(13, 13, 60, 20);
-            
+
             //ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[2]));//gazr-5min
             //tradingSystems.Add(ts);
             //ts.Logger = logger;
@@ -121,7 +121,7 @@ namespace TrendByPivotPointsStrategy
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
 
-            var lastBarNumber = securityFirst.GetBarsCount() - 1;
+            var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
             if (lastBarNumber < 1)
                 return;
 
@@ -187,9 +187,9 @@ namespace TrendByPivotPointsStrategy
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
-        }       
+        }
 
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide, 
+        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide, double rateUSD, double positionSide,
             double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup)
         {
             this.leftLocalSide = leftLocalSide;

@@ -8,7 +8,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystemPivotPointsEMA : ITradingSystemPivotPointsEMA
+    public class TradingSystemPivotPointsEmaRtUpdate : ITradingSystemPivotPointsEMA
     {
         public IContext ctx { get; set; }
         LocalMoneyManager localMoneyManager;
@@ -41,12 +41,18 @@ namespace TrendByPivotPointsStrategy
         private double rightLocalSide;
         private double pivotPointBreakDownSide;
         private double EmaPeriodSide;
+        private Account account;
 
         public PositionSide PositionSide { get { return positionSide; } }
 
-        public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        private string containerName;
+        private string name = "TradingSystemPivotPointsEMAtest";
+        private string parametersCombination;
+
+        public TradingSystemPivotPointsEmaRtUpdate(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
+            this.account = account;
             var securityTSLab = security as SecurityTSlab;
             sec = securityTSLab.security;
             this.security = security;
@@ -71,7 +77,7 @@ namespace TrendByPivotPointsStrategy
                 var lastBar = security.LastBar;
                 var lastPrice = lastBar.Close;
 
-                if (security.IsRealTimeActualBar(barNumber))
+                if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                     Logger.SwitchOn();
                 else
                     Logger.SwitchOff();
@@ -106,7 +112,6 @@ namespace TrendByPivotPointsStrategy
         public void CheckPositionOpenLongCase(double lastPrice, int barNumber)
         {
             var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
-
             var lows = pivotPointsIndicator.GetLows(barNumber);
             if (lows.Count < 2)
                 return;
@@ -233,29 +238,11 @@ namespace TrendByPivotPointsStrategy
                                     stopLossLong = stopPrice;
 
                                     Logger.Log("Проверяем актуальный ли это бар.");
-                                    if (security.IsRealTimeActualBar(barNumber))
+                                    if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                                     {
                                         Logger.Log("Бар актуальный.");
-
-                                        var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
-                                        Logger.Log(string.Format("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
-                                        var container = new NotClearableContainer<double>(stopLossLong);
-
-                                        ctx.StoreObject(containerName, container);
-                                        Logger.Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
-
-                                        container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
-                                        double value = 0d;
-                                        if (container != null)
-                                            value = container.Content;
-
-                                        if (value != 0d)
-                                            if (value == stopLossLong)
-                                                Logger.Log(string.Format("stopLossLong сохранился в контейнере. Значение в контейнере: value = {0}.", value));
-
-                                            else
-                                                Logger.Log(string.Format("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
-
+                                        CreateStopLossLong();
+                                        SetFlagNewPositionOpened();
                                     }
                                     else
                                     {
@@ -301,6 +288,50 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
+        private void CreateStopLossLong()
+        {
+            var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
+            Logger.Log(string.Format("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
+            var container = new NotClearableContainer<double>(stopLossLong);
+
+            ctx.StoreObject(containerName, container);
+            Logger.Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
+
+            container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+            double value = 0d;
+            if (container != null)
+                value = container.Content;
+
+            if (value != 0d)
+                if (value == stopLossLong)
+                    Logger.Log(string.Format("stopLossLong сохранился в контейнере. Значение в контейнере: value = {0}.", value));
+
+                else
+                    Logger.Log(string.Format("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
+        }
+
+        private void CreateStopLossShort()
+        {
+            var containerName = string.Format("stopLossShort {0} {1}", security.Name, positionSide);
+            Logger.Log(string.Format("Сохраним stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
+            var container = new NotClearableContainer<double>(stopLossShort);
+
+            ctx.StoreObject(containerName, container);
+            Logger.Log(string.Format("Проверим, сохранился ли stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
+
+            container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+            double value = 0d;
+            if (container != null)
+                value = container.Content;
+
+            if (value != 0d)
+                if (value == stopLossLong)
+                    Logger.Log(string.Format("stopLossShort сохранился в контейнере. Значение в контейнере: value = {0}.", value));
+
+                else
+                    Logger.Log(string.Format("stopLossShort НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
+        }
+
         private void UpdateStopLossLongPosition(int barNumber, List<Indicator> lows, Indicator lastLow, IPosition le)
         {
             Logger.Log("Обновляем стоп...");
@@ -319,7 +350,7 @@ namespace TrendByPivotPointsStrategy
             Logger.Log(messageForLog);
 
             Logger.Log("Проверяем актуальный ли это бар.");
-            if (security.IsRealTimeActualBar(barNumber))
+            if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
             {
                 Logger.Log("Бар актуальный.");
 
@@ -360,7 +391,7 @@ namespace TrendByPivotPointsStrategy
                 stopLossLong = stopLoss;
 
                 Logger.Log("Проверяем актуальный ли это бар.");
-                if (security.IsRealTimeActualBar(barNumber))
+                if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                 {
                     Logger.Log("Бар актуальный.");
 
@@ -382,7 +413,6 @@ namespace TrendByPivotPointsStrategy
 
                         else
                             Logger.Log(string.Format("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
-
                 }
                 else
                 {
@@ -396,7 +426,16 @@ namespace TrendByPivotPointsStrategy
                 Logger.Log(messageForLog);
             }
 
-            le.CloseAtStop(barNumber + 1, stopLossLong, atr[barNumber], "LXS");
+            if (WasNewPositionOpened())
+            {
+                Logger.Log("Открыта новая позиция. Устанавливаем стоп-лосс на текущем баре.");
+                le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], "LXS");
+            }
+            else
+            {
+                Logger.Log("Новая позиция не открыта. Устанавливаем стоп-лосс на следующем баре.");
+                le.CloseAtStop(barNumber + 1, stopLossLong, atr[barNumber], "LXS");
+            }
         }
 
         public bool CheckLongPositionCloseCase(IPosition le, int barNumber)
@@ -409,7 +448,16 @@ namespace TrendByPivotPointsStrategy
                 Logger.Log("Проверяем пробил ли вниз минимум последнего бара стоп-лосс для лонга?");
                 if (bar.Low <= stopLossLong)
                 {
-                    le.CloseAtMarket(barNumber + 1, "LXE");
+                    if (WasNewPositionOpened())
+                    {
+                        Logger.Log("Открыта новая позиция. Устанавливаем стоп-лосс на текущем баре.");
+                        le.CloseAtMarket(barNumber, "LXE");
+                    }
+                    else
+                    {
+                        Logger.Log("Новая позиция не открыта. Устанавливаем стоп-лосс на следующем баре.");
+                        le.CloseAtMarket(barNumber + 1, "LXE");
+                    }
 
                     var message = string.Format("Да, минимум последнего бара {0} пробил вниз стоп-лосс для лонга {1}. Закрываем позицию по рынку на следующем баре.", bar.Low, stopLossLong);
                     Logger.Log(message);
@@ -482,7 +530,6 @@ namespace TrendByPivotPointsStrategy
                                 Logger.Log("Открытие короткой позции актуально?");
 
                                 Logger.Log("Вычисляем стоп-цену...");
-
                                 var stopPrice = lastHigh.Value + breakdownShort;
 
                                 messageForLog = string.Format("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
@@ -556,31 +603,11 @@ namespace TrendByPivotPointsStrategy
                                     stopLossShort = stopPrice;
 
                                     Logger.Log("Проверяем актуальный ли это бар.");
-                                    if (security.IsRealTimeActualBar(barNumber))
+                                    if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                                     {
                                         Logger.Log("Бар актуальный.");
-
-                                        var containerName = string.Format("stopLossShort {0} {1}", security.Name, positionSide);
-                                        Logger.Log(string.Format("Сохраним stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
-                                        var container = new NotClearableContainer<double>(stopLossShort);
-
-                                        ctx.StoreObject(containerName, container);
-
-                                        Logger.Log(string.Format("Проверим, сохранился ли stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
-
-                                        container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
-
-                                        double value = 0d;
-                                        if (container != null)
-                                            value = container.Content;
-
-                                        if (value != 0d)
-                                            if (value == stopLossLong)
-                                                Logger.Log(string.Format("stopLossShort сохранился в контейнере. Значение в контейнере: value = {0}.", value));
-
-                                            else
-                                                Logger.Log(string.Format("stopLossShort НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
-
+                                        CreateStopLossShort();
+                                        SetFlagNewPositionOpened();
                                     }
                                     else
                                     {
@@ -656,7 +683,7 @@ namespace TrendByPivotPointsStrategy
             Logger.Log(messageForLog);
 
             Logger.Log("Проверяем актуальный ли это бар.");
-            if (security.IsRealTimeActualBar(barNumber))
+            if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
             {
                 Logger.Log("Бар актуальный.");
 
@@ -697,7 +724,7 @@ namespace TrendByPivotPointsStrategy
                 stopLossShort = stopLoss;
 
                 Logger.Log("Проверяем актуальный ли это бар.");
-                if (security.IsRealTimeActualBar(barNumber))
+                if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                 {
                     Logger.Log("Бар актуальный.");
 
@@ -706,11 +733,9 @@ namespace TrendByPivotPointsStrategy
                     var container = new NotClearableContainer<double>(stopLossShort);
 
                     ctx.StoreObject(containerName, container);
-
                     Logger.Log(string.Format("Проверим, сохранился ли stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
 
                     container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
-
                     double value = 0d;
                     if (container != null)
                         value = container.Content;
@@ -721,7 +746,6 @@ namespace TrendByPivotPointsStrategy
 
                         else
                             Logger.Log(string.Format("stopLossShort НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
-
                 }
                 else
                 {
@@ -734,7 +758,16 @@ namespace TrendByPivotPointsStrategy
                 Logger.Log(messageForLog);
             }
 
-            se.CloseAtStop(barNumber + 1, stopLossShort, atr[barNumber], "SXS");
+            if (WasNewPositionOpened())
+            {
+                Logger.Log("Открыта новая позиция. Устанавливаем стоп-лосс на текущем баре.");
+                se.CloseAtStop(barNumber, stopLossShort, atr[barNumber], "SXS");
+            }
+            else
+            {
+                Logger.Log("Новая позиция не открыта. Устанавливаем стоп-лосс на следующем баре.");
+                se.CloseAtStop(barNumber + 1, stopLossShort, atr[barNumber], "SXS");
+            }
         }
 
         public bool CheckShortPositionCloseCase(IPosition se, int barNumber)
@@ -747,7 +780,16 @@ namespace TrendByPivotPointsStrategy
                 Logger.Log("Проверяем пробил ли вверх максимум последнего бара стоп-лосс для шорта?");
                 if (bar.High >= stopLossShort)
                 {
-                    se.CloseAtMarket(barNumber + 1, "SXE");
+                    if (WasNewPositionOpened())
+                    {
+                        Logger.Log("Открыта новая позиция. Устанавливаем стоп-лосс на текущем баре.");
+                        se.CloseAtMarket(barNumber, "SXE");
+                    }
+                    else
+                    {
+                        Logger.Log("Новая позиция не открыта. Устанавливаем стоп-лосс на следующем баре.");
+                        se.CloseAtMarket(barNumber + 1, "SXE");
+                    }
 
                     var message = string.Format("Да, максимум последнего бара {0} пробил вверх стоп-лосс для шорта {1}. Закрываем позицию по рынку на следующем баре.", bar.High, stopLossShort);
                     Logger.Log(message);
@@ -785,6 +827,9 @@ namespace TrendByPivotPointsStrategy
             this.rightLocalSide = rightLocalSide;
             this.pivotPointBreakDownSide = pivotPointBreakDownSide;
             this.EmaPeriodSide = EmaPeriodSide;
+
+            parametersCombination = string.Format("leftLocal: {0}; rightLocal: {1}; breakDown: {2}; ema: {3}", leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
+            containerName = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
 
         public void CalculateIndicators()
@@ -940,6 +985,252 @@ namespace TrendByPivotPointsStrategy
             else if (positionSide == PositionSide.Short)
                 position = sec.Positions.GetLastActiveForSignal("SE");
             return position != null;
+        }
+
+        public void Execute()
+        {
+            try
+            {
+                //ctx.ClearLog();                               
+                security.ResetBarNumberToLastBarNumber();
+                var lastBar = security.LastBar;
+                var barsCount = security.GetBarsCountReal();
+
+                var lastBarNumber = barsCount - 1;
+                var prevLastBarNumber = lastBarNumber - 1;
+                var prevLastBar = security.GetBar(prevLastBarNumber);
+
+                if (ctx.IsLastBarClosed)
+                {
+                    Logger.Log("Последний бар закрыт!!!!!!!!!!!!!!!! Последний бар № + " + lastBarNumber + ": " + lastBar.Date);
+                    Logger.Log("Пересчитываем индикаторы");
+                    CalculateIndicators(lastBarNumber);
+                }
+                else
+                {
+                    Logger.Log("Последний бар не закрыт. Последний бар № + " + lastBarNumber + ": " + lastBar.Date);
+
+                    //Закомментировал, так как если не пересчитывать индикаторы, то не получится обновлять графики. Индикаторы с них слетают. Пересчитывать индикаторы надо!
+
+                    //Logger.Log(string.Format("Пересчитывались ли индикаторы на предыдущем баре: № {0}: {1}?", prevLastBarNumber, prevLastBar));
+                    //if (WasIndicatorsCalculateOnThisBar(prevLastBarNumber))
+                    //{
+                    //    Logger.Log(string.Format("Да, пересчитывались"));
+                    //    Logger.Log(string.Format("Была ли открыта новая позиция?"));
+                    //    if (WasNewPositionOpened())
+                    //    {
+                    //        Logger.Log(string.Format("Да, была"));
+                    //        Logger.Log(string.Format("Создаём стоп-лосс"));
+                    //        CreateStopLoss();
+                    //        Logger.Log(string.Format("Сбрасываем признак того, что была открыта новая позиция"));
+                    //        ResetFlagNewPositionOpened();
+                    //    }
+                    //    else
+                    //    {
+                    //        Logger.Log(string.Format("Нет, новая позиция не была открыта"));
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    Logger.Log(string.Format("Нет, не пересчитывались"));
+                    //    Logger.Log("Пересчитываем индикаторы");
+                    //    CalculateIndicators(prevLastBarNumber);
+                    //}
+
+                    Logger.Log("Пересчитываем индикаторы");
+                    CalculateIndicators(prevLastBarNumber);
+                    Logger.Log(string.Format("Была ли открыта новая позиция? (Заглушил)"));
+                    if (WasNewPositionOpened())
+                    {
+                        Logger.Log(string.Format("Да, была"));
+                        Logger.Log(string.Format("Создаём стоп-лосс"));
+                        CreateStopLoss(lastBarNumber);
+
+                        Logger.Log(string.Format("Сбрасываем признак того, что была открыта новая позиция"));
+                        ResetFlagNewPositionOpened();
+                    }
+                    else
+                    {
+                        Logger.Log(string.Format("Нет, новая позиция не была открыта"));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Log(e.Message);
+            }
+        }
+
+        private void CalculateIndicators(int barNumber)
+        {
+            Logger.Log("Пересчёт индикатора на баре №" + barNumber);
+            CalculateIndicators();
+
+            var lastBarNumber = barNumber;
+            if (lastBarNumber < 1)
+                return;
+
+            for (var i = 0; i <= lastBarNumber; i++)
+            {
+                Update(i);
+                account.Update(i);
+            }
+            Logger.SwitchOn();
+            var bar = GetBar(barNumber);
+            SaveBarToContainer(bar.Date);
+        }
+
+        private void SaveBarToContainer(DateTime dateBar)
+        {
+            Logger.Log("Сохраняем бар в контейнер");
+            SaveObjectToContainer("Последний бар", dateBar);
+            Logger.Log("Проверим, сохранился ли бар в контейнере");
+
+            if (WasBarSavedToContainer(dateBar))
+                Logger.Log("Бар сохранился в контейнере");
+            else
+            {
+                Logger.Log("Бар не сохранился в контейнере");
+                throw new Exception("Вызываю исключение, так как бар не сохранился в контейнере!");
+            }
+        }
+
+        private bool WasBarSavedToContainer(DateTime dateBar)
+        {
+            var dateBarLoaded = LoadBarFromContainer("Последний бар");
+            return dateBar == dateBarLoaded;
+        }
+
+        private DateTime LoadBarFromContainer(string key)
+        {
+            Logger.Log("LoadBarFromContainer(key = " + key + ")");
+            DateTime barDate = DateTime.MinValue;
+            try
+            {
+                barDate = (DateTime)LoadObjectFromContainer(key);
+            }
+            catch (NullReferenceException e)
+            {
+                Logger.Log(e.Message + ". Возвращаем константу DateTime.MinValue");
+            }
+
+            return barDate;
+        }
+
+        private void SaveObjectToContainer(string key, object value)
+        {
+            var containerName = this.containerName + key;
+            var container = new NotClearableContainer<object>(value);
+            ctx.StoreObject(containerName, container);
+        }
+
+        private object LoadObjectFromContainer(string key)
+        {
+            var containerName = this.containerName + key;
+            var container = ctx.LoadObject(containerName) as NotClearableContainer<object>;
+            object value;
+            if (container != null)
+                value = container.Content;
+            else
+                throw new NullReferenceException("container равно null");
+
+            return value;
+        }
+
+        private bool WasIndicatorsCalculateOnThisBar(int barNumber)
+        {
+            Logger.Log("WasIndicatorsCalculateOnThisBar(barNumber = " + barNumber + ")");
+            var bar = GetBar(barNumber);
+            var dateBarLoaded = LoadBarFromContainer("Последний бар");
+            return bar.Date == dateBarLoaded;
+        }
+
+        private bool WasNewPositionOpened()
+        {
+            return LoadFlagNewPositionOpened();
+        }
+
+        private void SetFlagNewPositionOpened()
+        {
+            SaveFlagNewPositionOpened(true);
+        }
+
+        private void ResetFlagNewPositionOpened()
+        {
+            SaveFlagNewPositionOpened(false);
+        }
+
+        private void SaveFlagNewPositionOpened(bool flag)
+        {
+            if (positionSide == PositionSide.Long || positionSide == PositionSide.Short)
+            {
+                Logger.Log("Взводим флаг открытия новой позиции в контейнере. Флаг: " + flag);
+                SaveObjectToContainer("Новая позиция " + positionSide, flag);
+                Logger.Log("Проверим, сохранился ли флаг в контейнере");
+
+                if (WasFlagNewPositionOpenedSavedToContainer(flag))
+                    Logger.Log("Флаг сохранился в контейнере");
+                else
+                {
+                    Logger.Log("Флаг не сохранился в контейнере");
+                    throw new Exception("Вызываю исключение, так как флаг не сохранился в контейнере!");
+                }
+            }
+            else
+            {
+                throw new Exception("Вызываю исключение, так как значение positionSide ожидалось Long или Short, а оно " + positionSide);
+            }
+        }
+
+        private bool LoadFlagNewPositionOpened()
+        {
+            if (positionSide == PositionSide.Long || positionSide == PositionSide.Short)
+            {
+                var containerName = "Новая позиция " + positionSide;
+                Logger.Log("Название контейнера: " + containerName);
+                var value = (bool)LoadObjectFromContainer(containerName);
+                return value;
+            }
+            else
+            {
+                throw new Exception("Вызываю исключение, так как значение positionSide ожидалось Long или Short, а оно " + positionSide);
+            }
+        }
+
+        private bool WasFlagNewPositionOpenedSavedToContainer(bool flag)
+        {
+            var flagSaved = LoadFlagNewPositionOpened();
+            var message = string.Format("Сохранённый флаг = {0}, текущий флаг = {1}", flagSaved, flag);
+            Logger.Log(message);
+            return flag == flagSaved;
+        }
+
+        private void CreateStopLoss(int lastBarNumber)
+        {
+            Logger.LockCurrentStatus();
+            Update(lastBarNumber);
+            Logger.UnlockCurrentStatus();
+        }
+
+        private IDataBar GetBar(int barNumber)
+        {
+            Logger.Log("GetBar(barNumber = " + barNumber + ")");
+            var bars = GetBars();
+            return bars[barNumber];
+        }
+
+        private IReadOnlyList<IDataBar> GetBars()
+        {
+            Logger.Log("GetBars()");
+            if (sec == null)
+                throw new NullReferenceException("sec равно null");
+            var bars = sec.Bars;
+            if (bars == null)
+                throw new NullReferenceException("sec.Bars равно null");
+            if (bars.Count == 0)
+                throw new ArgumentOutOfRangeException("bars.Count == 0");
+
+            return sec.Bars;
         }
     }
 }

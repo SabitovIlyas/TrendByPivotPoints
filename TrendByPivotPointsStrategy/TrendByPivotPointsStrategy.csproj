@@ -63,6 +63,7 @@
     <Compile Include="Currency.cs" />
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
+    <Compile Include="ITradingSystemPivotPointsEMA.cs" />
     <Compile Include="MainSystem.cs" />
     <Compile Include="Indicator.cs" />
     <Compile Include="Logger.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="SecurityTSlab.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
+    <Compile Include="TradingSystemPivotPointsEmaRtUpdate.cs" />
     <Compile Include="TradingSystemPivotPointsEMAWithEnchancePosition.cs" />
     <Compile Include="TradingSystemPivotPointsEMA.cs" />
     <Compile Include="TradingSystemPivotPointsTwoTimeFrames.cs" />

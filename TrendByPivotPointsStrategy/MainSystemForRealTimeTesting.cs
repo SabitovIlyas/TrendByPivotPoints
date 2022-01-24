@@ -70,7 +70,7 @@ namespace TrendByPivotPointsStrategy
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
 
-            var lastBarNumber = securityFirst.GetBarsCount() - 1;
+            var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
             if (lastBarNumber < 1)
                 return;
 

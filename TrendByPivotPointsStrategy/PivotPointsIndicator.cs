@@ -18,7 +18,7 @@ namespace TrendByPivotPointsStrategy
         public void CalculateLows(Security security, int leftLocal, int rightLocal)
         {
             var result = new List<Indicator>();
-            var count = security.GetBarsCount();
+            var count = security.GetBarsCountReal();
             rightLocalLows = rightLocal;
 
             for (var i = leftLocal; i < count - rightLocal; i++)
@@ -46,7 +46,7 @@ namespace TrendByPivotPointsStrategy
                         {
                             low = false;
                             break;
-                        }                        
+                        }
                     }
                 }
 
@@ -55,13 +55,13 @@ namespace TrendByPivotPointsStrategy
             }
 
             //this.security = security;
-            lows = result;            
+            lows = result;
         }
 
         public List<Indicator> GetLows(int barNumber)
         {
             var result = new List<Indicator>();
-            
+
             foreach (var low in lows)
             {
                 if (low.BarNumber + rightLocalLows > barNumber)
@@ -145,7 +145,7 @@ namespace TrendByPivotPointsStrategy
         public void CalculateHighs(Security security, int leftLocal, int rightLocal)
         {
             var result = new List<Indicator>();
-            var count = security.GetBarsCount();
+            var count = security.GetBarsCountReal();
             rightLocalHighs = rightLocal;
 
             for (var i = leftLocal; i < count - rightLocal; i++)
