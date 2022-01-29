@@ -325,6 +325,8 @@ namespace TrendByPivotPointsStrategy
 
                 var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
                 Logger.Log(string.Format("Загружаем stopLossLong из контейнера \"{0}\".", containerName));
+                if (ctx == null)
+                    Logger.Log("!ctx==null!");
                 var container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
 
                 if (container != null)
