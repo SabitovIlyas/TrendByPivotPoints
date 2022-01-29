@@ -40,6 +40,7 @@ namespace TrendByPivotPointsStrategy
         {
             //var timeStart = DateTime.Now;
             var logger = new LoggerSystem(context);
+            var testGit = false;
 
             MainSystem system;
 
