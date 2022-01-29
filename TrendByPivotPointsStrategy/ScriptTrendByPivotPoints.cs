@@ -32,6 +32,9 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty riskValuePrcnt = new OptimProperty(0.25, 0, 1, 100);
         public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 1);
         public OptimProperty instrumentsGroup = new OptimProperty(0, 0, 3, 1);
+        public OptimProperty isPaint = new OptimProperty(0, 0, 1, 1);
+        public OptimProperty isLoggerOn = new OptimProperty(1, 0, 1, 1);
+        public OptimProperty shares = new OptimProperty(1, 0, 1, 1);
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
@@ -58,14 +61,32 @@ namespace TrendByPivotPointsStrategy
                         break;
                     }                    
             }
-            
-            system.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, emaPeriodSide, rateUSD, positionSide, comission, 
-                riskValuePrcnt, securityNumber, instrumentsGroup);
+
+            if ((int)isLoggerOn == 1)
+                system.Logger = new LoggerSystem(context);
+
+            var systemParameters = new SystemParameters();
+
+            systemParameters.Add("leftLocalSide", leftLocalSide);
+            systemParameters.Add("rightLocalSide", rightLocalSide);
+            systemParameters.Add("pivotPointBreakDownSide", pivotPointBreakDownSide);
+            systemParameters.Add("emaPeriodSide", emaPeriodSide);
+            systemParameters.Add("rateUSD", rateUSD);
+            systemParameters.Add("positionSide", positionSide);
+            systemParameters.Add("comission", comission);
+            systemParameters.Add("riskValuePrcnt", riskValuePrcnt);
+            systemParameters.Add("securityNumber", securityNumber);
+            systemParameters.Add("instrumentsGroup", instrumentsGroup);
+            systemParameters.Add("shares", shares);
+                       
             try
             {
+                system.SetParameters(systemParameters);
                 system.Initialize(securities, context);
                 system.Run();
-                system.Paint(context, securities[0]);
+
+                if ((int)isPaint == 1)
+                    system.Paint();
             }
             catch(Exception e)
             {

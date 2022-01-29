@@ -19,7 +19,7 @@ namespace TrendByPivotPointsStrategy
         int securityNumber;
 
         static DateTime lastClosedBarDateTime = DateTime.MinValue;
-        public void Initialize(ISecurity[] securities, IContext ctx)
+        public override void Initialize(ISecurity[] securities, IContext ctx)
         {
             logger = new LoggerSystem(ctx);
             var securityFirst = securities.First();
@@ -27,7 +27,7 @@ namespace TrendByPivotPointsStrategy
                 account = new AccountLab(securityFirst);
             else
                 account = new AccountReal(securityFirst);
-            
+
             account.Rate = rateUSD;
 
             var securityList = new List<Security>();
@@ -37,7 +37,7 @@ namespace TrendByPivotPointsStrategy
 
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);            
+            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
 
             tradingSystems = new List<TradingSystemPivotPointsEMA>();
 
@@ -47,14 +47,14 @@ namespace TrendByPivotPointsStrategy
 
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //sv-5min            
             ts.Logger = logger;
-            tradingSystems.Add(ts);            
+            tradingSystems.Add(ts);
             ts.SetParameters(5, 5, 10, 50);
 
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //br-5min
             ts.Logger = logger;
-            tradingSystems.Add(ts);            
+            tradingSystems.Add(ts);
             ts.SetParameters(5, 5, 10, 50);
-           
+
             account.Logger = logger;
             this.ctx = ctx;
             context = new ContextTSLab(ctx);
@@ -62,7 +62,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         bool leSeNullPreviousBar = false;
-        public void Run()
+        public override void Run()
         {
             logger.SwitchOff();
             var localLogger = new LoggerSystem(ctx);
@@ -85,7 +85,7 @@ namespace TrendByPivotPointsStrategy
             }
 
             if (IsRealTimeTrading())
-            {     
+            {
                 var prevLastBarNumber = lastBarNumber - 1;
 
                 UpdateLoggerStatus(prevLastBarNumber);
@@ -99,8 +99,8 @@ namespace TrendByPivotPointsStrategy
                         tradingSystem.Update(lastBarNumber);
                 }
 
-                foreach (var tradingSystem in tradingSystems)                
-                    tradingSystem.CheckPositionCloseCase(lastBarNumber);                
+                foreach (var tradingSystem in tradingSystems)
+                    tradingSystem.CheckPositionCloseCase(lastBarNumber);
             }
             else
             {

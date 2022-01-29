@@ -23,7 +23,7 @@ namespace TrendByPivotPointsStrategy
 
         static DateTime lastClosedBarDateTime = DateTime.MinValue;
 
-        public void Initialize(ISecurity[] securities, IContext ctx)
+        public override void Initialize(ISecurity[] securities, IContext ctx)
         {
             logger = new LoggerSystem(ctx);
             //var logger = new NullLogger();
@@ -891,7 +891,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         bool leSeNullPreviousBar = false;
-        public void Run()
+        public override void Run()
         {
             //logger.SwitchOff();
             //var localLogger = new LoggerSystem(ctx);
@@ -904,13 +904,13 @@ namespace TrendByPivotPointsStrategy
                 return;
 
             for (var i = 0; i <= lastBarNumber; i++)
-            {                
+            {
                 foreach (var tradingSystem in tradingSystems)
                 {
                     tradingSystem.Update(i);
                     account.Update(i);
                 }
-            }                        
+            }
         }
 
         private void UpdateLoggerStatus(int barNumber)
