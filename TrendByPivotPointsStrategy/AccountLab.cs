@@ -45,9 +45,9 @@ namespace TrendByPivotPointsStrategy
             }
         }        
 
-        public double GObying => 4500;
+        public double GObying => 0.45;
 
-        public double GOselling => 4500;
+        public double GOselling => 0.40;
 
         public double Rate { get { return rate; } set { rate = value; } }
         private double rate;

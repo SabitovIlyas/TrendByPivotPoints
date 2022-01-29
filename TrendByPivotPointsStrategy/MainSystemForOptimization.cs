@@ -22,6 +22,8 @@ namespace TrendByPivotPointsStrategy
         //List<TradingSystemPivotPointsTwoTimeFrames> tradingSystems;
         List<TradingSystemPivotPointsEMA> tradingSystems;
         int securityNumber;
+        public Logger Logger { get { return logger; } set { logger = value; } }
+        Logger logger=new NullLogger();
 
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
@@ -165,6 +167,7 @@ namespace TrendByPivotPointsStrategy
             this.comission = comission;
             this.riskValuePrcnt = riskValuePrcnt;
             this.securityNumber = securityNumber;
+            this.shares = shares;
         }
 
         private double leftLocalSide;
@@ -175,5 +178,6 @@ namespace TrendByPivotPointsStrategy
         private double positionSide;
         private double comission;
         private double riskValuePrcnt;
+        private int shares;
     }
 }

@@ -17,6 +17,8 @@ namespace TrendByPivotPointsStrategy
         List<TradingSystemPivotPointsEMA> tradingSystems;
         Logger logger;
         int securityNumber;
+        public Logger Logger { get { return logger; } set { logger = value; } }
+
 
         static DateTime lastClosedBarDateTime = DateTime.MinValue;
         public override void Initialize(ISecurity[] securities, IContext ctx)
@@ -146,7 +148,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide,
-            double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup)
+            double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup, int shares)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
@@ -157,6 +159,7 @@ namespace TrendByPivotPointsStrategy
             this.comission = comission;
             this.riskValuePrcnt = riskValuePrcnt;
             this.securityNumber = securityNumber;
+            this.shares = shares;
         }
 
         private double leftLocalSide;
@@ -167,5 +170,6 @@ namespace TrendByPivotPointsStrategy
         private double positionSide;
         private double comission;
         private double riskValuePrcnt;
+        private int shares;
     }
 }

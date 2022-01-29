@@ -20,6 +20,7 @@ namespace TrendByPivotPointsStrategy
         Logger logger;
         int securityNumber;
         int instrumentsGroup;
+        public Logger Logger { get { return logger; } set { logger = value; } }
 
         static DateTime lastClosedBarDateTime = DateTime.MinValue;
 
@@ -363,7 +364,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         private List<Security> Initialize5minUSDScript(ISecurity[] securities)
-        {            
+        {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -441,7 +442,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         private List<Security> Initialize15minRubleScript(ISecurity[] securities)
-        {            
+        {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -769,7 +770,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         private List<Security> Initialize5minRubleScript(ISecurity[] securities)
-        {            
+        {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -925,7 +926,7 @@ namespace TrendByPivotPointsStrategy
 
             lastClosedBarDateTime = dateTimePreviousLastBar;
         }
-        
+
         public void Paint(IContext ctx, ISecurity sec)
         {
             //var firstTradingSystem = tradingSystems.First();
@@ -972,7 +973,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide,
-            double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup)
+            double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup, int shares)
         {
             this.leftLocalSide = leftLocalSide;
             this.rightLocalSide = rightLocalSide;
@@ -984,6 +985,7 @@ namespace TrendByPivotPointsStrategy
             this.riskValuePrcnt = riskValuePrcnt;
             this.securityNumber = securityNumber;
             this.instrumentsGroup = instrumentsGroup;
+            this.shares = shares;
         }
 
         private double leftLocalSide;
@@ -994,5 +996,6 @@ namespace TrendByPivotPointsStrategy
         private double positionSide;
         private double comission;
         private double riskValuePrcnt;
+        private int shares;
     }
 }
