@@ -60,6 +60,7 @@
     <Compile Include="Bar.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="ContextTSLab.cs" />
+    <Compile Include="Converter.cs" />
     <Compile Include="Currency.cs" />
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
