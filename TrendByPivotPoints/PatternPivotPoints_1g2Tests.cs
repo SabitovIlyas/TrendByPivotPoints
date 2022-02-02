@@ -25,6 +25,7 @@ namespace TrendByPivotPoints.Tests
             Assert.IsTrue(actual);            
         }
 
+        [TestMethod()]
         public void CheckTest_1l2()
         {
             //arrange

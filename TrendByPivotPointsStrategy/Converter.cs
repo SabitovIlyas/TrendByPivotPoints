@@ -15,18 +15,18 @@ namespace TrendByPivotPointsStrategy
             this.isConverted = isConverted;
         }
 
-        public bool IsGreater(double a, double b)
+        public bool IsGreater(double greaterValue, double lessValue)
         {
             if (!isConverted)
-                return a > b;
+                return greaterValue > lessValue;
             else
-                return b < a;
+                return greaterValue < lessValue;
         }
 
-        public bool IsLess(double a, double b)
+        public bool IsLess(double lessValue, double greaterValue)
         {
             isConverted = !isConverted;
-            var result = IsGreater(a, b);
+            var result = IsGreater(lessValue, greaterValue);
             isConverted = !isConverted;
             return result;
         }

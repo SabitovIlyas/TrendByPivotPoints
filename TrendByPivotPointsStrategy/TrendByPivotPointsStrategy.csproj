@@ -78,9 +78,11 @@
     <Compile Include="PaneTSLab.cs" />
     <Compile Include="PatternPivotPoints.cs" />
     <Compile Include="PatternPivotPoints_1g2.cs" />
+    <Compile Include="PatternPivotPoints_1g2g3.cs" />
     <Compile Include="PatternPivotPoints_1g2l3.cs" />
     <Compile Include="PatternPivotPoints_1l2.cs" />
     <Compile Include="PatternPivotPoints_1l2g3.cs" />
+    <Compile Include="PatternPivotPoints_1l2l3.cs" />
     <Compile Include="PivotPointsIndicator.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="PositionSide.cs" />

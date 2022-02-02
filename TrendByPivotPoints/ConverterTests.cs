@@ -12,7 +12,7 @@ namespace TrendByPivotPointsStrategy.Tests
         }
 
         [TestMethod()]
-        public void IsGreaterTest1()
+        public void IsGreaterTest_IsConvertedFalse_ReturnedTrue()
         {
             //arrange            
             var expected = true;
@@ -26,20 +26,21 @@ namespace TrendByPivotPointsStrategy.Tests
         }
 
         [TestMethod()]
-        public void IsGreaterTest2()
+        public void IsGreaterTest_IsConvertedTrue_ReturnedFalse()
         {
             //arrange            
             var expected = false;
 
             //act
             var convertable = new Converter(true);
-            var actual = convertable.IsGreater(4.5, 2.0); ;
+            var actual = convertable.IsGreater(4.5, 2.0);
 
             //assert            
             Assert.AreEqual(expected, actual);
         }
 
-        public void IsLessTest1()
+        [TestMethod()]
+        public void IsLessTest_IsConvertedFalse_ReturnedFalse()
         {
             //arrange            
             var expected = false;
@@ -53,7 +54,7 @@ namespace TrendByPivotPointsStrategy.Tests
         }
 
         [TestMethod()]
-        public void IsLessTest2()
+        public void IsLessTest_IsConvertedTrue_ReturnedFalse()
         {
             //arrange            
             var expected = true;

@@ -4,6 +4,6 @@ namespace TrendByPivotPointsStrategy
 {
     public interface PatternPivotPoints
     {
-        bool Check(List<double> extremums);
+        bool Check(List<double> extremums, bool isConverted = false);
     }
 }
