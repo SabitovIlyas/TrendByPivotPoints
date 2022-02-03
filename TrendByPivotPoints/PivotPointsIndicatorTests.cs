@@ -37,33 +37,7 @@ namespace TrendByPivotPointsStrategy.Tests
 
             security = new SecurityTSlab(securityBase);
             lastBarNumber = security.GetBarsCountReal() - 1;
-        }
-
-        [TestMethod()]
-        public void GetLowsTest()
-        {
-            //arrange            
-            var expected = dataBarsForTesting.GetExpectedLows_lefLocal3_rightLocal3();
-
-            //act
-            var actual = pivotPointsIndicator.GetLows(bars, 3, 3);
-
-            //assert
-            var check = true;
-            if (expected != null && actual != null && expected.Count == actual.Count)
-                for (var i = 0; i < expected.Count; i++)
-                {
-                    if ((actual[i].BarNumber != expected[i].BarNumber) || (actual[i].Value != expected[i].Value))
-                    {
-                        check = false;
-                        break;
-                    }                    
-                }
-            else
-                check = false;
-
-            Assert.IsTrue(check);
-        }
+        }      
 
         [TestMethod()]
         public void GetLowsSecurityTest()
@@ -90,33 +64,7 @@ namespace TrendByPivotPointsStrategy.Tests
                 check = false;
 
             Assert.IsTrue(check);
-        }
-
-        [TestMethod()]
-        public void GetHighsTest()
-        {
-            //arrange            
-            var expected = dataBarsForTesting.GetExpectedHighs_lefLocal3_rightLocal3();
-
-            //act
-            var actual = pivotPointsIndicator.GetHighs(bars, 3, 3);
-
-            //assert
-            var check = true;
-            if (expected != null && actual != null && expected.Count == actual.Count)
-                for (var i = 0; i < expected.Count; i++)
-                {
-                    if ((actual[i].BarNumber != expected[i].BarNumber) || (actual[i].Value != expected[i].Value))
-                    {
-                        check = false;
-                        break;
-                    }
-                }
-            else
-                check = false;
-
-            Assert.IsTrue(check);
-        }
+        }        
 
         [TestMethod()]
         public void GetHighsSecurityTest()
