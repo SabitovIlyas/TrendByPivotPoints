@@ -7,7 +7,7 @@ namespace TrendByPivotPointsStrategy
         public bool Check(List<double> extremums, bool isConverted = false)
        {
             var pattern = new PatternPivotPoints_1g2();
-            return pattern.Check(extremums, isConverted: true);
+            return pattern.Check(extremums, isConverted: !isConverted);
         }
     }
 }

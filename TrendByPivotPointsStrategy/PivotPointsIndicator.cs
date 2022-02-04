@@ -6,26 +6,25 @@ namespace TrendByPivotPointsStrategy
     {
         private List<Indicator> lows = new List<Indicator>();
         private List<Indicator> highs = new List<Indicator>();
-        private Security security;
-        private int rightLocalLows;
-        private int rightLocalHighs;
+        private int rightLocalExtremums;
 
-        public void CalculateLows(Security security, int leftLocal, int rightLocal)
+        public void CalculateLows(Security security, int leftLocal, int rightLocal, bool isConverted = false)
         {
+            var convertable = new Converter(isConverted);
             var result = new List<Indicator>();
             var count = security.GetBarsCountReal();
-            rightLocalLows = rightLocal;            
+            rightLocalExtremums = rightLocal;            
 
             for (var i = leftLocal; i < count - rightLocal; i++)
             {
-                double low1 = security.GetBarLow(i);
+                double low1 = convertable.GetBarLow(security, i);
                 double low2;
 
                 var low = true;
                 for (var j = i - leftLocal; j < i; j++)
                 {
-                    low2 = security.GetBarLow(j);
-                    if (low1 >= low2)
+                    low2 = convertable.GetBarLow(security, j);
+                    if (convertable.IsGreaterOrEqual(low1, low2))
                     {
                         low = false;
                         break;
@@ -36,8 +35,8 @@ namespace TrendByPivotPointsStrategy
                 {
                     for (var j = i + 1; j <= i + rightLocal; j++)
                     {
-                        low2 = security.GetBarLow(j);
-                        if (low2 < low1)
+                        low2 = convertable.GetBarLow(security, j);
+                        if (convertable.IsLess(low2, low1))
                         {
                             low = false;
                             break;
@@ -48,78 +47,42 @@ namespace TrendByPivotPointsStrategy
                 if (low == true)
                     result.Add(new Indicator() { BarNumber = i, Value = low1 });
             }
-            
-            lows = result;
+
+            if (!isConverted)
+                lows = result;
+            else
+                highs = result;
         }
 
-        public List<Indicator> GetLows(int barNumber)
+        public List<Indicator> GetLows(int barNumber, bool isConverted = false)
         {
+            List<Indicator> extremums;
+            if (!isConverted)
+                extremums = lows;
+            else
+                extremums = highs;
+
             var result = new List<Indicator>();
 
-            foreach (var low in lows)
+
+            foreach (var extremum in extremums)
             {
-                if (low.BarNumber + rightLocalLows > barNumber)
+                if (extremum.BarNumber + rightLocalExtremums > barNumber)
                     break;
-                result.Add(low);
+                result.Add(extremum);
             }
 
             return result;
         }
-        
-        public void CalculateHighs(Security security, int leftLocal, int rightLocal)
+
+        public void CalculateHighs(Security security, int leftLocal, int rightLocal, bool isConverted = false)
         {
-            var result = new List<Indicator>();
-            var count = security.GetBarsCountReal();
-            rightLocalHighs = rightLocal;
-
-            for (var i = leftLocal; i < count - rightLocal; i++)
-            {
-                double high1 = security.GetBarHigh(i);
-                double high2;
-
-                var high = true;
-                for (var j = i - leftLocal; j < i; j++)
-                {
-                    high2 = security.GetBarHigh(j);
-                    if (high1 <= high2)
-                    {
-                        high = false;
-                        break;
-                    }
-                }
-
-                if (high == true)
-                {
-                    for (var j = i + 1; j <= i + rightLocal; j++)
-                    {
-                        high2 = security.GetBarHigh(j);
-                        if (high2 > high1)
-                        {
-                            high = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (high == true)
-                    result.Add(new Indicator() { BarNumber = i, Value = high1 });
-            }
-            
-            highs = result;
+            CalculateLows(security, leftLocal, rightLocal, isConverted: !isConverted);
         }
 
-        public List<Indicator> GetHighs(int barNumber)
+        public List<Indicator> GetHighs(int barNumber, bool isConverted = false)
         {
-            var result = new List<Indicator>();
-
-            foreach (var high in highs)
-            {
-                if (high.BarNumber + rightLocalHighs > barNumber)
-                    break;
-                result.Add(high);
-            }
-
-            return result;
+            return GetLows(barNumber, isConverted: !isConverted);            
         }
     }
 }

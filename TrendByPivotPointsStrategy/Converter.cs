@@ -24,6 +24,16 @@
             return result;
         }
 
+        public bool IsGreaterOrEqual(double greaterValue, double lessValue)
+        {
+            return IsGreater(greaterValue, lessValue) || (greaterValue == lessValue);
+        }
+
+        public bool IsLessOrEqual(double lessValue, double greaterValue)
+        {
+            return IsLess(lessValue, greaterValue) || (greaterValue == lessValue);
+        }
+
         public double GetBarLow(Security security, int barNumber)
         {            
             if (!isConverted)
