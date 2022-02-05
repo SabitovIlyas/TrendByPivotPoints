@@ -60,6 +60,7 @@
     <Compile Include="Bar.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="ContextTSLab.cs" />
+    <Compile Include="Converter.cs" />
     <Compile Include="Currency.cs" />
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
@@ -77,9 +78,11 @@
     <Compile Include="PaneTSLab.cs" />
     <Compile Include="PatternPivotPoints.cs" />
     <Compile Include="PatternPivotPoints_1g2.cs" />
+    <Compile Include="PatternPivotPoints_1g2g3.cs" />
     <Compile Include="PatternPivotPoints_1g2l3.cs" />
     <Compile Include="PatternPivotPoints_1l2.cs" />
     <Compile Include="PatternPivotPoints_1l2g3.cs" />
+    <Compile Include="PatternPivotPoints_1l2l3.cs" />
     <Compile Include="PivotPointsIndicator.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="PositionSide.cs" />

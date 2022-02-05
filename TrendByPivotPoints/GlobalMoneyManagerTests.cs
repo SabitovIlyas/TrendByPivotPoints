@@ -18,7 +18,7 @@ namespace TrendByPivotPoints.Tests
         public void TestInitialize()
         {
             account = new AccountFake();
-            account.InitDeposit = 1000.0;
+            account.Equity = 1000.0;
             globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 5.00); ;
         }
 
@@ -27,7 +27,7 @@ namespace TrendByPivotPoints.Tests
         {
             //arrange            
             var expected = 50;
-            account.Equity = 100;
+            account.FreeBalance = 100;
 
             //act
             var actual = globalMoneyManager.GetMoneyForDeal();
@@ -35,18 +35,18 @@ namespace TrendByPivotPoints.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
-        public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance25_returned25()
-        {
-            //arrange            
-            var expected = 25;
-            account.Equity = 25;
+        //[TestMethod()]
+        //public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance25_returned25()
+        //{
+        //    //arrange            
+        //    var expected = 25;
+        //    account.FreeBalance = 25;
 
-            //act
-            var actual = globalMoneyManager.GetMoneyForDeal();
-            //assert
-            Assert.AreEqual(expected, actual);
-        }
+        //    //act
+        //    var actual = globalMoneyManager.GetMoneyForDeal();
+        //    //assert
+        //    Assert.AreEqual(expected, actual);
+        //}
 
     //    [TestMethod()]
     //    public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance25_returned25_1()

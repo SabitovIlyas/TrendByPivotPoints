@@ -4,7 +4,7 @@ namespace TrendByPivotPointsStrategy
 {
     public class PatternPivotPoints_1g2l3 : PatternPivotPoints
     {
-        public bool Check(List<double> extremums)
+        public bool Check(List<double> extremums, bool isConverted = false)
         {
             var last3extremums = new List<double>();
             var countExtremumsInPattern = 3;
