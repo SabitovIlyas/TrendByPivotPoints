@@ -23,6 +23,15 @@ namespace TrendByPivotPointsStrategy
                 context.Log(text);
         }
 
+        public void Log(string text, params object[] args)
+        {            
+            if (switchOn)
+            {
+                var log = string.Format(text, args);
+                context.Log(log); 
+            }
+        }
+
         public void SwitchOff()
         {
             if (!locked)

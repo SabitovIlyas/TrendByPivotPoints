@@ -8,6 +8,11 @@
 
         public void Log(string text) { }
 
+        public void Log(string text, params object[] args)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void SwitchOff()
         {
         }

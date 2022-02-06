@@ -224,7 +224,7 @@ namespace TrendByPivotPointsStrategy.Tests
             result.Add(new Indicator() { Value = 75952, BarNumber = 6 });
             result.Add(new Indicator() { Value = 75630, BarNumber = 29 });
             result.Add(new Indicator() { Value = 75510, BarNumber = 40 });
-            result.Add(new Indicator() { Value = 75609, BarNumber = 47 });
+            result.Add(new Indicator() { Value = 75609, BarNumber = 47 });//!
             result.Add(new Indicator() { Value = 75582, BarNumber = 56 });
             result.Add(new Indicator() { Value = 75576, BarNumber = 64 });
             result.Add(new Indicator() { Value = 75340, BarNumber = 78 });

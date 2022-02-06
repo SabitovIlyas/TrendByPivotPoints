@@ -74,13 +74,7 @@ namespace TrendByPivotPointsStrategy
                 var lastPrice = lastBar.Close;
 
                 switch (positionSide)
-                {
-                    case PositionSide.LongAndShort:
-                        {
-                            CheckPositionOpenLongCase(lastPrice, barNumber);
-                            CheckPositionOpenShortCase(lastPrice, barNumber);
-                            break;
-                        }
+                {                    
                     case PositionSide.Long:                    
                         {
                             CheckPositionOpenLongCase(lastPrice, barNumber);
@@ -864,13 +858,7 @@ namespace TrendByPivotPointsStrategy
         public void CalculateIndicators()
         {
             switch (positionSide)
-            {
-                case PositionSide.LongAndShort:
-                    {
-                        pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);
-                        pivotPointsIndicator.CalculateHighs(security, (int)leftLocalSide, (int)rightLocalSide);
-                        break;
-                    }
+            {               
                 case PositionSide.Long:
                     {
                         pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);
@@ -911,34 +899,7 @@ namespace TrendByPivotPointsStrategy
             pane.AddList("EMA", ema, ListStyles.LINE, colorTSlab, LineStyles.SOLID, PaneSides.RIGHT);
 
             switch (positionSide)
-            {
-                case PositionSide.LongAndShort:
-                    {
-                        var lows = pivotPointsIndicator.GetLows(security.BarNumber);
-                        var listLows = new List<bool>();
-
-                        for (var i = 0; i <= security.BarNumber; i++)
-                            listLows.Add(false);
-
-                        foreach (var low in lows)
-                            listLows[low.BarNumber] = true;
-
-                        colorTSlab = new TSLab.Script.Color(SystemColor.Green.ToArgb());
-                        pane.AddList("Lows", listLows, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
-
-                        var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
-                        var listHighs = new List<bool>();
-
-                        for (var i = 0; i <= security.BarNumber; i++)
-                            listHighs.Add(false);
-
-                        foreach (var high in highs)
-                            listHighs[high.BarNumber] = true;
-
-                        colorTSlab = new TSLab.Script.Color(SystemColor.Red.ToArgb());
-                        pane.AddList("Highs", listHighs, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
-                        break;
-                    }
+            {                
                 case PositionSide.Long:
                     {
                         var lows = pivotPointsIndicator.GetLows(security.BarNumber);

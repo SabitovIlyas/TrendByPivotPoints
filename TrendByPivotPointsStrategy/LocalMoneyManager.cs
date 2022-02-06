@@ -60,9 +60,7 @@ namespace TrendByPivotPointsStrategy
                         }
                         go = account.GOselling;
                     }
-                    break;
-                case PositionSide.LongAndShort:
-                    break;
+                    break;                
             }
 
                      
