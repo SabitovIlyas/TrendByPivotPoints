@@ -6,22 +6,28 @@ namespace TrendByPivotPointsStrategy
 {
     public abstract class MainSystem
     {
+        public Logger Logger { get { return logger; } set { logger = value; } }
+
         protected ContextTSLab context;
-        protected List<TradingSystemPivotPointsEMA> tradingSystems;
+        protected List<ITradingSystemPivotPointsEMA> tradingSystems;
         protected int securityNumber;
+        protected int instrumentsGroup;
 
         protected int leftLocalSide;
         protected int rightLocalSide;
         protected double pivotPointBreakDownSide;
         protected int EmaPeriodSide;
+
         protected double rateUSD;
         protected int positionSide;
         protected double comission;
         protected double riskValuePrcnt;
-        protected int shares;
-        protected int instrumentsGroup;
+        
+        protected int shares;        
+        protected Logger logger = new NullLogger();
+        protected Account account;
 
-        public Logger Logger { get; set; }
+
         public abstract void Initialize(ISecurity[] securities, IContext ctx);
         public void Paint()
         {

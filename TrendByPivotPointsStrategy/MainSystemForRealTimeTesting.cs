@@ -8,17 +8,9 @@ using TSLab.Script.Realtime;
 namespace TrendByPivotPointsStrategy
 {
     public class MainSystemForRealTimeTesting : MainSystem
-    {
-        TradingSystemPivotPointsEMA tradingSystem1;
+    {        
         Security securityFirst;
-        IContext ctx;
-        ContextTSLab context;
-        Account account;
-        List<TradingSystemPivotPointsEMA> tradingSystems;
-        Logger logger;
-        int securityNumber;
-        public Logger Logger { get { return logger; } set { logger = value; } }
-
+        IContext ctx;                
 
         static DateTime lastClosedBarDateTime = DateTime.MinValue;
         public override void Initialize(ISecurity[] securities, IContext ctx)
@@ -41,10 +33,8 @@ namespace TrendByPivotPointsStrategy
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
 
-            tradingSystems = new List<TradingSystemPivotPointsEMA>();
-
-            double totalComission;
-            AbsolutCommission absoluteComission;
+            tradingSystems = new List<ITradingSystemPivotPointsEMA>();
+            
             TradingSystemPivotPointsEMA ts;
 
             ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, PositionSide.Long);   //sv-5min            
@@ -62,8 +52,7 @@ namespace TrendByPivotPointsStrategy
             context = new ContextTSLab(ctx);
             account.Initialize(securityList);
         }
-
-        bool leSeNullPreviousBar = false;
+        
         public override void Run()
         {
             logger.SwitchOff();
@@ -145,31 +134,6 @@ namespace TrendByPivotPointsStrategy
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
-        }
-
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide,
-            double rateUSD, double positionSide, double comission, double riskValuePrcnt, int securityNumber, int instrumentsGroup, int shares)
-        {
-            this.leftLocalSide = leftLocalSide;
-            this.rightLocalSide = rightLocalSide;
-            this.pivotPointBreakDownSide = pivotPointBreakDownSide;
-            this.EmaPeriodSide = EmaPeriodSide;
-            this.rateUSD = rateUSD;
-            this.positionSide = positionSide;
-            this.comission = comission;
-            this.riskValuePrcnt = riskValuePrcnt;
-            this.securityNumber = securityNumber;
-            this.shares = shares;
-        }
-
-        private double leftLocalSide;
-        private double rightLocalSide;
-        private double pivotPointBreakDownSide;
-        private double EmaPeriodSide;
-        private double rateUSD;
-        private double positionSide;
-        private double comission;
-        private double riskValuePrcnt;
-        private int shares;
+        }       
     }
 }

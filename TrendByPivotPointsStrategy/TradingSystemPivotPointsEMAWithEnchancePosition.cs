@@ -29,12 +29,10 @@ namespace TrendByPivotPointsStrategy
         bool flagToDebugLog = false;
                 
         Indicator lastLowForOpenLongPosition = null;
-        Indicator lastLowCaseLongClose = null;
         double lastPriceOpenLongPosition = 0;
         double breakdownLong = 0;
 
         Indicator lastHighForOpenShortPosition = null;
-        Indicator lastHighCaseShortClose = null;
         double lastPriceOpenShortPosition = 0;
         double breakdownShort = 0;
 

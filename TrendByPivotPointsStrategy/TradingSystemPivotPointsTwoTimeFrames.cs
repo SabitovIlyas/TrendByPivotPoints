@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TSLab.DataSource;
 using TSLab.Script;
-using TsLabColor = TSLab.Script.Color;
 using SystemColor = System.Drawing.Color;
 using TSLab.Script.GraphPane;
 
@@ -11,7 +10,6 @@ namespace TrendByPivotPointsStrategy
 {
     public class TradingSystemPivotPointsTwoTimeFrames
     {
-        List<Bar> bars;
         LocalMoneyManager localMoneyManager;
         Account account;
         ISecurity sec;

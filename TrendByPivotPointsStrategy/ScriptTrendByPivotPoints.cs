@@ -38,9 +38,7 @@ namespace TrendByPivotPointsStrategy
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
-            //var timeStart = DateTime.Now;
             var logger = new LoggerSystem(context);
-            var testGit = false;
 
             MainSystem system;
 
@@ -92,11 +90,7 @@ namespace TrendByPivotPointsStrategy
             catch(Exception e)
             {
                 logger.Log(e.ToString());
-            }
-
-            //var timeStop = DateTime.Now;
-            //var time = timeStop - timeStart;
-            //logger.Log(time.ToString());
+            }            
         }
     }
 }
