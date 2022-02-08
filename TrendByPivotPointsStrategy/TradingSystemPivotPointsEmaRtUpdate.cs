@@ -146,6 +146,12 @@ namespace TrendByPivotPointsStrategy
         {
             Logger.Log("{0}: {1}", tradingSystemDescription, text);
         }
+        
+        private void Log(string text, params object[] args)
+        {
+            text = string.Format(text, args);
+            Log(text);
+        }
 
         public void CheckPositionOpenLongCase()
         {
@@ -159,7 +165,7 @@ namespace TrendByPivotPointsStrategy
 
             breakdownLong = (pivotPointBreakDownSide / 100) * atr[barNumber];
                         
-            Log(string.Format("бар № {0}. Открыта ли длинная позиция?", barNumber));
+            Log("бар № {0}. Открыта ли длинная позиция?", barNumber);
 
             if (!IsPositionOpen())
             {
@@ -168,7 +174,7 @@ namespace TrendByPivotPointsStrategy
 
                 if (IsLastMinGreaterThanPrevious())   //1
                 {
-                    Log(string.Format("Да, выполняется: последний минимум б. №{0}: {1} выше предыдущего б. №{2}: {3}.", lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value));
+                    Log("Да, выполняется: последний минимум б. №{0}: {1} выше предыдущего б. №{2}: {3}.", lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
                     Log("Использовался ли последний минимум в попытке открыть длинную позицию ранее?");                    
 
                     var isLastLowCaseLongCloseNotExist = lastLowForOpenLongPosition == null;
@@ -176,14 +182,13 @@ namespace TrendByPivotPointsStrategy
                     if (isLastLowCaseLongCloseNotExist || (lastLow.BarNumber != lastLowForOpenLongPosition.BarNumber))    //2
                     {
                         if (isLastLowCaseLongCloseNotExist)
-                            textForLog = "Последняя попытка открыть длинную позицию не обнаружена. Не отсеивается ли потенциальная сделка фильтром EMA?";
+                            Log("Последняя попытка открыть длинную позицию не обнаружена.");
 
                         else
-                            textForLog = string.Format("Нет, не использовался. Последний минимум, который использовался в попытке " +
-                            "открыть длинную позицию ранее -- б. №{0}: {1}. Не отсеивается ли потенциальная сделка фильтром EMA?",
-                            lastLowForOpenLongPosition.BarNumber, lastLowForOpenLongPosition.Value);
-
-                        Logger.Log(textForLog);
+                            Log("Нет, не использовался. Последний минимум, который использовался в попытке открыть длинную позицию ранее -- б. №{0}: {1}.",
+                                lastLowForOpenLongPosition.BarNumber, lastLowForOpenLongPosition.Value);
+                            
+                        Log("Не отсеивается ли потенциальная сделка фильтром EMA?");                        
 
                         if (IsLastPriceGreaterEma()) //3
                         {
