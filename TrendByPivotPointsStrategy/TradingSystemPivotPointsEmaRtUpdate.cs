@@ -74,7 +74,7 @@ namespace TrendByPivotPointsStrategy
                 security.BarNumber = barNumber;
                 if (!flagToDebugLog)
                 {
-                    Log("ГО на покупку: {0}; ГО на продажу: {1}; Шаг цены: {2}", security.BuyDeposit, security.SellDeposit, security.StepPrice);                    
+                    Log("ГО на покупку: {0}; ГО на продажу: {1}; Шаг цены: {2}", security.BuyDeposit, security.SellDeposit, security.StepPrice);
                     flagToDebugLog = true;
                 }
 
@@ -87,7 +87,7 @@ namespace TrendByPivotPointsStrategy
                     Logger.SwitchOff();
 
                 switch (positionSide)
-                {                   
+                {
                     case PositionSide.Long:
                         {
                             signalNameForOpenPosition = "LE";
@@ -109,24 +109,19 @@ namespace TrendByPivotPointsStrategy
             {
                 Log("Исключение в методе Update(): " + e.ToString());
             }
-        }
-        
-        private void OpenPosition()
-        {
-
-        }
+        }        
 
         private bool IsPositionOpen()
         {
             var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition, barNumber);
             return position != null;
         }
-        
+
         private bool IsLastMinGreaterThanPrevious()
         {
             var lows = pivotPointsIndicator.GetLows(barNumber, isConverted);
             if (lows.Count < 2)
-                return false;            
+                return false;
 
             var lowsValues = new List<double>();
             foreach (var low in lows)
@@ -138,14 +133,14 @@ namespace TrendByPivotPointsStrategy
         private bool IsLastPriceGreaterEma()
         {
             var convertable = new Converter(isConverted);
-            return convertable.IsGreater(lastPrice, ema[barNumber]);            
+            return convertable.IsGreater(lastPrice, ema[barNumber]);
         }
 
         private void Log(string text)
         {
             Logger.Log("{0}: {1}", tradingSystemDescription, text);
         }
-        
+
         private void Log(string text, params object[] args)
         {
             text = string.Format(text, args);
@@ -160,21 +155,21 @@ namespace TrendByPivotPointsStrategy
                 return;
 
             var lastLow = lows[lows.Count - 1];
-            var prevLastLow = lows[lows.Count - 2];            
+            var prevLastLow = lows[lows.Count - 2];
 
             breakdownLong = (pivotPointBreakDownSide / 100) * atr[barNumber];
-                        
+
             Log("бар № {0}. Открыта ли длинная позиция?", barNumber);
             if (!IsPositionOpen())
             {
                 Log("Длинная позиция не открыта.");
 
-                Log("Выполняется ли условие двух последовательных повышающихся минимумов?");                
+                Log("Выполняется ли условие двух последовательных повышающихся минимумов?");
                 if (IsLastMinGreaterThanPrevious())   //1
                 {
                     Log("Да, выполняется: последний минимум б. №{0}: {1} выше предыдущего б. №{2}: {3}.", lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
 
-                    Log("Использовался ли последний минимум в попытке открыть длинную позицию ранее?");                    
+                    Log("Использовался ли последний минимум в попытке открыть длинную позицию ранее?");
                     var isLastLowCaseLongCloseNotExist = lastLowForOpenLongPosition == null;
 
                     if (isLastLowCaseLongCloseNotExist || (lastLow.BarNumber != lastLowForOpenLongPosition.BarNumber))    //2
@@ -185,79 +180,73 @@ namespace TrendByPivotPointsStrategy
                         else
                             Log("Нет, не использовался. Последний минимум, который использовался в попытке открыть длинную позицию ранее -- б. №{0}: {1}.",
                                 lastLowForOpenLongPosition.BarNumber, lastLowForOpenLongPosition.Value);
-                            
+
                         Log("Не отсеивается ли потенциальная сделка фильтром EMA?");
                         if (IsLastPriceGreaterEma()) //3
                         {
-                            Log("Нет, потенциальная сделка не отсеивается фильтром. Последняя цена закрытия {0} выше EMA: {1}. ", lastPrice, ema[barNumber]);                            
-                            Log("Проверяем актуально ли открытие длинной позиции?");
+                            Log("Нет, потенциальная сделка не отсеивается фильтром. Последняя цена закрытия {0} выше EMA: {1}. ", lastPrice, ema[barNumber]);
+                            
+                            Log("Вычисляем стоп-цену...");
+                            var stopPrice = lastLow.Value - breakdownLong;
 
-                            if (true || IsOpenLongPositionCaseActual(lastLow, barNumber)) //заглушил
+                            Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
+                                "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Последняя цена выше стоп-цены?", atr[barNumber], pivotPointBreakDownSide,
+                                breakdownLong, lastLow.Value, stopPrice);
+
+                            Log("Запоминаем минимум, использовавшийся для попытки открытия длинной позиции.");
+
+                            lastLowForOpenLongPosition = lastLow;
+
+                            if (lastPrice > stopPrice)  //4
                             {
-                                Log("Открытие длинной позиции актуально.");
+                                Log("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
 
-                                Log("Вычисляем стоп-цену...");
-                                var stopPrice = lastLow.Value - breakdownLong;
+                                Log("Определяем количество контрактов...");
 
-                                Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
-                                    "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Последняя цена выше стоп-цены?", atr[barNumber], pivotPointBreakDownSide,
-                                    breakdownLong, lastLow.Value, stopPrice);                                
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
 
-                                Log("Запоминаем минимум, использовавшийся для попытки открытия длинной позиции.");                                
-
-                                lastLowForOpenLongPosition = lastLow;
-
-                                if (lastPrice > stopPrice)  //4
+                                Log("Торгуем в лаборатории или в режиме реального времени?");
+                                if (security.IsRealTimeTrading)
                                 {
-                                    Log("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
+                                    contracts = 1;
+                                    Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
 
-                                    Log("Определяем количество контрактов...");
-
-                                    var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
-
-                                    Log("Торгуем в лаборатории или в режиме реального времени?");
-                                    if (security.IsRealTimeTrading)
-                                    {
-                                        contracts = 1;
-                                        Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
-
-                                        var price = lastPrice + atr[barNumber];
-                                        sec.Positions.BuyAtPrice(barNumber + 1, contracts, price, "LE");
-                                    }
-                                    else
-                                    {
-                                        Log("Торгуем в лаборатории.");
-                                        sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
-                                    }
-
-                                    stopLossLong = stopPrice;
-
-                                    Log("Проверяем актуальный ли это бар.");
-                                    if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
-                                    {
-                                        Logger.Log("Бар актуальный.");
-                                        CreateStopLossLong();
-                                        SetFlagNewPositionOpened();
-                                    }
-                                    else
-                                        Log("Бар не актуальный.");
-
-                                    Log("Открываем длинную позицию! Отправляем ордер.");
+                                    var price = lastPrice + atr[barNumber];
+                                    sec.Positions.BuyAtPrice(barNumber + 1, contracts, price, "LE");
                                 }
                                 else
-                                    Log("Последняя цена ниже стоп-цены. Длинную позицию не открываем.");
-                                
+                                {
+                                    Log("Торгуем в лаборатории.");
+                                    sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
+                                }
+
+                                stopLossLong = stopPrice;
+
+                                Log("Проверяем актуальный ли это бар.");
+                                if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
+                                {
+                                    Logger.Log("Бар актуальный.");
+                                    CreateStopLossLong();
+                                    SetFlagNewPositionOpened();
+                                }
+                                else
+                                    Log("Бар не актуальный.");
+
+                                Log("Открываем длинную позицию! Отправляем ордер.");
                             }
-                            else                            
-                                Log("Открытие длинной позиции не актуально.");                            
+                            else
+                                Log("Последняя цена ниже стоп-цены. Длинную позицию не открываем.");
+
+
+
                         }
-                        else                        
+                        else
                             Log("Cделка отсеивается фильтром, так как последняя цена закрытия {0} ниже или совпадает с EMA: {1}.", lastPrice, ema[barNumber]);
                     }
-                    else                    
-                        Log("Да, последний минимум использовался в попытке открыть длинную позицию ранее.");                                            
+                    else
+                        Log("Да, последний минимум использовался в попытке открыть длинную позицию ранее.");
                 }
-                else                
+                else
                     Log("Нет, не выполняется: последний минимум б. №{0}: {1} не выше предыдущего б. №{2}: {3}.",
                         lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
             }
@@ -522,40 +511,7 @@ namespace TrendByPivotPointsStrategy
                                 Logger.Log(textForLog);
 
                                 lastHighForOpenShortPosition = lastHigh;
-
-                                ////=======================
-
-                                //Logger.Log("Проверяем актуальный ли это бар.");
-                                //if (security.IsRealTimeActualBar(barNumber))
-                                //{
-                                //    Logger.Log("Бар актуальный.");
-
-                                //    var containerName = string.Format("lastHighForOpenShortPosition {0} {1}", security.Name, positionSide);
-                                //    Logger.Log(string.Format("Сохраним lastHighForOpenShortPosition = {0} в контейнере \"{1}\".", lastHighForOpenShortPosition, containerName));
-                                //    var container = new NotClearableContainer<Indicator>(lastHighForOpenShortPosition);
-
-                                //    ctx.StoreObject(containerName, container);
-                                //    Logger.Log(string.Format("Проверим, сохранился ли lastHighForOpenShortPosition = {0} в контейнере \"{1}\".", lastHighForOpenShortPosition, containerName));
-
-                                //    container = ctx.LoadObject(containerName) as NotClearableContainer<Indicator>;
-                                //    Indicator value = null;
-                                //    if (container != null)
-                                //        value = container.Content;
-
-                                //    if (value != null)
-                                //        if (value.Value == lastHighForOpenShortPosition.Value)
-                                //            Logger.Log(string.Format("lastHighForOpenShortPosition.Value сохранился в контейнере. Значение в контейнере: value.Value = {0}.", value.Value));
-
-                                //        else
-                                //            Logger.Log(string.Format("lastHighForOpenShortPosition.Value НЕ сохранился в контейнере!"));
-                                //}
-                                //else
-                                //{
-                                //    Logger.Log("Бар не актуальный.");
-                                //}
-
-                                ////======================
-
+                                
                                 if (lastPrice < stopPrice)  //4
                                 {
                                     textForLog = string.Format("Да, последняя цена ({0}) ниже стоп-цены ({1}). Открываем короткую позицию...", lastPrice, stopPrice);
@@ -633,13 +589,7 @@ namespace TrendByPivotPointsStrategy
                 CheckShortPositionCloseCase(se, barNumber);
             }
         }
-
-        private bool IsOpenLongPositionCaseActual(Indicator lastLow, int barNumber)
-        {
-            var previousBarNumber = security.RealTimeActualBarNumber - 1;
-            return (barNumber == lastLow.BarNumber + rightLocalSide) || (security.GetBarClose(previousBarNumber) < ema[previousBarNumber]);
-        }
-
+        
         private bool IsOpenShortPositionCaseActual(Indicator lastHigh, int barNumber)
         {
             var previousBarNumber = security.RealTimeActualBarNumber - 1;
@@ -816,10 +766,10 @@ namespace TrendByPivotPointsStrategy
         public void CalculateIndicators()
         {
             switch (positionSide)
-            {                
+            {
                 case PositionSide.Long:
                     {
-                        pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);                        
+                        pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);
                         break;
                     }
                 case PositionSide.Short:
@@ -830,18 +780,11 @@ namespace TrendByPivotPointsStrategy
 
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
-            //ema = Series.EMA(sec.ClosePrices, 50);
             atr = Series.AverageTrueRange(sec.Bars, 20);
         }
 
         public void Paint(Context context)
         {
-            //var pane1 = context.CreateGraphPane(sec.ToString() + " 1", "Инструмент (основной таймфрейм) 1");
-            //var color = SystemColor.Blue;
-            //pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-            //pane1.AddList("EMA", ema, color, PaneSides.RIGHT);
-
-
             var contextTSLab = context as ContextTSLab;
             var name = string.Format("{0} {1} {2}", sec.ToString(), positionSide, sec.Interval);
             var pane = contextTSLab.context.CreateGraphPane(name: name, title: name);
@@ -853,7 +796,7 @@ namespace TrendByPivotPointsStrategy
             pane.AddList("EMA", ema, ListStyles.LINE, colorTSlab, LineStyles.SOLID, PaneSides.RIGHT);
 
             switch (positionSide)
-            {                
+            {
                 case PositionSide.Long:
                     {
                         var lows = pivotPointsIndicator.GetLows(security.BarNumber);
@@ -884,43 +827,7 @@ namespace TrendByPivotPointsStrategy
                         pane.AddList("Highs", listHighs, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
                         break;
                     }
-            }
-
-
-            //if (id == 0) pane1.ClearInteractiveObjects();
-            //pane1.ClearInteractiveObjects();
-            //color = SystemColor.Blue;
-            //DateTime x;
-            //double y;
-            //MarketPoint position; 
-
-            //var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
-
-            //foreach(var low in lows)
-            //{
-            //    x = security.GetBarDateTime(low.BarNumber);
-            //    //y = low.Value - 50;
-            //    y = low.Value - 50;
-            //    position = new MarketPoint(x, y);
-            //    var id = low.BarNumber.ToString()+ " " + x.ToLongTimeString() + " " + low.Value.ToString();
-            //    //Logger.Log("id: " + id.ToString());
-            //    pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
-            //}
-
-            //var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
-
-            //foreach (var high in highs)
-            //{
-            //    x = security.GetBarDateTime(high.BarNumber);
-            //    //y = high.Value + 50;
-            //    y = high.Value + 50;
-            //    position = new MarketPoint(x, y);
-            //    var id = high.BarNumber.ToString() + " " + x.ToLongTimeString() + " " + high.Value.ToString();
-            //    //Logger.Log("id: " + id.ToString());
-            //    pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
-            //}
-
-            //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
+            }           
         }
 
         public bool HasOpenPosition()
@@ -954,34 +861,7 @@ namespace TrendByPivotPointsStrategy
                 }
                 else
                 {
-                    Logger.Log("Последний бар не закрыт. Последний бар № + " + lastBarNumber + ": " + lastBar.Date);
-
-                    //Закомментировал, так как если не пересчитывать индикаторы, то не получится обновлять графики. Индикаторы с них слетают. Пересчитывать индикаторы надо!
-
-                    //Logger.Log(string.Format("Пересчитывались ли индикаторы на предыдущем баре: № {0}: {1}?", prevLastBarNumber, prevLastBar));
-                    //if (WasIndicatorsCalculateOnThisBar(prevLastBarNumber))
-                    //{
-                    //    Logger.Log(string.Format("Да, пересчитывались"));
-                    //    Logger.Log(string.Format("Была ли открыта новая позиция?"));
-                    //    if (WasNewPositionOpened())
-                    //    {
-                    //        Logger.Log(string.Format("Да, была"));
-                    //        Logger.Log(string.Format("Создаём стоп-лосс"));
-                    //        CreateStopLoss();
-                    //        Logger.Log(string.Format("Сбрасываем признак того, что была открыта новая позиция"));
-                    //        ResetFlagNewPositionOpened();
-                    //    }
-                    //    else
-                    //    {
-                    //        Logger.Log(string.Format("Нет, новая позиция не была открыта"));
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    Logger.Log(string.Format("Нет, не пересчитывались"));
-                    //    Logger.Log("Пересчитываем индикаторы");
-                    //    CalculateIndicators(prevLastBarNumber);
-                    //}
+                    Logger.Log("Последний бар не закрыт. Последний бар № + " + lastBarNumber + ": " + lastBar.Date);                   
 
                     Logger.Log("Пересчитываем индикаторы");
                     CalculateIndicators(prevLastBarNumber);
@@ -1081,15 +961,7 @@ namespace TrendByPivotPointsStrategy
                 throw new NullReferenceException("container равно null");
 
             return value;
-        }
-
-        private bool WasIndicatorsCalculateOnThisBar(int barNumber)
-        {
-            Logger.Log("WasIndicatorsCalculateOnThisBar(barNumber = " + barNumber + ")");
-            var bar = GetBar(barNumber);
-            var dateBarLoaded = LoadBarFromContainer("Последний бар");
-            return bar.Date == dateBarLoaded;
-        }
+        }      
 
         private bool WasNewPositionOpened()
         {
