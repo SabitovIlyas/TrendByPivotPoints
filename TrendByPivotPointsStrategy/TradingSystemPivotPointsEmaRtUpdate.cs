@@ -145,7 +145,7 @@ namespace TrendByPivotPointsStrategy
         {
             text = string.Format(text, args);
             Log(text);
-        }
+        }        
 
         public void CheckPositionOpenLongCase()
         {
@@ -225,7 +225,7 @@ namespace TrendByPivotPointsStrategy
                                 Log("Проверяем актуальный ли это бар.");
                                 if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                                 {
-                                    Logger.Log("Бар актуальный.");
+                                    Log("Бар актуальный.");
                                     CreateStopLossLong();
                                     SetFlagNewPositionOpened();
                                 }
