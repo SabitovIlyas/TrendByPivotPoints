@@ -2,7 +2,9 @@
 {
     public class Converter
     {
-        bool isConverted = false;
+        public bool IsConverted { get { return isConverted; } }
+
+        private bool isConverted = false;
 
         public Converter(bool isConverted)
         {
@@ -47,6 +49,6 @@
             var result = GetBarLow(security, barNumber);
             isConverted = !isConverted;
             return result;            
-        }
+        }        
     }
 }

@@ -44,7 +44,6 @@ namespace TrendByPivotPointsStrategy
         private Account account;
         private int barNumber;
         private string signalNameForOpenPosition = "";
-        private bool isConverted;
         private double lastPrice;
 
         public PositionSide PositionSide { get { return positionSide; } }
@@ -90,15 +89,16 @@ namespace TrendByPivotPointsStrategy
                 {
                     case PositionSide.Long:
                         {
-                            signalNameForOpenPosition = "LE";
-                            isConverted = false;
+                            signalNameForOpenPosition = "LE";                            
+                            convertable = new Converter(isConverted: false);
+                            GetLows();
                             CheckPositionOpenLongCase();
                             break;
                         }
                     case PositionSide.Short:
                         {
                             signalNameForOpenPosition = "SE";
-                            isConverted = true;
+                            convertable = new Converter(isConverted: true);
                             CheckPositionOpenShortCase();
                             break;
                         }
@@ -109,7 +109,22 @@ namespace TrendByPivotPointsStrategy
             {
                 Log("Исключение в методе Update(): " + e.ToString());
             }
-        }        
+        }
+
+        private Indicator lastLow;
+        private Indicator prevLastLow;
+        private List<Indicator> lows;
+        private Converter convertable;
+
+        private void GetLows()
+        {
+            lows = pivotPointsIndicator.GetLows(barNumber, convertable.IsConverted);
+            if (lows.Count < 2)
+                throw new Exception("Количество экстремумов меньше двух");
+
+            lastLow = lows[lows.Count - 1];
+            prevLastLow = lows[lows.Count - 2];
+        }
 
         private bool IsPositionOpen()
         {
@@ -119,21 +134,21 @@ namespace TrendByPivotPointsStrategy
 
         private bool IsLastMinGreaterThanPrevious()
         {
-            var lows = pivotPointsIndicator.GetLows(barNumber, isConverted);
-            if (lows.Count < 2)
-                return false;
-
             var lowsValues = new List<double>();
             foreach (var low in lows)
                 lowsValues.Add(low.Value);
 
-            return patternPivotPoints_1g2.Check(lowsValues, isConverted);
+            return patternPivotPoints_1g2.Check(lowsValues, convertable.IsConverted);
         }
 
         private bool IsLastPriceGreaterEma()
-        {
-            var convertable = new Converter(isConverted);
+        {            
             return convertable.IsGreater(lastPrice, ema[barNumber]);
+        }
+
+        private bool IsLastPriceGreaterStopPrice()
+        {            
+            return false;// convertable.IsGreater(lastPrice, stopPrice);
         }
 
         private void Log(string text)
@@ -149,15 +164,9 @@ namespace TrendByPivotPointsStrategy
 
         public void CheckPositionOpenLongCase()
         {
-            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber);
-            var lows = pivotPointsIndicator.GetLows(barNumber);
-            if (lows.Count < 2)
-                return;
+            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber); //убрать в перспективе
 
-            var lastLow = lows[lows.Count - 1];
-            var prevLastLow = lows[lows.Count - 2];
-
-            breakdownLong = (pivotPointBreakDownSide / 100) * atr[barNumber];
+            breakdownLong = (pivotPointBreakDownSide / 100) * atr[barNumber]; //убрать в перспективе
 
             Log("бар № {0}. Открыта ли длинная позиция?", barNumber);
             if (!IsPositionOpen())
