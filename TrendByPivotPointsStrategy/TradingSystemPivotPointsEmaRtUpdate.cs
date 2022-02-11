@@ -160,7 +160,17 @@ namespace TrendByPivotPointsStrategy
         {
             text = string.Format(text, args);
             Log(text);
-        }        
+        }    
+        
+        private void dd()
+        {
+
+        }
+
+        private void SetLastLowForOpenLongPosition()
+        {
+            lastLowForOpenLongPosition = lastLow;
+        }
 
         public void CheckPositionOpenLongCase()
         {
@@ -203,8 +213,7 @@ namespace TrendByPivotPointsStrategy
                                 breakdownLong, lastLow.Value, stopPrice);
 
                             Log("Запоминаем минимум, использовавшийся для попытки открытия длинной позиции.");
-
-                            lastLowForOpenLongPosition = lastLow;
+                            SetLastLowForOpenLongPosition();                            
 
                             if (lastPrice > stopPrice)  //4
                             {
@@ -245,8 +254,6 @@ namespace TrendByPivotPointsStrategy
                             }
                             else
                                 Log("Последняя цена ниже стоп-цены. Длинную позицию не открываем.");
-
-
 
                         }
                         else
