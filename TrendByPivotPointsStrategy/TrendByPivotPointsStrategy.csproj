@@ -94,6 +94,8 @@
     <Compile Include="SecurityTSlab.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
+    <Compile Include="Short.cs" />
+    <Compile Include="StopLoss.cs" />
     <Compile Include="SystemParameters.cs" />
     <Compile Include="TradingSystemPivotPointsEmaRtUpdate.cs" />
     <Compile Include="TradingSystemPivotPointsEMAWithEnchancePosition.cs" />
