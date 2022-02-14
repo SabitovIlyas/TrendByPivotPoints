@@ -64,7 +64,7 @@ namespace TrendByPivotPointsStrategy
             patternPivotPoints_1g2 = new PatternPivotPoints_1g2();
             patternPivotPoints_1l2 = new PatternPivotPoints_1l2();
             this.positionSide = positionSide;
-            stopLoss = new StopLoss();            
+            stopLoss = StopLoss.Create();            
         }
 
         public void Update(int barNumber)
@@ -635,6 +635,11 @@ namespace TrendByPivotPointsStrategy
         }
 
         public void CheckPositionOpenShortCase(double lastPrice, int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckShortPositionCloseCase(IPosition se, int barNumber)
         {
             throw new NotImplementedException();
         }

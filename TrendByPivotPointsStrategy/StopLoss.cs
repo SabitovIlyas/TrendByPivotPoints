@@ -1,16 +1,38 @@
 ﻿using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.DataSource;
+using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
     public class StopLoss
     {
+        public static StopLoss Create(string parametersCombination, Security security, PositionSide positionSide)
+        {
+            return new StopLoss(parametersCombination, security, positionSide);
+        }
         public Logger Logger { get; set; } = new NullLogger();
+
+        public IContext ctx { get; set; }
+        private string name = "StopLossUnderLow";
+        private string parametersCombination = "StopLossUnderLow";
+        private Security security;
+        private PositionSide positionSide;
+        private double breakdownLong = 0;
+        private double stopLossLong;
+        private string stopLossDescription = "StopLossUnderLow";
+
+        private StopLoss(string parametersCombination, Security security, PositionSide positionSide)
+        {
+            this.security = security;
+            this.parametersCombination = parametersCombination;
+            this.positionSide = positionSide;
+            stopLossDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
+        }
 
         private void Log(string text)
         {
-            Logger.Log("{0}: {1}", tradingSystemDescription, text);
+            Logger.Log("{0}: {1}", stopLossDescription, text);
         }
 
         private void Log(string text, params object[] args)
@@ -25,16 +47,15 @@ namespace TrendByPivotPointsStrategy
 
             if (lows.Count == 0)
             {
-                Logger.Log("Это условие никогда не должно отрабатывать. Проверить и впоследствии убрать.");
+                Log("Это условие никогда не должно отрабатывать. Проверить и впоследствии убрать.");
                 return;
             }
 
             var stopLoss = lastLow.Value - breakdownLong;
 
-            textForLog = string.Format("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
+            Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
                             "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Новый стоп-лосс выше прежнего?", atr[barNumber], pivotPointBreakDownSide,
-                            breakdownLong, lastLow.Value, stopLoss);
-            Log(textForLog);
+                            breakdownLong, lastLow.Value, stopLoss);            
 
             Log("Проверяем актуальный ли это бар.");
             if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
@@ -42,14 +63,14 @@ namespace TrendByPivotPointsStrategy
                 Log("Бар актуальный.");
 
                 var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
-                Log(string.Format("Загружаем stopLossLong из контейнера \"{0}\".", containerName));
+                Log("Загружаем stopLossLong из контейнера \"{0}\".", containerName);
                 var container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
 
                 if (container != null)
                 {
                     Log("Загрузили контейнер.");
                     var value = container.Content;
-                    Log(string.Format("Значение в контейнере: value = {0}", value));
+                    Log("Значение в контейнере: value = {0}", value);
                     if (value != 0d)
                     {
                         Log("Записываем в stopLossLong ненулевое значение из контейнера.");
@@ -66,9 +87,8 @@ namespace TrendByPivotPointsStrategy
 
             if (stopLoss > stopLossLong)
             {
-                textForLog = string.Format("Да, новый стоп-лосс ({0}) выше прежнего ({1}). Обновляем стоп-лосс.", stopLoss, stopLossLong);
-
-                Log(textForLog);
+                Log("Да, новый стоп-лосс ({0}) выше прежнего ({1}). Обновляем стоп-лосс.", stopLoss, stopLossLong);
+                
                 stopLossLong = stopLoss;
 
                 Log("Проверяем актуальный ли это бар.");
@@ -77,11 +97,11 @@ namespace TrendByPivotPointsStrategy
                     Log("Бар актуальный.");
 
                     var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
-                    Log(string.Format("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
+                    Log("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
                     var container = new NotClearableContainer<double>(stopLossLong);
 
                     ctx.StoreObject(containerName, container);
-                    Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
+                    Log("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
 
                     container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
                     double value = 0d;
@@ -90,10 +110,10 @@ namespace TrendByPivotPointsStrategy
 
                     if (value != 0d)
                         if (value == stopLossLong)
-                            Logger.Log(string.Format("stopLossLong сохранился в контейнере. Значение в контейнере: value = {0}.", value));
+                            Logger.Log("stopLossLong сохранился в контейнере. Значение в контейнере: value = {0}.", value);
 
                         else
-                            Logger.Log(string.Format("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
+                            Logger.Log("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value);
                 }
                 else                
                     Log("Бар не актуальный.");
@@ -102,8 +122,7 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
-                textForLog = string.Format("Нет, новый стоп-лосс ({0}) не выше прежнего ({1}). Стоп-лосс оставляем прежним.", stopLoss, stopLossLong);
-                Log(textForLog);
+                Log("Нет, новый стоп-лосс ({0}) не выше прежнего ({1}). Стоп-лосс оставляем прежним.", stopLoss, stopLossLong);                
             }
 
             if (WasNewPositionOpened())
@@ -118,14 +137,14 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private void CreateStopLossLong()
+        public void CreateStopLossLong()
         {
             var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
-            Logger.Log(string.Format("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
+            Log("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
             var container = new NotClearableContainer<double>(stopLossLong);
 
             ctx.StoreObject(containerName, container);
-            Logger.Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
+            Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
 
             container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
             double value = 0d;
@@ -134,10 +153,10 @@ namespace TrendByPivotPointsStrategy
 
             if (value != 0d)
                 if (value == stopLossLong)
-                    Logger.Log(string.Format("stopLossLong сохранился в контейнере. Значение в контейнере: value = {0}.", value));
+                    Log("stopLossLong сохранился в контейнере. Значение в контейнере: value = {0}.", value);
 
                 else
-                    Logger.Log(string.Format("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value));
+                    Log("stopLossLong НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value);
         }
     }
 }
