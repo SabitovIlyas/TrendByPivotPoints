@@ -52,6 +52,7 @@ namespace TrendByPivotPointsStrategy
         private string name = "TradingSystemPivotPointsEMAtest";
         private string parametersCombination;
         private StopLoss stopLoss;
+        private RealTimeTrading realTimeTrading;
 
         public TradingSystemPivotPointsEmaRtUpdate(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
@@ -64,7 +65,8 @@ namespace TrendByPivotPointsStrategy
             patternPivotPoints_1g2 = new PatternPivotPoints_1g2();
             patternPivotPoints_1l2 = new PatternPivotPoints_1l2();
             this.positionSide = positionSide;
-            stopLoss = StopLoss.Create();            
+            stopLoss = StopLoss.Create(parametersCombination, security, positionSide);
+            realTimeTrading = RealTimeTrading.Create();
         }
 
         public void Update(int barNumber)
@@ -528,23 +530,9 @@ namespace TrendByPivotPointsStrategy
             ctx.StoreObject(containerName, container);
         }
 
-        private object LoadObjectFromContainer(string key)
-        {
-            var containerName = this.tradingSystemDescription + key;
-            var container = ctx.LoadObject(containerName) as NotClearableContainer<object>;
-            object value;
-            if (container != null)
-                value = container.Content;
-            else
-                throw new NullReferenceException("container равно null");
+              
 
-            return value;
-        }      
-
-        private bool WasNewPositionOpened()
-        {
-            return LoadFlagNewPositionOpened();
-        }
+        
 
         private void SetFlagNewPositionOpened()
         {
@@ -578,20 +566,7 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private bool LoadFlagNewPositionOpened()
-        {
-            if (positionSide == PositionSide.Long || positionSide == PositionSide.Short)
-            {
-                var containerName = "Новая позиция " + positionSide;
-                Logger.Log("Название контейнера: " + containerName);
-                var value = (bool)LoadObjectFromContainer(containerName);
-                return value;
-            }
-            else
-            {
-                throw new Exception("Вызываю исключение, так как значение positionSide ожидалось Long или Short, а оно " + positionSide);
-            }
-        }
+        
 
         private bool WasFlagNewPositionOpenedSavedToContainer(bool flag)
         {

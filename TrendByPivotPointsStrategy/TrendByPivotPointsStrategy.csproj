@@ -90,6 +90,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LoggerSystem.cs" />
     <Compile Include="ReadOnlyList.cs" />
+    <Compile Include="RealTimeTrading.cs" />
     <Compile Include="SecurityNull.cs" />
     <Compile Include="SecurityTSlab.cs" />
     <Compile Include="Security.cs" />

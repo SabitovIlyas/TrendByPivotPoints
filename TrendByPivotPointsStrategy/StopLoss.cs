@@ -21,6 +21,8 @@ namespace TrendByPivotPointsStrategy
         private double breakdownLong = 0;
         private double stopLossLong;
         private string stopLossDescription = "StopLossUnderLow";
+        private IList<double> atr;
+        private double pivotPointBreakDownSide;
 
         private StopLoss(string parametersCombination, Security security, PositionSide positionSide)
         {
@@ -144,7 +146,7 @@ namespace TrendByPivotPointsStrategy
             var container = new NotClearableContainer<double>(stopLossLong);
 
             ctx.StoreObject(containerName, container);
-            Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
+            Log("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
 
             container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
             double value = 0d;
