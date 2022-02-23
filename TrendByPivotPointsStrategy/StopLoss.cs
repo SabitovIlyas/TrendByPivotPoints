@@ -7,9 +7,9 @@ namespace TrendByPivotPointsStrategy
 {
     public class StopLoss
     {
-        public static StopLoss Create(string parametersCombination, Security security, PositionSide positionSide)
+        public static StopLoss Create(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
-            return new StopLoss(parametersCombination, security, positionSide);
+            return new StopLoss(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
         }
         public Logger Logger { get; set; } = new NullLogger();
 
@@ -23,13 +23,17 @@ namespace TrendByPivotPointsStrategy
         private string stopLossDescription = "StopLossUnderLow";
         private IList<double> atr;
         private double pivotPointBreakDownSide;
+        private RealTimeTrading realTimeTrading;
 
-        private StopLoss(string parametersCombination, Security security, PositionSide positionSide)
+        private StopLoss(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
             this.security = security;
             this.parametersCombination = parametersCombination;
             this.positionSide = positionSide;
             stopLossDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
+            this.realTimeTrading = realTimeTrading;
+            this.atr = atr;
+            this.pivotPointBreakDownSide = pivotPointBreakDownSide;
         }
 
         private void Log(string text)
@@ -127,7 +131,7 @@ namespace TrendByPivotPointsStrategy
                 Log("Нет, новый стоп-лосс ({0}) не выше прежнего ({1}). Стоп-лосс оставляем прежним.", stopLoss, stopLossLong);                
             }
 
-            if (WasNewPositionOpened())
+            if (realTimeTrading.WasNewPositionOpened())
             {
                 Log("Открыта новая позиция. Устанавливаем стоп-лосс на текущем баре.");
                 le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], "LXS");

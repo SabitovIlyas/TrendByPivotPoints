@@ -96,7 +96,7 @@ namespace TrendByPivotPointsStrategy
             return dateBar == dateBarLoaded;
         }
 
-        private void SaveBarToContainer(DateTime dateBar)
+        public void SaveBarToContainer(DateTime dateBar)
         {
             Logger.Log("Сохраняем бар в контейнер");
             SaveObjectToContainer("Последний бар", dateBar);
@@ -140,12 +140,12 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private void SetFlagNewPositionOpened()
+        public void SetFlagNewPositionOpened()
         {
             SaveFlagNewPositionOpened(true);
         }
 
-        private void ResetFlagNewPositionOpened()
+        public void ResetFlagNewPositionOpened()
         {
             SaveFlagNewPositionOpened(false);
         }

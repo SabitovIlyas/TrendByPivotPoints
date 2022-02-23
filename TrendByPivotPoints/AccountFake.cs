@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TrendByPivotPoints;
+using TSLab.DataSource;
 using TSLab.Script;
 
 namespace TrendByPivotPointsStrategy
@@ -9,9 +10,7 @@ namespace TrendByPivotPointsStrategy
     {
         public double InitDeposit { get; set; }
         public double Equity { get; set; }
-
         public double GObying { get; set; }
-
         public double GOselling { get; set; }
         public double Rate { get; set; }
 

@@ -64,9 +64,9 @@ namespace TrendByPivotPointsStrategy
             pivotPointsIndicator = new PivotPointsIndicator();
             patternPivotPoints_1g2 = new PatternPivotPoints_1g2();
             patternPivotPoints_1l2 = new PatternPivotPoints_1l2();
-            this.positionSide = positionSide;
-            stopLoss = StopLoss.Create(parametersCombination, security, positionSide);
-            realTimeTrading = RealTimeTrading.Create();
+            this.positionSide = positionSide;            
+            realTimeTrading = RealTimeTrading.Create(positionSide, tradingSystemDescription, ctx);
+            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, realTimeTrading);// параметры стратегии здесь ещё неизвестны. Перенести эту строку в инициализацию.
         }
 
         public void Update(int barNumber)
@@ -103,7 +103,7 @@ namespace TrendByPivotPointsStrategy
                         {
                             signalNameForOpenPosition = "SE";
                             convertable = new Converter(isConverted: true);
-                            CheckPositionOpenShortCase();
+                            //CheckPositionOpenShortCase();
                             break;
                         }
                 }
@@ -250,7 +250,7 @@ namespace TrendByPivotPointsStrategy
                                 {
                                     Log("Бар актуальный.");
                                     stopLoss.CreateStopLossLong();
-                                    SetFlagNewPositionOpened();
+                                    realTimeTrading.SetFlagNewPositionOpened();
                                 }
                                 else
                                     Log("Бар не актуальный.");
@@ -289,7 +289,7 @@ namespace TrendByPivotPointsStrategy
                 Logger.Log("Проверяем пробил ли вниз минимум последнего бара стоп-лосс для лонга?");
                 if (bar.Low <= stopLossLong)
                 {
-                    if (WasNewPositionOpened())
+                    if (realTimeTrading.WasNewPositionOpened())
                     {
                         Logger.Log("Открыта новая позиция. Устанавливаем стоп-лосс на текущем баре.");
                         le.CloseAtMarket(barNumber, "LXE");
@@ -446,14 +446,14 @@ namespace TrendByPivotPointsStrategy
                     Logger.Log("Пересчитываем индикаторы");
                     CalculateIndicators(prevLastBarNumber);
                     Logger.Log(string.Format("Была ли открыта новая позиция? (Заглушил)"));
-                    if (WasNewPositionOpened())
+                    if (realTimeTrading.WasNewPositionOpened())
                     {
                         Logger.Log(string.Format("Да, была"));
                         Logger.Log(string.Format("Создаём стоп-лосс"));
                         CreateStopLoss(lastBarNumber);
 
                         Logger.Log(string.Format("Сбрасываем признак того, что была открыта новая позиция"));
-                        ResetFlagNewPositionOpened();
+                        realTimeTrading.ResetFlagNewPositionOpened();
                     }
                     else
                     {
@@ -483,7 +483,7 @@ namespace TrendByPivotPointsStrategy
             }
             Logger.SwitchOn();
             var bar = GetBar(barNumber);
-            SaveBarToContainer(bar.Date);
+            realTimeTrading.SaveBarToContainer(bar.Date);
         }          
         
         private void CreateStopLoss(int lastBarNumber)

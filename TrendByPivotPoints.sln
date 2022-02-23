@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStrategyTests", "TrendByPivotPoints\TrendByPivotPointsStrategyTests.csproj", "{0194D529-32BB-42F5-A9FF-FC531CDCB684}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B9A9953F-E415-44D8-ABA8-35A77304CCFA} = {B9A9953F-E415-44D8-ABA8-35A77304CCFA}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStrategy", "TrendByPivotPointsStrategy\TrendByPivotPointsStrategy.csproj", "{B9A9953F-E415-44D8-ABA8-35A77304CCFA}"
 EndProject

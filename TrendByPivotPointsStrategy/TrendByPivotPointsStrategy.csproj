@@ -41,13 +41,13 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="TSLab.DataSource">
-      <HintPath>..\TSLab.DataSource.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.DataSource.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Script">
-      <HintPath>..\TSLab.Script.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Script.Handlers">
-      <HintPath>..\TSLab.Script.Handlers.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\TSLab\TSLab 2.1\TSLab.Script.Handlers.dll</HintPath>
     </Reference>
     <Reference Include="TSLab.Utility">
       <HintPath>..\TSLab.Utility.dll</HintPath>
