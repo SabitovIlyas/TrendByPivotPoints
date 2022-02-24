@@ -10,7 +10,7 @@ namespace TrendByPivotPointsStrategy
 {
     public class TradingSystemPivotPointsEMA : ITradingSystemPivotPointsEMA
     {
-        public IContext ctx { get; set; }
+        public IContext Ctx { get; set; }
         LocalMoneyManager localMoneyManager;
         ISecurity sec;
         PivotPointsIndicator pivotPointsIndicator;
@@ -235,10 +235,10 @@ namespace TrendByPivotPointsStrategy
                                         Logger.Log(string.Format("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
                                         var container = new NotClearableContainer<double>(stopLossLong);
 
-                                        ctx.StoreObject(containerName, container);
+                                        Ctx.StoreObject(containerName, container);
                                         Logger.Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
 
-                                        container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+                                        container = Ctx.LoadObject(containerName) as NotClearableContainer<double>;
                                         double value = 0d;
                                         if (container != null)
                                             value = container.Content;
@@ -319,9 +319,9 @@ namespace TrendByPivotPointsStrategy
 
                 var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
                 Logger.Log(string.Format("Загружаем stopLossLong из контейнера \"{0}\".", containerName));
-                if (ctx == null)
+                if (Ctx == null)
                     Logger.Log("!ctx==null!");
-                var container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+                var container = Ctx.LoadObject(containerName) as NotClearableContainer<double>;
 
                 if (container != null)
                 {
@@ -364,10 +364,10 @@ namespace TrendByPivotPointsStrategy
                     Logger.Log(string.Format("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
                     var container = new NotClearableContainer<double>(stopLossLong);
 
-                    ctx.StoreObject(containerName, container);
+                    Ctx.StoreObject(containerName, container);
                     Logger.Log(string.Format("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName));
 
-                    container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+                    container = Ctx.LoadObject(containerName) as NotClearableContainer<double>;
                     double value = 0d;
                     if (container != null)
                         value = container.Content;
@@ -560,11 +560,11 @@ namespace TrendByPivotPointsStrategy
                                         Logger.Log(string.Format("Сохраним stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
                                         var container = new NotClearableContainer<double>(stopLossShort);
 
-                                        ctx.StoreObject(containerName, container);
+                                        Ctx.StoreObject(containerName, container);
 
                                         Logger.Log(string.Format("Проверим, сохранился ли stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
 
-                                        container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+                                        container = Ctx.LoadObject(containerName) as NotClearableContainer<double>;
 
                                         double value = 0d;
                                         if (container != null)
@@ -658,7 +658,7 @@ namespace TrendByPivotPointsStrategy
 
                 var containerName = string.Format("stopLossShort {0} {1}", security.Name, positionSide);
                 Logger.Log(string.Format("Загружаем stopLossShort из контейнера \"{0}\".", containerName));
-                var container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+                var container = Ctx.LoadObject(containerName) as NotClearableContainer<double>;
 
                 if (container != null)
                 {
@@ -701,11 +701,11 @@ namespace TrendByPivotPointsStrategy
                     Logger.Log(string.Format("Сохраним stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
                     var container = new NotClearableContainer<double>(stopLossShort);
 
-                    ctx.StoreObject(containerName, container);
+                    Ctx.StoreObject(containerName, container);
 
                     Logger.Log(string.Format("Проверим, сохранился ли stopLossShort = {0} в контейнере \"{1}\".", stopLossShort, containerName));
 
-                    container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+                    container = Ctx.LoadObject(containerName) as NotClearableContainer<double>;
 
                     double value = 0d;
                     if (container != null)
@@ -903,6 +903,11 @@ namespace TrendByPivotPointsStrategy
             else if (positionSide == PositionSide.Short)
                 position = sec.Positions.GetLastActiveForSignal("SE");
             return position != null;
+        }
+
+        public void Initialize(IContext ctx)
+        {
+            Ctx = ctx;
         }
     }
 }

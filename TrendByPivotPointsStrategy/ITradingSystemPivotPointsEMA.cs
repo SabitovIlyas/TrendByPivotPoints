@@ -8,7 +8,7 @@ namespace TrendByPivotPointsStrategy
         Logger Logger { get; set; }
         PositionSide PositionSide { get; }
 
-        IContext ctx { get; set; }
+        IContext Ctx { get; set; }
 
         void CalculateIndicators();
         bool CheckLongPositionCloseCase(IPosition le, int barNumber);
@@ -20,5 +20,6 @@ namespace TrendByPivotPointsStrategy
         void Paint(Context context);
         void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide);
         void Update(int barNumber);
+        void Initialize(IContext ctx);
     }
 }

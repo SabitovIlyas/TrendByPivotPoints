@@ -10,7 +10,7 @@ namespace TrendByPivotPointsStrategy
 {
     public class TradingSystemPivotPointsEmaRtUpdate : ITradingSystemPivotPointsEMA
     {
-        public IContext ctx { get; set; }
+        public IContext Ctx { get; set; }
         LocalMoneyManager localMoneyManager;
         ISecurity sec;
         PivotPointsIndicator pivotPointsIndicator;
@@ -65,8 +65,6 @@ namespace TrendByPivotPointsStrategy
             patternPivotPoints_1g2 = new PatternPivotPoints_1g2();
             patternPivotPoints_1l2 = new PatternPivotPoints_1l2();
             this.positionSide = positionSide;            
-            realTimeTrading = RealTimeTrading.Create(positionSide, tradingSystemDescription, ctx);
-            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, realTimeTrading);// параметры стратегии здесь ещё неизвестны. Перенести эту строку в инициализацию.
         }
 
         public void Update(int barNumber)
@@ -312,9 +310,7 @@ namespace TrendByPivotPointsStrategy
                 }
             }
             return false;
-        }
-
-        
+        }        
 
         public void CheckPositionCloseCase(int barNumber)
         {
@@ -341,6 +337,8 @@ namespace TrendByPivotPointsStrategy
 
             parametersCombination = string.Format("leftLocal: {0}; rightLocal: {1}; breakDown: {2}; ema: {3}", leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
+            realTimeTrading = RealTimeTrading.Create(positionSide, tradingSystemDescription, Ctx);
+            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, realTimeTrading);// параметры стратегии здесь ещё неизвестны. Перенести эту строку в инициализацию.
         }
 
         public void CalculateIndicators()
@@ -433,7 +431,7 @@ namespace TrendByPivotPointsStrategy
                 var prevLastBarNumber = lastBarNumber - 1;
                 var prevLastBar = security.GetBar(prevLastBarNumber);
 
-                if (ctx.IsLastBarClosed)
+                if (Ctx.IsLastBarClosed)
                 {
                     Logger.Log("Последний бар закрыт!!!!!!!!!!!!!!!! Последний бар № + " + lastBarNumber + ": " + lastBar.Date);
                     Logger.Log("Пересчитываем индикаторы");
@@ -527,6 +525,11 @@ namespace TrendByPivotPointsStrategy
         public bool CheckShortPositionCloseCase(IPosition se, int barNumber)
         {
             throw new NotImplementedException();
+        }
+
+        public void Initialize(IContext ctx)
+        {
+            Ctx = ctx;
         }
     }
 }
