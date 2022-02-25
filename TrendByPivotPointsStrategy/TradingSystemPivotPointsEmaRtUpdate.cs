@@ -337,8 +337,7 @@ namespace TrendByPivotPointsStrategy
 
             parametersCombination = string.Format("leftLocal: {0}; rightLocal: {1}; breakDown: {2}; ema: {3}", leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
-            realTimeTrading = RealTimeTrading.Create(positionSide, tradingSystemDescription, Ctx);
-            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, realTimeTrading);// параметры стратегии здесь ещё неизвестны. Перенести эту строку в инициализацию.
+            realTimeTrading = RealTimeTrading.Create(positionSide, tradingSystemDescription, Ctx);            
         }
 
         public void CalculateIndicators()
@@ -359,6 +358,7 @@ namespace TrendByPivotPointsStrategy
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
             atr = Series.AverageTrueRange(sec.Bars, 20);
+            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);// параметры стратегии здесь ещё неизвестны. Перенести эту строку в инициализацию.
         }
 
         public void Paint(Context context)

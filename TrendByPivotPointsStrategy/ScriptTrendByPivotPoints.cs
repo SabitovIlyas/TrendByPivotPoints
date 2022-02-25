@@ -39,11 +39,12 @@ namespace TrendByPivotPointsStrategy
         public void Execute(IContext context, ISecurity[] securities)        
         {
             var logger = new LoggerSystem(context);
+            logger.Log("Hello!");
 
             MainSystem system;
 
             switch ((int)mode)
-                {
+            {
                 case 0:
                     {
                         system = new MainSystemForRealTimeTesting();
@@ -58,7 +59,7 @@ namespace TrendByPivotPointsStrategy
                     {
                         system = new MainSystemForTrading();
                         break;
-                    }                    
+                    }
             }
 
             if ((int)isLoggerOn == 1)
@@ -77,7 +78,7 @@ namespace TrendByPivotPointsStrategy
             systemParameters.Add("securityNumber", securityNumber);
             systemParameters.Add("instrumentsGroup", instrumentsGroup);
             systemParameters.Add("shares", shares);
-                       
+
             try
             {
                 system.SetParameters(systemParameters);
@@ -87,10 +88,10 @@ namespace TrendByPivotPointsStrategy
                 if ((int)isPaint == 1)
                     system.Paint();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.Log(e.ToString());
-            }            
+            }
         }
     }
 }

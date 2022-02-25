@@ -40,7 +40,7 @@ namespace TrendByPivotPointsStrategy
             leftLocalSide = systemParameters.GetInt("leftLocalSide");
             rightLocalSide = systemParameters.GetInt("rightLocalSide");
             pivotPointBreakDownSide = systemParameters.GetDouble("pivotPointBreakDownSide");
-            EmaPeriodSide = systemParameters.GetInt("EmaPeriodSide");
+            EmaPeriodSide = systemParameters.GetInt("emaPeriodSide");
             rateUSD = systemParameters.GetDouble("rateUSD");
             positionSide = systemParameters.GetInt("positionSide");
             comission = systemParameters.GetDouble("comission"); ;

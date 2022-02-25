@@ -15,7 +15,7 @@ namespace TrendByPivotPointsStrategy
 
         public IContext ctx { get; set; }
         private string name = "StopLossUnderLow";
-        private string parametersCombination = "StopLossUnderLow";
+        //private string parametersCombination = "StopLossUnderLow";
         private Security security;
         private PositionSide positionSide;
         private double breakdownLong = 0;
@@ -28,7 +28,7 @@ namespace TrendByPivotPointsStrategy
         private StopLoss(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
             this.security = security;
-            this.parametersCombination = parametersCombination;
+            //this.parametersCombination = parametersCombination;
             this.positionSide = positionSide;
             stopLossDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
             this.realTimeTrading = realTimeTrading;
