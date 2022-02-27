@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.DataSource;
 using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
@@ -17,8 +12,7 @@ namespace TrendByPivotPointsStrategy
         IContext ctx;
 
         public override void Initialize(ISecurity[] securities, IContext ctx)
-        {
-            //var logger = new LoggerSystem(ctx);
+        {            
             var logger = Logger;
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
@@ -34,25 +28,23 @@ namespace TrendByPivotPointsStrategy
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares);
-
-            //tradingSystems = new List<TradingSystemPivotPointsTwoTimeFrames>();
+                        
             tradingSystems = new List<ITradingSystemPivotPointsEMA>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
-            TradingSystemPivotPointsEMA ts;
-
-            //tradingSystems.Add(new TradingSystemPivotPointsTwoTimeFrames(localMoneyManagerRuble, account, this.securityFirst));            
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
+            ITradingSystemPivotPointsEMA ts;
+                        
+            ts = new TradingSystemPivotPointsEmaRtUpdate(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;
             ts.Logger = logger;
             tradingSystems.Add(ts);
-            //comission = 0;
-            totalComission = comission * 2;
-            //comission = 1 * 2;
-            absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[0]);
+            ts.Initialize(ctx);
             ts.SetParameters(leftLocalSide, rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
+
+            totalComission = comission * 2;            
+            absoluteComission = new AbsolutCommission() { Commission = totalComission };
+            absoluteComission.Execute(securities[0]);            
             securities[0].Commission = CalculateCommission;
 
             account.Logger = logger;
@@ -87,22 +79,7 @@ namespace TrendByPivotPointsStrategy
                 foreach (var tradingSystem in tradingSystems)
                 {
                     tradingSystem.Update(lastClosedBarNumberInRealTrading);
-
-                    //var sec = securityFirst as SecurityTSlab;
-
-                    //var le = sec.security.Positions.GetLastActiveForSignal("LE", i);
-                    //var se = sec.security.Positions.GetLastActiveForSignal("SE", i);
-
-
-                    //var leSeNullCurrentBar = (le == null) && (se == null);
-                    //var moneyBefore = account.Equity;
-
                     account.Update(lastClosedBarNumberInRealTrading);
-
-                    //var moneyAfter = account.Equity;
-                    //var br = (leSeNullCurrentBar && leSeNullPreviousBar && (moneyAfter != moneyBefore));
-
-                    //leSeNullPreviousBar = leSeNullCurrentBar;
                 }
             }
 
@@ -125,9 +102,7 @@ namespace TrendByPivotPointsStrategy
         public void Paint(IContext ctx, ISecurity sec)
         {
             var firstTradingSystem = tradingSystems.First();
-            firstTradingSystem.Paint(context);
-            //var lastTradingSystem = tradingSystems.Last();
-            //lastTradingSystem.Paint(context);
+            firstTradingSystem.Paint(context);            
         }
 
         private bool IsLaboratory(ISecurity security)

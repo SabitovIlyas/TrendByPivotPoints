@@ -82,8 +82,8 @@ namespace TrendByPivotPointsStrategy
             contractsByRiskMoney = contractsByRiskMoney / shares;
             if (contractsByRiskMoney == 0) contractsByRiskMoney = 1;
 
-            message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity (Estimated Balance) и рискумой суммой в одном контракте, равно {0}" +
-                "(с учётом цены контракта и количества лотов при открытии позиции {1}.", contractsByRiskMoney, shares);
+            message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity (Estimated Balance) и рискуемой суммой в одном контракте, равно {0} " +
+                "(с учётом цены контракта и количества лотов при открытии позиции {1}).", contractsByRiskMoney, shares);
             logger.Log(message);
             
 
