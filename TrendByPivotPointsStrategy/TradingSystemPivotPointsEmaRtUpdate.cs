@@ -101,7 +101,8 @@ namespace TrendByPivotPointsStrategy
                         {
                             signalNameForOpenPosition = "SE";
                             convertable = new Converter(isConverted: true);
-                            //CheckPositionOpenShortCase();
+                            GetLows();
+                            CheckPositionOpenLongCase();
                             break;
                         }
                 }
@@ -148,6 +149,15 @@ namespace TrendByPivotPointsStrategy
             return convertable.IsGreater(lastPrice, ema[barNumber]);
         }
 
+        private double Minus(double a, double b)
+        {
+            return convertable.Minus(a, b);
+        }
+        private bool IsGreater(double a, double b)
+        {
+            return convertable.IsGreater(a, b);
+        }
+
         private bool IsLastPriceGreaterStopPrice()
         {            
             return false;// convertable.IsGreater(lastPrice, stopPrice);
@@ -181,7 +191,7 @@ namespace TrendByPivotPointsStrategy
 
         public void CheckPositionOpenLongCase()
         {
-            var le = sec.Positions.GetLastActiveForSignal("LE", barNumber); //убрать в перспективе
+            var le = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition, barNumber); //убрать в перспективе
             breakdownLong = (pivotPointBreakDownSide / 100) * atr[barNumber]; //убрать в перспективе
 
             Log("бар № {0}. Открыта ли длинная позиция?", barNumber);
@@ -210,7 +220,8 @@ namespace TrendByPivotPointsStrategy
                             Log("Нет, потенциальная сделка не отсеивается фильтром. Последняя цена закрытия {0} выше EMA: {1}. ", lastPrice, ema[barNumber]);
                             
                             Log("Вычисляем стоп-цену...");
-                            var stopPrice = lastLow.Value - breakdownLong;
+                            //var stopPrice = lastLow.Value - breakdownLong;
+                            var stopPrice = Minus(lastLow.Value, breakdownLong);
 
                             Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
                                 "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Последняя цена выше стоп-цены?", atr[barNumber], pivotPointBreakDownSide,
@@ -219,7 +230,7 @@ namespace TrendByPivotPointsStrategy
                             Log("Запоминаем минимум, использовавшийся для попытки открытия длинной позиции.");
                             SetLastLowForOpenLongPosition();                            
 
-                            if (lastPrice > stopPrice)  //4
+                            if (IsGreater(lastPrice, stopPrice))  //4
                             {
                                 Log("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
 
@@ -247,7 +258,7 @@ namespace TrendByPivotPointsStrategy
                                 if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                                 {
                                     Log("Бар актуальный.");
-                                    stopLoss.CreateStopLossLong();
+                                    stopLoss.CreateStopLossLong(stopLossLong, breakdownLong);                                    
                                     realTimeTrading.SetFlagNewPositionOpened();
                                 }
                                 else
@@ -358,7 +369,9 @@ namespace TrendByPivotPointsStrategy
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
             atr = Series.AverageTrueRange(sec.Bars, 20);
-            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);// параметры стратегии здесь ещё неизвестны. Перенести эту строку в инициализацию.
+            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
+            stopLoss.Logger = Logger;
+            stopLoss.ctx = Ctx;
         }
 
         public void Paint(Context context)

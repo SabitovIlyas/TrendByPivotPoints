@@ -63,7 +63,7 @@ namespace TrendByPivotPointsStrategy
 
             return totalCommission + reserve;
         }
-                
+
         public override void Run()
         {
             foreach (var tradingSystem in tradingSystems)
@@ -73,31 +73,51 @@ namespace TrendByPivotPointsStrategy
             if (lastBarNumber < 1)
                 return;
 
-            for (var i = 1; i < lastBarNumber; i++)
+            for (var i = 0; i <= lastBarNumber; i++)
             {
-                var lastClosedBarNumberInRealTrading = i - 1;
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    tradingSystem.Update(lastClosedBarNumberInRealTrading);
-                    account.Update(lastClosedBarNumberInRealTrading);
+                    tradingSystem.Update(i);
+                    account.Update(i);
                 }
             }
-
-            if (IsRealTimeTrading())
-            {
-                foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.CheckPositionCloseCase(lastBarNumber);
-
-                if (IsLastBarClosed())
-                    foreach (var tradingSystem in tradingSystems)
-                        tradingSystem.Update(lastBarNumber);
-            }
-            else
-                foreach (var tradingSystem in tradingSystems)
-                    tradingSystem.Update(lastBarNumber);
-
-            account.Update(lastBarNumber);
         }
+
+        //public override void Run()
+        //{
+        //    foreach (var tradingSystem in tradingSystems)
+        //        tradingSystem.CalculateIndicators();
+
+        //    var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
+        //    if (lastBarNumber < 1)
+        //        return;
+
+        //    for (var i = 1; i < lastBarNumber; i++)
+        //    {
+        //        var lastClosedBarNumberInRealTrading = i - 1;
+        //        foreach (var tradingSystem in tradingSystems)
+        //        {
+        //            Logger.Log("Бар №" + lastClosedBarNumberInRealTrading);
+        //            tradingSystem.Update(lastClosedBarNumberInRealTrading);
+        //            account.Update(lastClosedBarNumberInRealTrading);
+        //        }
+        //    }
+
+        //    if (IsRealTimeTrading())
+        //    {
+        //        foreach (var tradingSystem in tradingSystems)
+        //            tradingSystem.CheckPositionCloseCase(lastBarNumber);
+
+        //        if (IsLastBarClosed())
+        //            foreach (var tradingSystem in tradingSystems)
+        //                tradingSystem.Update(lastBarNumber);
+        //    }
+        //    else
+        //        foreach (var tradingSystem in tradingSystems)
+        //            tradingSystem.Update(lastBarNumber);
+
+        //    account.Update(lastBarNumber);
+        //}
 
         public void Paint(IContext ctx, ISecurity sec)
         {

@@ -143,8 +143,10 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        public void CreateStopLossLong()
+        public void CreateStopLossLong(double stopLossLong, double breakdownLong)
         {
+            this.stopLossLong = stopLossLong;
+            this.breakdownLong = breakdownLong;
             var containerName = string.Format("stopLossLong {0} {1}", security.Name, positionSide);
             Log("Сохраним stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
             var container = new NotClearableContainer<double>(stopLossLong);

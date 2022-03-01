@@ -49,6 +49,21 @@
             var result = GetBarLow(security, barNumber);
             isConverted = !isConverted;
             return result;            
-        }        
+        }      
+        
+        public double Minus(double a, double b)
+        {
+            if (!isConverted)
+                return a - b;
+            return a + b;
+        }
+
+        public double Plus(double a, double b)
+        {
+            isConverted = !isConverted;
+            var result = Minus(a, b);
+            isConverted = !isConverted;
+            return result;
+        }
     }
 }
