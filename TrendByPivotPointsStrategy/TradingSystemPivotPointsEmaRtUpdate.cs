@@ -189,6 +189,24 @@ namespace TrendByPivotPointsStrategy
             return lastLow.BarNumber == lastLowForOpenLongPosition.BarNumber;
         }
 
+        private void OpenPositionAtPrice(int contracts)
+        {
+            var price = convertable.Plus(lastPrice, atr[barNumber]);
+
+            if (positionSide == PositionSide.Long)                        
+                sec.Positions.BuyAtPrice(barNumber + 1, contracts, price, signalNameForOpenPosition);            
+            if (positionSide == PositionSide.Short)                            
+                sec.Positions.SellAtPrice(barNumber + 1, contracts, price, signalNameForOpenPosition);            
+        }
+
+        private void OpenPositionAtMarket(int contracts)
+        {
+            if (positionSide == PositionSide.Long)
+                sec.Positions.BuyAtMarket(barNumber + 1, contracts, signalNameForOpenPosition);
+            if (positionSide == PositionSide.Short)
+                sec.Positions.SellAtMarket(barNumber + 1, contracts, signalNameForOpenPosition);
+        }        
+
         public void CheckPositionOpenLongCase()
         {
             var le = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition, barNumber); //убрать в перспективе
@@ -241,15 +259,13 @@ namespace TrendByPivotPointsStrategy
                                 if (security.IsRealTimeTrading)
                                 {
                                     contracts = 1;
-                                    Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
-
-                                    var price = lastPrice + atr[barNumber];
-                                    sec.Positions.BuyAtPrice(barNumber + 1, contracts, price, "LE");
+                                    Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);                                                                        
+                                    OpenPositionAtPrice(contracts);                                    
                                 }
                                 else
-                                {
+                                {                                    
                                     Log("Торгуем в лаборатории.");
-                                    sec.Positions.BuyAtMarket(barNumber + 1, contracts, "LE");
+                                    OpenPositionAtMarket(contracts);                                    
                                 }
 
                                 stopLossLong = stopPrice;

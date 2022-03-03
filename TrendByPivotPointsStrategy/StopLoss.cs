@@ -24,6 +24,7 @@ namespace TrendByPivotPointsStrategy
         private IList<double> atr;
         private double pivotPointBreakDownSide;
         private RealTimeTrading realTimeTrading;
+        private Converter convertable;
 
         private StopLoss(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
@@ -33,7 +34,12 @@ namespace TrendByPivotPointsStrategy
             stopLossDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
             this.realTimeTrading = realTimeTrading;
             this.atr = atr;
-            this.pivotPointBreakDownSide = pivotPointBreakDownSide;
+            this.pivotPointBreakDownSide = pivotPointBreakDownSide;            
+            
+            if (positionSide == PositionSide.Long)
+                convertable = new Converter(isConverted: false);
+            if (positionSide == PositionSide.Short)
+                convertable = new Converter(isConverted: true);
         }
 
         private void Log(string text)
