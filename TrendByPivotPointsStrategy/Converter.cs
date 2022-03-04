@@ -65,5 +65,104 @@
             isConverted = !isConverted;
             return result;
         }
+
+        public string Long
+        {
+            get
+            {
+                if (!isConverted)
+                    return "long";
+                return "short";
+            }
+        }
+
+        public string Short
+        {
+            get
+            {
+                isConverted = !isConverted;
+                var result = Long;
+                isConverted = !isConverted;
+                return result;
+            }
+        }
+
+        public string Minimum
+        {
+            get
+            {
+                if (!isConverted)
+                    return "минимум";
+                return "максимум";
+            }
+        }
+
+        public string Maximum
+        {
+            get
+            {
+                isConverted = !isConverted;
+                var result = Long;
+                isConverted = !isConverted;
+                return result;
+            }
+        }
+
+        public string Above
+        {
+            get
+            {
+                if (!isConverted)
+                    return "выше";
+                return "ниже";
+            }
+        }
+
+        public string Under
+        {
+            get
+            {
+                isConverted = !isConverted;
+                var result = Long;
+                isConverted = !isConverted;
+                return result;
+            }
+        }
+
+        public string Rising
+        {
+            get
+            {
+                if (!isConverted)
+                    return "повышающ";
+                return "понижающ";
+            }
+        }
+
+        public string Descending
+        {
+            get
+            {
+                isConverted = !isConverted;
+                var result = Long;
+                isConverted = !isConverted;
+                return result;
+            }
+        }
+
+        public double GetBarLow(Bar bar)
+        {
+            if (!isConverted)
+                return bar.Low;
+            return bar.High;
+        }
+
+        public double GetBarHigh(Bar bar)
+        {
+            isConverted = !isConverted;
+            var result = GetBarLow(bar);
+            isConverted = !isConverted;
+            return result;
+        }
     }
 }
