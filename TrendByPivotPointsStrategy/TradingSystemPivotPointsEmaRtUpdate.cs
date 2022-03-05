@@ -214,7 +214,7 @@ namespace TrendByPivotPointsStrategy
                 Log("Выполняется ли условие двух последовательных {0}ихся {1}ов?", convertable.Rising, convertable.Minimum);
                 if (IsLastMinGreaterThanPrevious())   //1
                 {
-                    Log("Да, выполняется: последний {0} б. №{1}: {2} выше предыдущего б. №{3}: {4}.", convertable.Minimum, lastLow.BarNumber, lastLow.Value, prevLastLow.BarNumber, prevLastLow.Value);
+                    Log("Да, выполняется: последний {0} б. №{1}: {2} {3} предыдущего б. №{4}: {5}.", convertable.Minimum, lastLow.BarNumber, lastLow.Value, convertable.Above, prevLastLow.BarNumber, prevLastLow.Value);
 
                     Log("Использовался ли последний {0} в попытке открыть {1} позицию ранее?", convertable.Minimum, convertable.Long);
                     if (IsLastLowCaseLongCloseNotExist() || !IsLastLowCaseLongAlreadyUsed())    //2
@@ -235,18 +235,16 @@ namespace TrendByPivotPointsStrategy
                             //var stopPrice = lastLow.Value - breakdownLong;
                             var stopPrice = convertable.Minus(lastLow.Value, breakdownLong);
 
-                            Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2}; стоп-лосс = последний {3} {4} - допустимый уровень пробоя {2} = {5}. " +
-                                "Последняя цена {6} стоп-цены?", atr[barNumber], pivotPointBreakDownSide, breakdownLong, convertable.Minimum, lastLow.Value, stopPrice, convertable.Above);
+                            Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2}; стоп-лосс = последний {3} {4} {6} допустимый уровень пробоя {2} = {5}. ",
+                                atr[barNumber], pivotPointBreakDownSide, breakdownLong, convertable.Minimum, lastLow.Value, stopPrice, convertable.SymbolMinus);
 
-                            Log("Запоминаем {0}, использовавшийся для попытки открытия {1} позиции.", convertable.Minimum, convertable.Long);
-                            SetLastLowForOpenLongPosition();
-
+                            Log("Последняя цена {0} стоп-цены?",convertable.Above);
                             if (convertable.IsGreater(lastPrice, stopPrice))  //4
                             {
                                 Log("Да, последняя цена ({0}) {1} стоп-цены ({2}). Открываем {3} позицию...", lastPrice, convertable.Above, stopPrice, convertable.Long);
 
                                 Log("Определяем количество контрактов...");
-                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, PositionSide.Long);
+                                var contracts = localMoneyManager.GetQntContracts(lastPrice, stopPrice, positionSide);
 
                                 Log("Торгуем в лаборатории или в режиме реального времени?");
                                 if (security.IsRealTimeTrading)
@@ -278,6 +276,8 @@ namespace TrendByPivotPointsStrategy
                             else
                                 Log("Последняя цена {0} стоп-цены. {1} позицию не открываем.", convertable.Under, convertable.Long);
 
+                            Log("Запоминаем {0}, использовавшийся для попытки открытия {1} позиции.", convertable.Minimum, convertable.Long);
+                            SetLastLowForOpenLongPosition();
                         }
                         else
                             Log("Cделка отсеивается фильтром, так как последняя цена закрытия {0} {1} или совпадает с EMA: {2}.", lastPrice, convertable.Under, ema[barNumber]);

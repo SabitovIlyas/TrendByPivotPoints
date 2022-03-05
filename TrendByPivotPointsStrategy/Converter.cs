@@ -102,7 +102,7 @@
             get
             {
                 isConverted = !isConverted;
-                var result = Long;
+                var result = Minimum;
                 isConverted = !isConverted;
                 return result;
             }
@@ -123,7 +123,7 @@
             get
             {
                 isConverted = !isConverted;
-                var result = Long;
+                var result = Above;
                 isConverted = !isConverted;
                 return result;
             }
@@ -144,7 +144,7 @@
             get
             {
                 isConverted = !isConverted;
-                var result = Long;
+                var result = Rising;
                 isConverted = !isConverted;
                 return result;
             }
@@ -163,6 +163,27 @@
             var result = GetBarLow(bar);
             isConverted = !isConverted;
             return result;
+        }
+
+        public string SymbolMinus
+        {
+            get
+            {
+                if (!isConverted)
+                    return "-";
+                return "+";
+            }
+        }
+
+        public string SymbolPlus
+        {
+            get
+            {
+                isConverted = !isConverted;
+                var result = SymbolMinus;
+                isConverted = !isConverted;
+                return result;
+            }
         }
     }
 }
