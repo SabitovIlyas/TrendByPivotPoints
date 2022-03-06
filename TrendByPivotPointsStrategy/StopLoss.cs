@@ -5,7 +5,7 @@ using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class StopLoss
+    public class StopLoss : IStopLoss
     {
         public static StopLoss Create(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
@@ -76,7 +76,7 @@ namespace TrendByPivotPointsStrategy
 
             Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
                             "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Новый стоп-лосс выше прежнего?", atr[barNumber], pivotPointBreakDownSide,
-                            breakdownLong, lastLow.Value, stopLoss);            
+                            breakdownLong, lastLow.Value, stopLoss);
 
             Log("Проверяем актуальный ли это бар.");
             if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
@@ -98,12 +98,12 @@ namespace TrendByPivotPointsStrategy
                         stopLossLong = value;
                     }
                     else
-                        Log("Значение в контейнере равно нулю! Значение из контейнера отбрасываем!");                    
+                        Log("Значение в контейнере равно нулю! Значение из контейнера отбрасываем!");
                 }
-                else                
-                    Log("Не удалось загрузить контейнер.");                
+                else
+                    Log("Не удалось загрузить контейнер.");
             }
-            else            
+            else
                 Log("Бар не актуальный.");
 
             if (convertable.IsGreater(stopLoss, stopLossLong))
@@ -136,14 +136,14 @@ namespace TrendByPivotPointsStrategy
                         else
                             Logger.Log("stopLoss НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value);
                 }
-                else                
+                else
                     Log("Бар не актуальный.");
-                
+
 
             }
             else
             {
-                Log("Нет, новый стоп-лосс ({0}) не выше прежнего ({1}). Стоп-лосс оставляем прежним.", stopLoss, stopLossLong);                
+                Log("Нет, новый стоп-лосс ({0}) не выше прежнего ({1}). Стоп-лосс оставляем прежним.", stopLoss, stopLossLong);
             }
 
             if (realTimeTrading.WasNewPositionOpened())
@@ -170,9 +170,9 @@ namespace TrendByPivotPointsStrategy
                     Log("Нет.");
 
                     Log("Устанавливаем обновлённое значение стоп-лосса.");
-                    le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], signalNameForClosePosition);                    
-                }                
-            }            
+                    le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], signalNameForClosePosition);
+                }
+            }
         }
 
         public void CreateStopLoss(double stopLoss, double breakdown)
