@@ -68,7 +68,7 @@ namespace TrendByPivotPointsStrategy
             var systemParameters = new SystemParameters();
 
             systemParameters.Add("leftLocalSide", leftLocalSide);
-            systemParameters.Add("rightLocalSide", rightLocalSide);
+            systemParameters.Add("rightLocalSide", leftLocalSide);
             systemParameters.Add("pivotPointBreakDownSide", pivotPointBreakDownSide);
             systemParameters.Add("emaPeriodSide", emaPeriodSide);
             systemParameters.Add("rateUSD", rateUSD);

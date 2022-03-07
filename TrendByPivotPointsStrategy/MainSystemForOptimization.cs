@@ -35,7 +35,7 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             ITradingSystemPivotPointsEMA ts;
                         
-            ts = new TradingSystemPivotPointsEmaRtUpdate(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
+            ts = new TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;
             ts.Logger = logger;
             tradingSystems.Add(ts);

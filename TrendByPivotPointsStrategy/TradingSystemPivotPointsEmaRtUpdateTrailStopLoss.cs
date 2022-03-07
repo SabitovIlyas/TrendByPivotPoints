@@ -8,7 +8,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystemPivotPointsEmaRtUpdate : ITradingSystemPivotPointsEMA
+    public class TradingSystemPivotPointsEmaRtUpdateTrailStopLoss : ITradingSystemPivotPointsEMA
     {
         public IContext Ctx { get; set; }
         LocalMoneyManager localMoneyManager;
@@ -52,10 +52,10 @@ namespace TrendByPivotPointsStrategy
         private string tradingSystemDescription;
         private string name = "TradingSystemPivotPointsEMAtest";
         private string parametersCombination;
-        private StopLoss stopLoss;
+        private StopLossTrail stopLoss;
         private RealTimeTrading realTimeTrading;
 
-        public TradingSystemPivotPointsEmaRtUpdate(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        public TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
             this.account = account;
@@ -255,6 +255,7 @@ namespace TrendByPivotPointsStrategy
                                 }
                                 else
                                 {
+                                    contracts = 1;
                                     Log("Торгуем в лаборатории.");
                                     OpenPositionAtMarket(contracts);
                                 }
@@ -292,7 +293,7 @@ namespace TrendByPivotPointsStrategy
             else
             {
                 Log("{0} позиция открыта.", convertable.Long);
-                stopLoss.UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
+                stopLoss.UpdateStopLossLongPosition(barNumber, le);
                 CheckPositionCloseCase(le, barNumber);
             }
         }                                      
@@ -360,7 +361,7 @@ namespace TrendByPivotPointsStrategy
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
             atr = Series.AverageTrueRange(sec.Bars, 20);
-            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);            
+            stopLoss = StopLossTrail.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);            
             stopLoss.Logger = Logger;
             stopLoss.ctx = Ctx;
         }
