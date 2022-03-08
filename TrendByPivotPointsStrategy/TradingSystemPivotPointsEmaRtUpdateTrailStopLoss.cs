@@ -53,6 +53,7 @@ namespace TrendByPivotPointsStrategy
         private string name = "TradingSystemPivotPointsEMAtest";
         private string parametersCombination;
         private StopLossTrail stopLoss;
+        private StopLoss stopLoss1;
         private RealTimeTrading realTimeTrading;
 
         public TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
@@ -267,6 +268,7 @@ namespace TrendByPivotPointsStrategy
                                 {
                                     Log("Бар актуальный.");
                                     stopLoss.CreateStopLoss(stopLossLong, breakdownLong);
+                                    //stopLoss1.CreateStopLoss(stopLossLong, breakdownLong);
                                     realTimeTrading.SetFlagNewPositionOpened();
                                 }
                                 else
@@ -294,6 +296,7 @@ namespace TrendByPivotPointsStrategy
             {
                 Log("{0} позиция открыта.", convertable.Long);
                 stopLoss.UpdateStopLossLongPosition(barNumber, le);
+                //stopLoss1.UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
                 CheckPositionCloseCase(le, barNumber);
             }
         }                                      
@@ -361,9 +364,13 @@ namespace TrendByPivotPointsStrategy
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
             atr = Series.AverageTrueRange(sec.Bars, 20);
-            stopLoss = StopLossTrail.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);            
+            stopLoss = StopLossTrail.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
+            stopLoss1 = StopLoss.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
             stopLoss.Logger = Logger;
             stopLoss.ctx = Ctx;
+
+            stopLoss1.Logger = Logger;
+            stopLoss1.ctx = Ctx;            
         }
 
         public void Paint(Context context)

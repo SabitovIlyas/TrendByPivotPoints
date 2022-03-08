@@ -33,7 +33,7 @@ namespace TrendByPivotPointsStrategy
         private int currentBarNumber;
         private bool isStopLossActive = false;
         private double previousMaxPrice;
-        private double maxPrice;
+        private double maxPrice;            
 
         private StopLossTrail(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
@@ -106,7 +106,7 @@ namespace TrendByPivotPointsStrategy
                                                                                  //var pathPriceFromEntryPriceToMaxPriceComparedToFirstStopLossPrcnt = pathPriceFromEntryPriceToMaxPrice / firstStopLoss;
 
                 //if (pathPriceFromEntryPriceToMaxPriceComparedToFirstStopLossPrcnt >= pathPriceFromFirstStopLossToEntryPricePrcnt)
-                if (pathPriceFromEntryPriceToMaxPrice >= pathPriceFromFirstStopLossToEntryPrice)
+                if (convertable.IsGreaterOrEqual(pathPriceFromEntryPriceToMaxPrice,pathPriceFromFirstStopLossToEntryPrice))
                     isStopLossActive = true;
             }
             
@@ -117,10 +117,10 @@ namespace TrendByPivotPointsStrategy
         {
             security.BarNumber = currentBarNumber;
             var barNumberEnterPosition = le.EntryBarNum;
-            var maxPrice = security.GetBarHigh(barNumberEnterPosition);
-            for (var i = barNumberEnterPosition + 1; i <= currentBarNumber; i++)            
-                if (maxPrice < security.GetBarHigh(i))
-                    maxPrice = security.GetBarHigh(i);
+            var maxPrice = convertable.GetBarHigh(security, barNumberEnterPosition);
+            for (var i = barNumberEnterPosition + 1; i <= currentBarNumber; i++)
+                if (convertable.IsLess(maxPrice, security.GetBarHigh(i)))
+                    maxPrice = convertable.GetBarHigh(security, i);
             return maxPrice;
         }
 
@@ -130,11 +130,11 @@ namespace TrendByPivotPointsStrategy
             this.le = le;
             var previousStopLoss = stopLossLong;
             currentBarNumber = barNumber;
-            var stopLoss = 0d;
+            var stopLoss = convertable.Nil;
 
             Log("Обновляем стоп...");
 
-            if (this.maxPrice==0)
+            if (this.maxPrice == 0)
             {
                 this.maxPrice = le.EntryPrice;
                 this.previousMaxPrice = this.maxPrice;
@@ -145,12 +145,12 @@ namespace TrendByPivotPointsStrategy
 
             if (isStopLossActive)
             {
-                if (maxPrice > this.maxPrice)
+                if (convertable.IsGreater(maxPrice, this.maxPrice))
                 {
                     previousMaxPrice = this.maxPrice;
                     this.maxPrice = maxPrice;
                     //stopLossLong = stopLossLong + (maxPrice - previousMaxPrice);
-                    stopLoss = stopLossLong + (maxPrice - previousMaxPrice);
+                    stopLoss =  stopLossLong + (maxPrice - previousMaxPrice);
                 }                
             }                    
 
@@ -246,7 +246,7 @@ namespace TrendByPivotPointsStrategy
                     Log("Нет.");
 
                     Log("Устанавливаем обновлённое значение стоп-лосса.");
-                    le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], signalNameForClosePosition);
+                    le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], signalNameForClosePosition);                    
                 }
             }
         }

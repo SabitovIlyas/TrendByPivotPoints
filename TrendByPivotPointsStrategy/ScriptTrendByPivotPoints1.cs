@@ -39,7 +39,7 @@ namespace TrendByPivotPointsStrategy
         public void Execute(IContext context, ISecurity[] securities)        
         {
             var logger = new LoggerSystem(context);
-            logger.Log("Hello!");
+            //logger.Log("Hello!");
 
             MainSystem system;
 

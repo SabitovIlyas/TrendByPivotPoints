@@ -40,12 +40,12 @@ namespace TrendByPivotPointsStrategy
 
             if (positionSide == PositionSide.Long)
             {
-                signalNameForClosePosition = "LXS";
+                signalNameForClosePosition = "LXV";
                 convertable = new Converter(isConverted: false);
             }
             if (positionSide == PositionSide.Short)
             {
-                signalNameForClosePosition = "SXS";
+                signalNameForClosePosition = "SXV";
                 convertable = new Converter(isConverted: true);
             }
         }

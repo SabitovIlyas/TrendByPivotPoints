@@ -185,5 +185,26 @@
                 return result;
             }
         }
+
+        public double Nil
+        {
+            get
+            {
+                if (!isConverted)
+                    return 0;
+                return double.MaxValue;
+            }
+        }
+
+        public double MaxValue
+        {
+            get
+            {
+                isConverted = !isConverted;
+                var result = Nil;
+                isConverted = !isConverted;
+                return result;
+            }
+        }
     }
 }
