@@ -98,6 +98,7 @@
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
     <Compile Include="StopLoss.cs" />
+    <Compile Include="StopLossTrailPivotPoints.cs" />
     <Compile Include="StopLossTrail.cs" />
     <Compile Include="SystemParameters.cs" />
     <Compile Include="TradingSystemPivotPointsEmaRtUpdateTrailStopLoss.cs" />

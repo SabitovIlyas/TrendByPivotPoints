@@ -40,12 +40,12 @@ namespace TrendByPivotPointsStrategy
 
             if (positionSide == PositionSide.Long)
             {
-                signalNameForClosePosition = "LXV";
+                signalNameForClosePosition = "LXS";
                 convertable = new Converter(isConverted: false);
             }
             if (positionSide == PositionSide.Short)
             {
-                signalNameForClosePosition = "SXV";
+                signalNameForClosePosition = "SXS";
                 convertable = new Converter(isConverted: true);
             }
         }
@@ -61,16 +61,10 @@ namespace TrendByPivotPointsStrategy
             Log(text);
         }
 
-        public void UpdateStopLossLongPosition(int barNumber, List<Indicator> lows, Indicator lastLow, IPosition le)
+        public void UpdateStopLossLongPosition(int barNumber, Indicator lastLow, IPosition le)
         {
             var previousStopLoss = stopLossLong;
-            Log("Обновляем стоп...");
-
-            if (lows.Count == 0)
-            {
-                Log("Это условие никогда не должно отрабатывать. Проверить и впоследствии убрать.");
-                return;
-            }
+            Log("Обновляем стоп...");           
 
             var stopLoss = convertable.Minus(lastLow.Value, breakdownLong);
 

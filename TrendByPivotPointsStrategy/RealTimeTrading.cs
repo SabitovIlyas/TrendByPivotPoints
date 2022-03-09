@@ -11,11 +11,7 @@ namespace TrendByPivotPointsStrategy
             return new RealTimeTrading(positionSide, tradingSystemDescription, ctx);
         }
         public Logger Logger { get; set; } = new NullLogger();
-
-        //private void Log(string text)
-        //{
-        //    Logger.Log("{0}: {1}", stopLossDescription, text);
-        //}
+        
 
         private PositionSide positionSide;
         private string tradingSystemDescription;
@@ -31,7 +27,7 @@ namespace TrendByPivotPointsStrategy
         {
             this.positionSide = positionSide;
             this.tradingSystemDescription = tradingSystemDescription;
-            this.ctx = ctx;
+            this.ctx = ctx;            
         }
         public bool WasNewPositionOpened()
         {
@@ -53,8 +49,11 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private object LoadObjectFromContainer(string key)
+        public object LoadObjectFromContainer(string key)
         {
+            if (ctx.IsOptimization)
+                throw new Exception("Моё исключение: Чтение объекта из контейнера невозможно в режиме оптимизации");
+            
             var containerName = tradingSystemDescription + key;
             var container = ctx.LoadObject(containerName) as NotClearableContainer<object>;
             object value;
@@ -111,8 +110,11 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private void SaveObjectToContainer(string key, object value)
+        public void SaveObjectToContainer(string key, object value)
         {
+            if (ctx.IsOptimization)            
+                return;
+            
             var containerName = this.tradingSystemDescription + key;
             var container = new NotClearableContainer<object>(value);
             ctx.StoreObject(containerName, container);

@@ -52,7 +52,7 @@ namespace TrendByPivotPointsStrategy
         private string tradingSystemDescription;
         private string name = "TradingSystemPivotPointsEMAtest";
         private string parametersCombination;
-        private StopLossTrail stopLoss;
+        private StopLossTrailPivotPoints stopLoss;
         private StopLoss stopLoss1;
         private RealTimeTrading realTimeTrading;
 
@@ -267,8 +267,7 @@ namespace TrendByPivotPointsStrategy
                                 if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
                                 {
                                     Log("Бар актуальный.");
-                                    stopLoss.CreateStopLoss(stopLossLong, breakdownLong);
-                                    //stopLoss1.CreateStopLoss(stopLossLong, breakdownLong);
+                                    stopLoss.CreateStopLoss(lastLow, breakdownLong);
                                     realTimeTrading.SetFlagNewPositionOpened();
                                 }
                                 else
@@ -295,8 +294,7 @@ namespace TrendByPivotPointsStrategy
             else
             {
                 Log("{0} позиция открыта.", convertable.Long);
-                stopLoss.UpdateStopLossLongPosition(barNumber, le);
-                //stopLoss1.UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
+                stopLoss.UpdateStopLossLongPosition(barNumber, lastLow, le);
                 CheckPositionCloseCase(le, barNumber);
             }
         }                                      
@@ -364,7 +362,7 @@ namespace TrendByPivotPointsStrategy
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
             atr = Series.AverageTrueRange(sec.Bars, 20);
-            stopLoss = StopLossTrail.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
+            stopLoss = StopLossTrailPivotPoints.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
             stopLoss1 = StopLoss.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
             stopLoss.Logger = Logger;
             stopLoss.ctx = Ctx;
@@ -375,6 +373,9 @@ namespace TrendByPivotPointsStrategy
 
         public void Paint(Context context)
         {
+            if (Ctx.IsOptimization)
+                return;
+
             var contextTSLab = context as ContextTSLab;
             var name = string.Format("{0} {1} {2}", sec.ToString(), positionSide, sec.Interval);
             var pane = contextTSLab.context.CreateGraphPane(name: name, title: name);

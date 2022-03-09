@@ -292,7 +292,7 @@ namespace TrendByPivotPointsStrategy
             else
             {
                 Log("{0} позиция открыта.", convertable.Long);
-                stopLoss.UpdateStopLossLongPosition(barNumber, lows, lastLow, le);
+                stopLoss.UpdateStopLossLongPosition(barNumber, lastLow, le);
                 CheckPositionCloseCase(le, barNumber);
             }
         }                                      
