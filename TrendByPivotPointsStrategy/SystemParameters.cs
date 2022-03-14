@@ -23,12 +23,19 @@ namespace TrendByPivotPointsStrategy
 
         public double GetDouble(string key)
         {
-            return GetValue(key);
+            try
+            {
+                return GetValue(key);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         public int GetInt(string key)
         {
-            return GetValue(key);
+            return (int)GetDouble(key);
         }
     }
 }

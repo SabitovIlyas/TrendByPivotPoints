@@ -4,11 +4,11 @@ using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
-    class StopLossTrailPivotPoints : IStopLoss
+    class StopLossTrailPivotPointsEMA : IStopLoss
     {
-        public static StopLossTrailPivotPoints Create(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
+        public static StopLossTrailPivotPointsEMA Create(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
-            return new StopLossTrailPivotPoints(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
+            return new StopLossTrailPivotPointsEMA(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
         }
 
         public IContext ctx { get; set; }
@@ -27,13 +27,13 @@ namespace TrendByPivotPointsStrategy
         private double firstStopLoss;
         private IPosition le;
         private int currentBarNumber;
-        private bool isStopLossActive = true;
+        private bool isStopLossActive = false;
         private double previousMaxPrice;
         private double maxPrice;
         private double breakdown;
         private Indicator lastLow;
 
-        private StopLossTrailPivotPoints(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
+        private StopLossTrailPivotPointsEMA(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
         {
             this.security = security;
             this.positionSide = positionSide;
@@ -99,7 +99,7 @@ namespace TrendByPivotPointsStrategy
                 var pathPriceFromFirstStopLossToEntryPrice = entryPrice - firstStopLoss;
                 var pathPriceFromEntryPriceToMaxPrice = maxPrice - entryPrice;                
                 if (convertable.IsGreaterOrEqual(pathPriceFromEntryPriceToMaxPrice,pathPriceFromFirstStopLossToEntryPrice))
-                    isStopLossActive = false;
+                    isStopLossActive = true;
             }
             
             return isStopLossActive;
@@ -116,7 +116,7 @@ namespace TrendByPivotPointsStrategy
             return maxPrice;
         }
 
-        public void UpdateStopLossLongPosition(int barNumber, Indicator lastLow, IPosition le)
+        public void UpdateStopLossLongPosition(int barNumber, Indicator lastLow, IPosition le, double ema)
         {
             if (this.lastLow.BarNumber != lastLow.BarNumber && convertable.IsGreater(lastLow.Value, this.lastLow.Value))
                 CreateStopLoss(lastLow, breakdown);
@@ -145,7 +145,10 @@ namespace TrendByPivotPointsStrategy
                     this.maxPrice = maxPrice;                    
                     stopLoss =  stopLossLong + (maxPrice - previousMaxPrice);
                 }                
-            }                    
+            }
+
+            if (convertable.IsGreater(ema, stopLoss))
+                stopLoss = ema;
 
             Log("Проверяем актуальный ли это бар.");
             if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))

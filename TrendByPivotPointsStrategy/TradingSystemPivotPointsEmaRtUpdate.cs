@@ -52,7 +52,7 @@ namespace TrendByPivotPointsStrategy
         private string tradingSystemDescription;
         private string name = "TradingSystemPivotPointsEMAtest";
         private string parametersCombination;
-        private StopLoss stopLoss;
+        private StopLossExtremums stopLoss;
         private RealTimeTrading realTimeTrading;
 
         public TradingSystemPivotPointsEmaRtUpdate(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
@@ -360,7 +360,7 @@ namespace TrendByPivotPointsStrategy
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
             atr = Series.AverageTrueRange(sec.Bars, 20);
-            stopLoss = StopLoss.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);            
+            stopLoss = StopLossExtremums.Create(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);            
             stopLoss.Logger = Logger;
             stopLoss.ctx = Ctx;
         }
@@ -537,6 +537,11 @@ namespace TrendByPivotPointsStrategy
         }
 
         public void CheckPositionCloseCase(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetParameters(SystemParameters systemParameters)
         {
             throw new NotImplementedException();
         }

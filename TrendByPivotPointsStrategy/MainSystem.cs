@@ -26,7 +26,7 @@ namespace TrendByPivotPointsStrategy
         protected int shares;        
         protected Logger logger = new NullLogger();
         protected Account account;
-
+        protected SystemParameters systemParameters;
 
         public abstract void Initialize(ISecurity[] securities, IContext ctx);
         public void Paint()
@@ -37,6 +37,8 @@ namespace TrendByPivotPointsStrategy
         public abstract void Run();
         public void SetParameters(SystemParameters systemParameters)
         {
+            this.systemParameters = systemParameters;
+
             leftLocalSide = systemParameters.GetInt("leftLocalSide");
             rightLocalSide = systemParameters.GetInt("rightLocalSide");
             pivotPointBreakDownSide = systemParameters.GetDouble("pivotPointBreakDownSide");

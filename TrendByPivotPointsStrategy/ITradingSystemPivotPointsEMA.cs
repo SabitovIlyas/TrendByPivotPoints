@@ -19,6 +19,7 @@ namespace TrendByPivotPointsStrategy
         bool HasOpenPosition();
         void Paint(Context context);
         void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide);
+        void SetParameters(SystemParameters systemParameters);
         void Update(int barNumber);
         void Initialize(IContext ctx);
     }

@@ -1,37 +1,43 @@
 ﻿using System.Collections.Generic;
-using TSLab.Script;
 using TSLab.DataSource;
+using TSLab.Script;
 using TSLab.Script.Handlers;
+using Math = System.Math;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class StopLoss : IStopLoss
+    class StopLoss : IStopLoss
     {
-        public static StopLoss Create(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
+        public static StopLoss Create(string parametersCombination, Security security, PositionSide positionSide, RealTimeTrading realTimeTrading, IList<double> atr)
         {
-            return new StopLoss(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
+            return new StopLoss(parametersCombination, security, positionSide, realTimeTrading, atr);
         }
-        public Logger Logger { get; set; } = new NullLogger();
 
         public IContext ctx { get; set; }
-        public bool IsStopLossUpdateWhenBarIsClosedOnly { get; set; } = true;
-        private string name = "StopLossUnderLow";
-        //private string parametersCombination = "StopLossUnderLow";
+        public bool IsStopLossUpdateWhenBarIsClosedOnly { get; set; } = false;
+        public Logger Logger { get; set; } = new NullLogger();
+
+        private string name = "TrailingStopLoss";
         private Security security;
         private PositionSide positionSide;
         private double breakdownLong = 0;
         private double stopLossLong;
-        private string stopLossDescription = "StopLossUnderLow";
+        private string stopLossDescription = "TrailingStopLoss";
         private IList<double> atr;
         private double pivotPointBreakDownSide;
         private RealTimeTrading realTimeTrading;
         private Converter convertable;
         private string signalNameForClosePosition = "";
+        private double firstStopLoss;
+        private IPosition le;
+        private int currentBarNumber;
+        private bool isStopLossActive = false;
+        private double previousMaxPrice;
+        private double maxPrice;            
 
-        private StopLoss(string parametersCombination, Security security, PositionSide positionSide, IList<double> atr, double pivotPointBreakDownSide, RealTimeTrading realTimeTrading)
+        private StopLoss(string parametersCombination, Security security, PositionSide positionSide, RealTimeTrading realTimeTrading, IList<double> atr)
         {
             this.security = security;
-            //this.parametersCombination = parametersCombination;
             this.positionSide = positionSide;
             stopLossDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
             this.realTimeTrading = realTimeTrading;
@@ -61,30 +67,51 @@ namespace TrendByPivotPointsStrategy
             Log(text);
         }
 
-        public void UpdateStopLossLongPosition(int barNumber, Indicator lastLow, IPosition le)
+        public void CreateStopLoss(double stopLoss)
         {
-            var previousStopLoss = stopLossLong;
-            Log("Обновляем стоп...");           
+            stopLossLong = stopLoss;
+            maxPrice = 0;
+            previousMaxPrice = 0;
+            isStopLossActive = false;
 
-            var stopLoss = convertable.Minus(lastLow.Value, breakdownLong);
+            var stopLossName = string.Format("StopLossTrailPivotPoints {0} {1}", security.Name, positionSide);
+            Log("Сохраним stopLoss = {0} в контейнере \"{1}\".", stopLossLong, stopLossName);
 
-            Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2};" +
-                            "стоп-лосс = последний мимнимум {3} - допустимый уровень пробоя {2} = {4}. Новый стоп-лосс выше прежнего?", atr[barNumber], pivotPointBreakDownSide,
-                            breakdownLong, lastLow.Value, stopLoss);
+            realTimeTrading.SaveObjectToContainer(stopLossName, stopLossLong);
+
+            Log("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, stopLossName);
+            try
+            {
+                var containerValue = (double)realTimeTrading.LoadObjectFromContainer(stopLossName);
+                Logger.Log("stopLoss сохранился в контейнере. Значение в контейнере: value = {0}.", containerValue);
+            }
+            catch (System.Exception e)
+            {
+                Logger.Log(e.Message);
+            }
+        }
+
+        public void UpdateStopLossLongPosition(int barNumber, IPosition le, double stopLoss)
+        {
+            this.le = le;            
+            currentBarNumber = barNumber;            
+
+            Log("Обновляем стоп...");
 
             Log("Проверяем актуальный ли это бар.");
             if (security.IsRealTimeActualBar(barNumber) || (security.RealTimeActualBarNumber == (barNumber + 1)))
             {
                 Log("Бар актуальный.");
 
-                var containerName = string.Format("stopLoss {0} {1}", security.Name, positionSide);
-                Log("Загружаем stopLoss из контейнера \"{0}\".", containerName);
-                var container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
+                var stopLossName = string.Format("stopLoss {0} {1}", security.Name, positionSide);
+                Log("Загружаем stopLoss из контейнера \"{0}\".", stopLossName);
 
-                if (container != null)
+                try
                 {
+                    var containerValue = (double)realTimeTrading.LoadObjectFromContainer(stopLossName);
+
                     Log("Загрузили контейнер.");
-                    var value = container.Content;
+                    var value = containerValue;
                     Log("Значение в контейнере: value = {0}", value);
                     if (value != 0d)
                     {
@@ -93,17 +120,20 @@ namespace TrendByPivotPointsStrategy
                     }
                     else
                         Log("Значение в контейнере равно нулю! Значение из контейнера отбрасываем!");
+
                 }
-                else
-                    Log("Не удалось загрузить контейнер.");
+                catch (System.Exception e)
+                {
+                    Logger.Log(e.Message);
+                }
             }
             else
                 Log("Бар не актуальный.");
 
-            if (convertable.IsGreater(stopLoss, stopLossLong))
+            if (true||convertable.IsGreater(stopLoss, stopLossLong))
             {
                 Log("Да, новый стоп-лосс ({0}) выше прежнего ({1}). Обновляем стоп-лосс.", stopLoss, stopLossLong);
-                previousStopLoss = stopLossLong;
+               
                 stopLossLong = stopLoss;
 
                 Log("Проверяем актуальный ли это бар.");
@@ -111,36 +141,31 @@ namespace TrendByPivotPointsStrategy
                 {
                     Log("Бар актуальный.");
 
-                    var containerName = string.Format("stopLoss {0} {1}", security.Name, positionSide);
-                    Log("Сохраним stopLoss = {0} в контейнере \"{1}\".", stopLossLong, containerName);
-                    var container = new NotClearableContainer<double>(stopLossLong);
+                    var stopLossName = string.Format("StopLossTrailPivotPoints {0} {1}", security.Name, positionSide);
+                    Log("Сохраним stopLoss = {0} в контейнере \"{1}\".", stopLossLong, stopLossName);
 
-                    ctx.StoreObject(containerName, container);
-                    Log("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, containerName);
+                    realTimeTrading.SaveObjectToContainer(stopLossName, stopLossLong);
 
-                    container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
-                    double value = 0d;
-                    if (container != null)
-                        value = container.Content;
-
-                    if (value != 0d)
-                        if (value == stopLossLong)
-                            Logger.Log("stopLoss сохранился в контейнере. Значение в контейнере: value = {0}.", value);
-
-                        else
-                            Logger.Log("stopLoss НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value);
+                    Log("Проверим, сохранился ли stopLossLong = {0} в контейнере \"{1}\".", stopLossLong, stopLossName);
+                    try
+                    {
+                        var containerValue = (double)realTimeTrading.LoadObjectFromContainer(stopLossName);
+                        Logger.Log("stopLoss сохранился в контейнере. Значение в контейнере: value = {0}.", containerValue);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Logger.Log(e.Message);
+                    }
                 }
                 else
                     Log("Бар не актуальный.");
-
-
             }
             else
             {
                 Log("Нет, новый стоп-лосс ({0}) не выше прежнего ({1}). Стоп-лосс оставляем прежним.", stopLoss, stopLossLong);
             }
 
-            if (realTimeTrading.WasNewPositionOpened())
+            if (!ctx.IsOptimization && realTimeTrading.WasNewPositionOpened())
             {
                 Log("Открыта новая необработанная позиция. Устанавливаем стоп-лосс на текущем баре.");
                 le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], signalNameForClosePosition);
@@ -157,7 +182,7 @@ namespace TrendByPivotPointsStrategy
                     Log("Да.");
 
                     Log("Устанавливаем необновлённое значение стоп-лосса.");
-                    le.CloseAtStop(barNumber, previousStopLoss, atr[barNumber], signalNameForClosePosition);
+                    le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], signalNameForClosePosition);
                 }
                 else
                 {
@@ -167,30 +192,6 @@ namespace TrendByPivotPointsStrategy
                     le.CloseAtStop(barNumber, stopLossLong, atr[barNumber], signalNameForClosePosition);
                 }
             }
-        }
-
-        public void CreateStopLoss(double stopLoss, double breakdown)
-        {
-            stopLossLong = stopLoss;
-            this.breakdownLong = breakdown;
-            var containerName = string.Format("stopLoss {0} {1}", security.Name, positionSide);
-            Log("Сохраним stopLoss = {0} в контейнере \"{1}\".", stopLoss, containerName);
-            var container = new NotClearableContainer<double>(stopLoss);
-
-            ctx.StoreObject(containerName, container);
-            Log("Проверим, сохранился ли stopLoss = {0} в контейнере \"{1}\".", stopLoss, containerName);
-
-            container = ctx.LoadObject(containerName) as NotClearableContainer<double>;
-            double value = 0d;
-            if (container != null)
-                value = container.Content;
-
-            if (value != 0d)
-                if (value == stopLoss)
-                    Log("stopLoss сохранился в контейнере. Значение в контейнере: value = {0}.", value);
-
-                else
-                    Log("stopLoss НЕ сохранился в контейнере! Значение в контейнере: value = {0}.", value);
         }
     }
 }

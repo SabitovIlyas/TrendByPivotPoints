@@ -909,5 +909,10 @@ namespace TrendByPivotPointsStrategy
         {
             Ctx = ctx;
         }
+
+        public void SetParameters(SystemParameters systemParameters)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

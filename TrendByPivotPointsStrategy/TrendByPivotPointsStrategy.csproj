@@ -69,6 +69,7 @@
     <Compile Include="MainSystem.cs" />
     <Compile Include="Indicator.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MainSystemForOptimization2.cs" />
     <Compile Include="MainSystemForOptimization.cs" />
     <Compile Include="LocalMoneyManager.cs" />
     <Compile Include="MainSystemForRealTimeTesting.cs" />
@@ -92,15 +93,19 @@
     <Compile Include="LoggerSystem.cs" />
     <Compile Include="ReadOnlyList.cs" />
     <Compile Include="RealTimeTrading.cs" />
+    <Compile Include="ScriptTrendByPivotPoints2.cs" />
     <Compile Include="ScriptTrendByPivotPoints1.cs" />
     <Compile Include="SecurityNull.cs" />
     <Compile Include="SecurityTSlab.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
+    <Compile Include="StopLossExtremums.cs" />
     <Compile Include="StopLoss.cs" />
+    <Compile Include="StopLossTrailPivotPointsEMA.cs" />
     <Compile Include="StopLossTrailPivotPoints.cs" />
     <Compile Include="StopLossTrail.cs" />
     <Compile Include="SystemParameters.cs" />
+    <Compile Include="TradingSystemEmasCrossingUpdateTrailStopLoss.cs" />
     <Compile Include="TradingSystemPivotPointsEmaRtUpdateTrailStopLoss.cs" />
     <Compile Include="TradingSystemPivotPointsEmaRtUpdate.cs" />
     <Compile Include="TradingSystemPivotPointsEMAWithEnchancePosition.cs" />
