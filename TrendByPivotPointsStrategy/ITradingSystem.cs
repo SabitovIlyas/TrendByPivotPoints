@@ -3,7 +3,7 @@ using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
-    public interface ITradingSystemPivotPointsEMA
+    public interface ITradingSystem
     {
         Logger Logger { get; set; }
         PositionSide PositionSide { get; }

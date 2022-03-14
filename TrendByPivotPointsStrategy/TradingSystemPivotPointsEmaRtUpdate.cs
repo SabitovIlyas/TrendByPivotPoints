@@ -8,7 +8,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystemPivotPointsEmaRtUpdate : ITradingSystemPivotPointsEMA
+    public class TradingSystemPivotPointsEmaRtUpdate : ITradingSystem
     {
         public IContext Ctx { get; set; }
         LocalMoneyManager localMoneyManager;
@@ -211,12 +211,12 @@ namespace TrendByPivotPointsStrategy
             {
                 Log("{0} позиция не открыта.", convertable.Long);
 
-                Log("Выполняется ли условие двух последовательных {0}ихся {1}ов?", convertable.Rising, convertable.Minimum);
+                Log("Выполняется ли условие двух последовательных {0}ихся {1}ов?", convertable.Rising, convertable.WordMinimum);
                 if (IsLastMinGreaterThanPrevious())   //1
                 {
-                    Log("Да, выполняется: последний {0} б. №{1}: {2} {3} предыдущего б. №{4}: {5}.", convertable.Minimum, lastLow.BarNumber, lastLow.Value, convertable.Above, prevLastLow.BarNumber, prevLastLow.Value);
+                    Log("Да, выполняется: последний {0} б. №{1}: {2} {3} предыдущего б. №{4}: {5}.", convertable.WordMinimum, lastLow.BarNumber, lastLow.Value, convertable.Above, prevLastLow.BarNumber, prevLastLow.Value);
 
-                    Log("Использовался ли последний {0} в попытке открыть {1} позицию ранее?", convertable.Minimum, convertable.Long);
+                    Log("Использовался ли последний {0} в попытке открыть {1} позицию ранее?", convertable.WordMinimum, convertable.Long);
                     if (IsLastLowCaseLongCloseNotExist() || !IsLastLowCaseLongAlreadyUsed())    //2
                     {
                         if (IsLastLowCaseLongCloseNotExist())
@@ -224,7 +224,7 @@ namespace TrendByPivotPointsStrategy
 
                         else
                             Log("Нет, не использовался. Последний {0}, который использовался в попытке открыть {1} позицию ранее -- б. №{2}: {3}.",
-                                convertable.Minimum, convertable.Long, lastLowForOpenLongPosition.BarNumber, lastLowForOpenLongPosition.Value);
+                                convertable.WordMinimum, convertable.Long, lastLowForOpenLongPosition.BarNumber, lastLowForOpenLongPosition.Value);
 
                         Log("Не отсеивается ли потенциальная сделка фильтром EMA?");
                         if (IsLastPriceGreaterEma()) //3
@@ -236,7 +236,7 @@ namespace TrendByPivotPointsStrategy
                             var stopPrice = convertable.Minus(lastLow.Value, breakdownLong);
 
                             Log("ATR = {0}; допустимый уровень пробоя в % от ATR = {1}; допустимый уровень пробоя = {2}; стоп-лосс = последний {3} {4} {6} допустимый уровень пробоя {2} = {5}. ",
-                                atr[barNumber], pivotPointBreakDownSide, breakdownLong, convertable.Minimum, lastLow.Value, stopPrice, convertable.SymbolMinus);
+                                atr[barNumber], pivotPointBreakDownSide, breakdownLong, convertable.WordMinimum, lastLow.Value, stopPrice, convertable.SymbolMinus);
 
                             Log("Последняя цена {0} стоп-цены?",convertable.Above);
                             if (convertable.IsGreater(lastPrice, stopPrice))  //4
@@ -276,18 +276,18 @@ namespace TrendByPivotPointsStrategy
                             else
                                 Log("Последняя цена {0} стоп-цены. {1} позицию не открываем.", convertable.Under, convertable.Long);
 
-                            Log("Запоминаем {0}, использовавшийся для попытки открытия {1} позиции.", convertable.Minimum, convertable.Long);
+                            Log("Запоминаем {0}, использовавшийся для попытки открытия {1} позиции.", convertable.WordMinimum, convertable.Long);
                             SetLastLowForOpenLongPosition();
                         }
                         else
                             Log("Cделка отсеивается фильтром, так как последняя цена закрытия {0} {1} или совпадает с EMA: {2}.", lastPrice, convertable.Under, ema[barNumber]);
                     }
                     else
-                        Log("Да, последний {0} использовался в попытке открыть {1} позицию ранее.", convertable.Minimum, convertable.Long);
+                        Log("Да, последний {0} использовался в попытке открыть {1} позицию ранее.", convertable.WordMinimum, convertable.Long);
                 }
                 else
                     Log("Нет, не выполняется: последний {0} б. №{1}: {2} не {3} предыдущего б. №{4}: {5}.",
-                        convertable.Minimum, lastLow.BarNumber, lastLow.Value, convertable.Above, prevLastLow.BarNumber, prevLastLow.Value);
+                        convertable.WordMinimum, lastLow.BarNumber, lastLow.Value, convertable.Above, prevLastLow.BarNumber, prevLastLow.Value);
             }
             else
             {
@@ -305,7 +305,7 @@ namespace TrendByPivotPointsStrategy
 
             if (IsPositionOpen())
             {
-                Log("Проверяем пробил ли {0} последнего бара стоп-лосс для {1}?", convertable.Minimum, convertable.Long);
+                Log("Проверяем пробил ли {0} последнего бара стоп-лосс для {1}?", convertable.WordMinimum, convertable.Long);
                 if (convertable.IsLessOrEqual(barLow, stopLossLong))
                 {
                     Log("Да, пробил");
@@ -326,7 +326,7 @@ namespace TrendByPivotPointsStrategy
 
             else
             {
-                Log("Нет, {0} последнего бара {1} {2} стоп-лосса для {3} {4}. Оставляем позицию.", convertable.Minimum, barLow, convertable.Above, convertable.Long, stopLossLong);                
+                Log("Нет, {0} последнего бара {1} {2} стоп-лосса для {3} {4}. Оставляем позицию.", convertable.WordMinimum, barLow, convertable.Above, convertable.Long, stopLossLong);                
             }
         }
 

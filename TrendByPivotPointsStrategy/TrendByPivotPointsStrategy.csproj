@@ -65,13 +65,14 @@
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
     <Compile Include="IStopLoss.cs" />
-    <Compile Include="ITradingSystemPivotPointsEMA.cs" />
+    <Compile Include="ITradingSystem.cs" />
     <Compile Include="MainSystem.cs" />
     <Compile Include="Indicator.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MainSystemForOptimization2.cs" />
     <Compile Include="MainSystemForOptimization.cs" />
     <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="MainSystemForOptimizationDonchian.cs" />
     <Compile Include="MainSystemForRealTimeTesting.cs" />
     <Compile Include="MainSystemForTrading.cs" />
     <Compile Include="NullDataBar.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="LoggerSystem.cs" />
     <Compile Include="ReadOnlyList.cs" />
     <Compile Include="RealTimeTrading.cs" />
+    <Compile Include="ScriptTrendByDonchian.cs" />
     <Compile Include="ScriptTrendByPivotPoints2.cs" />
     <Compile Include="ScriptTrendByPivotPoints1.cs" />
     <Compile Include="SecurityNull.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="StopLossTrailPivotPoints.cs" />
     <Compile Include="StopLossTrail.cs" />
     <Compile Include="SystemParameters.cs" />
+    <Compile Include="TradingSystemDonchian.cs" />
     <Compile Include="TradingSystemEmasCrossingUpdateTrailStopLoss.cs" />
     <Compile Include="TradingSystemPivotPointsEmaRtUpdateTrailStopLoss.cs" />
     <Compile Include="TradingSystemPivotPointsEmaRtUpdate.cs" />

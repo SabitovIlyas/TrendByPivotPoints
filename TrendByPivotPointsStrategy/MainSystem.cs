@@ -9,7 +9,7 @@ namespace TrendByPivotPointsStrategy
         public Logger Logger { get { return logger; } set { logger = value; } }
 
         protected ContextTSLab context;
-        protected List<ITradingSystemPivotPointsEMA> tradingSystems;
+        protected List<ITradingSystem> tradingSystems;
         protected int securityNumber;
         protected int instrumentsGroup;
 
@@ -35,7 +35,7 @@ namespace TrendByPivotPointsStrategy
             tradingSystem.Paint(context);
         }
         public abstract void Run();
-        public void SetParameters(SystemParameters systemParameters)
+        public virtual void SetParameters(SystemParameters systemParameters)
         {
             this.systemParameters = systemParameters;
 

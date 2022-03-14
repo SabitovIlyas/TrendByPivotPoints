@@ -6,13 +6,14 @@ using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystemForOptimization2 : MainSystem
+    public class MainSystemForOptimizationDonchian : MainSystem
     {
-        Security securityFirst;
-        IContext ctx;
+        private Security securityFirst;
+        private IContext ctx;
+        private double kAtr;
 
         public override void Initialize(ISecurity[] securities, IContext ctx)
-        {            
+        {
             var logger = Logger;
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
@@ -25,26 +26,27 @@ namespace TrendByPivotPointsStrategy
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
+            riskValuePrcnt = kAtr;
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares);
-                        
+
             tradingSystems = new List<ITradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
             ITradingSystem ts;
-                        
-            ts = new TradingSystemEmasCrossingUpdateTrailStopLoss(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
+
+            ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;
             ts.Logger = logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
             ts.SetParameters(systemParameters);
 
-            totalComission = comission * 2;            
+            totalComission = comission * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[0]);            
+            absoluteComission.Execute(securities[0]);
             securities[0].Commission = CalculateCommission;
 
             account.Logger = logger;
@@ -81,12 +83,12 @@ namespace TrendByPivotPointsStrategy
                     account.Update(i);
                 }
             }
-        }        
+        }
 
         public void Paint(IContext ctx, ISecurity sec)
         {
             var firstTradingSystem = tradingSystems.First();
-            firstTradingSystem.Paint(context);            
+            firstTradingSystem.Paint(context);
         }
 
         private bool IsLaboratory(ISecurity security)
@@ -102,6 +104,12 @@ namespace TrendByPivotPointsStrategy
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
-        }        
+        }
+
+        public override void SetParameters(SystemParameters systemParameters)
+        {
+            kAtr = systemParameters.GetDouble("kAtr");
+            base.SetParameters(systemParameters);
+        }
     }
 }

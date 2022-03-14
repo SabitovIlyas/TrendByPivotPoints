@@ -8,7 +8,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystemEmasCrossingUpdateTrailStopLoss : ITradingSystemPivotPointsEMA
+    public class TradingSystemEmasCrossingUpdateTrailStopLoss : ITradingSystem
     {
         public IContext Ctx { get; set; }
         LocalMoneyManager localMoneyManager;
@@ -292,7 +292,7 @@ namespace TrendByPivotPointsStrategy
                     else
                         Log("Последняя цена {0} стоп-цены. {1} позицию не открываем.", convertable.Under, convertable.Long);
 
-                    Log("Запоминаем {0}, использовавшийся для попытки открытия {1} позиции.", convertable.Minimum, convertable.Long);
+                    Log("Запоминаем {0}, использовавшийся для попытки открытия {1} позиции.", convertable.WordMinimum, convertable.Long);
                     SetLastLowForOpenLongPosition();
                 }
                 else
@@ -325,7 +325,7 @@ namespace TrendByPivotPointsStrategy
 
             if (IsPositionOpen())
             {
-                Log("Проверяем пробил ли {0} последнего бара стоп-лосс для {1}?", convertable.Minimum, convertable.Long);
+                Log("Проверяем пробил ли {0} последнего бара стоп-лосс для {1}?", convertable.WordMinimum, convertable.Long);
                 if (convertable.IsLessOrEqual(barLow, stopLossLong))
                 {
                     Log("Да, пробил");
@@ -346,7 +346,7 @@ namespace TrendByPivotPointsStrategy
 
             else
             {
-                Log("Нет, {0} последнего бара {1} {2} стоп-лосса для {3} {4}. Оставляем позицию.", convertable.Minimum, barLow, convertable.Above, convertable.Long, stopLossLong);
+                Log("Нет, {0} последнего бара {1} {2} стоп-лосса для {3} {4}. Оставляем позицию.", convertable.WordMinimum, barLow, convertable.Above, convertable.Long, stopLossLong);
             }
         }
 

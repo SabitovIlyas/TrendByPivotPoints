@@ -33,7 +33,7 @@ namespace TrendByPivotPointsStrategy
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
 
-            tradingSystems = new List<ITradingSystemPivotPointsEMA>();
+            tradingSystems = new List<ITradingSystem>();
             
             TradingSystemPivotPointsEMA ts;
 

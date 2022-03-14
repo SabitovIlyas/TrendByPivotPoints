@@ -1,4 +1,9 @@
-﻿namespace TrendByPivotPointsStrategy
+﻿using System;
+using System.Collections.Generic;
+using TSLab.Script;
+using TSLab.Script.Helpers;
+
+namespace TrendByPivotPointsStrategy
 {
     public class Converter
     {
@@ -87,7 +92,7 @@
             }
         }
 
-        public string Minimum
+        public string WordMinimum
         {
             get
             {
@@ -97,12 +102,12 @@
             }
         }
 
-        public string Maximum
+        public string WordMaximum
         {
             get
             {
                 isConverted = !isConverted;
-                var result = Minimum;
+                var result = WordMinimum;
                 isConverted = !isConverted;
                 return result;
             }
@@ -205,6 +210,51 @@
                 isConverted = !isConverted;
                 return result;
             }
+        }
+
+        public IList<double> GetHighest(IList<double> values, int period)
+        {
+            if (!isConverted)
+                return Series.Highest(values, period);
+            return Series.Lowest(values, period);
+        }
+
+        public IList<double> GetLowest(IList<double> values, int period)
+        {
+            isConverted = !isConverted;
+            var result = GetHighest(values, period);
+            isConverted = !isConverted;
+            return result;
+        }
+
+        public IList<double> GetHighPrices(ISecurity security)
+        {
+            if (!isConverted)
+                return security.HighPrices;
+            return security.LowPrices;
+        }
+
+        public IList<double> GetLowPrices(ISecurity security)
+        {
+            isConverted = !isConverted;
+            var result = GetHighPrices(security);
+            isConverted = !isConverted;
+            return result;
+        }
+
+        public double Minimum(double a, double b)
+        {
+            if (!isConverted)
+                return Math.Min(a, b);
+            return Math.Max(a, b);
+        }
+
+        public double Maximum(double a, double b)
+        {
+            isConverted = !isConverted;
+            var result = Minimum(a, b);
+            isConverted = !isConverted;
+            return result;
         }
     }
 }
