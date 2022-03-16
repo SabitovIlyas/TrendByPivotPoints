@@ -13,6 +13,7 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty fastDonchian = new OptimProperty(20, 10, 20, 1);
         public OptimProperty kAtr = new OptimProperty(2, 1, 2, 0.5);
         public OptimProperty atrPeriod = new OptimProperty(20, 14, 20, 1);
+        public OptimProperty limitOpenedPositions = new OptimProperty(2, 1, 4, 1);
 
         public OptimProperty rateUSD = new OptimProperty(75, 1, 1000, 1);
         public OptimProperty positionSide = new OptimProperty(0, 1, 2, 1);
@@ -58,6 +59,7 @@ namespace TrendByPivotPointsStrategy
             systemParameters.Add("fastDonchian", fastDonchian);
             systemParameters.Add("kAtr", kAtr);
             systemParameters.Add("atrPeriod", atrPeriod);
+            systemParameters.Add("limitOpenedPositions", limitOpenedPositions);
 
             systemParameters.Add("rateUSD", rateUSD);
             systemParameters.Add("positionSide", positionSide);

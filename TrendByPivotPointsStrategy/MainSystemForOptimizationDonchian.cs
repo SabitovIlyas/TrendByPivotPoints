@@ -11,6 +11,7 @@ namespace TrendByPivotPointsStrategy
         private Security securityFirst;
         private IContext ctx;
         private double kAtr;
+        private double limitOpenedPositions;
 
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
@@ -25,6 +26,10 @@ namespace TrendByPivotPointsStrategy
 
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
+
+            var riskValuePrcntCalc = kAtr * limitOpenedPositions;
+            if (riskValuePrcntCalc > riskValuePrcnt)
+                throw new System.Exception("Превышен уровень риска");
 
             riskValuePrcnt = kAtr;
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
@@ -109,6 +114,7 @@ namespace TrendByPivotPointsStrategy
         public override void SetParameters(SystemParameters systemParameters)
         {
             kAtr = systemParameters.GetDouble("kAtr");
+            limitOpenedPositions = systemParameters.GetDouble("limitOpenedPositions");
             base.SetParameters(systemParameters);
         }
     }

@@ -39,7 +39,11 @@ namespace TrendByPivotPointsStrategy
         private int slowDonchian;
         private int fastDonchian;
         private int atrPeriod;
-        private double kAtr;
+        private double kAtrForStopLoss;
+        private int limitOpenedPositions = 10;
+        private double kAtrForOpenPosition = 0.5;
+        private double openPositionPrice;
+
 
         public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
@@ -75,11 +79,17 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private bool IsPositionOpen()
+        private bool IsPositionOpen(string notes = "")
         {
-            var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition, barNumber);
+            var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);            
             return position != null;
-        }       
+        }
+
+        private IPosition GetOpenedPosition(string notes)
+        {
+            var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
+            return position;
+        }
 
         private void Log(string text)
         {
@@ -92,35 +102,47 @@ namespace TrendByPivotPointsStrategy
             Log(text);
         }                               
 
-        private void BuyIfGreater(int contracts)
+        private void BuyIfGreater(double price , int contracts, string notes)
         {
             if (positionSide == PositionSide.Long)
-                sec.Positions.BuyIfGreater(barNumber + 1, contracts, highest[barNumber], signalNameForOpenPosition);
+                sec.Positions.BuyIfGreater(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
             if (positionSide == PositionSide.Short)
-                sec.Positions.SellIfLess(barNumber + 1, contracts, highest[barNumber], signalNameForOpenPosition);
+                sec.Positions.SellIfLess(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
         }
 
-        private double GetStopPrice()
+        private double GetStopPrice(string notes = "")
         {
             double stopPriceAtr;
-            if (IsPositionOpen())
-                stopPriceAtr = convertable.Minus(position.EntryPrice, kAtr * fixedAtr);
+            if (IsPositionOpen(notes))
+            {
+                var position = GetOpenedPosition(notes);
+                stopPriceAtr = convertable.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);
+            }
             else
-                stopPriceAtr = convertable.Minus(highest[barNumber], kAtr * fixedAtr);
+                stopPriceAtr = convertable.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
             var stopPriceDonchian = lowest[barNumber];
             return convertable.Maximum(stopPriceAtr, stopPriceDonchian);
         }
 
         public void CheckPositionOpenLongCase()
         {
-            position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition, barNumber);
+            for (var i = 0; i < limitOpenedPositions; i++)
+                CheckPositionOpenLongCase(i);
+        }
+
+        private void CheckPositionOpenLongCase(int positionNumber)
+        {
             Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
             double stopPrice;
-            if (!IsPositionOpen())
+
+            var notes = " Вход №" + (positionNumber + 1);
+
+            if (!IsPositionOpen(notes))
             {
                 Log("{0} позиция не открыта.", convertable.Long);
 
-                fixedAtr = atr[barNumber];
+                if (positionNumber == 0)
+                    fixedAtr = atr[barNumber];
 
                 Log("Вычисляем стоп-цену...");
                 stopPrice = GetStopPrice();
@@ -140,27 +162,34 @@ namespace TrendByPivotPointsStrategy
                     Log("Торгуем в лаборатории.");
                 }
 
-                BuyIfGreater(contracts);
+                if (positionNumber == 0)
+                    openPositionPrice = highest[barNumber];
 
-                Log("Открываем {0} позицию! Отправляем ордер.", convertable.Long);
+                BuyIfGreater(convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition), contracts, notes);
+
+                Log("Отправляем ордер.", convertable.Long);
             }
 
             else
-            {
+            {                
+                var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", convertable.Long);
-                stopPrice = GetStopPrice();
-                position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition);
+                stopPrice = GetStopPrice(notes);
+                notes = " Выход №" + (positionNumber + 1);
+                position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
             }
-        }                
+        }
 
         public void SetParameters(SystemParameters systemParameters)
         {
             slowDonchian = systemParameters.GetInt("slowDonchian");
             fastDonchian = systemParameters.GetInt("fastDonchian");
-            kAtr = systemParameters.GetDouble("kAtr");
-            atrPeriod = systemParameters.GetInt("atrPeriod");            
+            kAtrForStopLoss = systemParameters.GetDouble("kAtr");
+            atrPeriod = systemParameters.GetInt("atrPeriod");
+            limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");
+            kAtrForOpenPosition = kAtrForStopLoss;
 
-            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtr, atrPeriod);
+            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);            
         }
 
