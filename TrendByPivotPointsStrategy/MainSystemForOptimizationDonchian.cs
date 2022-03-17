@@ -41,6 +41,7 @@ namespace TrendByPivotPointsStrategy
             else
                 currency = Currency.USD;
 
+            account.Rate = rateUSD;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, currency, shares);
 
             tradingSystems = new List<ITradingSystem>();
