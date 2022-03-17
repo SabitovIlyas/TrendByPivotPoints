@@ -147,13 +147,11 @@ namespace TrendByPivotPointsStrategy
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)
-                {
-                    contracts = 1;
+                {                    
                     Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
                 }
                 else
-                {
-                    //contracts = 1;
+                {                 
                     Log("Торгуем в лаборатории.");
                 }
 

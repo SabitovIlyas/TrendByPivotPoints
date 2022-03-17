@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text;
-using System.Threading.Tasks;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Optimization;
@@ -30,7 +28,6 @@ namespace TrendByPivotPointsStrategy
         public void Execute(IContext context, ISecurity[] securities)        
         {
             var logger = new LoggerSystem(context);
-            logger.Log("Hello!");
             MainSystem system;
 
             switch ((int)mode)
@@ -47,7 +44,7 @@ namespace TrendByPivotPointsStrategy
                     }
                 default:
                     {
-                        system = new MainSystemForTrading();
+                        system = new MainSystemForTradingDonchian();
                         break;
                     }
             }
