@@ -22,7 +22,8 @@ namespace TrendByPivotPointsStrategy
         protected int positionSide;
         protected double comission;
         protected double riskValuePrcnt;
-        
+        protected int isUSD;
+
         protected int shares;        
         protected Logger logger = new NullLogger();
         protected Account account;
@@ -50,6 +51,7 @@ namespace TrendByPivotPointsStrategy
             securityNumber = systemParameters.GetInt("securityNumber");
             instrumentsGroup = systemParameters.GetInt("instrumentsGroup");
             shares = systemParameters.GetInt("shares");
+            isUSD = systemParameters.GetInt("isUSD");
         }
     }
 }

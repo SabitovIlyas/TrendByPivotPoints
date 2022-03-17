@@ -34,7 +34,14 @@ namespace TrendByPivotPointsStrategy
             riskValuePrcnt = kAtr;
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares);
+
+            Currency currency;
+            if (isUSD == 0)
+                currency = Currency.Ruble;
+            else
+                currency = Currency.USD;
+
+            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, currency, shares);
 
             tradingSystems = new List<ITradingSystem>();
 

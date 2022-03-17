@@ -15,7 +15,7 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty atrPeriod = new OptimProperty(20, 14, 20, 1);
         public OptimProperty limitOpenedPositions = new OptimProperty(2, 1, 4, 1);
 
-        public OptimProperty rateUSD = new OptimProperty(75, 1, 1000, 1);
+        public OptimProperty rateUSD = new OptimProperty(108, 1, 1000, 1);
         public OptimProperty positionSide = new OptimProperty(0, 1, 2, 1);
         public OptimProperty comission = new OptimProperty(0.565, 0.001, 100, 0.001);
         public OptimProperty mode = new OptimProperty(2, 0, 1, 1);
@@ -25,6 +25,7 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty isPaint = new OptimProperty(0, 0, 1, 1);
         public OptimProperty isLoggerOn = new OptimProperty(1, 0, 1, 1);
         public OptimProperty shares = new OptimProperty(1, 0, 1, 1);
+        public OptimProperty isUSD = new OptimProperty(0, 0, 1, 1);
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
@@ -69,6 +70,7 @@ namespace TrendByPivotPointsStrategy
             systemParameters.Add("securityNumber", securityNumber);
             systemParameters.Add("instrumentsGroup", instrumentsGroup);
             systemParameters.Add("shares", shares);
+            systemParameters.Add("isUSD", isUSD);
 
             try
             {
