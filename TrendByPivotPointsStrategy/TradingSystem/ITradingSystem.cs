@@ -11,7 +11,6 @@ namespace TrendByPivotPointsStrategy
         IContext Ctx { get; set; }
 
         void CalculateIndicators();
-        //bool CheckLongPositionCloseCase(IPosition le, int barNumber);
         void CheckPositionCloseCase(int barNumber);
         void CheckPositionOpenLongCase(double lastPrice, int barNumber);
         void CheckPositionOpenShortCase(double lastPrice, int barNumber);

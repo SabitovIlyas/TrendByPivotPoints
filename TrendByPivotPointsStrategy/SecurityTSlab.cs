@@ -64,7 +64,6 @@ namespace TrendByPivotPointsStrategy
         }
 
         public ISecurity security;
-        //private int barNumber = 0; //заглушил
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
@@ -235,7 +234,6 @@ namespace TrendByPivotPointsStrategy
         {
             var bars = GetBarsReal();
 
-            //if (barNumber < 0 || barNumber > this.barNumber || barNumber >= bars.Count)
             if (barNumber < 0 || barNumber > this.barNumber)
                 return false;
             return true;

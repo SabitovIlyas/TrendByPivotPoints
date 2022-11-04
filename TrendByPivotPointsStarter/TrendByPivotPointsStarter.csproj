@@ -41,6 +41,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TSLab.DataService">
+      <HintPath>..\..\..\..\..\Program Files\TSLab\TSLab 2.2\TSLab.DataService.dll</HintPath>
+    </Reference>
     <Reference Include="TSLab.DataSource">
       <HintPath>..\TSLab.DataSource.dll</HintPath>
     </Reference>

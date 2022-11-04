@@ -89,9 +89,6 @@ namespace TrendByPivotPointsStrategy
                     foreach (var tradingSystem in tradingSystems)
                         tradingSystem.Update(lastBarNumber);
                 }
-
-                //foreach (var tradingSystem in tradingSystems)
-                //    tradingSystem.CheckPositionCloseCase(lastBarNumber);//з
             }
             else
             {

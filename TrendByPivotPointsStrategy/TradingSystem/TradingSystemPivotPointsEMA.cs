@@ -166,39 +166,6 @@ namespace TrendByPivotPointsStrategy
 
                                 lastLowForOpenLongPosition = lastLow;
 
-                                //=======================
-
-                                //Logger.Log("Проверяем актуальный ли это бар.");
-                                //if (security.IsRealTimeActualBar(barNumber))
-                                //{
-                                //    Logger.Log("Бар актуальный.");
-
-                                //    var containerName = string.Format("lastLowForOpenLongPosition {0} {1}", security.Name, positionSide);
-                                //    Logger.Log(string.Format("Сохраним lastLowForOpenLongPosition = {0} в контейнере \"{1}\".", lastLowForOpenLongPosition, containerName));
-                                //    var container = new NotClearableContainer<Indicator>(lastLowForOpenLongPosition);
-
-                                //    ctx.StoreObject(containerName, container);
-                                //    Logger.Log(string.Format("Проверим, сохранился ли lastLowForOpenLongPosition = {0} в контейнере \"{1}\".", lastLowForOpenLongPosition, containerName));
-
-                                //    container = ctx.LoadObject(containerName) as NotClearableContainer<Indicator>;
-                                //    Indicator value = null;
-                                //    if (container != null)
-                                //        value = container.Content;
-
-                                //    if (value != null)
-                                //        if (value.Value == lastLowForOpenLongPosition.Value)
-                                //            Logger.Log(string.Format("lastLowForOpenLongPosition.Value сохранился в контейнере. Значение в контейнере: value.Value = {0}.", value.Value));
-
-                                //        else
-                                //            Logger.Log(string.Format("lastLowForOpenLongPosition.Value НЕ сохранился в контейнере!"));
-                                //}
-                                //else
-                                //{
-                                //    Logger.Log("Бар не актуальный.");
-                                //}
-
-                                //======================
-
                                 if (lastPrice > stopPrice)  //4
                                 {
                                     messageForLog = string.Format("Да, последняя цена ({0}) выше стоп-цены ({1}). Открываем длинную позицию...", lastPrice, stopPrice);
@@ -491,39 +458,6 @@ namespace TrendByPivotPointsStrategy
 
                                 lastHighForOpenShortPosition = lastHigh;
 
-                                ////=======================
-
-                                //Logger.Log("Проверяем актуальный ли это бар.");
-                                //if (security.IsRealTimeActualBar(barNumber))
-                                //{
-                                //    Logger.Log("Бар актуальный.");
-
-                                //    var containerName = string.Format("lastHighForOpenShortPosition {0} {1}", security.Name, positionSide);
-                                //    Logger.Log(string.Format("Сохраним lastHighForOpenShortPosition = {0} в контейнере \"{1}\".", lastHighForOpenShortPosition, containerName));
-                                //    var container = new NotClearableContainer<Indicator>(lastHighForOpenShortPosition);
-
-                                //    ctx.StoreObject(containerName, container);
-                                //    Logger.Log(string.Format("Проверим, сохранился ли lastHighForOpenShortPosition = {0} в контейнере \"{1}\".", lastHighForOpenShortPosition, containerName));
-
-                                //    container = ctx.LoadObject(containerName) as NotClearableContainer<Indicator>;
-                                //    Indicator value = null;
-                                //    if (container != null)
-                                //        value = container.Content;
-
-                                //    if (value != null)
-                                //        if (value.Value == lastHighForOpenShortPosition.Value)
-                                //            Logger.Log(string.Format("lastHighForOpenShortPosition.Value сохранился в контейнере. Значение в контейнере: value.Value = {0}.", value.Value));
-
-                                //        else
-                                //            Logger.Log(string.Format("lastHighForOpenShortPosition.Value НЕ сохранился в контейнере!"));
-                                //}
-                                //else
-                                //{
-                                //    Logger.Log("Бар не актуальный.");
-                                //}
-
-                                ////======================
-
                                 if (lastPrice < stopPrice)  //4
                                 {
                                     messageForLog = string.Format("Да, последняя цена ({0}) ниже стоп-цены ({1}). Открываем короткую позицию...", lastPrice, stopPrice);
@@ -790,8 +724,6 @@ namespace TrendByPivotPointsStrategy
                 case PositionSide.Long:
                     {
                         pivotPointsIndicator.CalculateLows(security, (int)leftLocalSide, (int)rightLocalSide);
-                        //pivotPointsIndicator.CalculateLows(security, 10, 10);
-                        //pivotPointsIndicator.CalculateHighs(security, 10, 10);
                         break;
                     }
                 case PositionSide.Short:
@@ -802,18 +734,11 @@ namespace TrendByPivotPointsStrategy
 
             }
             ema = Series.EMA(sec.ClosePrices, (int)EmaPeriodSide);
-            //ema = Series.EMA(sec.ClosePrices, 50);
             atr = Series.AverageTrueRange(sec.Bars, 20);
         }
 
         public void Paint(Context context)
         {
-            //var pane1 = context.CreateGraphPane(sec.ToString() + " 1", "Инструмент (основной таймфрейм) 1");
-            //var color = SystemColor.Blue;
-            //pane1.AddList(sec.ToString(), security, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
-            //pane1.AddList("EMA", ema, color, PaneSides.RIGHT);
-
-
             var contextTSLab = context as ContextTSLab;
             var name = string.Format("{0} {1} {2}", sec.ToString(), positionSide, sec.Interval);
             var pane = contextTSLab.context.CreateGraphPane(name: name, title: name);
@@ -857,42 +782,6 @@ namespace TrendByPivotPointsStrategy
                         break;
                     }
             }
-
-
-            //if (id == 0) pane1.ClearInteractiveObjects();
-            //pane1.ClearInteractiveObjects();
-            //color = SystemColor.Blue;
-            //DateTime x;
-            //double y;
-            //MarketPoint position; 
-
-            //var lows = pivotPointsIndicator.GetLows(security.BarNumber);                    
-
-            //foreach(var low in lows)
-            //{
-            //    x = security.GetBarDateTime(low.BarNumber);
-            //    //y = low.Value - 50;
-            //    y = low.Value - 50;
-            //    position = new MarketPoint(x, y);
-            //    var id = low.BarNumber.ToString()+ " " + x.ToLongTimeString() + " " + low.Value.ToString();
-            //    //Logger.Log("id: " + id.ToString());
-            //    pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
-            //}
-
-            //var highs = pivotPointsIndicator.GetHighs(security.BarNumber);
-
-            //foreach (var high in highs)
-            //{
-            //    x = security.GetBarDateTime(high.BarNumber);
-            //    //y = high.Value + 50;
-            //    y = high.Value + 50;
-            //    position = new MarketPoint(x, y);
-            //    var id = high.BarNumber.ToString() + " " + x.ToLongTimeString() + " " + high.Value.ToString();
-            //    //Logger.Log("id: " + id.ToString());
-            //    pane1.AddInteractivePoint(id, PaneSides.RIGHT, false, color, position);                
-            //}
-
-            //pane1.AddList("EMA", ema, CandleStyles.BAR_CANDLE, color, PaneSides.RIGHT);
         }
 
         public bool HasOpenPosition()

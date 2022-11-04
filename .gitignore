@@ -338,6 +338,3 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/TSLab.DataSource.dll
-/TSLab.Script.dll
-/TSLab.Script.Handlers.dll

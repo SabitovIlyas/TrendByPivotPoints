@@ -16,8 +16,6 @@ namespace TrendByPivotPointsStrategy
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
             logger = new LoggerSystem(ctx);
-            //var logger = new NullLogger();
-
             List<Security> securityList = null;
             this.ctx = ctx;
 
@@ -444,7 +442,6 @@ namespace TrendByPivotPointsStrategy
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            //var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.01);
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
@@ -930,30 +927,6 @@ namespace TrendByPivotPointsStrategy
 
         public void Paint(IContext ctx, ISecurity sec)
         {
-            //var firstTradingSystem = tradingSystems.First();
-            //firstTradingSystem.Paint(context);
-
-            //var tradingSystem = tradingSystems[0];
-            //tradingSystem.Paint(context);
-
-            //tradingSystem = tradingSystems[1];
-            //tradingSystem.Paint(context);
-
-            //var lastTradingSystem = tradingSystems.Last();
-            //lastTradingSystem.Paint(context);
-
-            //===
-            //foreach(var tradingSystem in tradingSystems)
-            //{
-            //    if (tradingSystem.PositionSide == PositionSide.Long || tradingSystem.PositionSide == PositionSide.Short)
-            //        tradingSystem.Paint(context);
-            //}
-            //==
-
-            //foreach (var tradingSystem in tradingSystems)            
-            //    if (tradingSystem.HasOpenPosition())
-            //        tradingSystem.Paint(context);
-
             if (tradingSystems[securityNumber] != null)
                 tradingSystems[securityNumber].Paint(context);
         }        

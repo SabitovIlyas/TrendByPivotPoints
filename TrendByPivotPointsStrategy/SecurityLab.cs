@@ -98,8 +98,6 @@ namespace TrendByPivotPointsStrategy
 
         public void ResetBarNumberToLastBarNumber()
         {
-            //var barsCountReal = GetBarsCountReal();
-            //barNumber = barsCountReal - 1;
         }
     }
 }
