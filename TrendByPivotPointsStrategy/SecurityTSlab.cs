@@ -118,7 +118,8 @@ namespace TrendByPivotPointsStrategy
         private void InitializeSecurity(ISecurity security)
         {
             this.security = security;
-            barNumber = security.Bars.Count - 1; //заглушил
+            var bars = security.Bars;
+            barNumber = bars.Count - 1;
             DefineIsLaboratory();
         }
 

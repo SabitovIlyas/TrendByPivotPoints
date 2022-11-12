@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TrendByPivotPointsStrategy;
+using TSLab.DataSource;
 
 namespace TrendByPivotPointsStarter
 {
@@ -10,6 +7,15 @@ namespace TrendByPivotPointsStarter
     {
         static void Main(string[] args)
         {
+            var script = new SampleScript();
+            var context = CustomContext.Create();
+
+            var initDeposit = 100000;
+            var finInfo = new FinInfo();
+            var bars = new ReadOnlyList<DataBar>();
+
+            var security = CustomSecurity.Create(initDeposit, finInfo, bars);
+            script.Execute(context, security);
         }
     }
 }
