@@ -18,7 +18,6 @@ namespace TrendByPivotPointsStarter
         public OptimProperty shares = new OptimProperty(1, 0, 1, 1);
         public OptimProperty isUSD = new OptimProperty(0, 0, 1, 1);
 
-
         public void Execute(IContext context, ISecurity security)
         {
             var logger = new LoggerSystem(context);

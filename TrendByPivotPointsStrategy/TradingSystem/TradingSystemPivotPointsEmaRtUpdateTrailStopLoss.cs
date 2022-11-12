@@ -8,7 +8,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystemPivotPointsEmaRtUpdateTrailStopLoss : ITradingSystem
+    public class TradingSystemPivotPointsEmaRtUpdateTrailStopLoss : TradingStrategy
     {
         public IContext Ctx { get; set; }
         LocalMoneyManager localMoneyManager;

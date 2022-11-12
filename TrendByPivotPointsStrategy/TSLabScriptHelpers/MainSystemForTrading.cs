@@ -88,9 +88,9 @@ namespace TrendByPivotPointsStrategy
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
                         
-            ITradingSystem ts;
+            TradingStrategy ts;
                         
             ts = new TradingSystemPivotPointsEmaRtUpdate(localMoneyManagerUSD, account, this.securityFirst, PositionSide.Long);   //Security: GOLD Long 15min
             ts.Logger = logger;
@@ -119,7 +119,7 @@ namespace TrendByPivotPointsStrategy
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, shares: 1000);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -202,7 +202,7 @@ namespace TrendByPivotPointsStrategy
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, shares: 10);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -269,7 +269,7 @@ namespace TrendByPivotPointsStrategy
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares: 10);
             localMoneyManagerRuble.Logger = logger;
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -316,7 +316,7 @@ namespace TrendByPivotPointsStrategy
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -366,7 +366,7 @@ namespace TrendByPivotPointsStrategy
             var localMoneyManagerUSD10Shares = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, 10); //заменить на USD            
             localMoneyManagerUSD10Shares.Logger = logger;
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -447,7 +447,7 @@ namespace TrendByPivotPointsStrategy
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             localMoneyManagerRuble.Logger = logger;
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -773,7 +773,7 @@ namespace TrendByPivotPointsStrategy
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
                         
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;

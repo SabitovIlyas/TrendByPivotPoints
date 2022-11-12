@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using TSLab.Script;
 using SystemColor = System.Drawing.Color;
+using Security = TrendByPivotPointsStrategy.Security;
+using Converter = TrendByPivotPointsStrategy.Converter;
+using Account = TrendByPivotPointsStrategy.Account;
 using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
+using TrendByPivotPointsStrategy;
 
-namespace TrendByPivotPointsStrategy
+namespace TrendByPivotPointsStarter
 {
-    public class TradingSystemDonchian : TradingStrategy
+    public class SampleTradingStrategy : TradingStrategy
     {
         public IContext Ctx { get; set; }
         public Logger Logger { get; set; } = new NullLogger();
@@ -43,7 +47,7 @@ namespace TrendByPivotPointsStrategy
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
 
-        public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        public SampleTradingStrategy(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
             var securityTSLab = security as SecurityTSlab;
@@ -56,7 +60,7 @@ namespace TrendByPivotPointsStrategy
         public void Update(int barNumber)
         {
             try
-            {                
+            {
                 this.barNumber = barNumber;
                 security.BarNumber = barNumber;
 
@@ -147,11 +151,11 @@ namespace TrendByPivotPointsStrategy
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)
-                {                    
+                {
                     Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
                 }
                 else
-                {                 
+                {
                     Log("Торгуем в лаборатории.");
                 }
 
@@ -212,14 +216,14 @@ namespace TrendByPivotPointsStrategy
 
             highest = secCompressed.Decompress(highest);
             lowest = secCompressed.Decompress(lowest);
-            atr = secCompressed.Decompress(atr);           
+            atr = secCompressed.Decompress(atr);
         }
 
         public void Paint(Context context)
         {
             if (Ctx.IsOptimization)
-                return;           
-            
+                return;
+
             var pane = Ctx.CreatePane("Первая панель", 50, true);
             var colorTSlab1 = new Color(SystemColor.Blue.ToArgb());
             var colorTSlab2 = new Color(SystemColor.Green.ToArgb());
@@ -229,7 +233,7 @@ namespace TrendByPivotPointsStrategy
             pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
 
-            pane = Ctx.CreatePane("Вторая панель", 50, true);            
+            pane = Ctx.CreatePane("Вторая панель", 50, true);
             pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
             pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);

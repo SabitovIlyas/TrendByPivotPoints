@@ -29,11 +29,11 @@ namespace TrendByPivotPointsStrategy
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares);
                         
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
-            ITradingSystem ts;
+            TradingStrategy ts;
                         
             ts = new TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;

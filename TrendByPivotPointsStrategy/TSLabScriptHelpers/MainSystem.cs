@@ -9,7 +9,7 @@ namespace TrendByPivotPointsStrategy
         public Logger Logger { get { return logger; } set { logger = value; } }
 
         protected ContextTSLab context;
-        protected List<ITradingSystem> tradingSystems;
+        protected List<TradingStrategy> tradingSystems;
         protected int securityNumber;
         protected int instrumentsGroup;
 

@@ -8,10 +8,12 @@ namespace TrendByPivotPointsStarter
     {
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
+
         }
 
         public override void Run()
         {
+
         }
     }
 }

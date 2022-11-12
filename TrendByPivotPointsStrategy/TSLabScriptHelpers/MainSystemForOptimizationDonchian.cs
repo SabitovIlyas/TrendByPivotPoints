@@ -44,11 +44,11 @@ namespace TrendByPivotPointsStrategy
             account.Rate = rateUSD;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, currency, shares);
 
-            tradingSystems = new List<ITradingSystem>();
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
-            ITradingSystem ts;
+            TradingStrategy ts;
 
             ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;
