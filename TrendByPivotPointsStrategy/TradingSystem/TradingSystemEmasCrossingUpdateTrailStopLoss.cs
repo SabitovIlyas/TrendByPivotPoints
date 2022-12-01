@@ -389,14 +389,22 @@ namespace TrendByPivotPointsStrategy
 
             var contextTSLab = context as ContextTSLab;
             var name = string.Format("{0} {1} {2}", sec.ToString(), positionSide, sec.Interval);
-            var pane = contextTSLab.context.CreateGraphPane(name: name, title: name);
-            var colorTSlab1 = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
-            var colorTSlab2 = new TSLab.Script.Color(SystemColor.Red.ToArgb());
-            var colorTSlab3 = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+            var pane = contextTSLab.CreateGraphPane(name: name, title: name);
+
+            //var colorTSlab1 = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
+            //var colorTSlab2 = new TSLab.Script.Color(SystemColor.Red.ToArgb());
+            //var colorTSlab3 = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+
+            var colorTSlab1 = SystemColor.Blue;
+            var colorTSlab2 = SystemColor.Red;
+            var colorTSlab3 = SystemColor.Green;
+
             var securityTSLab = (SecurityTSlab)security;
+
             pane.AddList(sec.ToString(), securityTSLab.security, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
 
-            colorTSlab1 = new TSLab.Script.Color(SystemColor.Gold.ToArgb());
+            //colorTSlab1 = new TSLab.Script.Color(SystemColor.Gold.ToArgb());
+            colorTSlab1 = SystemColor.Gold;
             pane.AddList("EmaFast", emaFast, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("EmaSlow", emaSlow, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
 
@@ -413,7 +421,8 @@ namespace TrendByPivotPointsStrategy
                         foreach (var low in lows)
                             listLows[low.BarNumber] = true;
 
-                        colorTSlab1 = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+                        //colorTSlab1 = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+                        colorTSlab1 = SystemColor.Green;
                         pane.AddList("Lows", listLows, ListStyles.HISTOHRAM, colorTSlab1, LineStyles.SOLID, PaneSides.LEFT);
                         break;
                     }
@@ -428,7 +437,8 @@ namespace TrendByPivotPointsStrategy
                         foreach (var high in highs)
                             listHighs[high.BarNumber] = true;
 
-                        colorTSlab1 = new TSLab.Script.Color(SystemColor.Red.ToArgb());
+                        //colorTSlab1 = new TSLab.Script.Color(SystemColor.Red.ToArgb());
+                        colorTSlab1 = SystemColor.Red;
                         pane.AddList("Highs", listHighs, ListStyles.HISTOHRAM, colorTSlab1, LineStyles.SOLID, PaneSides.LEFT);
                         break;
                     }

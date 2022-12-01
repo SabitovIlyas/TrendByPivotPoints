@@ -7,7 +7,7 @@ using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystemForRealTimeTesting : MainSystem
+    public class MainSystemForRealTimeTesting : PivotPointsMainSystem
     {        
         Security securityFirst;
         IContext ctx;                
@@ -49,7 +49,7 @@ namespace TrendByPivotPointsStrategy
 
             account.Logger = logger;
             this.ctx = ctx;
-            context = new ContextTSLab(ctx);
+            context = ContextTSLab.Create(ctx);
             account.Initialize(securityList);
         }
         

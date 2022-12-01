@@ -65,10 +65,10 @@
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
     <Compile Include="Indicator.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="Loggers\Logger.cs" />
     <Compile Include="LocalMoneyManager.cs" />
     <Compile Include="NullDataBar.cs" />
-    <Compile Include="NullLogger.cs" />
+    <Compile Include="Loggers\NullLogger.cs" />
     <Compile Include="Pane.cs" />
     <Compile Include="PaneTSLab.cs" />
     <Compile Include="PivotPointsIndicator.cs" />
@@ -76,7 +76,7 @@
     <Compile Include="PositionSide.cs" />
     <Compile Include="PositionOpenCasePatternPivotPoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LoggerSystem.cs" />
+    <Compile Include="Loggers\LoggerSystem.cs" />
     <Compile Include="ReadOnlyList.cs" />
     <Compile Include="RealTimeTrading.cs" />
     <Compile Include="SecurityNull.cs" />
@@ -104,6 +104,7 @@
     <Compile Include="TradingSystem\TradingSystemPivotPointsEmaRtUpdate.cs" />
     <Compile Include="TradingSystem\TradingSystemPivotPointsEmaRtUpdateTrailStopLoss.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystem.cs" />
+    <Compile Include="TSLabScriptHelpers\PivotPointsMainSystem.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForOptimization.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForOptimization2.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForOptimizationDonchian.cs" />

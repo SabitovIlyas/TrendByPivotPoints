@@ -28,7 +28,7 @@ namespace TrendByPivotPointsStrategy
         public void Execute(IContext context, ISecurity[] securities)        
         {
             var logger = new LoggerSystem(context);
-            MainSystem system;
+            PivotPointsMainSystem system;
 
             switch ((int)mode)
             {

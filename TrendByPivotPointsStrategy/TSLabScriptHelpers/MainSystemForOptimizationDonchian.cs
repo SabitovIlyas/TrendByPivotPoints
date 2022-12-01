@@ -6,7 +6,7 @@ using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystemForOptimizationDonchian : MainSystem
+    public class MainSystemForOptimizationDonchian : PivotPointsMainSystem
     {
         private Security securityFirst;
         private IContext ctx;
@@ -64,7 +64,7 @@ namespace TrendByPivotPointsStrategy
 
             account.Logger = logger;
             this.ctx = ctx;
-            context = new ContextTSLab(ctx);
+            context = ContextTSLab.Create(ctx);
             account.Initialize(securityList);
             logger.SwitchOff();
         }

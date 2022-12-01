@@ -4,8 +4,14 @@ namespace TrendByPivotPointsStrategy
 {
     public class ContextTSLab: Context
     {
-        public IContext context;
-        public ContextTSLab(IContext context)
+        private IContext context;
+
+        public static ContextTSLab Create(IContext context)
+        {
+            return new ContextTSLab(context);
+        }      
+
+        private ContextTSLab(IContext context)
         {
             this.context = context;
         }

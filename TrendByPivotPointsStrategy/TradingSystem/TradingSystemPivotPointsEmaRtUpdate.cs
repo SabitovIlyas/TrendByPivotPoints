@@ -364,12 +364,16 @@ namespace TrendByPivotPointsStrategy
         {
             var contextTSLab = context as ContextTSLab;
             var name = string.Format("{0} {1} {2}", sec.ToString(), positionSide, sec.Interval);
-            var pane = contextTSLab.context.CreateGraphPane(name: name, title: name);
-            var colorTSlab = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
+            var pane = contextTSLab.CreateGraphPane(name: name, title: name);
+            //var colorTSlab = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
+            //var securityTSLab = (SecurityTSlab)security;
+            var colorTSlab = SystemColor.Blue;
             var securityTSLab = (SecurityTSlab)security;
+
             pane.AddList(sec.ToString(), securityTSLab.security, CandleStyles.BAR_CANDLE, colorTSlab, PaneSides.RIGHT);
 
-            colorTSlab = new TSLab.Script.Color(SystemColor.Gold.ToArgb());
+            //colorTSlab = new TSLab.Script.Color(SystemColor.Gold.ToArgb());
+            colorTSlab = SystemColor.Gold;
             pane.AddList("EMA", ema, ListStyles.LINE, colorTSlab, LineStyles.SOLID, PaneSides.RIGHT);
 
             switch (positionSide)
@@ -385,7 +389,8 @@ namespace TrendByPivotPointsStrategy
                         foreach (var low in lows)
                             listLows[low.BarNumber] = true;
 
-                        colorTSlab = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+                        //colorTSlab = new TSLab.Script.Color(SystemColor.Green.ToArgb());
+                        colorTSlab = SystemColor.Green;
                         pane.AddList("Lows", listLows, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
                         break;
                     }
@@ -400,7 +405,8 @@ namespace TrendByPivotPointsStrategy
                         foreach (var high in highs)
                             listHighs[high.BarNumber] = true;
 
-                        colorTSlab = new TSLab.Script.Color(SystemColor.Red.ToArgb());
+                        //colorTSlab = new TSLab.Script.Color(SystemColor.Red.ToArgb());
+                        colorTSlab = SystemColor.Red;
                         pane.AddList("Highs", listHighs, ListStyles.HISTOHRAM, colorTSlab, LineStyles.SOLID, PaneSides.LEFT);
                         break;
                     }

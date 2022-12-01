@@ -29,7 +29,7 @@ namespace TrendByPivotPointsStrategy
             var logger = new LoggerSystem(context);
             logger.Log("Hello!");
 
-            MainSystem system;
+            PivotPointsMainSystem system;
 
             switch ((int)mode)
             {

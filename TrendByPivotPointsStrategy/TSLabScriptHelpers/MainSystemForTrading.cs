@@ -7,7 +7,7 @@ using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystemForTrading : MainSystem
+    public class MainSystemForTrading : PivotPointsMainSystem
     {        
         Security securityFirst;
         IContext ctx;
@@ -66,7 +66,7 @@ namespace TrendByPivotPointsStrategy
             //tradingSystem.Logger = logger;
             account.Logger = logger;
             account.Rate = rateUSD;            
-            context = new ContextTSLab(ctx);
+            context = ContextTSLab.Create(ctx);
             account.Initialize(securityList);
         }
 

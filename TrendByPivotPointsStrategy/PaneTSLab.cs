@@ -29,15 +29,36 @@ namespace TrendByPivotPointsStrategy
             lst.Thickness = 3;
         }
 
+        public void AddList(string name, IList<double> values, ListStyles listStyle, SystemColor color, LineStyles lineStyle, PaneSides side)
+        {
+            var colorTSlab = new TsLabColor(color.ToArgb());
+            var lst = pane.AddList(name, values, listStyle, colorTSlab, lineStyle, side);
+            lst.Thickness = 3;
+        }             
+
+        public void AddList(string name, IList<bool> values, ListStyles listStyle, SystemColor color, LineStyles lineStyle, PaneSides side)
+        {
+            var colorTSlab = new TsLabColor(color.ToArgb());
+            var lst = pane.AddList(name, values, listStyle, colorTSlab, lineStyle, side);
+            lst.Thickness = 3;
+        }
+
+        public void AddList(string name, ISecurity security, CandleStyles candleStyle, SystemColor color, PaneSides side)
+        {
+            var colorTSlab = new TsLabColor(color.ToArgb());
+            var lst = pane.AddList(name, security, candleStyle, colorTSlab, side);
+            lst.Thickness = 3;
+        }       
+
         public void ClearInteractiveObjects()
         {
             pane.ClearInteractiveObjects();
         }
 
         public void AddInteractivePoint(string id, PaneSides side, bool isRemovable, SystemColor color, MarketPoint position)
-        {            
+        {
             var colorTSlab = new TsLabColor(color.ToArgb());
-            pane.AddInteractivePoint(id, side, isRemovable, colorTSlab, position);            
-        }
+            pane.AddInteractivePoint(id, side, isRemovable, colorTSlab, position);
+        }       
     }    
 }
