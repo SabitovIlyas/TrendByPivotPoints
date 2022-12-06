@@ -94,9 +94,9 @@ namespace TrendByPivotPointsStrategy
                         lastLongPositionsClosed.Remove(security);
                         lastLongPositionsClosed.Add(security, lastLongPositionClosed);
 
-                        equity += lastLongPositionClosed.profit;
+                        equity += lastLongPositionClosed.Profit;
                         var message = string.Format("Активная длинная позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastLongPositionClosed.barNumber, lastLongPositionClosed.entryPrice, lastLongPositionClosed.profit, equity);
+                            lastLongPositionClosed.BarNumber, lastLongPositionClosed.EntryPrice, lastLongPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }
@@ -106,9 +106,9 @@ namespace TrendByPivotPointsStrategy
                     if (lastLongPositionClosed != null)
                     {
                         lastLongPositionsClosed.Add(security, lastLongPositionClosed);
-                        equity += lastLongPositionClosed.profit;
+                        equity += lastLongPositionClosed.Profit;
                         var message = string.Format("Активная длинная позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastLongPositionClosed.barNumber, lastLongPositionClosed.entryPrice, lastLongPositionClosed.profit, equity);
+                            lastLongPositionClosed.BarNumber, lastLongPositionClosed.EntryPrice, lastLongPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }
@@ -121,9 +121,9 @@ namespace TrendByPivotPointsStrategy
                         lastShortPositionsClosed.Remove(security);
                         lastShortPositionsClosed.Add(security, lastShortPositionClosed);
 
-                        equity += lastShortPositionClosed.profit;
+                        equity += lastShortPositionClosed.Profit;
                         var message = string.Format("Активная короткая позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastShortPositionClosed.barNumber, lastShortPositionClosed.entryPrice, lastShortPositionClosed.profit, equity);
+                            lastShortPositionClosed.BarNumber, lastShortPositionClosed.EntryPrice, lastShortPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }
@@ -133,9 +133,9 @@ namespace TrendByPivotPointsStrategy
                     if (lastShortPositionClosed != null)
                     {
                         lastShortPositionsClosed.Add(security, lastShortPositionClosed);
-                        equity += lastShortPositionClosed.profit;
+                        equity += lastShortPositionClosed.Profit;
                         var message = string.Format("Активная короткая позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastShortPositionClosed.barNumber, lastShortPositionClosed.entryPrice, lastShortPositionClosed.profit, equity);
+                            lastShortPositionClosed.BarNumber, lastShortPositionClosed.EntryPrice, lastShortPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }

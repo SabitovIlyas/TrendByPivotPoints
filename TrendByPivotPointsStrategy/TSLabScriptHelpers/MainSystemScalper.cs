@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TrendByPivotPointsStrategy;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystemForTradingDonchian : PivotPointsMainSystem
+    public class MainSystemScalper : MainSystem
     {
-        private IContext ctx;
-        private double kAtr;
-        private double limitOpenedPositions;
-
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
-            var logger = Logger;
+            Logger.Log("Инициализация.");
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -26,13 +25,8 @@ namespace TrendByPivotPointsStrategy
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var riskValuePrcntCalc = kAtr * limitOpenedPositions;
-            if (riskValuePrcntCalc > riskValuePrcnt)
-                throw new System.Exception("Превышен уровень риска");
-
-            riskValuePrcnt = kAtr;
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
-            globalMoneyManager.Logger = logger;
+            var globalMoneyManager = new GlobalMoneyManagerReal(account);
+            globalMoneyManager.Logger = Logger;
 
             Currency currency;
             if (isUSD == 0)
@@ -49,9 +43,9 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingStrategy ts;
 
-            ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
-            localMoneyManagerRuble.Logger = logger;
-            ts.Logger = logger;
+            ts = new TradingSystemScalper(this.securityFirst, (PositionSide)positionSide);
+            localMoneyManagerRuble.Logger = Logger;
+            ts.Logger = Logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
             ts.SetParameters(systemParameters);
@@ -62,11 +56,10 @@ namespace TrendByPivotPointsStrategy
             securities[0].Commission = CalculateCommission;
 
             account.Logger = logger;
-            this.ctx = ctx;
             context = ContextTSLab.Create(ctx);
             account.Initialize(securityList);
-            logger.SwitchOff();
-        }
+            //logger.SwitchOff();
+        }        
 
         private double CalculateCommission(IPosition pos, double price, double shares, bool isEntry, bool isPart)
         {
@@ -78,8 +71,16 @@ namespace TrendByPivotPointsStrategy
             return totalCommission + reserve;
         }
 
+        public override void Paint()
+        {
+            logger.Log("Отрисовка");
+            var firstTradingSystem = tradingSystems.First();
+            firstTradingSystem.Paint(context);
+        }
+
         public override void Run()
         {
+            logger.Log("Запуск!");
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();
 
@@ -97,26 +98,16 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        public void Paint(IContext ctx, ISecurity sec)
-        {
-            var firstTradingSystem = tradingSystems.First();
-            firstTradingSystem.Paint(context);
-        }        
-
-        private bool IsLastBarClosed()
-        {
-            return ctx.IsLastBarClosed;
-        }
-        private bool IsRealTimeTrading()
-        {
-            return securityFirst.IsRealTimeTrading;
-        }
-
         public override void SetParameters(SystemParameters systemParameters)
         {
-            kAtr = systemParameters.GetDouble("kAtr");
-            limitOpenedPositions = systemParameters.GetDouble("limitOpenedPositions");
-            base.SetParameters(systemParameters);
+            logger.Log("Установка параметров.");
+            this.systemParameters = systemParameters;
+                      
+            rateUSD = systemParameters.GetDouble("rateUSD");
+            positionSide = systemParameters.GetInt("positionSide");
+            comission = systemParameters.GetDouble("comission");            
+            shares = systemParameters.GetInt("shares");
+            isUSD = systemParameters.GetInt("isUSD");
         }
     }
 }

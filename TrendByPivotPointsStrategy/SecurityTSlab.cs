@@ -36,7 +36,7 @@ namespace TrendByPivotPointsStrategy
                 }
             }
         }
-        public double? StepPrice => finInfo.StepPrice;
+        public double? StepPrice => finInfo.StepPrice; 
         public double? SellDeposit => finInfo.SellDeposit;
         public double? BuyDeposit => finInfo.BuyDeposit;
         public Bar LastBar
@@ -275,12 +275,12 @@ namespace TrendByPivotPointsStrategy
             if (position == null)
                 return null;
             if (lastLongPositionClosed == null)
-                lastLongPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+                lastLongPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
 
-            if (position.EntryPrice == lastLongPositionClosed.entryPrice && position.EntryBarNum == lastLongPositionClosed.barNumber && position.Profit() == lastLongPositionClosed.profit)
+            if (position.EntryPrice == lastLongPositionClosed.EntryPrice && position.EntryBarNum == lastLongPositionClosed.BarNumber && position.Profit() == lastLongPositionClosed.Profit)
                 return lastLongPositionClosed;
 
-            lastLongPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+            lastLongPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
             return lastLongPositionClosed;
         }
         public Position GetLastClosedShortPosition(int barNumber)
@@ -290,12 +290,12 @@ namespace TrendByPivotPointsStrategy
             if (position == null)
                 return null;
             if (lastShortPositionClosed == null)
-                lastShortPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+                lastShortPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
 
-            if (position.EntryPrice == lastShortPositionClosed.entryPrice && position.EntryBarNum == lastShortPositionClosed.barNumber && position.Profit() == lastShortPositionClosed.profit)
+            if (position.EntryPrice == lastShortPositionClosed.EntryPrice && position.EntryBarNum == lastShortPositionClosed.BarNumber && position.Profit() == lastShortPositionClosed.Profit)
                 return lastShortPositionClosed;
 
-            lastShortPositionClosed = new Position { entryPrice = position.EntryPrice, barNumber = position.EntryBarNum, security = this, profit = position.Profit() };
+            lastShortPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
             return lastShortPositionClosed;
         }
 

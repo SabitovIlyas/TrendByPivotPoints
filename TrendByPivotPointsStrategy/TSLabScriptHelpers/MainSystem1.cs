@@ -5,7 +5,7 @@ using TSLab.Script.Realtime;
 
 namespace TrendByPivotPointsStrategy
 {
-    public abstract class MainSystem
+    public abstract class MainSystem1
     {
         protected Context context;
         protected List<TradingStrategy> tradingSystems;
@@ -23,7 +23,7 @@ namespace TrendByPivotPointsStrategy
         protected SystemParameters systemParameters;
         protected Security securityFirst;
 
-        public  Logger Logger { get { return logger; } set { logger = value; } }
+        //public abstract Logger Logger { get; set; }
 
         public abstract void Initialize(ISecurity[] securities, IContext ctx);
         public abstract void Paint();

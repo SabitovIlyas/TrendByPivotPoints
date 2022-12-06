@@ -6,8 +6,6 @@ namespace TrendByPivotPointsStarter
 {
     public class SampleMainSystem : MainSystem
     {
-        public override Logger Logger { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
 

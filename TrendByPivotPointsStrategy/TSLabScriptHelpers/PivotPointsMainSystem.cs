@@ -6,10 +6,8 @@ namespace TrendByPivotPointsStrategy
 {
     public abstract class PivotPointsMainSystem : MainSystem
     {
-        public override Logger Logger { get { return logger; } set { logger = value; } }
 
         protected int instrumentsGroup;
-
         protected int leftLocalSide;
         protected int rightLocalSide;
         protected double pivotPointBreakDownSide;

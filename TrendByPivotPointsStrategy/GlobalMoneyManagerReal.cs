@@ -11,12 +11,12 @@ namespace TrendByPivotPointsStrategy
         private Logger logger = new NullLogger();
         public Logger Logger { get { return logger; } set { logger = value; } }
 
-        public GlobalMoneyManagerReal(Account account, double riskValuePrcnt)
+        public GlobalMoneyManagerReal(Account account, double riskValuePrcnt=100)
         {
             this.account = account;
             this.riskValuePrcnt = riskValuePrcnt;
             riskValue = riskValuePrcnt / 100.0;
-        }
+        }        
 
         public double GetMoneyForDeal()
         {
