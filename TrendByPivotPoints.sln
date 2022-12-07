@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStrategyTests", "TrendByPivotPoints\TrendByPivotPointsStrategyTests.csproj", "{0194D529-32BB-42F5-A9FF-FC531CDCB684}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -13,6 +13,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStarter", "TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj", "{A9C7C965-F0F0-48ED-986A-21D98A8221FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsOptimizator", "TrendByPivotPointsOptimizator\TrendByPivotPointsOptimizator.csproj", "{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsOptimizatorTests", "TrendByPivotPointsOptimizatorTests\TrendByPivotPointsOptimizatorTests.csproj", "{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
