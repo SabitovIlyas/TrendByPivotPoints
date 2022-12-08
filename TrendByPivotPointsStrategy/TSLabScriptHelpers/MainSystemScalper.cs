@@ -61,14 +61,25 @@ namespace TrendByPivotPointsStrategy
             //logger.SwitchOff();
         }        
 
+        //private double CalculateCommission(IPosition pos, double price, double shares, bool isEntry, bool isPart)
+        //{
+        //    var exchangeCommission = price * comission;
+        //    var brokerCommission = exchangeCommission;
+        //    var totalCommission = exchangeCommission + brokerCommission;
+        //    var reserve = 0.25 * totalCommission;
+
+        //    return totalCommission + reserve;
+        //}
+
         private double CalculateCommission(IPosition pos, double price, double shares, bool isEntry, bool isPart)
         {
-            var exchangeCommission = price * comission;
+            var exchangeCommission = comission;
             var brokerCommission = exchangeCommission;
             var totalCommission = exchangeCommission + brokerCommission;
-            var reserve = 0.25 * totalCommission;
+            //var reserve = 0.25 * totalCommission;
 
-            return totalCommission + reserve;
+            //return totalCommission * shares;
+            return (totalCommission * shares) / 4;
         }
 
         public override void Paint()

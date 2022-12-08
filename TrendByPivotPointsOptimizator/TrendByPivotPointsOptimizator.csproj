@@ -59,6 +59,7 @@
     <Compile Include="CombinationDecorator.cs" />
     <Compile Include="MatrixCreator.cs" />
     <Compile Include="Optimizator.cs" />
+    <Compile Include="ParserPointValueFromFile.cs" />
     <Compile Include="PointValue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

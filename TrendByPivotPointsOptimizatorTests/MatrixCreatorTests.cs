@@ -27,7 +27,7 @@ namespace TrendByPivotPointsOptimizator.Tests
                 PointValue.Create(2, new int[1] { 8 })
             };
 
-            var matirxCreator = MatrixCreator.Create(points, dimension: 1, 1);
+            var matirxCreator = MatrixCreator.Create(points, dimension: 1, new int[1] { 1 });
             var matrix = matirxCreator.CreateMatrix();
 
             Assert.IsNotNull(matrix);

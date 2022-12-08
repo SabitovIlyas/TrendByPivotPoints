@@ -46,9 +46,9 @@ namespace TrendByPivotPointsStrategy
         private double thirdTakeLevelAtr = 3;
         private double[] positionTakeLevelsAtr;
 
-        private double firstStopLevelAtr = -2;
-        private double secondStopLevelAtr = -1.5;
-        private double thirdStopLevelAtr = -1;
+        private double firstStopLevelAtr = -2;      //-
+        private double secondStopLevelAtr = -1.5;   //-
+        private double thirdStopLevelAtr = -1;      //!
         private double[] positionStopLevelsAtr;
 
         private int intervalToCompressInMinutes = 15;
@@ -306,7 +306,6 @@ namespace TrendByPivotPointsStrategy
             return activePositionByDirectionCount;
         }
 
-
         private double GetEntryPrice()
         {
             var lastPrice = security.GetBarClose(barNumber);
@@ -316,7 +315,8 @@ namespace TrendByPivotPointsStrategy
             else
                 stepPrice = (double)security.StepPrice;
 
-            return convertable.Plus(lastPrice, stepPrice);            
+            //return convertable.Minus(lastPrice, stepPrice);
+            return convertable.Minus(lastPrice, (int)(fixedAtr * 0.1));
         }
 
         //TODO: стоп неправильный. Переделать.
@@ -343,7 +343,13 @@ namespace TrendByPivotPointsStrategy
                 sec.Positions.BuyAtPrice(barNumber + 1, openPositionLots[positionNumber], entryPrice, signalNameForOpenPosition + notes);
 
             if (positionSide == PositionSide.Short)
-                sec.Positions.SellAtPrice(barNumber + 1, openPositionLots[positionNumber], entryPrice, signalNameForOpenPosition + notes);                       
+                sec.Positions.SellAtPrice(barNumber + 1, openPositionLots[positionNumber], entryPrice, signalNameForOpenPosition + notes);
+
+            //if (positionSide == PositionSide.Long)
+            //    sec.Positions.BuyAtMarket(barNumber + 1, openPositionLots[positionNumber], signalNameForOpenPosition + notes);
+
+            //if (positionSide == PositionSide.Short)
+            //    sec.Positions.SellAtMarket(barNumber + 1, openPositionLots[positionNumber], signalNameForOpenPosition + notes);
         }
 
         private void SetLimitOrdersForClosePosition(int positionNumber, Position position, string notes)

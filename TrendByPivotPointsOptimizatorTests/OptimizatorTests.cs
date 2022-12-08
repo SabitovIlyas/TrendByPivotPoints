@@ -26,10 +26,10 @@ namespace TrendByPivotPointsOptimizator.Tests
                 PointValue.Create(2, new int[1] { 8 })
             };
 
-            var exptected = "4,67: (6)";
+            var exptected = "4,67: (6); 4: (4); 4: (5); 3,67: (7); 3,5: (8)";
             var optimizator = Optimizator.Create();
             var actual =
-                optimizator.GetOptimalParameters(points, dimension: 1, radiusNeighbour: 1,
+                optimizator.GetOptimalParameters(points, dimension: 1, radiusNeighbour: new int[1] {1},
                 barrier: 2, isCheckedPass: true);
             Assert.AreEqual(exptected, actual);
         }
@@ -50,10 +50,10 @@ namespace TrendByPivotPointsOptimizator.Tests
                 PointValue.Create(4.08, new int[2] { 23, 77 })
             };
 
-            var exptected = "4,76: (23; 77)";
+            var exptected = "4,76: (23; 77); 4,44: (22; 77); 4,42: (21; 77); 4,33: (21; 79); 4,11: (21; 78)";
             var optimizator = Optimizator.Create();
             var actual =
-                optimizator.GetOptimalParameters(points, dimension: 2, radiusNeighbour: 1,
+                optimizator.GetOptimalParameters(points, dimension: 2, radiusNeighbour: new int[2] { 1,1 },
                 barrier: 1, isCheckedPass: true);
             Assert.AreEqual(exptected, actual);
         }

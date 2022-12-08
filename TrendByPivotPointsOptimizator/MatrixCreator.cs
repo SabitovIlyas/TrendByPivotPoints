@@ -7,14 +7,14 @@ namespace TrendByPivotPointsOptimizator
         List<CombinationDecorator> combinations = new List<CombinationDecorator>();
         List<PointValue> points;
         private int dimension;
-        private int radiusNeighbour;
+        private int[] radiusNeighbour;
 
-        public static MatrixCreator Create(List<PointValue> points, int dimension, int radiusNeighbour)
+        public static MatrixCreator Create(List<PointValue> points, int dimension, int[] radiusNeighbour)
         {
             return new MatrixCreator(points, dimension, radiusNeighbour);
         }
 
-        private MatrixCreator(List<PointValue> points, int dimension, int radiusNeighbour)
+        private MatrixCreator(List<PointValue> points, int dimension, int[] radiusNeighbour)
         {
             this.points = points;
             this.dimension = dimension;
@@ -44,8 +44,8 @@ namespace TrendByPivotPointsOptimizator
 
                 for (var z = 0; z < dimension; z++)
                 {
-                    lowerBand[z] = combination.GetCoord(z) - radiusNeighbour;
-                    upperBand[z] = combination.GetCoord(z) + radiusNeighbour;                    
+                    lowerBand[z] = combination.GetCoord(z) - radiusNeighbour[z];
+                    upperBand[z] = combination.GetCoord(z) + radiusNeighbour[z];                    
                     
                 }                
 
