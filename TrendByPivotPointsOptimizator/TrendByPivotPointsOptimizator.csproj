@@ -67,5 +67,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TrendByPivotPointsStrategy\TrendByPivotPointsStrategy.csproj">
+      <Project>{B9A9953F-E415-44D8-ABA8-35A77304CCFA}</Project>
+      <Name>TrendByPivotPointsStrategy</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

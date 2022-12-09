@@ -208,7 +208,7 @@ namespace TrendByPivotPointsStrategy
         public void CheckPositionOpenLongCase(int positionNumber)
         {
             Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
-            var notes = " Вход №" + (positionNumber + 1);
+            var notes = GetSignalNotesName(positionNumber);
             
 
             if (!IsPositionOpen(notes))
@@ -265,7 +265,12 @@ namespace TrendByPivotPointsStrategy
                 SetStopLoss(currentPosition, notes);                 
             }
         }
-        
+
+        private string GetSignalNotesName(int positionNumber)
+        {
+            return " Вход №" + (positionNumber + 1);
+        }
+
         private bool IsTimeForTrading()
         {
             var hour = security.GetBarDateTime(barNumber).Hour;
@@ -296,14 +301,26 @@ namespace TrendByPivotPointsStrategy
         private int GetPositionCount()
         {
             var positions = sec.Positions;
-            var activePositions = positions.GetActiveForBar(barNumber);
-            var activePositionByDirectionCount = 0;
-            if (positionSide == PositionSide.Long)
-                activePositionByDirectionCount = activePositions.Count(p => p.IsLong);
-            if (positionSide == PositionSide.Short)
-                activePositionByDirectionCount = activePositions.Count(p => p.IsShort);
+            var activePositions = 0;
+            for (var i = 0; i < limitOpenedPositions; i++)
+            {
+                if (positions.GetLastActiveForSignal(signalNameForOpenPosition + GetSignalNotesName(positionNumber: i), barNumber) != null)
+                    activePositions++;
+            }
+            return activePositions;
 
-            return activePositionByDirectionCount;
+            //var positions = sec.Positions;
+            //var activePositions = positions.GetActiveForBar(barNumber);
+
+            //var activePositionByDirectionCount = 0;
+            //if (positionSide == PositionSide.Long)
+            //    activePositionByDirectionCount = activePositions.Count(p => p.IsLong);
+            //if (positionSide == PositionSide.Short)
+            //    activePositionByDirectionCount = activePositions.Count(p => p.IsShort);
+
+            //return activePositionByDirectionCount;
+
+            //return 0;
         }
 
         private double GetEntryPrice()
