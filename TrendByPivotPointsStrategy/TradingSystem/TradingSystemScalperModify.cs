@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class TradingSystemScalper : TradingStrategy
+    public class TradingSystemScalperModify : TradingStrategy
     {
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }
@@ -22,25 +22,17 @@ namespace TrendByPivotPointsStrategy
         private string signalNameForClosePositionByTakeProfit = string.Empty;
         private string signalNameForClosePositionByTime = string.Empty;
         private string tradingSystemDescription;
-        private string name = "TradingSystemScalper";
+        private string name = "TradingSystemScalperModify";
         private string parametersCombination;
 
         private ISecurity sec;
         private ISecurity secCompressed;
-        private ISecurity secCompressedFilter;
         private Security security;
 
         private IList<double> atr;
         private IList<double> rsi;
-        private IList<double> adx;
-        private IList<double> dip;
-        private IList<double> dim;
-
-        private int periodRsiAndAtr;
-        private int bandRsi;
-        private int periodAdx;
-        private int bandAdx;
-
+        private int period;
+        private int rsiBand;
 
         private int limitOpenedPositions = 1;
         
@@ -60,21 +52,19 @@ namespace TrendByPivotPointsStrategy
         private double[] positionStopLevelsAtr;
 
         private int intervalToCompressInMinutes = 60;
-        private int filterIntervalToCompressInMinutes = 540;
 
         private int lastUsedLots = 1;
 
         private double fixedAtr;
         private int hourStopTrading = 23;
         private int minuteStopTrading = 45;
-        public TradingSystemScalper(Security security, PositionSide positionSide)
+        public TradingSystemScalperModify(Security security, PositionSide positionSide)
         {
             var securityTSLab = security as SecurityTSlab;
             sec = securityTSLab.security;
 
             this.security = security;
             secCompressed = sec.CompressTo(intervalToCompressInMinutes);
-            secCompressedFilter = sec.CompressTo(filterIntervalToCompressInMinutes);
             this.positionSide = positionSide;
 
             openPositionLots = new int[limitOpenedPositions];
@@ -118,32 +108,10 @@ namespace TrendByPivotPointsStrategy
             }
 
 
-            atr = Series.AverageTrueRange(secCompressed.Bars, periodRsiAndAtr);
+            atr = Series.AverageTrueRange(secCompressed.Bars, period);
             atr = secCompressed.Decompress(atr);
-            rsi = Series.RSI(secCompressed.ClosePrices, periodRsiAndAtr);
+            rsi = Series.RSI(secCompressed.ClosePrices, period);
             rsi = secCompressed.Decompress(rsi);
-            
-            dip = ADXHelper.CalcDIP(secCompressedFilter, periodAdx);
-            dim = ADXHelper.CalcDIM(secCompressedFilter, periodAdx);
-            adx = ADXHelper.CalcADX(dip, dim, periodAdx);
-
-            //var list = new List<double>();
-            //var result = 0d;
-            //for (int i = 0; i < dip.Count; i++)
-            //{
-            //    if (dip[i] == 0.0 && dim[i] == 0.0)
-            //        result = 0d;
-            //    else
-            //        result = (Math.Abs(dip[i] - dim[i]) / (dip[i] + dim[i])) * 100.0;
-
-            //    list.Add(result);
-            //}
-
-            //adx = Series.EMA(list, periodAdx);
-
-            dip = secCompressedFilter.Decompress(dip);
-            dim = secCompressedFilter.Decompress(dim);
-            adx = secCompressedFilter.Decompress(adx);            
         }
 
         public void CheckPositionCloseCase(int barNumber)
@@ -206,11 +174,9 @@ namespace TrendByPivotPointsStrategy
 
         public void SetParameters(SystemParameters systemParameters)
         {            
-            periodRsiAndAtr = systemParameters.GetInt("periodRsiAndAtr");
-            bandRsi = systemParameters.GetInt("bandRsi");
-            periodAdx = systemParameters.GetInt("periodAdx");
-            bandAdx = systemParameters.GetInt("bandAdx");
-            parametersCombination = string.Format("Period: {0}; RSI band: {1}", periodRsiAndAtr, bandRsi);
+            period = systemParameters.GetInt("period");
+            rsiBand = systemParameters.GetInt("rsiBand");
+            parametersCombination = string.Format("Period: {0}; RSI band: {1}", period, rsiBand);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
 
@@ -238,7 +204,7 @@ namespace TrendByPivotPointsStrategy
         public void CheckPositionOpenLongCase()
         {            
             for (var i = 0; i < limitOpenedPositions; i++)
-                CheckPositionOpenLongCase(i);
+                CheckPositionOpenLongCase(i); //надо подумать
         }
 
         public void CheckPositionOpenLongCase(int positionNumber)
@@ -266,6 +232,14 @@ namespace TrendByPivotPointsStrategy
                 if (positionNumber == 0)
                     fixedAtr = atr[barNumber];
 
+                Log("Вычисляем цену входа...");
+                var entryPrice = GetEntryPrice();
+                Log("Цена входа: " + entryPrice);
+
+                //Log("Вычисляем стоп-цену...");
+                //var stopPrice = GetStopPrice(positionNumber, entryPrice);
+                //Log("Cтоп-цена: " + stopPrice);
+
                 Log("Определяем количество контрактов...");
                 var contracts = GetQntContracts(positionNumber);
                 Log("Количество контрактов: " + contracts);
@@ -276,7 +250,7 @@ namespace TrendByPivotPointsStrategy
                 else
                     Log("Торгуем в лаборатории.");
 
-                SetOrderForOpenPosition(contracts, notes);
+                SetLimitOrdersForOpenPosition(positionNumber, contracts, entryPrice, notes);
             }
             else
             {
@@ -338,10 +312,43 @@ namespace TrendByPivotPointsStrategy
                     activePositions++;
             }
             return activePositions;
+
+            //var positions = sec.Positions;
+            //var activePositions = positions.GetActiveForBar(barNumber);
+
+            //var activePositionByDirectionCount = 0;
+            //if (positionSide == PositionSide.Long)
+            //    activePositionByDirectionCount = activePositions.Count(p => p.IsLong);
+            //if (positionSide == PositionSide.Short)
+            //    activePositionByDirectionCount = activePositions.Count(p => p.IsShort);
+
+            //return activePositionByDirectionCount;
+
+            //return 0;
+        }
+
+        private double GetEntryPrice()
+        {
+            var lastPrice = security.GetBarClose(barNumber);
+            double stepPrice;
+            if (security.StepPrice == null)
+                stepPrice = 1;
+            else
+                stepPrice = (double)security.StepPrice;
+
+            //return convertable.Minus(lastPrice, stepPrice);
+            return convertable.Plus(lastPrice, (int)(fixedAtr * 0.1));
+        }
+
+        //TODO: стоп неправильный. Переделать.
+        private double GetStopPrice(int positionNumber, double entryPrice)
+        {
+            return convertable.Plus(entryPrice, positionStopLevelsAtr[positionNumber] * fixedAtr);            
         }
 
         private int GetQntContracts(int positionNumber)
         {
+            //return openPositionLots[positionNumber];
             var lastClosedPosition = sec.Positions.GetLastPositionClosed(barNumber);
 
             int lots;
@@ -371,20 +378,20 @@ namespace TrendByPivotPointsStrategy
 
         private bool GotSignal()
         {
-            if (barNumber < (periodRsiAndAtr + 1) * intervalToCompressInMinutes)
+            if (barNumber < (period + 1) * intervalToCompressInMinutes)
                 return false;
-            var wasSignal = convertable.IsLess(rsi[barNumber - 1], bandRsi) && convertable.IsGreaterOrEqual(rsi[barNumber], bandRsi);
-            var wasPassedFilter = WasPassedFilter();
-            return wasSignal && wasPassedFilter;
+            //return convertable.IsLess(rsi[barNumber - 1], rsiBand) && convertable.IsGreaterOrEqual(rsi[barNumber], rsiBand);
+            return convertable.IsGreater(rsi[barNumber - 1], rsiBand) && convertable.IsLessOrEqual(rsi[barNumber], rsiBand);
         }
 
-        private bool WasPassedFilter()
+        private void SetLimitOrdersForOpenPosition(int positionNumber, int contracts, double entryPrice, string notes)
         {
-            return convertable.IsGreaterOrEqual(adx[barNumber], bandAdx) && convertable.IsGreater(dip[barNumber], dim[barNumber]);
-        }
+            //if (positionSide == PositionSide.Long)
+            //    sec.Positions.BuyAtPrice(barNumber + 1, openPositionLots[positionNumber], entryPrice, signalNameForOpenPosition + notes);
 
-        private void SetOrderForOpenPosition(int contracts, string notes)
-        { 
+            //if (positionSide == PositionSide.Short)
+            //    sec.Positions.SellAtPrice(barNumber + 1, openPositionLots[positionNumber], entryPrice, signalNameForOpenPosition + notes);
+
             if (positionSide == PositionSide.Long)
                 sec.Positions.BuyAtMarket(barNumber + 1, contracts, signalNameForOpenPosition + notes);
 

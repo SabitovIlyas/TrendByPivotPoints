@@ -25,8 +25,8 @@ namespace TrendByPivotPointsOptimizator
         {
             path = "C:\\Users\\1\\Dropbox\\Трейдинг\\";
             
-            fileNameLong = "RSIScalper_test_long---Si_new-1M-2022-12-09-03-36-08-724-(1).csv";
-            fileNameShort = "RSIScalper_test_short---Si_new-1M-2022-12-09-03-36-14-803-(1).csv";
+            fileNameLong = "results_Long.csv";
+            fileNameShort = "results_Short.csv";
             dimension = 2;
 
             Console.WriteLine("Start!");

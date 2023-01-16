@@ -103,8 +103,11 @@
     <Compile Include="TradingSystem\TradingSystemPivotPointsEMA.cs" />
     <Compile Include="TradingSystem\TradingSystemPivotPointsEmaRtUpdate.cs" />
     <Compile Include="TradingSystem\TradingSystemPivotPointsEmaRtUpdateTrailStopLoss.cs" />
+    <Compile Include="TradingSystem\TradingSystemBollingerBands.cs" />
+    <Compile Include="TradingSystem\TradingSystemScalperModify.cs" />
     <Compile Include="TradingSystem\TradingSystemScalper.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystem.cs" />
+    <Compile Include="TSLabScriptHelpers\MainSystemBollingerBands.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemScalper.cs" />
     <Compile Include="TSLabScriptHelpers\PivotPointsMainSystem.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForOptimization.cs" />
@@ -113,6 +116,7 @@
     <Compile Include="TSLabScriptHelpers\MainSystemForRealTimeTesting.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForTrading.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForTradingDonchian.cs" />
+    <Compile Include="TSLabScripts\BollingerBandsArbitrageStrategy.cs" />
     <Compile Include="TSLabScripts\ScriptScalperStrategy.cs" />
     <Compile Include="TSLabScripts\ScriptTrendByDonchian.cs" />
     <Compile Include="TSLabScripts\ScriptTrendByPivotPoints.cs" />

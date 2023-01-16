@@ -9,7 +9,7 @@ using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStrategy
 {
-    public class MainSystemScalper : MainSystem
+    public class MainSystemBollingerBands : MainSystem
     {
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
@@ -43,7 +43,7 @@ namespace TrendByPivotPointsStrategy
             AbsolutCommission absoluteComission;
             TradingStrategy ts;
 
-            ts = new TradingSystemScalper(this.securityFirst, (PositionSide)positionSide);
+            ts = new TradingSystemBollingerBands(this.securityFirst, (PositionSide)positionSide);
             localMoneyManagerRuble.Logger = Logger;
             ts.Logger = Logger;
             tradingSystems.Add(ts);

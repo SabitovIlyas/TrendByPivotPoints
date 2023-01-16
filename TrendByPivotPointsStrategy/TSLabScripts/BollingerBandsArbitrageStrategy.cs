@@ -4,8 +4,8 @@ using TSLab.Script.Optimization;
 using TSLab.Script;
 
 namespace TrendByPivotPointsStrategy
-{
-    public class ScriptScalperStrategy : IExternalScript
+{    
+    public class BollingerBandsArbitrageStrategy : IExternalScript
     {
         public OptimProperty rateUSD = new OptimProperty(61, 1, 200, 1);
         //TODO: надо сделать так, чтобы 0 был не для лонга, а для Null (None).
@@ -15,17 +15,18 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty isPaint = new OptimProperty(1, 0, 1, 1);
         public OptimProperty isLoggerOn = new OptimProperty(1, 0, 1, 1);
         public OptimProperty shares = new OptimProperty(1, 0, 1, 1);
+
+        public OptimProperty startLots = new OptimProperty(1, 0, 1, 1);
         public OptimProperty isUSD = new OptimProperty(0, 0, 1, 1);
-        public OptimProperty periodRsiAndAtr = new OptimProperty(14, 5, 15, 1);
-        public OptimProperty bandRsi = new OptimProperty(30, 25, 35, 1);       
-        public OptimProperty periodAdx = new OptimProperty(20, 20, 40, 1);
-        public OptimProperty bandAdx = new OptimProperty(20, 20, 40, 1);
+        public OptimProperty periodBollingerBandAndEma = new OptimProperty(20, 5, 25, 1);
+        public OptimProperty profitPercent = new OptimProperty(10, 5, 25, 1);
+        public OptimProperty standartDeviationCoef = new OptimProperty(2, 1, 3, 1);
 
         public void Execute(IContext context, ISecurity security)
         {            
             var logger = new LoggerSystem(context);
             logger.Log("Запуск скрипта.");
-            MainSystem system = new MainSystemScalper();
+            MainSystem system = new MainSystemBollingerBands();
 
             if (isLoggerOn == 1)
                 system.Logger = new LoggerSystem(context);
@@ -36,11 +37,12 @@ namespace TrendByPivotPointsStrategy
             systemParameters.Add("positionSide", positionSide);
             systemParameters.Add("comission", comission);
             systemParameters.Add("shares", shares);
+
+            systemParameters.Add("startLots", startLots);
             systemParameters.Add("isUSD", isUSD);
-            systemParameters.Add("periodRsiAndAtr", periodRsiAndAtr);
-            systemParameters.Add("bandRsi", bandRsi);
-            systemParameters.Add("periodAdx", periodAdx);
-            systemParameters.Add("bandAdx", bandAdx);
+            systemParameters.Add("periodBollingerBandAndEma", periodBollingerBandAndEma);
+            systemParameters.Add("profitPercent", profitPercent);
+            systemParameters.Add("standartDeviationCoef", standartDeviationCoef);
 
             var securities = new ISecurity[1];
             securities[0] = security;
