@@ -132,9 +132,20 @@ namespace TrendByPivotPointsStrategy
                 UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition();
                 UpdateParametersOfCurrentPosition(currentPosition);
 
-                if (isPriceCrossedEmaAfterOpenOrChangePosition)
-                    SetLimitOrdersForChangePosition(currentPosition, notes);
-                SetLimitOrdersForClosePosition(currentPosition, notes);
+                var currentPrice = security.GetBarClose(barNumber);
+                var priceTakeProfit = convertable.Plus(currentPosition.iPosition.AverageEntryPrice,
+                    profitPercent / 100 * currentPosition.iPosition.AverageEntryPrice);
+                var priceChangePosition = bollingerBand[barNumber];
+
+                var isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice = 
+                    Math.Abs(priceTakeProfit - currentPrice) <=
+                Math.Abs(priceChangePosition - currentPrice);
+
+                if (!isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice &&
+                    isPriceCrossedEmaAfterOpenOrChangePosition)                
+                    SetLimitOrdersForChangePosition(currentPosition, notes);                
+                else
+                    SetLimitOrdersForClosePosition(currentPosition, notes);
             }
         }
 

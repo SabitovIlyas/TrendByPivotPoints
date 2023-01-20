@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
     <Compile Include="ClassForTestReflection.cs" />
-    <Compile Include="StoreValuesInCacheTests.cs" />
+    <Compile Include="SomeCalcTests.cs" />
     <Compile Include="OtherTests.cs" />
     <Compile Include="ObjectDiagnosticExtensionsTests.cs" />
     <Compile Include="ConverterTests.cs" />
