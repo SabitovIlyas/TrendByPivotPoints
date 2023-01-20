@@ -62,6 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
+    <Compile Include="ClassForTestReflection.cs" />
+    <Compile Include="StoreValuesInCacheTests.cs" />
+    <Compile Include="OtherTests.cs" />
+    <Compile Include="ObjectDiagnosticExtensionsTests.cs" />
     <Compile Include="ConverterTests.cs" />
     <Compile Include="DataBarFake.cs" />
     <Compile Include="DataBarsForTesting.cs" />
@@ -80,6 +84,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj">
+      <Project>{A9C7C965-F0F0-48ED-986A-21D98A8221FC}</Project>
+      <Name>TrendByPivotPointsStarter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TrendByPivotPointsStrategy\TrendByPivotPointsStrategy.csproj">
       <Project>{b9a9953f-e415-44d8-aba8-35a77304ccfa}</Project>
       <Name>TrendByPivotPointsStrategy</Name>

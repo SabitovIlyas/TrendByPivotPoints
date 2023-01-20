@@ -12,23 +12,17 @@ namespace TrendByPivotPointsStrategy
         }
         public Logger Logger { get; set; } = new NullLogger();
         
-
         private PositionSide positionSide;
         private string tradingSystemDescription;
         private IContext ctx;
-
-        private void Log(string text, params object[] args)
-        {
-            text = string.Format(text, args);
-            Log(text);
-        }
 
         private RealTimeTrading(PositionSide positionSide, string tradingSystemDescription, IContext ctx)
         {
             this.positionSide = positionSide;
             this.tradingSystemDescription = tradingSystemDescription;
-            this.ctx = ctx;            
+            this.ctx = ctx;
         }
+
         public bool WasNewPositionOpened()
         {
             return LoadFlagNewPositionOpened();
@@ -52,15 +46,15 @@ namespace TrendByPivotPointsStrategy
         public object LoadObjectFromContainer(string key)
         {
             if (ctx.IsOptimization)
-                throw new Exception("Моё исключение: Чтение объекта из контейнера невозможно в режиме оптимизации");
-            
+                throw new Exception("Чтение объекта из контейнера невозможно в режиме оптимизации.");
+
             var containerName = tradingSystemDescription + key;
             var container = ctx.LoadObject(containerName) as NotClearableContainer<object>;
             object value;
             if (container != null)
                 value = container.Content;
             else
-                throw new NullReferenceException("container равно null");
+                throw new NullReferenceException("container равно null"); //TODO: Переделать на KeyNotFoundException(key)
 
             return value;
         }
@@ -71,6 +65,37 @@ namespace TrendByPivotPointsStrategy
             var message = string.Format("Сохранённый флаг = {0}, текущий флаг = {1}", flagSaved, flag);
             Logger.Log(message);
             return flag == flagSaved;
+        }
+        
+        public void SaveBarToContainer(DateTime dateBar)
+        {
+            Logger.Log("Сохраняем бар в контейнер");
+            SaveObjectToContainer("Последний бар", dateBar);
+            Logger.Log("Проверим, сохранился ли бар в контейнере");
+
+            if (WasBarSavedToContainer(dateBar))
+                Logger.Log("Бар сохранился в контейнере");
+            else
+            {
+                Logger.Log("Бар не сохранился в контейнере");
+                throw new Exception("Вызываю исключение, так как бар не сохранился в контейнере!");
+            }
+        }
+
+        public void SaveObjectToContainer(string key, object value)
+        {
+            if (ctx.IsOptimization)
+                return;
+
+            var containerName = this.tradingSystemDescription + key;
+            var container = new NotClearableContainer<object>(value);
+            ctx.StoreObject(containerName, container);
+        }
+
+        private bool WasBarSavedToContainer(DateTime dateBar)
+        {
+            var dateBarLoaded = LoadBarFromContainer("Последний бар");
+            return dateBar == dateBarLoaded;
         }
 
         private DateTime LoadBarFromContainer(string key)
@@ -89,35 +114,9 @@ namespace TrendByPivotPointsStrategy
             return barDate;
         }
 
-        private bool WasBarSavedToContainer(DateTime dateBar)
+        public void SetFlagNewPositionOpened()
         {
-            var dateBarLoaded = LoadBarFromContainer("Последний бар");
-            return dateBar == dateBarLoaded;
-        }
-
-        public void SaveBarToContainer(DateTime dateBar)
-        {
-            Logger.Log("Сохраняем бар в контейнер");
-            SaveObjectToContainer("Последний бар", dateBar);
-            Logger.Log("Проверим, сохранился ли бар в контейнере");
-
-            if (WasBarSavedToContainer(dateBar))
-                Logger.Log("Бар сохранился в контейнере");
-            else
-            {
-                Logger.Log("Бар не сохранился в контейнере");
-                throw new Exception("Вызываю исключение, так как бар не сохранился в контейнере!");
-            }
-        }
-
-        public void SaveObjectToContainer(string key, object value)
-        {
-            if (ctx.IsOptimization)            
-                return;
-            
-            var containerName = this.tradingSystemDescription + key;
-            var container = new NotClearableContainer<object>(value);
-            ctx.StoreObject(containerName, container);
+            SaveFlagNewPositionOpened(true);
         }
 
         private void SaveFlagNewPositionOpened(bool flag)
@@ -140,11 +139,6 @@ namespace TrendByPivotPointsStrategy
             {
                 throw new Exception("Вызываю исключение, так как значение positionSide ожидалось Long или Short, а оно " + positionSide);
             }
-        }
-
-        public void SetFlagNewPositionOpened()
-        {
-            SaveFlagNewPositionOpened(true);
         }
 
         public void ResetFlagNewPositionOpened()

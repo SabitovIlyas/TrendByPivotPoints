@@ -7,6 +7,8 @@ using TSLab.Script.Handlers;
 using System.Linq;
 using System.Diagnostics.Contracts;
 using TSLab.Script.Realtime;
+using TrendByPivotPoints;
+using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -25,7 +27,6 @@ namespace TrendByPivotPointsStrategy
         private string name = nameof(TradingSystemBollingerBands);
         private string parametersCombination;
         private ISecurity sec;
-        private ISecurity secCompressed;
         private Security security;
 
         private int periodBollingerBandAndEma;
@@ -41,12 +42,21 @@ namespace TrendByPivotPointsStrategy
 
         private int hourStopTrading = 23;
         private int minuteStopTrading = 45;
+
+        private int currentOpenedShares = 0;
+        private int changePositionCounter = 0;
+        private RealTimeTrading realTimeTrading;
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
             var securityTSLab = security as SecurityTSlab;
             sec = securityTSLab.security;
             this.security = security;            
             this.positionSide = positionSide;
+        }
+
+        public void Initialize(IContext ctx)
+        {
+            Ctx = ctx;
         }
 
         public void CalculateIndicators()
@@ -70,6 +80,219 @@ namespace TrendByPivotPointsStrategy
             }
             ema = Series.EMA(sec.ClosePrices, periodBollingerBandAndEma);
             bollingerBand = Series.BollingerBands(sec.ClosePrices, ema, periodBollingerBandAndEma, standartDeviationCoef, isTopLine: convertable.IsConverted);
+        }
+
+        public void Update(int barNumber)
+        {
+            try
+            {
+                this.barNumber = barNumber;
+                security.BarNumber = barNumber;
+
+                if (security.IsRealTimeActualBar(barNumber))
+                    Logger.SwitchOn();
+                else
+                    Logger.SwitchOff();
+
+                CheckPositionOpenLongCase();
+            }
+
+            catch (Exception e)
+            {
+                Log("Исключение в методе Update(): " + e.ToString());
+            }
+        }
+
+        public void CheckPositionOpenLongCase()
+        {
+            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
+            var notes = GetSignalNotesName();
+
+            if (!IsPositionOpen(notes))
+            {
+                Log("{0} позиция не открыта.", convertable.Long);
+                if (!IsTimeForTrading())
+                    return;
+
+                changePositionCounter = 0;
+                currentOpenedShares = 0;
+                if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
+                {
+                    SaveChangePositionCounterToLocalCache();
+                    SaveCurrentOpenedSharesToLocalCache();
+                }
+                
+                SetLimitOrdersForOpenPosition(notes);
+            }
+            else
+            {
+                Log("{0} позиция открыта.", convertable.Long);
+                var currentPosition = GetPosition(notes);
+
+                UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition();
+                UpdateParametersOfCurrentPosition(currentPosition);
+
+                if (isPriceCrossedEmaAfterOpenOrChangePosition)
+                    SetLimitOrdersForChangePosition(currentPosition, notes);
+                SetLimitOrdersForClosePosition(currentPosition, notes);
+            }
+        }
+
+        private void UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition()
+        {
+            Log(nameof(UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition) + ": Обновляю флаг \" Пересечение цены EMA после открытия" +
+                " или изменения позиции\". Текущее состояние флага: " + isPriceCrossedEmaAfterOpenOrChangePosition);
+
+            if (convertable.IsGreater(security.GetBarClose(barNumber), ema[barNumber]))
+            {
+                isPriceCrossedEmaAfterOpenOrChangePosition = true;
+                if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
+                    SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
+            }
+
+            Log(nameof(UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition) + ": Новое состояние флага: " +
+                isPriceCrossedEmaAfterOpenOrChangePosition);
+        }
+
+        private void UpdateParametersOfCurrentPosition(Position currentPosition)
+        {
+            var methodName = nameof(UpdateParametersOfCurrentPosition);
+            Log("{0}: Обновляю значение \"Текущее количество открытых лотов\".", methodName);
+
+            if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber)) 
+            {                
+                try
+                {
+                    currentOpenedShares = LoadCurrentOpenedSharesFromLocalCache();
+                    isPriceCrossedEmaAfterOpenOrChangePosition = LoadFlagIsPriceCrossedEmaAfterOpenOrChangePositionFromLocalCache();
+                    changePositionCounter = LoadChangePositionCounterFromLocalCache();
+                }
+                catch (KeyNotFoundException) 
+                {
+                    Log("{0}: Получено исключение обновления значений. Оставляем прежние значения", methodName);
+                }
+            }
+            
+            Log("{0}: Значение, хранящееся в позиции: {1}", methodName, currentPosition.iPosition.Shares);
+
+            if (currentPosition.iPosition.Shares != currentOpenedShares)
+            {
+                Log("{0}: Обновляем значение, сбрасываем флаг, наращиваем счётчик", methodName);
+                currentOpenedShares = (int)currentPosition.iPosition.Shares;
+                isPriceCrossedEmaAfterOpenOrChangePosition = false;
+                changePositionCounter++;
+
+                SaveCurrentOpenedSharesToLocalCache();
+                SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
+                SaveChangePositionCounterToLocalCache();
+            }
+            else            
+                Log("{0}: Обновлять ничего не нужно", methodName);            
+        }
+
+        private int LoadCurrentOpenedSharesFromLocalCache()
+        {
+            var methodName = nameof(LoadCurrentOpenedSharesFromLocalCache);
+            Log("{0}: Считываем \"Текущее количество открытых лотов\" из локального кеша", methodName);
+            var key = nameof(currentOpenedShares);
+            var value = 0;
+
+            try
+            {
+                value = (int)realTimeTrading.LoadObjectFromContainer(key);
+                Log("{0}: Значение: \"Текущее количество открытых лотов\", равное {1} считано из кеша.",
+                    methodName, value);
+            }            
+            catch (NullReferenceException)
+            {
+                Log("{0}: Значение: \"Текущее количество открытых лотов\" не содержится в кеше. " +
+                    "Генерируем исключение", methodName);
+                throw new KeyNotFoundException(key);
+            }
+            catch (Exception ex)
+            {
+                Log("{0}: {1}", methodName, ex.Message);
+            }
+
+            return value;
+        }
+
+        private bool LoadFlagIsPriceCrossedEmaAfterOpenOrChangePositionFromLocalCache()
+        {
+            var methodName = nameof(LoadFlagIsPriceCrossedEmaAfterOpenOrChangePositionFromLocalCache);
+            Log("{0}: Считываем флаг \"Пересечение цены EMA после открытия\" из локального кеша", methodName);
+            var key = nameof(isPriceCrossedEmaAfterOpenOrChangePosition);
+            var value = false;
+
+            try
+            {
+                value = (bool)realTimeTrading.LoadObjectFromContainer(key);
+                Log("{0}: Флаг: \"Пересечение цены EMA после открытия\", равное {1} считано из кеша.",
+                    methodName, value);
+            }
+            catch (NullReferenceException)
+            {
+                Log("{0}: Флаг: \"Пересечение цены EMA после открытия\" не содержится в кеше. " +
+                    "Генерируем исключение", methodName);
+                throw new KeyNotFoundException(key);
+            }
+            catch (Exception ex)
+            {
+                Log("{0}: {1}", methodName, ex.Message);
+            }
+
+            return value;
+        }
+
+        private int LoadChangePositionCounterFromLocalCache()
+        {
+            var methodName = nameof(LoadChangePositionCounterFromLocalCache);
+            Log("{0}: Считываем \"Текущее значение счётчика изменения позиции\" из локального кеша", methodName);
+            var key = nameof(changePositionCounter);
+            var value = 0;
+
+            try
+            {
+                value = (int)realTimeTrading.LoadObjectFromContainer(key);
+                Log("{0}: Значение: \"Текущее значение счётчика изменения позиции\", равное {1} считано из кеша.",
+                    methodName, value);
+            }
+            catch (NullReferenceException)
+            {
+                Log("{0}: Значение: \"Текущее значение счётчика изменения позиции\" не содержится в кеше. " +
+                    "Генерируем исключение", methodName);
+                throw new KeyNotFoundException(key);
+            }
+            catch (Exception ex)
+            {
+                Log("{0}: {1}", methodName, ex.Message);
+            }
+
+            return value;
+        }
+
+        private void SaveCurrentOpenedSharesToLocalCache()
+        {
+            var methodName = nameof(SaveCurrentOpenedSharesToLocalCache);
+            Log("{0}: Сохраняем \"Текущее количество открытых лотов\" в локальный кеш", methodName);
+            var key = nameof(currentOpenedShares);
+            realTimeTrading.SaveObjectToContainer(key, currentOpenedShares);
+        }
+
+        private void SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache()
+        {
+            var methodName = nameof(SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache);
+            Log("{0}: Сохраняем флаг \"Пересечение цены EMA после открытия\" в локальный кеш", methodName);
+            var key = nameof(isPriceCrossedEmaAfterOpenOrChangePosition);
+            realTimeTrading.SaveObjectToContainer(key, isPriceCrossedEmaAfterOpenOrChangePosition);
+        }
+
+        private void SaveChangePositionCounterToLocalCache()
+        {
+            var methodName = nameof(SaveChangePositionCounterToLocalCache);
+            Log("{0}: Сохраняем \"Текущее значение счётчика изменения позиции\" в локальный кеш", methodName);
+            var key = nameof(changePositionCounter);
+            realTimeTrading.SaveObjectToContainer(key, changePositionCounter);
         }
 
         public void CheckPositionCloseCase(int barNumber)
@@ -102,14 +325,9 @@ namespace TrendByPivotPointsStrategy
             return position != null;
         }
 
-        public void Initialize(IContext ctx)
-        {
-            Ctx = ctx;
-        }
-
         public void Paint(Context context)
         {
-            if (Ctx.IsOptimization)
+            if (Ctx.IsOptimization || sec.Bars.Count == 0)
                 return;
 
             var pane = Ctx.CreateGraphPane(security.Name, security.Name);
@@ -154,68 +372,8 @@ namespace TrendByPivotPointsStrategy
 
             parametersCombination = string.Format("Period Bollinger Band: {0}; Standart Deviation Coefficient: {1}; Profit Percent", periodBollingerBandAndEma, standartDeviationCoef, profitPercent);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
+            realTimeTrading = RealTimeTrading.Create(positionSide, tradingSystemDescription, Ctx);
         }
-
-
-        public void Update(int barNumber)
-        {
-            try
-            {
-                this.barNumber = barNumber;
-                security.BarNumber = barNumber;
-
-                if (security.IsRealTimeActualBar(barNumber))
-                    Logger.SwitchOn();
-                else
-                    Logger.SwitchOff();
-
-                CheckPositionOpenLongCase();
-            }
-
-            catch (Exception e)
-            {
-                Log("Исключение в методе Update(): " + e.ToString());
-            }
-        }
-
-        public void CheckPositionOpenLongCase()
-        {
-            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
-            var notes = GetSignalNotesName();
-            
-            if (!IsPositionOpen(notes))
-            {
-                Log("{0} позиция не открыта.", convertable.Long);
-                if (!IsTimeForTrading())
-                    return;
-
-                changePositionCounter = 0;
-                currentOpenedShares = 0;
-                SetLimitOrdersForOpenPosition(notes);
-            }
-            else
-            {
-                Log("{0} позиция открыта.", convertable.Long);
-                var currentPosition = GetPosition(notes);
-
-                if (convertable.IsGreater(security.GetBarClose(barNumber), ema[barNumber]))
-                    isPriceCrossedEmaAfterOpenOrChangePosition = true;
-
-                if (currentPosition.iPosition.Shares != currentOpenedShares)
-                {
-                    currentOpenedShares = (int)currentPosition.iPosition.Shares;
-                    isPriceCrossedEmaAfterOpenOrChangePosition = false;
-                    changePositionCounter++;
-                }              
-                
-                if (isPriceCrossedEmaAfterOpenOrChangePosition)
-                    SetLimitOrdersForChangePosition(currentPosition, notes);
-                SetLimitOrdersForClosePosition(currentPosition, notes);
-            }
-        }
-
-        int currentOpenedShares = 0;
-        int changePositionCounter = 0;
 
         private string GetSignalNotesName()
         {
@@ -224,6 +382,8 @@ namespace TrendByPivotPointsStrategy
 
         private bool IsTimeForTrading()
         {
+            var methodName = nameof(IsTimeForTrading);
+            Log("{0}: Проверяем, подходящее ли сейчас время для торговли?", methodName);
             var hour = security.GetBarDateTime(barNumber).Hour;
             var minute = security.GetBarDateTime(barNumber).Minute;
             var year = security.GetBarDateTime(barNumber).Year;
@@ -232,7 +392,14 @@ namespace TrendByPivotPointsStrategy
 
             var currentTime = new DateTime(year, month, day, hour, minute, second: 0);
             var stopTradingTime = new DateTime(year, month, day, hourStopTrading, minuteStopTrading, second: 0);
-            return currentTime < stopTradingTime;
+            var result = currentTime < stopTradingTime;
+            if (result)            
+                Log("{0}: Да, сейчас подходящее время для торговли.", methodName);
+            
+            else            
+                Log("{0}: Нет, сейчас не подходящее время для торговли.", methodName);
+            
+            return result;
         }
 
         private bool IsPositionOpen(string notes)
@@ -243,9 +410,17 @@ namespace TrendByPivotPointsStrategy
 
         private Position GetPosition(string notes)
         {
-            var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
+            var fullSignalName = signalNameForOpenPosition + notes;
+            Log(nameof(GetPosition) + ": Получить последнюю активную позицию для сигнала: " + fullSignalName + "; для бара: " + barNumber);
+            var position = sec.Positions.GetLastActiveForSignal(fullSignalName, barNumber);
+            
             if (position == null)
-                return null;
+            {
+                Log(nameof(GetPosition) + ": Позиции нет.");
+                return null; 
+            }
+
+            Log(nameof(GetPosition) + ": Позиция найдена. Состояние позиции:\r\n"+position.GetPropertiesState());
             return Position.Create(position);
         }
 
@@ -258,7 +433,7 @@ namespace TrendByPivotPointsStrategy
             if (lots > limitLots)
                 lots = limitLots;
 
-            Log("Количество лотов: " + lots); ;
+            Log("Количество лотов: " + lots);
             return lots;
         }
 
@@ -314,6 +489,23 @@ namespace TrendByPivotPointsStrategy
         {
             text = string.Format(text, args);
             Log(text);
+        }
+
+        private bool IsLaboratory()
+        {
+            var methodName = nameof(IsLaboratory);
+            Log("{0}: Это лаборатория?.", methodName);
+            
+            var realTimeSecurity = sec as ISecurityRt;
+            var result = realTimeSecurity == null;
+
+            if (result)            
+                Log("{0}: Да. Это лаборатория.", methodName);
+            
+            else            
+                Log("{0}: Нет, это торговля в реальном времени.", methodName);
+            
+            return result;
         }
     }
 }

@@ -4,10 +4,13 @@ using TSLab.Script;
 
 namespace TrendByPivotPointsStrategy
 {
+    /// <summary>
+    /// Я не пользуюсь этим классом
+    /// </summary>
     internal class SecurityLab : Security
     {
         private ISecurity sec;
-
+        //TODO: Удалить эту реализацию Security. Но сперва рефакторить SecurityTSlab.
         public SecurityLab(ISecurity sec)
         {
             this.sec = sec;

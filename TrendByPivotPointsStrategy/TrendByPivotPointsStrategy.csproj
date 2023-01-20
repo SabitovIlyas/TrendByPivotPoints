@@ -69,6 +69,7 @@
     <Compile Include="LocalMoneyManager.cs" />
     <Compile Include="NullDataBar.cs" />
     <Compile Include="Loggers\NullLogger.cs" />
+    <Compile Include="ObjectDiagnosticExtensions.cs" />
     <Compile Include="Pane.cs" />
     <Compile Include="PaneTSLab.cs" />
     <Compile Include="PivotPointsIndicator.cs" />
@@ -116,7 +117,7 @@
     <Compile Include="TSLabScriptHelpers\MainSystemForRealTimeTesting.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForTrading.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForTradingDonchian.cs" />
-    <Compile Include="TSLabScripts\BollingerBandsArbitrageStrategy.cs" />
+    <Compile Include="TSLabScripts\BollingerBandsArbitrageStrategyScript.cs" />
     <Compile Include="TSLabScripts\ScriptScalperStrategy.cs" />
     <Compile Include="TSLabScripts\ScriptTrendByDonchian.cs" />
     <Compile Include="TSLabScripts\ScriptTrendByPivotPoints.cs" />
