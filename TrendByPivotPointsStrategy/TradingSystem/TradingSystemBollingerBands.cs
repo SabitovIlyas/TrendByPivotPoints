@@ -193,9 +193,12 @@ namespace TrendByPivotPointsStrategy
                 isPriceCrossedEmaAfterOpenOrChangePosition = false;
                 changePositionCounter++;
 
-                SaveCurrentOpenedSharesToLocalCache();
-                SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
-                SaveChangePositionCounterToLocalCache();
+                if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
+                {
+                    SaveCurrentOpenedSharesToLocalCache();
+                    SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
+                    SaveChangePositionCounterToLocalCache();
+                }
             }
             else            
                 Log("{0}: Обновлять ничего не нужно", methodName);            

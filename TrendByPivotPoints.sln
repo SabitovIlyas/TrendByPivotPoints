@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsOptimizat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsOptimizatorTests", "TrendByPivotPointsOptimizatorTests\TrendByPivotPointsOptimizatorTests.csproj", "{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsPeparatorDataForSpread", "TrendByPivotPointsPeparatorDataForSpread\TrendByPivotPointsPeparatorDataForSpread.csproj", "{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsPeparatorDataForSpreadTests", "TrendByPivotPointsPeparatorDataForSpreadTests\TrendByPivotPointsPeparatorDataForSpreadTests.csproj", "{9B7232DC-700D-40F3-905D-674BEEF8F4DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +46,14 @@ Global
 		{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F6C0D47-CBEE-4FB0-AF89-505E7B04960D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B7232DC-700D-40F3-905D-674BEEF8F4DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B7232DC-700D-40F3-905D-674BEEF8F4DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B7232DC-700D-40F3-905D-674BEEF8F4DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B7232DC-700D-40F3-905D-674BEEF8F4DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
