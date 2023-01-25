@@ -3,23 +3,47 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace TrendByPivotPointsPeparatorDataForSpread
 {
     internal class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
-            Console.WriteLine("Старт!");
-            var converter = ConverterTextDataToBar.Create(
-                @"C:\Users\1\Downloads\SPFB.BR-2.23_230101_230131.txt");
+            Console.WriteLine("Старт!");            
+            Console.WriteLine("Введите путь к первому файлу:");
+            var fullFileName = String.Empty;
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+                fullFileName = openFileDialog.FileName;
+            else
+                return;
+            
+            var converter = ConverterTextDataToBar.Create(fullFileName);
             var bars1 = converter.ConvertFileWithBarsToListOfBars();
-            converter.FullFileName = @"C:\Users\1\Downloads\SPFB.BR-3.23_230101_230131.txt";
+
+            Console.WriteLine("Ок!");
+            Console.WriteLine("Введите путь ко второму файлу:");
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+                fullFileName = openFileDialog.FileName;
+            else
+                return;
+
+            converter.FullFileName = fullFileName;
             var bars2 = converter.ConvertFileWithBarsToListOfBars();
 
             var spread = Spread.Create(bars2, bars1);
 
-            var fullFileName = @"C:\Users\1\Downloads\SPFB.BR-2.23-3.23_230101_230131.txt";
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                fullFileName = saveFileDialog.FileName;
+            else
+                return;
+
             StreamWriter writer = new StreamWriter(fullFileName, false);
             writer.WriteLine("<TICKER>,<PER>,<DATE>,<TIME>,<OPEN>,<HIGH>,<LOW>,<CLOSE>,<VOL>");
             foreach(var bar in spread.Bars)
@@ -27,6 +51,7 @@ namespace TrendByPivotPointsPeparatorDataForSpread
             writer.Close();
             Console.WriteLine("Запись завершена");
             Console.ReadLine();
+            
         }
     }
 }

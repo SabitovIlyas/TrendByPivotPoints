@@ -31,6 +31,7 @@ namespace TrendByPivotPointsStrategy
 
         private int periodBollingerBandAndEma;
         private double standartDeviationCoef;
+        private bool useRelatedOrders;
         private double profitPercent;
         private IList<double> ema;
         private IList<double> bollingerBand;
@@ -141,11 +142,20 @@ namespace TrendByPivotPointsStrategy
                     Math.Abs(priceTakeProfit - currentPrice) <=
                 Math.Abs(priceChangePosition - currentPrice);
 
-                if (!isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice &&
-                    isPriceCrossedEmaAfterOpenOrChangePosition)                
-                    SetLimitOrdersForChangePosition(currentPosition, notes);                
-                else
+                if (useRelatedOrders)
+                {
+                    if (isPriceCrossedEmaAfterOpenOrChangePosition)
+                        SetLimitOrdersForChangePosition(currentPosition, notes);
                     SetLimitOrdersForClosePosition(currentPosition, notes);
+                }
+                else
+                {
+                    if (!isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice &&
+                    isPriceCrossedEmaAfterOpenOrChangePosition)
+                        SetLimitOrdersForChangePosition(currentPosition, notes);
+                    else
+                        SetLimitOrdersForClosePosition(currentPosition, notes);
+                }                
             }
         }
 
@@ -383,6 +393,8 @@ namespace TrendByPivotPointsStrategy
             standartDeviationCoef = systemParameters.GetDouble("standartDeviationCoef");
             profitPercent = systemParameters.GetDouble("profitPercent");
             startLots = systemParameters.GetInt("startLots");
+            var useRelatedOrdersInt = systemParameters.GetInt("useRelatedOrders");
+            useRelatedOrders = Convert.ToBoolean(useRelatedOrdersInt);
 
             parametersCombination = string.Format("Period Bollinger Band: {0}; Standart Deviation Coefficient: {1}; Profit Percent", periodBollingerBandAndEma, standartDeviationCoef, profitPercent);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);

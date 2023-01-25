@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 using System.Reflection;
 using TrendByPivotPoints;
@@ -56,6 +57,18 @@ namespace TrendByPivotPointsStrategy.Tests
             classForTestKeyWords.MethodWithoutKeyWordRefForClass(param);
             var actual = param.Property;
 
+            Assert.AreEqual(expected, actual);
+        }
+
+        [DataTestMethod()]
+        [DataRow(0,false)]
+        [DataRow(1, true)]
+        [DataRow(-1, true)]
+        [DataRow(2, true)]
+        [DataRow(-2, true)]
+        public void ConvertIntToBoolTest(int parameterForConvertion, bool expected)
+        {
+            var actual = Convert.ToBoolean(parameterForConvertion);
             Assert.AreEqual(expected, actual);
         }
     }

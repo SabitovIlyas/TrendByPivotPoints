@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.ConstrainedExecution;
+using System.IO;
 
 namespace TrendByPivotPointsPeparatorDataForSpread.Tests
 {
@@ -27,9 +28,9 @@ namespace TrendByPivotPointsPeparatorDataForSpread.Tests
         [TestMethod()]
         public void ConvertFileWithBarsToListOfBarsTest() 
         {
-            var expected = 6816;
-            var converter = ConverterTextDataToBar.Create(
-                @"C:\Users\1\Downloads\SPFB.BR-3.23_230101_230131.txt");
+            var expected = 7201;
+            var converter = ConverterTextDataToBar.Create("SPFB.BR-3.23_230101_230131.txt");
+            
             var bars = converter.ConvertFileWithBarsToListOfBars();
             var actual = bars.Count();
             Assert.AreEqual(expected, actual);
@@ -54,8 +55,8 @@ namespace TrendByPivotPointsPeparatorDataForSpread.Tests
 
             var expected = new List<Bar>
             {
-                Bar.Create(new DateTime(2023, 01, 03, 9, 0, 0), -1.75, -1.74, -2.12, -2.09),
-                Bar.Create(new DateTime(2023, 01, 03, 9, 1, 0), -1.77, -1.77, -1.90, -1.81)
+                Bar.Create(new DateTime(2023, 01, 03, 9, 0, 0), -1.75, -1.75, -2.09, -2.09),
+                Bar.Create(new DateTime(2023, 01, 03, 9, 1, 0), -1.77, -1.77, -1.81, -1.81)
             };
 
             var spread = Spread.Create(bars1, bars2);

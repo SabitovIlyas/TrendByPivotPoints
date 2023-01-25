@@ -22,6 +22,7 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty periodBollingerBandAndEma = new OptimProperty(20, 5, 25, 1);
         public OptimProperty profitPercent = new OptimProperty(10, 5, 25, 1);
         public OptimProperty standartDeviationCoef = new OptimProperty(2, 1, 3, 1);
+        public OptimProperty useRelatedOrders = new OptimProperty(0,0,1,1);
 
         public void Execute(IContext context, ISecurity security)
         {
@@ -44,6 +45,7 @@ namespace TrendByPivotPointsStrategy
             systemParameters.Add("periodBollingerBandAndEma", periodBollingerBandAndEma);
             systemParameters.Add("profitPercent", profitPercent);
             systemParameters.Add("standartDeviationCoef", standartDeviationCoef);
+            systemParameters.Add("useRelatedOrders", useRelatedOrders);
 
             var securities = new ISecurity[1];
             securities[0] = security;
