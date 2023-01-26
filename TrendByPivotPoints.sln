@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsPeparator
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsPeparatorDataForSpreadTests", "TrendByPivotPointsPeparatorDataForSpreadTests\TrendByPivotPointsPeparatorDataForSpreadTests.csproj", "{9B7232DC-700D-40F3-905D-674BEEF8F4DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabitovCapitalConsole", "SabitovKapitalConsole\SabitovCapitalConsole.csproj", "{A3BB933E-5F20-4F3F-8146-59A1A11DCFD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabitovCapitalConsoleTests", "SabitovKapitalConsoleTests\SabitovCapitalConsoleTests.csproj", "{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +58,14 @@ Global
 		{9B7232DC-700D-40F3-905D-674BEEF8F4DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B7232DC-700D-40F3-905D-674BEEF8F4DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B7232DC-700D-40F3-905D-674BEEF8F4DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3BB933E-5F20-4F3F-8146-59A1A11DCFD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3BB933E-5F20-4F3F-8146-59A1A11DCFD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3BB933E-5F20-4F3F-8146-59A1A11DCFD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3BB933E-5F20-4F3F-8146-59A1A11DCFD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
