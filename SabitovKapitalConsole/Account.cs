@@ -18,7 +18,9 @@ public class Account
 
     public void CreateTransaction(Operation operation, decimal value, DateTime dateTime)
     {
-        transactions.Add(Transaction.Create(operation, value, dateTime));
+        var balanceStampBeforeTransaction = balance.GetCurrentBalanceStamp();
+        transactions.Add(Transaction.Create(operation, value, dateTime,
+            balanceStampBeforeTransaction));
     }
 
     public decimal GetDeposit()
@@ -27,13 +29,21 @@ public class Account
         foreach (var transaction in transactions)
             sum = sum + transaction.GetDeposit();
         return sum;
-    }
+    }    
 
     public decimal GetProfit()
     {
-        var sum = 0m;
-        foreach (var transaction in transactions)
-            sum = sum + transaction.GetDeposit();//TODO: доделать метод
-        return sum;
-    }
+        var share = 0m;
+        
+        foreach(var transaction in transactions)
+        {
+            var moneyBeforeTransaction = share * transaction.BalanceBeforeTransaction;
+            share = (moneyBeforeTransaction + transaction.ValueWithSign) /
+                transaction.BalanceAfterTransaction;            
+        }
+
+        var money = share * balance.GetCurrentBalance();
+        //var money = share * transactions.Last().BalanceAfterTransaction;
+        return money - GetDeposit();
+    }    
 }

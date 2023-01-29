@@ -2,5 +2,5 @@
 
 public enum Operation
 {
-    Deposit, WithdrawDeposit, WithdrawProfit, InputOfStartBalances
+    Deposit, WithdrawProfit, WithdrawDeposit
 }
