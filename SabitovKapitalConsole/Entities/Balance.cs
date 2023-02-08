@@ -1,7 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-public class Balance
+﻿public class Balance
 {
     private List<BalanceStamp> balances = new List<BalanceStamp>();
 

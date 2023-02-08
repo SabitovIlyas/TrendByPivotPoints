@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-public class Account
+﻿public class Account
 {
     public string Name { get; private set; }
     private List<Transaction> transactions = new List<Transaction>();

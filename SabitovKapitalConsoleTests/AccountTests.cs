@@ -1,11 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework.Constraints;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SabitovCapitalConsole.Tests
 {
@@ -24,7 +17,8 @@ namespace SabitovCapitalConsole.Tests
             account = Account.Create("Пятанов Иван Вадимович", balance);
             var dateTime = new DateTime(2023, 01, 25);
             account.CreateTransaction(Operation.Deposit, 50000, dateTime);
-            balance.Update(dateTime, 1344578.62m);
+            //balance.Update(dateTime, 1344578.62m);
+            balance.Update(dateTime, 2689157.23m);
         }
 
         [TestMethod()]
@@ -116,6 +110,26 @@ namespace SabitovCapitalConsole.Tests
             GetProfitTestHelperCase2();
             account.CreateTransaction(Operation.WithdrawProfit, 87500m, dateTime);    //300 000
             balance.Update(dateTime, balance: 1412500m);    //1 412 500
+        }
+
+        [TestMethod()]
+        public void LinqWhereTest()
+        {
+            var expected = 5;
+            var list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var subList = list.Where(p => p <= 5).ToList();
+            var actual = subList.Count;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void SelectWhereTest()
+        {
+            var expected = 5;
+            var list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var subList = list.Select(p => p <= 5).ToList();
+            var actual = subList.Where(p => p == true).Count();
+            Assert.AreEqual(expected, actual);
         }
 
         [TestCleanup]

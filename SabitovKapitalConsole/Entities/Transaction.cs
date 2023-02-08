@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-public class Transaction
+﻿public class Transaction
 {
     public Operation Operation { get; private set; }
     public decimal Value { get; private set; }

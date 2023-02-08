@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿Console.WriteLine("Hello, World!");
 
 Balance balance = Balance.Create();
 Account account = Account.Create("Пятанов Иван Вадимович", balance);

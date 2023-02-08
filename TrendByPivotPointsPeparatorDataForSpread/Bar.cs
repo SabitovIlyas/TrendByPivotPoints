@@ -44,12 +44,12 @@ namespace TrendByPivotPointsPeparatorDataForSpread
             //return Bar.Create(a.DateTime, Math.Round(a.Open - b.Open, 2), newHigh, newLow,
             //    Math.Round(a.Close - b.Close, 2), a.Volume, a.Ticker, a.Period);
 
-            var open = Math.Round(a.Open - b.Open, 2);            
-            var close = Math.Round(a.Close - b.Close, 2);
+            var open = Math.Round(a.Open - b.Open, 3);            
+            var close = Math.Round(a.Close - b.Close, 3);
             var high = Math.Max(open, close);
             var low = Math.Min(open, close);
-            return Bar.Create(a.DateTime, Math.Round(a.Open - b.Open, 2), high, low,
-                Math.Round(a.Close - b.Close, 2), a.Volume, a.Ticker, a.Period);
+            return Bar.Create(a.DateTime, Math.Round(a.Open - b.Open, 3), high, low,
+                Math.Round(a.Close - b.Close, 3), a.Volume, a.Ticker, a.Period);
         }
 
         public static bool operator ==(Bar a, Bar b)

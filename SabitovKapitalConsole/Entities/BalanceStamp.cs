@@ -1,7 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-public class BalanceStamp
+﻿public class BalanceStamp
 {
     public DateTime DateTime { get; private set; }
     public decimal Value { get; private set; }
