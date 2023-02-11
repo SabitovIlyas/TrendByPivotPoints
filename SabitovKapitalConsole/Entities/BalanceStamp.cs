@@ -12,4 +12,9 @@
         DateTime = dateTime;
         Value = value;
     }
+
+    public override string ToString()
+    {
+        return string.Format("Balance Stamp: {0} {1}", DateTime, Value);
+    }
 }

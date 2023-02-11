@@ -5,8 +5,8 @@
         return new MainMenu(name);
     }
 
-    private MainMenu(string name)
+    private MainMenu(string name):base()
     {
-        Name = name;
+        //content = string.Format()
     }
 }

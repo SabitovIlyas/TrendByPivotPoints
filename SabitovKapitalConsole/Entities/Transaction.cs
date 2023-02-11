@@ -47,4 +47,10 @@
         }
         return 0;
     }
+
+    public override string ToString()
+    {
+        return string.Format("Transaction: {0} {1} {2}. {3} (balance before transaction).",
+            DateTime, Operation, Value, BalanceBeforeTransaction);        
+    }
 }

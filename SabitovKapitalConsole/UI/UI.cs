@@ -1,13 +1,15 @@
 ﻿public class UI
 {
-    List<Menu> menus= new List<Menu>();
+    public string Content { get; private set; } = string.Empty;
     public Menu CurrentMenu { get; private set; }
+
+    private List<Menu> menus = new List<Menu>();
 
     public void AddMenu(Menu menu)
     {
         if (menus.Count == 0)
             CurrentMenu = menu;
-        menus.Add(menu);
+        menus.Add(menu);        
     }
 
     public string GetCurrentMenuName()
@@ -17,11 +19,23 @@
 
     public void Select(int selectedMenuIndex)
     {
-        CurrentMenu = CurrentMenu.GetMenu(selectedMenuIndex);
-        Show();
+        try
+        {
+            CurrentMenu = CurrentMenu.GetMenu(selectedMenuIndex);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            throw exception;
+        }        
     }
 
-    public void Show()
-    {        
+    public void GoHome()
+    {
+        CurrentMenu = CurrentMenu.HomeMenu;
+    }    
+
+    public virtual void Show()
+    {
+        Content = CurrentMenu.Content;
     }
 }
