@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework.Constraints;
+using System;
 
 namespace SabitovCapitalConsole.Tests
 {
@@ -15,7 +17,7 @@ namespace SabitovCapitalConsole.Tests
             //real data
             balance = Balance.Create();
             account = Account.Create("Пятанов Иван Вадимович", balance);
-            var dateTime = new DateTime(2023, 01, 25);
+            dateTime = new DateTime(2023, 01, 25);
             balance.Update(dateTime, 2639157.23m);
             account.CreateTransaction(Operation.Deposit, 50000, dateTime);
 
@@ -29,7 +31,7 @@ namespace SabitovCapitalConsole.Tests
         public void GetDepositTest1()
         {
             var expected = 50000;
-            var actual= account.GetDeposit();
+            var actual = account.GetDeposit();
             Assert.AreEqual(expected, actual);
         }
 
@@ -43,11 +45,11 @@ namespace SabitovCapitalConsole.Tests
         }
 
         [TestMethod()]
-        public void GetProfitTest() 
+        public void GetProfitTest()
         {
             var expected = -10000m;
             GetProfitTestHelperCase1();
-            var actual = account.GetProfit();            
+            var actual = account.GetProfit();
             Assert.AreEqual(expected, actual);
         }
 
@@ -68,7 +70,7 @@ namespace SabitovCapitalConsole.Tests
             var actual = account.GetProfit();
             var delta = Math.Abs(expected - actual);
             if (delta >= 0.01m)
-                Assert.Fail();            
+                Assert.Fail();
         }
 
         [TestMethod()]
@@ -169,8 +171,7 @@ namespace SabitovCapitalConsole.Tests
             //    "(balance before transaction). Пятанов Иван Вадимович\r\n" +
             //    "Transaction: 07.02.2023 0:00:00 WithdrawProfit 10000. 2697205,23 (balance " +
             //    "before transaction). Сабитов Ильяс Ильдарович\r\n";
-            
-            dateTime = new DateTime(2023, 01, 25);//???????
+
             account.CreateTransaction(Operation.WithdrawProfit, 0, dateTime);
 
             var exptected = "Transaction: 25.01.2023 0:00:00 Deposit 50000. 2639157,23 " +
@@ -180,6 +181,6 @@ namespace SabitovCapitalConsole.Tests
 
             var actual = account.ToString();
             Assert.AreEqual(exptected, actual);
-        }
+        }        
     }
 }
