@@ -2,20 +2,64 @@
 
 public class Account
 {
+    public static List<Account> Accounts { get; private set; } = new List<Account>();
+
     public string Name { get; private set; }
     public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
-    private Balance balance;
+    public int Id { get; private set; }
+    private Balance balance;    
 
     public static Account Create(string name, Balance balance)
     {
-        return new Account(name, balance);
+        var account = new Account(name, balance);
+        Accounts.Add(account);
+        return account;
     }
 
     private Account(string name, Balance balance)
     {
+        Id = GetId();
         Name = name;
         this.balance = balance;
     }   
+
+    private static int GetId()
+    {
+        if (Accounts.Count == 0)
+            return 0;
+        return Accounts.Last().Id + 1;
+    }
+
+    public static Account Create(string name, Balance balance, int id)
+    {
+        if (!IsThisIdAvailable(id))
+            throw new ArgumentException("Такой Id уже используется");
+        var account = new Account(name, balance, id);
+        Accounts.Add(account);
+        Accounts = SortAccounts();
+        return account;
+    }
+
+    private Account(string name, Balance balance, int id)
+    {
+        Id = id;
+        Name = name;
+        this.balance = balance;
+    }
+
+    private static List<Account> SortAccounts()
+    {
+        return (from account in Accounts
+                orderby account.Id
+                select account).ToList();
+    }
+
+    private static bool IsThisIdAvailable(int id)
+    {
+        if (Accounts.Find(p => p.Id == id) == null)
+            return true;
+        return false;
+    }
 
     public void CreateTransaction(Operation operation, decimal value, DateTime dateTime)
     {
@@ -55,5 +99,23 @@ public class Account
             result += string.Format("{0} {1}\r\n", transaction, Name);
 
         return result;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(this, obj))
+            return true;
+        return false;
+
+            //if (obj == null)
+            //    return false;
+            //if (ReferenceEquals(this, obj))
+            //    return true;
+            //if (obj.GetType() != GetType())
+            //    return false;
+
+            //var account = obj as Account;
+
+            //return Id == account.Id && Name == account.Name;        
     }
 }

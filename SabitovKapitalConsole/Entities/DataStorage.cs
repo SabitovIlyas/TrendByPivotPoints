@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,31 @@ namespace SabitovCapitalConsole.Entities
             }
 
             return result;
+        }
+
+        public Portfolio LoadDataFromFile()
+        {
+            var lines = GetLinesWithData();
+            foreach (var line in lines) 
+            {                
+            }
+            return null;
+        }
+
+        private List<string> GetLinesWithData()
+        {
+            var fileContent = ReadFile();
+            var lines = fileContent.Split("\r\n");
+            var linesWithData = new List<string>();
+            foreach (var line in lines)
+            {
+                if (line == string.Empty)
+                    continue;
+
+                linesWithData.Add(line);
+            }
+
+            return linesWithData;
         }
     }
 }

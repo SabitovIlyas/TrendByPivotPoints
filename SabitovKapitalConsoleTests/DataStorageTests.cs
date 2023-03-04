@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SabitovCapitalConsole.Entities;
+using System.Transactions;
 
 namespace SabitovCapitalConsole.Tests
 {
@@ -32,6 +33,7 @@ namespace SabitovCapitalConsole.Tests
             account.CreateTransaction(Operation.WithdrawProfit, 10000, dateTime);
 
             dataStorage = DataStorage.Create();
+            dataStorage.SaveDataToFile(portfolio);
         }
 
         [TestMethod()]
@@ -44,22 +46,17 @@ namespace SabitovCapitalConsole.Tests
              "WithdrawProfit 10000. 2697205,27 (balance before transaction). " +
              "Сабитов Ильяс Ильдарович\r\n\r\n";
 
-            dataStorage.SaveDataToFile(portfolio);
             var actual = dataStorage.ReadFile();
             Assert.AreEqual(exptected, actual);
         }
 
-        public void _LoadDataFromFileTest()
+        //[TestMethod()]
+        public void LoadDataFromFileTest()
         {
-            var exptected = "Transaction: 25.01.2023 0:00:00 Deposit 50000. 2639157,23 " +
-             "(balance before transaction). Пятанов Иван Вадимович\r\n" +
-             "Transaction: 25.01.2023 0:00:00 WithdrawProfit 0. 2639157,23 (balance before " +
-             "transaction). Пятанов Иван Вадимович\r\n\r\nTransaction: 07.02.2023 0:00:00 " +
-             "WithdrawProfit 10000. 2697205,27 (balance before transaction). " +
-             "Сабитов Ильяс Ильдарович\r\n\r\n";
+            var expected = portfolio;
+            var actual = dataStorage.LoadDataFromFile();
 
-            var actual = portfolio.ToString();
-            Assert.AreEqual(exptected, actual);
-        }
+            Assert.AreEqual(expected, actual);
+        }        
     }
 }
