@@ -105,17 +105,6 @@ public class Account
     {
         if (ReferenceEquals(this, obj))
             return true;
-        return false;
-
-            //if (obj == null)
-            //    return false;
-            //if (ReferenceEquals(this, obj))
-            //    return true;
-            //if (obj.GetType() != GetType())
-            //    return false;
-
-            //var account = obj as Account;
-
-            //return Id == account.Id && Name == account.Name;        
-    }
+        return false;    
+    }    
 }

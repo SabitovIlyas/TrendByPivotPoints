@@ -32,7 +32,9 @@
     public Object Deserialize()
     {
         var info = serializedAccount.Split(';');
-        return null;
+        var id = int.Parse(info[1].Split(':')[1]);
+        var name = info[2].Split(':')[1];
+        return Account.Create(name, null, id);
     }
 
     public string Serialize()
