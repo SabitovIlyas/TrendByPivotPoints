@@ -4,11 +4,8 @@ using TSLab.Script;
 using SystemColor = System.Drawing.Color;
 using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
-using System.Linq;
-using System.Diagnostics.Contracts;
 using TSLab.Script.Realtime;
 using TrendByPivotPoints;
-using TSLab.DataSource;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -38,6 +35,7 @@ namespace TrendByPivotPointsStrategy
         private bool isPriceCrossedEmaAfterOpenOrChangePosition;
 
         private int startLots;
+        private int maxLots;
         private int lastUsedLots = 1;
         private int limitLots = int.MaxValue;
 
@@ -393,6 +391,7 @@ namespace TrendByPivotPointsStrategy
             standartDeviationCoef = systemParameters.GetDouble("standartDeviationCoef");
             profitPercent = systemParameters.GetDouble("profitPercent");
             startLots = systemParameters.GetInt("startLots");
+            maxLots = systemParameters.GetInt("maxLots");
             var useRelatedOrdersInt = systemParameters.GetInt("useRelatedOrders");
             useRelatedOrders = Convert.ToBoolean(useRelatedOrdersInt);
 
@@ -473,6 +472,10 @@ namespace TrendByPivotPointsStrategy
         {
             var newLots = GetLots();
             var result = (int)position.Shares + newLots;
+
+            if (result > maxLots)
+                result = maxLots;
+
             if (convertable.IsConverted)
                 result = -result;
             return result;
@@ -496,7 +499,10 @@ namespace TrendByPivotPointsStrategy
         {
             var iPosition = position.iPosition;
             var lots = GetLotsForChangePosition(iPosition);
-            iPosition.ChangeAtPrice(barNumber + 1, bollingerBand[barNumber], lots, signalNameForOpenPosition + notes);
+            var changePositionIntervalPercent = profitPercent;
+            var changePositionPrice = convertable.Minus(iPosition.AverageEntryPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
+            changePositionPrice = convertable.Minimum(changePositionPrice, bollingerBand[barNumber]);
+            iPosition.ChangeAtPrice(barNumber + 1, changePositionPrice, lots, signalNameForOpenPosition + notes);
         }
 
         private void SetLimitOrdersForClosePosition(Position position, string notes)

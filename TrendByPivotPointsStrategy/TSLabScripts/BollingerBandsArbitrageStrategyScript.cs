@@ -18,6 +18,7 @@ namespace TrendByPivotPointsStrategy
         public OptimProperty shares = new OptimProperty(1, 0, 1, 1);
 
         public OptimProperty startLots = new OptimProperty(1, 0, 1, 1);
+        public OptimProperty maxLots = new OptimProperty(256, 1, 256, 1);
         public OptimProperty isUSD = new OptimProperty(0, 0, 1, 1);
         public OptimProperty periodBollingerBandAndEma = new OptimProperty(20, 5, 25, 1);
         public OptimProperty profitPercent = new OptimProperty(10, 5, 25, 1);
@@ -41,6 +42,7 @@ namespace TrendByPivotPointsStrategy
             systemParameters.Add("shares", shares);
 
             systemParameters.Add("startLots", startLots);
+            systemParameters.Add("maxLots", startLots);
             systemParameters.Add("isUSD", isUSD);
             systemParameters.Add("periodBollingerBandAndEma", periodBollingerBandAndEma);
             systemParameters.Add("profitPercent", profitPercent);
