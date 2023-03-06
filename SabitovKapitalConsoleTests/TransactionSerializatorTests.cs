@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace Tests
+namespace SabitovCapitalConsoleTests
 {
     [TestClass()]
     public class TransactionSerializatorTests
@@ -18,7 +18,7 @@ namespace Tests
                 "BalanceStampId:1;AccountId:1";
             //var transaction = Transaction.Create();
             //var actual =
-            
+
             //    Assert.AreEqual(expected, actual);
             Assert.Fail();
         }

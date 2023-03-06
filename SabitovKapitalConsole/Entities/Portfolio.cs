@@ -11,17 +11,22 @@ namespace SabitovCapitalConsole.Entities
     public class Portfolio
     {
         public List<Account> Accounts { get; private set; } = new List<Account>();
+        public Balance Balance { get; private set; }
 
-        public static Portfolio Create()
+        public static Portfolio Create(Balance balance)
         {
-            return new Portfolio();
+            return new Portfolio(balance);
         }
 
-        private Portfolio() { }
+        private Portfolio(Balance balance) 
+        {
+            Balance = balance;
+        }
 
         public void AddAccount(Account account)
         {
             Accounts.Add(account);
+            Accounts = SortAccounts();
         }
 
         public override string ToString()
@@ -31,6 +36,27 @@ namespace SabitovCapitalConsole.Entities
                 result += string.Format("{0}\r\n", account);
 
             return result;
+        }
+
+        public bool IsThisIdAvailable(int id)
+        {
+            if (Accounts.Find(p => p.Id == id) == null)
+                return true;
+            return false;
+        }
+
+        private List<Account> SortAccounts()
+        {
+            return (from account in Accounts
+                    orderby account.Id
+                    select account).ToList();
+        }
+
+        public int GetAccountId()
+        {
+            if (Accounts.Count == 0)
+                return 0;
+            return Accounts.Last().Id + 1;
         }
     }
 }

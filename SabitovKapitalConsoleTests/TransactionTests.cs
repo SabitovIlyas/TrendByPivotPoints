@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SabitovCapitalConsole.Entities;
 
 namespace SabitovCapitalConsole.Tests
 {
@@ -6,6 +7,7 @@ namespace SabitovCapitalConsole.Tests
     public class TransactionTests
     {
         Balance balance;
+        Portfolio portfolio;
         Account account;
         DateTime dateTime;
 
@@ -14,10 +16,11 @@ namespace SabitovCapitalConsole.Tests
         {
             //real data
             balance = Balance.Create();
-            account = Account.Create("Пятанов Иван Вадимович", balance);
+            portfolio = Portfolio.Create(balance);
+            account = Account.Create("Пятанов Иван Вадимович", portfolio);
             var dateTime = new DateTime(2023, 01, 25);
             balance.Update(dateTime, 2639157.23m);
-            account.CreateTransaction(Operation.Deposit, 50000, dateTime);            
+            account.CreateTransaction(Operation.Deposit, 50000, dateTime);
         }
 
         [TestMethod()]

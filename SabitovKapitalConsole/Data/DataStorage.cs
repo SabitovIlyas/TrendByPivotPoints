@@ -4,8 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SabitovCapitalConsole.Entities;
 
-namespace SabitovCapitalConsole.Entities
+namespace SabitovCapitalConsole.Data
 {
     public class DataStorage
     {
@@ -17,7 +18,7 @@ namespace SabitovCapitalConsole.Entities
 
         public void SaveDataToFile(Portfolio portfolio)
         {
-            using (StreamWriter outputFile = new StreamWriter("PortfolioDataBase.txt"))            
+            using (StreamWriter outputFile = new StreamWriter("PortfolioDataBase.txt"))
                 outputFile.Write(portfolio);
         }
 
@@ -42,8 +43,8 @@ namespace SabitovCapitalConsole.Entities
         public Portfolio LoadDataFromFile()
         {
             var lines = GetLinesWithData();
-            foreach (var line in lines) 
-            {                
+            foreach (var line in lines)
+            {
             }
             return null;
         }

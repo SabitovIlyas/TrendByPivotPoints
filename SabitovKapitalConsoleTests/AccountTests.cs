@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework.Constraints;
+using SabitovCapitalConsole.Entities;
 using System;
 
 namespace SabitovCapitalConsole.Tests
@@ -8,6 +9,7 @@ namespace SabitovCapitalConsole.Tests
     public class AccountTests
     {
         Balance balance;
+        Portfolio portfolio;
         Account account;
         DateTime dateTime;
 
@@ -16,7 +18,8 @@ namespace SabitovCapitalConsole.Tests
         {
             //real data
             balance = Balance.Create();
-            account = Account.Create("Пятанов Иван Вадимович", balance);
+            portfolio = Portfolio.Create(balance);
+            account = Account.Create("Пятанов Иван Вадимович", portfolio);
             dateTime = new DateTime(2023, 01, 25);
             balance.Update(dateTime, 2639157.23m);
             account.CreateTransaction(Operation.Deposit, 50000, dateTime);
@@ -94,7 +97,8 @@ namespace SabitovCapitalConsole.Tests
         private void GetProfitTestHelperCase1()
         {
             balance = Balance.Create();
-            account = Account.Create("Пятанов Иван Вадимович", balance);
+            portfolio = Portfolio.Create(balance);
+            account = Account.Create("Пятанов Иван Вадимович", portfolio);
             dateTime = new DateTime(2023, 01, 01);
             balance.Update(dateTime, balance: 900000m);    //900 000
 
@@ -181,6 +185,26 @@ namespace SabitovCapitalConsole.Tests
 
             var actual = account.ToString();
             Assert.AreEqual(exptected, actual);
-        }        
+        }
+
+        [TestMethod()]
+        public void SortAccountsTest()
+        {
+            var balance = Balance.Create();
+            var portfolio = Portfolio.Create(balance);
+            var account1 = Account.Create("Сабитов Ильяс Ильдарович", portfolio, 2);
+            var account2 = Account.Create("Пятанов Иван Вадимович", portfolio, 3);
+            var account3 = Account.Create("Ати", portfolio, 1);
+
+            var expected = new List<Account>() { account3, account1, account2 };
+            var actual = portfolio.Accounts;
+
+            if (expected.Count != actual.Count)
+                Assert.Fail();
+
+            for (var i = 0; i < expected.Count; i++)
+                if (expected[i] != actual[i])
+                    Assert.Fail();
+        }
     }
 }

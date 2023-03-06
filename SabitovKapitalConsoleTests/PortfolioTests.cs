@@ -14,11 +14,10 @@ namespace SabitovCapitalConsole.Tests
         [TestInitialize()]
         public void Init()
         {
-            portfolio = Portfolio.Create();
             //real data
             balance = Balance.Create();
-            account = Account.Create("Пятанов Иван Вадимович", balance);
-            portfolio.AddAccount(account);
+            portfolio = Portfolio.Create(balance);
+            account = Account.Create("Пятанов Иван Вадимович", portfolio);
             dateTime = new DateTime(2023, 01, 25);
             balance.Update(dateTime, 2639157.23m);
             account.CreateTransaction(Operation.Deposit, 50000, dateTime);
@@ -26,8 +25,7 @@ namespace SabitovCapitalConsole.Tests
 
             dateTime = new DateTime(2023, 02, 07);
             balance.Update(dateTime, 2697205.27m);
-            account = Account.Create("Сабитов Ильяс Ильдарович", balance);
-            portfolio.AddAccount(account);
+            account = Account.Create("Сабитов Ильяс Ильдарович", portfolio);
             account.CreateTransaction(Operation.WithdrawProfit, 10000, dateTime);            
         }
 
@@ -40,7 +38,6 @@ namespace SabitovCapitalConsole.Tests
              "transaction). Пятанов Иван Вадимович\r\n\r\nTransaction: 07.02.2023 0:00:00 " +
              "WithdrawProfit 10000. 2697205,27 (balance before transaction). " +
              "Сабитов Ильяс Ильдарович\r\n\r\n";
-
 
             var actual = portfolio.ToString();
             Assert.AreEqual(exptected, actual);

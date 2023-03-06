@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SabitovCapitalConsole.Entities;
 using System.Transactions;
+using SabitovCapitalConsole.Data;
 
 namespace SabitovCapitalConsole.Tests
 {
@@ -16,11 +17,10 @@ namespace SabitovCapitalConsole.Tests
         [TestInitialize()]
         public void Init()
         {
-            portfolio = Portfolio.Create();
             //real data
             balance = Balance.Create();
-            account = Account.Create("Пятанов Иван Вадимович", balance);
-            portfolio.AddAccount(account);
+            portfolio = Portfolio.Create(balance);
+            account = Account.Create("Пятанов Иван Вадимович", portfolio);
             dateTime = new DateTime(2023, 01, 25);
             balance.Update(dateTime, 2639157.23m);
             account.CreateTransaction(Operation.Deposit, 50000, dateTime);
@@ -28,8 +28,7 @@ namespace SabitovCapitalConsole.Tests
 
             dateTime = new DateTime(2023, 02, 07);
             balance.Update(dateTime, 2697205.27m);
-            account = Account.Create("Сабитов Ильяс Ильдарович", balance);
-            portfolio.AddAccount(account);
+            account = Account.Create("Сабитов Ильяс Ильдарович", portfolio);
             account.CreateTransaction(Operation.WithdrawProfit, 10000, dateTime);
 
             dataStorage = DataStorage.Create();
