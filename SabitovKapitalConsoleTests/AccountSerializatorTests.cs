@@ -15,7 +15,7 @@ namespace SabitovCapitalConsole.Tests
         [TestMethod()]
         public void SerializeTest()
         {
-            var expected = "Account;Id:0;Name:Пятанов Иван Вадимович";
+            var expected = "Account;Id\t0;Name\tПятанов Иван Вадимович";
             var balance = Balance.Create();
             var portfolio = Portfolio.Create(balance);
             var account = Account.Create("Пятанов Иван Вадимович", portfolio);
@@ -31,7 +31,7 @@ namespace SabitovCapitalConsole.Tests
             var balance = Balance.Create();
             var portfolio = Portfolio.Create(balance);
             var expected = Account.Create("Пятанов Иван Вадимович", portfolio);
-            var serializedAccount = "Account;Id:0;Name:Пятанов Иван Вадимович";
+            var serializedAccount = "Account;Id\t0;Name\tПятанов Иван Вадимович";
 
             var anotherPortfolio = Portfolio.Create(balance);
             var accountSerializator = AccountSerializator.Create(serializedAccount, 

@@ -100,11 +100,11 @@ namespace SabitovCapitalConsole.Tests
             portfolio = Portfolio.Create(balance);
             account = Account.Create("Пятанов Иван Вадимович", portfolio);
             dateTime = new DateTime(2023, 01, 01);
-            balance.Update(dateTime, balance: 900000m);    //900 000
+            balance.Update(dateTime, value: 900000m);    //900 000
 
             account.CreateTransaction(Operation.Deposit, 100000m, dateTime);    //100 000
             dateTime = new DateTime(2023, 02, 01);
-            balance.Update(dateTime, balance: 900000m);     //900 000
+            balance.Update(dateTime, value: 900000m);     //900 000
         }
 
         private void GetProfitTestHelperCase2()
@@ -112,14 +112,14 @@ namespace SabitovCapitalConsole.Tests
             GetProfitTestHelperCase1();
             account.CreateTransaction(Operation.Deposit, 300000m, dateTime);    //300 000
             dateTime = new DateTime(2023, 03, 01);
-            balance.Update(dateTime, balance: 1500000m);     //1 500 000
+            balance.Update(dateTime, value: 1500000m);     //1 500 000
         }
 
         private void GetProfitTestHelperCase3()
         {
             GetProfitTestHelperCase2();
             account.CreateTransaction(Operation.WithdrawProfit, 87500m, dateTime);    //300 000
-            balance.Update(dateTime, balance: 1412500m);    //1 412 500
+            balance.Update(dateTime, value: 1412500m);    //1 412 500
         }
 
         [TestMethod()]
