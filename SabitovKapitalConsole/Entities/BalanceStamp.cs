@@ -52,19 +52,5 @@ namespace SabitovCapitalConsole.Entities
 
             return false;
         }
-
-        public static bool operator ==(BalanceStamp left, BalanceStamp right)
-        {
-            if (left == null && right == null)
-                return true;
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(BalanceStamp left, BalanceStamp right)
-        {
-            if (left == null && right == null)
-                return false;
-            return !left.Equals(right);
-        }
     }
 }

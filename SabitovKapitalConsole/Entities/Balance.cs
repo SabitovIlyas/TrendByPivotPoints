@@ -70,8 +70,9 @@ namespace SabitovCapitalConsole.Entities
                     return false;
 
                 for (var i = 0; i < BalanceStamps.Count; i++)
-                    if (BalanceStamps[i] != balance.BalanceStamps[i])
-                        return false;
+                    //if (BalanceStamps[i] != balance.BalanceStamps[i])
+                        if (!BalanceStamps[i].Equals(balance.BalanceStamps[i]))
+                            return false;
 
                 return true;
             }
