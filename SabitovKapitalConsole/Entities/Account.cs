@@ -1,4 +1,6 @@
-﻿namespace SabitovCapitalConsole.Entities
+﻿using System.Transactions;
+
+namespace SabitovCapitalConsole.Entities
 {
     public class Account
     {
@@ -6,6 +8,7 @@
         public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
         public int Id { get; private set; }
         private Balance balance;
+        private Portfolio portfolio;
 
         public static Account Create(string name, Portfolio portfolio)
         {
@@ -19,11 +22,12 @@
             Id = portfolio.GetAccountId();
             Name = name;
             balance = portfolio.Balance;
+            this.portfolio = portfolio;
         }
 
         public static Account Create(string name, Portfolio portfolio, int id)
         {
-            if (!portfolio.IsThisIdAvailable(id))
+            if (!portfolio.IsThisAccountIdAvailable(id))
                 throw new ArgumentException("Такой Id уже используется");
 
             var account = new Account(name, portfolio, id);
@@ -36,13 +40,14 @@
             Id = id;
             Name = name;
             balance = portfolio.Balance;
+            this.portfolio = portfolio;
         }
 
         public void CreateTransaction(Operation operation, decimal value, DateTime dateTime)
         {
             var balanceStampBeforeTransaction = balance.GetCurrentBalanceStamp();
             Transactions.Add(Transaction.Create(operation, value, dateTime,
-                balanceStampBeforeTransaction));
+                balanceStampBeforeTransaction, this));
         }
 
         public decimal GetDeposit()
@@ -73,7 +78,7 @@
         {
             var result = string.Empty;
             foreach (var transaction in Transactions)
-                result += string.Format("{0} {1}\r\n", transaction, Name);
+                result += string.Format("{0}\r\n", transaction);
 
             return result;
         }
@@ -88,6 +93,41 @@
             }
 
             return false;
+        }
+
+        public int GetTransactionId()
+        {
+            return portfolio.GetTransactionId();
+        }
+
+        public int GetLastId()
+        {
+            if (Transactions.Count == 0) 
+                return -1;
+            return Transactions.Max(p => p.Id);
+        }
+
+        public void AddTransaction(Transaction transaction)
+        {
+            Transactions.Add(transaction);
+            Transactions = SortTransactions();
+        }
+
+        public void RemoveTransaction(Transaction transaction)
+        {
+            Transactions.Remove(transaction);
+        }
+
+        private List<Transaction> SortTransactions()
+        {
+            return (from transaction in Transactions
+                    orderby transaction.Id
+                    select transaction).ToList();
+        }
+
+        public bool IsThisTransactionIdAvailable(int id)
+        {
+            return portfolio.IsThisTransactionIdAvailable(id);            
         }
     }
 }

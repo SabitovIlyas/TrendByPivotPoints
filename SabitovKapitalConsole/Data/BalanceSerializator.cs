@@ -50,7 +50,6 @@ namespace SabitovCapitalConsole.Data
                     balanceStampSerializator.SerializedBalanceStamp = line;
                     balanceStampSerializator.Balance = balance;
                     var balanceStamp = (BalanceStamp)balanceStampSerializator.Deserialize();
-                    balance.AddBalanceStamp(balanceStamp);
                 }
 
                 return balance;

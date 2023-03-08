@@ -9,7 +9,9 @@ namespace SabitovCapitalConsole.Entities
         public decimal Value { get; private set; }
         public static BalanceStamp Create(DateTime dateTime, decimal value, Balance balance)
         {
-            return new BalanceStamp(dateTime, value, balance);
+            var balanceStamp = new BalanceStamp(dateTime, value, balance);
+            balance.AddBalanceStamp(balanceStamp);
+            return balanceStamp;
         }
 
         private BalanceStamp(DateTime dateTime, decimal value, Balance balance)
@@ -25,7 +27,9 @@ namespace SabitovCapitalConsole.Entities
             if (!balance.IsThisIdAvailable(id))
                 throw new ArgumentException("Такой Id уже используется");
 
-            return new BalanceStamp(dateTime, value, balance, id);
+            var balanceStamp = new BalanceStamp(dateTime, value, balance, id);
+            balance.AddBalanceStamp(balanceStamp);
+            return balanceStamp;
         }
 
         private BalanceStamp(DateTime dateTime, decimal value, Balance balance, int id)

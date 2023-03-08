@@ -17,7 +17,6 @@ namespace SabitovCapitalConsole.Entities
         {
             var id = GetBalanceStampId();
             var balanceStamp = BalanceStamp.Create(dateTime, value, this, id);
-            BalanceStamps.Add(balanceStamp);
             BalanceStamps = SortBalanceStamp();
         }
 
@@ -50,7 +49,7 @@ namespace SabitovCapitalConsole.Entities
         public BalanceStamp GetCurrentBalanceStamp()
         {
             if (BalanceStamps.Count == 0)
-                return null;    //TODO: Не возвращать null
+                throw new NullReferenceException("Отсутствуют штампы баланса");
             return BalanceStamps.Last();
         }
 
@@ -70,14 +69,21 @@ namespace SabitovCapitalConsole.Entities
                     return false;
 
                 for (var i = 0; i < BalanceStamps.Count; i++)
-                    //if (BalanceStamps[i] != balance.BalanceStamps[i])
-                        if (!BalanceStamps[i].Equals(balance.BalanceStamps[i]))
-                            return false;
+                    if (!BalanceStamps[i].Equals(balance.BalanceStamps[i]))
+                        return false;
 
                 return true;
             }
 
             return false;
+        }
+
+        public BalanceStamp GetBalanceStampById(int id)
+        {
+            var balanceStamp = BalanceStamps.Find(x => x.Id == id);
+            if (balanceStamp == null)
+                throw new NullReferenceException("Штампа баланса с таким ID не существует");
+            return balanceStamp;
         }
     }
 }
