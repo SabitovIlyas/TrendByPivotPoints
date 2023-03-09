@@ -95,5 +95,51 @@ namespace SabitovCapitalConsole.Entities
                 throw new NullReferenceException("Аккаунта с таким ID не существует");
             return account;
         }
+
+        public List<Transaction> GetAllAccountsTransactions()
+        {
+            var allAccountsTransactions = new List<Transaction>();
+            foreach (var account in Accounts)
+                foreach (var transaction in account.Transactions)
+                    allAccountsTransactions.Add(transaction);
+
+            return SortTransactions(allAccountsTransactions);
+        }
+
+        private List<Transaction> SortTransactions(List<Transaction> transactions)
+        {
+            return (from transaction in transactions
+                    orderby transaction.Id
+                    select transaction).ToList();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || obj.GetType() != GetType())
+                return false;
+
+            var portfolio = obj as Portfolio;
+            if (Accounts.Count != portfolio.Accounts.Count)
+                return false;
+
+            for (var i = 0; i < Accounts.Count; i++)
+                if (!Accounts[i].Equals(portfolio.Accounts[i]))
+                    return false;
+
+            if (!Balance.Equals(portfolio.Balance))
+                return false;
+
+            var thisAllAccountsTransactions = GetAllAccountsTransactions();
+            var objAllAccountsTransactions = portfolio.GetAllAccountsTransactions();
+
+            if (thisAllAccountsTransactions.Count != objAllAccountsTransactions.Count)
+                return false;
+
+            for (var i = 0; i < thisAllAccountsTransactions.Count; i++)
+                if (!thisAllAccountsTransactions[i].Equals(objAllAccountsTransactions[i]))
+                    return false;
+
+            return true;
+        }
     }
 }

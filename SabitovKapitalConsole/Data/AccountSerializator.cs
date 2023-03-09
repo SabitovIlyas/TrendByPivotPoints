@@ -4,9 +4,9 @@ namespace SabitovCapitalConsole.Data
 {
     public class AccountSerializator : Serializator
     {
-        private Account? account;
-        private string? serializedAccount;
-        private Portfolio? portfolio;
+        public Account? Account { get; set; }
+        public string? SerializedAccount { get; set; }
+        public Portfolio? Portfolio { get; set; }
 
         public static AccountSerializator Create(Account account)
         {
@@ -15,7 +15,7 @@ namespace SabitovCapitalConsole.Data
 
         private AccountSerializator(Account account)
         {
-            this.account = account;
+            this.Account = account;
         }
 
         public static AccountSerializator Create(string serializedAccount, Portfolio portfolio)
@@ -25,28 +25,37 @@ namespace SabitovCapitalConsole.Data
 
         private AccountSerializator(string serializedAccount, Portfolio portfolio)
         {
-            this.serializedAccount = serializedAccount;
-            this.portfolio = portfolio;
+            this.SerializedAccount = serializedAccount;
+            this.Portfolio = portfolio;
+        }
+
+        public static AccountSerializator Create()
+        {
+            return new AccountSerializator();
+        }
+
+        private AccountSerializator()
+        {
         }
 
         public object Deserialize()
         {
-            if (serializedAccount == null)
+            if (SerializedAccount == null)
                 throw new NullReferenceException("Строка с сериализованным объектом " +
                     "не определена.");
 
-            if (portfolio == null)
+            if (Portfolio == null)
                 throw new NullReferenceException("Портфель не определён.");
 
-            if (serializedAccount == string.Empty)
+            if (SerializedAccount == string.Empty)
                 throw new InvalidDataException("Строка с сериализованным объектом пуста.");
 
             try
             {
-                var info = serializedAccount.Split(';');
+                var info = SerializedAccount.Split(';');
                 var id = int.Parse(info[1].Split('\t')[1]);
                 var name = info[2].Split('\t')[1];
-                return Account.Create(name, portfolio, id);
+                return Account.Create(name, Portfolio, id);
             }
             catch
             {
@@ -57,7 +66,7 @@ namespace SabitovCapitalConsole.Data
 
         public string Serialize()
         {
-            return string.Format("Account;Id\t{0};Name\t{1}", account.Id, account.Name);
+            return string.Format("Account;Id\t{0};Name\t{1}", Account.Id, Account.Name);
         }
     }
 }

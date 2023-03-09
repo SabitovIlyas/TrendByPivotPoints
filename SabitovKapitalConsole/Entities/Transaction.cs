@@ -23,7 +23,7 @@
         public BalanceStamp BalanceStampBeforeTransaction { get; private set; }
         public decimal BalanceBeforeTransaction => BalanceStampBeforeTransaction.Value;
         public decimal BalanceAfterTransaction => BalanceStampBeforeTransaction.Value + ValueWithSign;
-        private Account account;
+        public Account Account { get; private set; }
 
         public static Transaction Create(Operation operation, decimal value, DateTime dateTime,
             BalanceStamp balanceStampBeforeTransaction, Account account)
@@ -42,7 +42,7 @@
             Value = value;
             DateTime = dateTime;
             BalanceStampBeforeTransaction = balanceStampBeforeTransaction;
-            this.account = account;
+            this.Account = account;
         }
 
         public static Transaction Create(Operation operation, decimal value, DateTime dateTime,
@@ -65,7 +65,7 @@
             Value = value;
             DateTime = dateTime;
             BalanceStampBeforeTransaction = balanceStampBeforeTransaction;
-            this.account = account;
+            this.Account = account;
         }
 
         public decimal GetDeposit()
@@ -83,20 +83,20 @@
         public override string ToString()
         {
             return string.Format("Transaction: {0} {1} {2}. {3} (balance before transaction). " +
-                "{4}", DateTime, Operation, Value, BalanceBeforeTransaction, account.Name);
+                "{4}", DateTime, Operation, Value, BalanceBeforeTransaction, Account.Name);
         }
 
         public override bool Equals(object? obj)
         {
-            if (obj != null && obj.GetType() == GetType())
-            {
-                var transaction = obj as Transaction;
-                if (Id == transaction.Id && DateTime == transaction.DateTime && 
-                    Operation == transaction.Operation && Value == transaction.Value && 
-                    BalanceStampBeforeTransaction == transaction.BalanceStampBeforeTransaction &&
-                    account == transaction.account)
-                    return true;
-            }
+            if (obj == null || obj.GetType() != GetType())            
+                return false;
+            
+            var transaction = obj as Transaction;
+            if (Id == transaction.Id && DateTime == transaction.DateTime &&
+                Operation == transaction.Operation && Value == transaction.Value &&
+                BalanceStampBeforeTransaction.Equals(transaction.BalanceStampBeforeTransaction) &&
+                Account.Equals(transaction.Account))
+                return true;
 
             return false;
         }

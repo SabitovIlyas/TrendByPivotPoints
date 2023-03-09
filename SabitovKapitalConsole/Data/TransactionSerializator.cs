@@ -40,6 +40,15 @@ namespace SabitovCapitalConsole.Data
             Portfolio = portfolio;            
         }
 
+        public static TransactionSerializator Create()
+        {
+            return new TransactionSerializator();
+        }
+
+        private TransactionSerializator()
+        {            
+        }
+
         public string Serialize()
         {
             return string.Format("Transaction;Id\t{0};DateTime\t{1};Operation\t{2};" +

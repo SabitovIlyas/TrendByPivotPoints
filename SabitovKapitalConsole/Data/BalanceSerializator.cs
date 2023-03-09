@@ -44,7 +44,7 @@ namespace SabitovCapitalConsole.Data
                 var lines = serializedBalance.Split("\r\n");
                 foreach (var line in lines)
                 {
-                    if (line == "")
+                    if (line == string.Empty)
                         continue;
 
                     balanceStampSerializator.SerializedBalanceStamp = line;
