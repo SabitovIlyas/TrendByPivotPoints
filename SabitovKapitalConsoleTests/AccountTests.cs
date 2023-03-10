@@ -1,11 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework.Constraints;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+using SabitovCapitalConsole.Entities;
 
 namespace SabitovCapitalConsole.Tests
 {
@@ -13,6 +7,7 @@ namespace SabitovCapitalConsole.Tests
     public class AccountTests
     {
         Balance balance;
+        Portfolio portfolio;
         Account account;
         DateTime dateTime;
 
@@ -21,17 +16,18 @@ namespace SabitovCapitalConsole.Tests
         {
             //real data
             balance = Balance.Create();
-            account = Account.Create("Пятанов Иван Вадимович", balance);
-            var dateTime = new DateTime(2023, 01, 25);
+            portfolio = Portfolio.Create(balance);
+            account = Account.Create("Пятанов Иван Вадимович", portfolio);
+            dateTime = new DateTime(2023, 01, 25);
+            balance.Update(dateTime, 2639157.23m);
             account.CreateTransaction(Operation.Deposit, 50000, dateTime);
-            balance.Update(dateTime, 1344578.62m);
         }
 
         [TestMethod()]
         public void GetDepositTest1()
         {
             var expected = 50000;
-            var actual= account.GetDeposit();
+            var actual = account.GetDeposit();
             Assert.AreEqual(expected, actual);
         }
 
@@ -45,11 +41,11 @@ namespace SabitovCapitalConsole.Tests
         }
 
         [TestMethod()]
-        public void GetProfitTest() 
+        public void GetProfitTest()
         {
             var expected = -10000m;
             GetProfitTestHelperCase1();
-            var actual = account.GetProfit();            
+            var actual = account.GetProfit();
             Assert.AreEqual(expected, actual);
         }
 
@@ -70,7 +66,7 @@ namespace SabitovCapitalConsole.Tests
             var actual = account.GetProfit();
             var delta = Math.Abs(expected - actual);
             if (delta >= 0.01m)
-                Assert.Fail();            
+                Assert.Fail();
         }
 
         [TestMethod()]
@@ -94,13 +90,14 @@ namespace SabitovCapitalConsole.Tests
         private void GetProfitTestHelperCase1()
         {
             balance = Balance.Create();
-            account = Account.Create("Пятанов Иван Вадимович", balance);
+            portfolio = Portfolio.Create(balance);
+            account = Account.Create("Пятанов Иван Вадимович", portfolio);
             dateTime = new DateTime(2023, 01, 01);
-            balance.Update(dateTime, balance: 900000m);    //900 000
+            balance.Update(dateTime, value: 900000m);    //900 000
 
             account.CreateTransaction(Operation.Deposit, 100000m, dateTime);    //100 000
             dateTime = new DateTime(2023, 02, 01);
-            balance.Update(dateTime, balance: 900000m);     //900 000
+            balance.Update(dateTime, value: 900000m);     //900 000
         }
 
         private void GetProfitTestHelperCase2()
@@ -108,19 +105,76 @@ namespace SabitovCapitalConsole.Tests
             GetProfitTestHelperCase1();
             account.CreateTransaction(Operation.Deposit, 300000m, dateTime);    //300 000
             dateTime = new DateTime(2023, 03, 01);
-            balance.Update(dateTime, balance: 1500000m);     //1 500 000
+            balance.Update(dateTime, value: 1500000m);     //1 500 000
         }
 
         private void GetProfitTestHelperCase3()
         {
             GetProfitTestHelperCase2();
             account.CreateTransaction(Operation.WithdrawProfit, 87500m, dateTime);    //300 000
-            balance.Update(dateTime, balance: 1412500m);    //1 412 500
+            balance.Update(dateTime, value: 1412500m);    //1 412 500
         }
 
-        [TestCleanup]
-        public void Cleanup() { }
+        [TestMethod()]
+        public void LinqWhereTest()
+        {
+            var expected = 5;
+            var list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var subList = list.Where(p => p <= 5).ToList();
+            var actual = subList.Count;
+            Assert.AreEqual(expected, actual);
+        }
 
+        [TestMethod()]
+        public void SelectWhereTest()
+        {
+            var expected = 5;
+            var list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var subList = list.Select(p => p <= 5).ToList();
+            var actual = subList.Where(p => p == true).Count();
+            Assert.AreEqual(expected, actual);
+        }
 
+        [TestMethod()]
+        public void ToStringTest()
+        {
+            account.CreateTransaction(Operation.WithdrawProfit, 0, dateTime);
+
+            var expected = "Transaction: 25.01.2023 0:00:00 Deposit 50000. 2639157,23 " +
+             "(balance before transaction). Пятанов Иван Вадимович\r\n" +
+             "Transaction: 25.01.2023 0:00:00 WithdrawProfit 0. 2639157,23 (balance before " +
+             "transaction). Пятанов Иван Вадимович\r\n";
+
+            var actual = account.ToString();
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void SortAccountsTest()
+        {
+            var balance = Balance.Create();
+            var portfolio = Portfolio.Create(balance);
+            var account1 = Account.Create("Сабитов Ильяс Ильдарович", portfolio, 2);
+            var account2 = Account.Create("Пятанов Иван Вадимович", portfolio, 3);
+            var account3 = Account.Create("Ати", portfolio, 1);
+
+            var expected = new List<Account>() { account3, account1, account2 };
+            var actual = portfolio.Accounts;
+
+            if (expected.Count != actual.Count)
+                Assert.Fail();
+
+            for (var i = 0; i < expected.Count; i++)
+                if (expected[i] != actual[i])
+                    Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void CreateTest_GetCorrectId()
+        {
+            Assert.AreEqual(expected: 0, actual: account.Id);
+            account = Account.Create("Сабитов Ильяс Ильдарович", portfolio);
+            Assert.AreEqual(expected: 1, actual: account.Id);
+        }
     }
 }

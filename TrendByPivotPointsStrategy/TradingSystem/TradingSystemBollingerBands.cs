@@ -408,6 +408,7 @@ namespace TrendByPivotPointsStrategy
         {
             var methodName = nameof(IsTimeForTrading);
             Log("{0}: Проверяем, подходящее ли сейчас время для торговли?", methodName);
+
             var hour = security.GetBarDateTime(barNumber).Hour;
             var minute = security.GetBarDateTime(barNumber).Minute;
             var year = security.GetBarDateTime(barNumber).Year;
@@ -477,6 +478,17 @@ namespace TrendByPivotPointsStrategy
             return result;
         }
 
+        private int GetLotsForChangePositionBasedOnOpenedLots(IPosition position)
+        {
+            var methodName = nameof(GetLotsForChangePositionBasedOnOpenedLots);
+            Log("{0}: Получаем новый объём позиции, основанный на уже открытом объёме", methodName);
+
+            var result = (int)position.Shares * 2;
+            if (convertable.IsConverted)
+                result = -result;
+            return result;
+        }
+
         private void SetLimitOrdersForOpenPosition(string notes)
         {
             if (barNumber < periodBollingerBandAndEma)
@@ -493,16 +505,24 @@ namespace TrendByPivotPointsStrategy
 
         private void SetLimitOrdersForChangePosition(Position position, string notes)
         {
+            var methodName = nameof(SetLimitOrdersForChangePosition);
+            Log("{0}: Устанавливаем лимитный ордер для изменения позиции", methodName);
+
             var iPosition = position.iPosition;
-            var lots = GetLotsForChangePosition(iPosition);
+            var lots = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
             var changePositionIntervalPercent = profitPercent;
             var changePositionPrice = convertable.Minus(iPosition.AverageEntryPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
             changePositionPrice = convertable.Minimum(changePositionPrice, bollingerBand[barNumber]);
-            iPosition.ChangeAtPrice(barNumber + 1, changePositionPrice, lots, signalNameForOpenPosition + notes);
+            var signalName = signalNameForOpenPosition + notes;
+            
+            iPosition.ChangeAtPrice(barNumber + 1, changePositionPrice, lots, signalName);
         }
 
         private void SetLimitOrdersForClosePosition(Position position, string notes)
         {
+            var methodName = nameof(SetLimitOrdersForClosePosition);
+            Log("{0}: Устанавливаем лимитный ордер для закрытия позиции", methodName);
+
             var price = convertable.Plus(position.iPosition.AverageEntryPrice, profitPercent/100 * position.iPosition.AverageEntryPrice);
             var iPosition = position.iPosition;
             iPosition.CloseAtPrice(barNumber + 1, price, signalNameForClosePositionByTakeProfit + notes);
