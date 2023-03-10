@@ -37,7 +37,6 @@ namespace TrendByPivotPointsStrategy
         private int startLots;
         private int maxLots;
         private int lastUsedLots = 1;
-        private int limitLots = int.MaxValue;
 
         private int hourStopTrading = 23;
         private int minuteStopTrading = 45;
@@ -455,8 +454,8 @@ namespace TrendByPivotPointsStrategy
 
             var lots = startLots * (int)Math.Pow(2, changePositionCounter);
             
-            if (lots > limitLots)
-                lots = limitLots;
+            if (lots > maxLots)
+                lots = maxLots;
 
             Log("Количество лотов: " + lots);
             return lots;
@@ -472,9 +471,6 @@ namespace TrendByPivotPointsStrategy
         {
             var newLots = GetLots();
             var result = (int)position.Shares + newLots;
-
-            if (result > maxLots)
-                result = maxLots;
 
             if (convertable.IsConverted)
                 result = -result;

@@ -42,7 +42,7 @@ namespace TrendByPivotPointsStrategy
             systemParameters.Add("shares", shares);
 
             systemParameters.Add("startLots", startLots);
-            systemParameters.Add("maxLots", startLots);
+            systemParameters.Add("maxLots", maxLots);
             systemParameters.Add("isUSD", isUSD);
             systemParameters.Add("periodBollingerBandAndEma", periodBollingerBandAndEma);
             systemParameters.Add("profitPercent", profitPercent);
