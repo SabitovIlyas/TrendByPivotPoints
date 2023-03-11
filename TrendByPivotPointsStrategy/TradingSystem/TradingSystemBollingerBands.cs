@@ -36,7 +36,8 @@ namespace TrendByPivotPointsStrategy
 
         private int startLots;
         private int maxLots;
-        private int lastUsedLots = 1;
+        private double lastUsedPrice = 0;
+        private double changePositionLastDealPrice = 0;
 
         private int hourStopTrading = 23;
         private int minuteStopTrading = 45;
@@ -114,6 +115,9 @@ namespace TrendByPivotPointsStrategy
 
                 changePositionCounter = 0;
                 currentOpenedShares = 0;
+                lastUsedPrice = 0;
+                changePositionLastDealPrice = 0;
+
                 if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
                 {
                     SaveChangePositionCounterToLocalCache();
@@ -184,6 +188,8 @@ namespace TrendByPivotPointsStrategy
                     currentOpenedShares = LoadCurrentOpenedSharesFromLocalCache();
                     isPriceCrossedEmaAfterOpenOrChangePosition = LoadFlagIsPriceCrossedEmaAfterOpenOrChangePositionFromLocalCache();
                     changePositionCounter = LoadChangePositionCounterFromLocalCache();
+                    changePositionLastDealPrice = LoadChangePositionLastDealPriceFromLocalCache();
+
                 }
                 catch (KeyNotFoundException) 
                 {
@@ -198,6 +204,8 @@ namespace TrendByPivotPointsStrategy
                 Log("{0}: Обновляем значение, сбрасываем флаг, наращиваем счётчик", methodName);
                 currentOpenedShares = (int)currentPosition.iPosition.Shares;
                 isPriceCrossedEmaAfterOpenOrChangePosition = false;
+                changePositionLastDealPrice = lastUsedPrice;
+
                 changePositionCounter++;
 
                 if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
@@ -205,6 +213,7 @@ namespace TrendByPivotPointsStrategy
                     SaveCurrentOpenedSharesToLocalCache();
                     SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
                     SaveChangePositionCounterToLocalCache();
+                    SaveChangePositionLastDealPriceToLocalCache();
                 }
             }
             else            
@@ -292,6 +301,33 @@ namespace TrendByPivotPointsStrategy
             return value;
         }
 
+        private double LoadChangePositionLastDealPriceFromLocalCache()
+        {
+            var methodName = nameof(LoadChangePositionLastDealPriceFromLocalCache);
+            Log("{0}: Считываем последнюю цену, использованную в сделке, из локального кеша", methodName);
+            var key = nameof(changePositionLastDealPrice);
+            var value = 0d;
+
+            try
+            {
+                value = (double)realTimeTrading.LoadObjectFromContainer(key);
+                Log("{0}: Значение: \"Последня цена, использованная в сделке,\", равное {1} считано из кеша.",
+                    methodName, value);
+            }
+            catch (NullReferenceException)
+            {
+                Log("{0}: Значение: \"Последня цена, использованная в сделке,\" не содержится в кеше. " +
+                    "Генерируем исключение", methodName);
+                throw new KeyNotFoundException(key);
+            }
+            catch (Exception ex)
+            {
+                Log("{0}: {1}", methodName, ex.Message);
+            }
+
+            return value;
+        }
+
         private void SaveCurrentOpenedSharesToLocalCache()
         {
             var methodName = nameof(SaveCurrentOpenedSharesToLocalCache);
@@ -314,6 +350,14 @@ namespace TrendByPivotPointsStrategy
             Log("{0}: Сохраняем \"Текущее значение счётчика изменения позиции\" в локальный кеш", methodName);
             var key = nameof(changePositionCounter);
             realTimeTrading.SaveObjectToContainer(key, changePositionCounter);
+        }
+
+        private void SaveChangePositionLastDealPriceToLocalCache()
+        {
+            var methodName = nameof(SaveChangePositionLastDealPriceToLocalCache);
+            Log("{0}: Сохраняем последнюю цену, использованную в сделке, в локальный кеш", methodName);
+            var key = nameof(changePositionLastDealPrice);
+            realTimeTrading.SaveObjectToContainer(key, changePositionLastDealPrice);
         }
 
         public void CheckPositionCloseCase(int barNumber)
@@ -463,8 +507,7 @@ namespace TrendByPivotPointsStrategy
         }
 
         private int GetLotsForOpenPosition()
-        {
-            lastUsedLots = 0;
+        { 
             return GetLots();
         }
 
@@ -484,6 +527,10 @@ namespace TrendByPivotPointsStrategy
             Log("{0}: Получаем новый объём позиции, основанный на уже открытом объёме", methodName);
 
             var result = (int)position.Shares * 2;
+
+            if (result > maxLots)
+                result = maxLots;
+
             if (convertable.IsConverted)
                 result = -result;
             return result;
@@ -495,6 +542,7 @@ namespace TrendByPivotPointsStrategy
                 return;
 
             var lots = GetLotsForOpenPosition();
+            lastUsedPrice = bollingerBand[barNumber];
 
             if (positionSide == PositionSide.Long)
                 sec.Positions.BuyAtPrice(barNumber + 1, lots, bollingerBand[barNumber], signalNameForOpenPosition + notes);
@@ -511,10 +559,18 @@ namespace TrendByPivotPointsStrategy
             var iPosition = position.iPosition;
             var lots = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
             var changePositionIntervalPercent = profitPercent;
-            var changePositionPrice = convertable.Minus(iPosition.AverageEntryPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
-            changePositionPrice = convertable.Minimum(changePositionPrice, bollingerBand[barNumber]);
-            var signalName = signalNameForOpenPosition + notes;
+            var changePositionPrice = convertable.Minus(changePositionLastDealPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
             
+            if (convertable.IsGreater(bollingerBand[barNumber], changePositionPrice))
+                return;
+
+            if (convertable.IsLessOrEqual(security.GetBarClose(barNumber), bollingerBand[barNumber]))
+                return;
+
+            changePositionPrice = bollingerBand[barNumber];
+            //changePositionPrice = convertable.Minimum(changePositionPrice, bollingerBand[barNumber]);
+            lastUsedPrice = changePositionPrice;
+            var signalName = signalNameForOpenPosition + notes;            
             iPosition.ChangeAtPrice(barNumber + 1, changePositionPrice, lots, signalName);
         }
 
