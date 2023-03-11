@@ -1,4 +1,5 @@
-﻿using System.Transactions;
+﻿using System.Data.Common;
+using System.Transactions;
 
 namespace SabitovCapitalConsole.Entities
 {
@@ -77,9 +78,10 @@ namespace SabitovCapitalConsole.Entities
         public override string ToString()
         {
             var result = string.Empty;
-            foreach (var transaction in Transactions)
-                result += string.Format("{0}\r\n", transaction);
+            //foreach (var transaction in Transactions)
+            //    result += string.Format("{0}\r\n", transaction);
 
+            result = string.Format("{0}) {1}", Id, Name);
             return result;
         }
 

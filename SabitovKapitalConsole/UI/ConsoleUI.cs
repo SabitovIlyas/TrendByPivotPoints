@@ -1,11 +1,11 @@
-﻿public class ConsoleInterface: UI
+﻿public class ConsoleUI: UI
 { 
-    public static ConsoleInterface Create()
+    public static ConsoleUI Create()
     {
-        return new ConsoleInterface(); 
+        return new ConsoleUI(); 
     }
 
-    private ConsoleInterface() 
+    private ConsoleUI() 
     {        
     }
 

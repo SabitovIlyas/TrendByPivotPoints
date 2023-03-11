@@ -1,25 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SabitovCapitalConsole.Entities;
+﻿using SabitovCapitalConsole.Entities;
 
 namespace SabitovCapitalConsole.Data
 {
     public class DataStorage
     {
-        public static DataStorage Create()
+        Portfolio portfolio;
+        string fileName;
+
+        public static DataStorage Create(string fileName)
         {
-            return new DataStorage();
+            return new DataStorage(fileName);
         }
-        private DataStorage() { }
+        private DataStorage(string fileName) 
+        {
+            this.fileName = fileName;
+        }
 
         public void SaveDataToFile(Portfolio portfolio)
         {
-            using (StreamWriter outputFile = new StreamWriter("PortfolioDataBase.txt"))
+            using (StreamWriter outputFile = new StreamWriter(fileName))
                 outputFile.Write(portfolio);
+        }
+
+        public void SaveDataToFile()
+        {
+            SaveDataToFile(portfolio);            
         }
 
         public string ReadFile()
@@ -27,7 +32,7 @@ namespace SabitovCapitalConsole.Data
             var result = string.Empty;
             try
             {
-                using (var sr = new StreamReader("PortfolioDataBase.txt"))
+                using (var sr = new StreamReader(fileName))
                     result = sr.ReadToEnd();
             }
 
@@ -42,27 +47,32 @@ namespace SabitovCapitalConsole.Data
 
         public Portfolio LoadDataFromFile()
         {
-            var lines = GetLinesWithData();
-            foreach (var line in lines)
-            {
-            }
-            return null;
+            var serializedPortfolio = ReadFile();
+            var portfolioSerializator = PortfolioSerializator.Create(serializedPortfolio);
+            portfolio = (Portfolio)portfolioSerializator.Deserialize();
+            return portfolio;
+
+            //var lines = GetLinesWithData();
+            //foreach (var line in lines)
+            //{
+            //}
+            //return null;
         }
 
-        private List<string> GetLinesWithData()
-        {
-            var fileContent = ReadFile();
-            var lines = fileContent.Split("\r\n");
-            var linesWithData = new List<string>();
-            foreach (var line in lines)
-            {
-                if (line == string.Empty)
-                    continue;
+        //private List<string> GetLinesWithData()
+        //{
+        //    var fileContent = ReadFile();
+        //    var lines = fileContent.Split("\r\n");
+        //    var linesWithData = new List<string>();
+        //    foreach (var line in lines)
+        //    {
+        //        if (line == string.Empty)
+        //            continue;
 
-                linesWithData.Add(line);
-            }
+        //        linesWithData.Add(line);
+        //    }
 
-            return linesWithData;
-        }
+        //    return linesWithData;
+        //}
     }
 }

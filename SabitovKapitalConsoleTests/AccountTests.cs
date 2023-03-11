@@ -140,10 +140,7 @@ namespace SabitovCapitalConsole.Tests
         {
             account.CreateTransaction(Operation.WithdrawProfit, 0, dateTime);
 
-            var expected = "Transaction: 25.01.2023 0:00:00 Deposit 50000. 2639157,23 " +
-             "(balance before transaction). Пятанов Иван Вадимович\r\n" +
-             "Transaction: 25.01.2023 0:00:00 WithdrawProfit 0. 2639157,23 (balance before " +
-             "transaction). Пятанов Иван Вадимович\r\n";
+            var expected = "0) Пятанов Иван Вадимович";
 
             var actual = account.ToString();
             Assert.AreEqual(expected, actual);

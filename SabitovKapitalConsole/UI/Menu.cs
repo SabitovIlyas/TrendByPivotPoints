@@ -1,10 +1,8 @@
-﻿using System;
-
-public class Menu
+﻿public class Menu
 {
     public string Name { get; protected set; } = string.Empty;
     public Menu HomeMenu { get; private set; }
-    public string Content { get; private set; } = string.Empty;
+    public string Content { get; protected set; } = string.Empty;
     private Dictionary<int, Menu> linkedMenus = new Dictionary<int, Menu>();
 
 
@@ -13,7 +11,7 @@ public class Menu
         return new Menu(name);
     }
 
-    private Menu(string name)
+    protected Menu(string name)
     {
         Name = name;
         Content = Name + "\r\n\r\n";
