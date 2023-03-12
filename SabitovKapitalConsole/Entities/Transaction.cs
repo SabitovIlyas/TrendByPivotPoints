@@ -42,7 +42,7 @@
             Value = value;
             DateTime = dateTime;
             BalanceStampBeforeTransaction = balanceStampBeforeTransaction;
-            this.Account = account;
+            Account = account;
         }
 
         public static Transaction Create(Operation operation, decimal value, DateTime dateTime,
@@ -65,7 +65,7 @@
             Value = value;
             DateTime = dateTime;
             BalanceStampBeforeTransaction = balanceStampBeforeTransaction;
-            this.Account = account;
+            Account = account;
         }
 
         public decimal GetDeposit()

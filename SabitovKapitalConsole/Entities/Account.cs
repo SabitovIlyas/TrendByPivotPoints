@@ -8,9 +8,10 @@ namespace SabitovCapitalConsole.Entities
         public string Name { get; private set; }
         public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
         public int Id { get; private set; }
+        public decimal Share { get; set; }
         private Balance balance;
         private Portfolio portfolio;
-
+        
         public static Account Create(string name, Portfolio portfolio)
         {
             var account = new Account(name, portfolio);
@@ -49,6 +50,8 @@ namespace SabitovCapitalConsole.Entities
             var balanceStampBeforeTransaction = balance.GetCurrentBalanceStamp();
             Transactions.Add(Transaction.Create(operation, value, dateTime,
                 balanceStampBeforeTransaction, this));
+
+            portfolio.RecalcSharesForAllAccounts(this);
         }
 
         public decimal GetDeposit()
@@ -61,16 +64,16 @@ namespace SabitovCapitalConsole.Entities
 
         public decimal GetProfit()
         {
-            var share = 0m;
+            //var share = 0m;
 
-            foreach (var transaction in Transactions)
+            /*foreach (var transaction in Transactions)
             {
                 var moneyBeforeTransaction = share * transaction.BalanceBeforeTransaction;
                 share = (moneyBeforeTransaction + transaction.ValueWithSign) /
                     transaction.BalanceAfterTransaction;
-            }
+            }*/
 
-            var money = share * balance.GetCurrentBalance();
+            var money = Share * balance.GetCurrentBalance();
             //var money = share * transactions.Last().BalanceAfterTransaction;
             return money - GetDeposit();
         }

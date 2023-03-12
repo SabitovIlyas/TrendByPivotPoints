@@ -43,7 +43,7 @@ namespace SabitovCapitalConsole.Tests
         [TestMethod()]
         public void GetProfitTest()
         {
-            var expected = -10000m;
+            var expected = -10000m;// -10 000
             GetProfitTestHelperCase1();
             var actual = account.GetProfit();
             Assert.AreEqual(expected, actual);
@@ -65,6 +65,28 @@ namespace SabitovCapitalConsole.Tests
             GetProfitTestHelperCase3();
             var actual = account.GetProfit();
             var delta = Math.Abs(expected - actual);
+            if (delta >= 0.01m)
+                Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void GetProfitTest4()
+        {
+            var expected = -10000m;
+            balance = Balance.Create();
+            portfolio = Portfolio.Create(balance);
+            var account1 = Account.Create("Сабитов Ильяс Ильдарович", portfolio);
+            var account2 = Account.Create("Пятанов Иван Вадимович", portfolio);
+            GetProfitTestHelperCase4(account1, account2);
+            
+            var actual = account2.GetProfit();
+            var delta = Math.Abs(expected - actual);
+            if (delta >= 0.01m)
+                Assert.Fail();
+
+            expected = -90000m;
+            actual = account1.GetProfit();
+            delta = Math.Abs(expected - actual);
             if (delta >= 0.01m)
                 Assert.Fail();
         }
@@ -113,6 +135,20 @@ namespace SabitovCapitalConsole.Tests
             GetProfitTestHelperCase2();
             account.CreateTransaction(Operation.WithdrawProfit, 87500m, dateTime);    //300 000
             balance.Update(dateTime, value: 1412500m);    //1 412 500
+        }
+
+        private void GetProfitTestHelperCase4(Account account1, Account account2)
+        {   
+            dateTime = new DateTime(2022, 12, 01);
+            balance.Update(dateTime, value: 0m);    //0
+            account1.CreateTransaction(Operation.Deposit, 900000m, dateTime);    //900 000
+
+            dateTime = new DateTime(2023, 01, 01);
+            balance.Update(dateTime, value: 900000m);    //900 000
+
+            account2.CreateTransaction(Operation.Deposit, 100000m, dateTime);    //100 000
+            dateTime = new DateTime(2023, 02, 01);
+            balance.Update(dateTime, value: 900000m);     //900 000
         }
 
         [TestMethod()]

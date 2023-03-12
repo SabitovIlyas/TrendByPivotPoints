@@ -105,6 +105,20 @@
                     select transaction).ToList();
         }
 
+        public void RecalcSharesForAllAccounts(Account account)
+        {
+            var transaction = account.Transactions.Last();
+            //var balanceAfterTransaction = Balance.GetCurrentBalance() + transaction.ValueWithSign;
+            //Balance.get
+            foreach (var acc in Accounts)
+            {
+                var accountBalanceBeforeTransaction = acc.Share * transaction.BalanceBeforeTransaction;
+                if (acc == account)
+                    accountBalanceBeforeTransaction += transaction.ValueWithSign;
+                acc.Share = accountBalanceBeforeTransaction / transaction.BalanceAfterTransaction;               
+            }
+        }
+
         public override bool Equals(object? obj)
         {
             if (obj == null || obj.GetType() != GetType())

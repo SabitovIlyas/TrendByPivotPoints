@@ -78,7 +78,10 @@ namespace SabitovCapitalConsole.Data
                 var balanceStamp = Balance.GetBalanceStampById(balanceStampId);
                 var accountId = int.Parse(info[6].Split('\t')[1]);
                 var account = Portfolio.GetAccountById(accountId);
-                return Transaction.Create(operation, value, dateTime, balanceStamp, account, id);
+                var transaction = Transaction.Create(operation, value, dateTime, balanceStamp,
+                    account, id);
+                Portfolio.RecalcSharesForAllAccounts(account);
+                return transaction;
             }
             catch(Exception e)
             {
