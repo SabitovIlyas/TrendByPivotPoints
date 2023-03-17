@@ -577,9 +577,9 @@ namespace TrendByPivotPointsStrategy
         private double GetAdaptiveTakeProfitPercent()
         {
             var constParam = 633;
-            var longEma = Series.EMA(sec.ClosePrices, period: 200);
+            var longSma = Series.SMA(sec.ClosePrices, period: 200);
             var longAtr = Series.AverageTrueRange(sec.Bars, period: 200);
-            return constParam * longAtr[barNumber] / Math.Abs(longEma[barNumber]);
+            return constParam * longAtr[barNumber] / Math.Abs(longSma[barNumber]);
         }
 
         private void SetLimitOrdersForClosePosition(Position position, string notes)
