@@ -87,7 +87,7 @@ namespace TrendByPivotPointsStrategy
             if (ctx.IsOptimization)
                 return;
 
-            var containerName = this.tradingSystemDescription + key;
+            var containerName = tradingSystemDescription + key;
             var container = new NotClearableContainer<object>(value);
             ctx.StoreObject(containerName, container);
         }

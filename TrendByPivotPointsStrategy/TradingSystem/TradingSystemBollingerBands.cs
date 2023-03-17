@@ -136,7 +136,7 @@ namespace TrendByPivotPointsStrategy
 
                 var currentPrice = security.GetBarClose(barNumber);
                 var priceTakeProfit = convertable.Plus(currentPosition.iPosition.AverageEntryPrice,
-                    profitPercent / 100 * currentPosition.iPosition.AverageEntryPrice);
+                    GetAdaptiveTakeProfitPercent() / 100 * currentPosition.iPosition.AverageEntryPrice);
                 var priceChangePosition = bollingerBand[barNumber];
 
                 var isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice = 
@@ -558,7 +558,7 @@ namespace TrendByPivotPointsStrategy
 
             var iPosition = position.iPosition;
             var lots = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
-            var changePositionIntervalPercent = profitPercent;
+            var changePositionIntervalPercent = GetAdaptiveTakeProfitPercent();
             var changePositionPrice = convertable.Minus(changePositionLastDealPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
             
             if (convertable.IsGreater(bollingerBand[barNumber], changePositionPrice))
@@ -574,12 +574,20 @@ namespace TrendByPivotPointsStrategy
             iPosition.ChangeAtPrice(barNumber + 1, changePositionPrice, lots, signalName);
         }
 
+        private double GetAdaptiveTakeProfitPercent()
+        {
+            var constParam = 633;
+            var longEma = Series.EMA(sec.ClosePrices, period: 200);
+            var longAtr = Series.AverageTrueRange(sec.Bars, period: 200);
+            return constParam * longAtr[barNumber] / Math.Abs(longEma[barNumber]);
+        }
+
         private void SetLimitOrdersForClosePosition(Position position, string notes)
         {
             var methodName = nameof(SetLimitOrdersForClosePosition);
             Log("{0}: Устанавливаем лимитный ордер для закрытия позиции", methodName);
 
-            var price = convertable.Plus(position.iPosition.AverageEntryPrice, profitPercent/100 * position.iPosition.AverageEntryPrice);
+            var price = convertable.Plus(position.iPosition.AverageEntryPrice, GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice);
             var iPosition = position.iPosition;
             iPosition.CloseAtPrice(barNumber + 1, price, signalNameForClosePositionByTakeProfit + notes);
         }        
