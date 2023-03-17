@@ -232,5 +232,10 @@ namespace TrendByPivotPointsStarter
         {
             throw new NotImplementedException();
         }
+
+        public ISecurity GetData(string handlerName, string[] parameters, CacheObjectMaker<ISecurity> maker)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
