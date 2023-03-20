@@ -1,10 +1,11 @@
-﻿using SabitovCapitalConsole.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
-namespace SabitovCapitalConsole.Data
+namespace LogPreparator
 {
     public class DataStorage
     {
-        Portfolio portfolio;
         string fileName;
 
         public static DataStorage Create(string fileName)
@@ -14,17 +15,6 @@ namespace SabitovCapitalConsole.Data
         private DataStorage(string fileName) 
         {
             this.fileName = fileName;
-        }
-
-        public void SaveDataToFile(Portfolio portfolio)
-        {
-            using (StreamWriter outputFile = new StreamWriter(fileName))
-                outputFile.Write(portfolio);
-        }
-
-        public void SaveDataToFile()
-        {
-            SaveDataToFile(portfolio);            
         }
 
         public string ReadFile()
@@ -45,12 +35,11 @@ namespace SabitovCapitalConsole.Data
             return result;
         }
 
-        public Portfolio LoadDataFromFile()
+        public void SaveDataToFile(List<string> lines)
         {
-            var serializedPortfolio = ReadFile();
-            var portfolioSerializator = PortfolioSerializator.Create(serializedPortfolio);
-            portfolio = (Portfolio)portfolioSerializator.Deserialize();
-            return portfolio;
+            using (StreamWriter outputFile = new StreamWriter(fileName, false))
+                foreach(var line in lines) 
+                    outputFile.Write(line);
         }
     }
 }

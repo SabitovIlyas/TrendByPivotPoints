@@ -187,13 +187,18 @@ namespace TrendByPivotPointsStrategy
                 {
                     currentOpenedShares = LoadCurrentOpenedSharesFromLocalCache();
                     isPriceCrossedEmaAfterOpenOrChangePosition = LoadFlagIsPriceCrossedEmaAfterOpenOrChangePositionFromLocalCache();
-                    changePositionCounter = LoadChangePositionCounterFromLocalCache();
+                    changePositionCounter = LoadChangePositionCounterFromLocalCache();                               //changePositionCounter не использую, в текущей версии робота
                     changePositionLastDealPrice = LoadChangePositionLastDealPriceFromLocalCache();
 
                 }
                 catch (KeyNotFoundException) 
                 {
                     Log("{0}: Получено исключение обновления значений. Оставляем прежние значения", methodName);
+                    SaveCurrentOpenedSharesToLocalCache();
+                    SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
+                    SaveChangePositionCounterToLocalCache();
+                    SaveChangePositionLastDealPriceToLocalCache();
+
                 }
             }
             

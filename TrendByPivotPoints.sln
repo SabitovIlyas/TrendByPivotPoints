@@ -20,9 +20,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsPeparator
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsPeparatorDataForSpreadTests", "TrendByPivotPointsPeparatorDataForSpreadTests\TrendByPivotPointsPeparatorDataForSpreadTests.csproj", "{9B7232DC-700D-40F3-905D-674BEEF8F4DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabitovCapitalConsole", "SabitovKapitalConsole\SabitovCapitalConsole.csproj", "{A3BB933E-5F20-4F3F-8146-59A1A11DCFD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabitovCapitalConsole", "SabitovKapitalConsole\SabitovCapitalConsole.csproj", "{A3BB933E-5F20-4F3F-8146-59A1A11DCFD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabitovCapitalConsoleTests", "SabitovKapitalConsoleTests\SabitovCapitalConsoleTests.csproj", "{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SabitovCapitalConsoleTests", "SabitovKapitalConsoleTests\SabitovCapitalConsoleTests.csproj", "{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogPreparator", "LogReader\LogPreparator.csproj", "{8F6F5A91-5ACB-4829-84E2-FCD2A2FE35BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogPreparatorTests", "LogReaderTests\LogPreparatorTests.csproj", "{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +70,14 @@ Global
 		{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FD9DEF5-86E0-4EA7-BDB7-6A264E90DDAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F6F5A91-5ACB-4829-84E2-FCD2A2FE35BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F6F5A91-5ACB-4829-84E2-FCD2A2FE35BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F6F5A91-5ACB-4829-84E2-FCD2A2FE35BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F6F5A91-5ACB-4829-84E2-FCD2A2FE35BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
