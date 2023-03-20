@@ -198,7 +198,6 @@ namespace TrendByPivotPointsStrategy
                     SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
                     SaveChangePositionCounterToLocalCache();
                     SaveChangePositionLastDealPriceToLocalCache();
-
                 }
             }
             
