@@ -1,0 +1,1 @@
+Lab msg	BollingerBandArbitrager_v.13_Short_GD	TradingSystemBollingerBands/Period Bollinger Band: 20; Standart Deviation Coefficient: 2; Profit Percent/GDM3GDU3:FUT/Short/

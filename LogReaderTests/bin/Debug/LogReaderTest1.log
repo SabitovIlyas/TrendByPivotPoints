@@ -1,0 +1,49 @@
+00:48:03.75[179]DEBUG:Lab msg:Info:TradingSystemBollingerBands/Period Bollinger Band: 10; Standart Deviation Coefficient: 2; Profit Percent/NGH3NGJ3:FUT/Short/: SetLimitOrdersForChangePosition: Устанавливаем лимитный ордер для изменения позиции 
+00:48:03.75[198]DEBUG:Lab msg:Info:TradingSystemBollingerBands/Period Bollinger Band: 20; Standart Deviation Coefficient: 2; Profit Percent/NGH3NGJ3:FUT/Long/: GetPosition: Позиция найдена. Состояние позиции:
+EntryOrders: TSLab.ScriptExecution.Realtime.RealtimePosition+<get_EntryOrders>d__21
+ExitOrders: TSLab.ScriptExecution.Realtime.RealtimePosition+<get_ExitOrders>d__23
+IsVirtual: False
+IsVirtualClosed: True
+BarsHeld: 6673
+PositionState: HaveCloseSignal
+EntryOrderType: Limit
+ExitOrderType: Market
+EntrySlippage: 0
+ExitSlippage: 
+ParentList: TSLab.ScriptExecution.Realtime.RealtimePositionList
+Security: NGH3NGJ3:FUT
+ChangeInfos: System.Collections.Generic.List`1[TSLab.Script.IPositionInfo]
+IsAddedVirtual: False
+EntrySignalName: LE Вход №1
+EntryNotes: 
+ExitSignalName: LE Вход №1
+ExitNotes: 
+ChangeSignalName: LE Вход №1
+ChangeNotes: 
+IsLong: True
+IsShort: False
+IsActive: True
+EntryPrice: 0.253
+AverageEntryPrice: 0.24220266666666668
+ExitPrice: 0
+Shares: 375
+SignedShares: 375
+SharesChange: 0
+NormalizedShares: 375
+SharesOrigin: 1
+MaxShares: 375
+EntryBarNum: 2384
+ExitBarNum: 9057
+EntryBar: 02/27/2023 11:51:00/0.253/0.252/0.254/0.254/52
+ExitBar: 03/10/2023 17:47:00/0.241/0.241/0.241/0.241/51
+EntryCommission: 0
+ExitCommission: 0
+ProfitPerTrade: 
+FullEntryCommission: 0
+FullExitCommission: 0
+EntryExecution: Normal
+ExitExecution: 
+ 
+00:48:03.75[179]DEBUG:TradingSystemBollingerBands/Period Bollinger Band: 10; Standart Deviation Coefficient: 2; Profit Percent/NGH3NGJ3:FUT/Short/: GetLotsForChangePositionBasedOnOpenedLots: Получаем новый объём позиции, основанный на уже открытом объёме 
+00:48:03.75[198]DEBUG:TradingSystemBollingerBands/Period Bollinger Band: 20; Standart Deviation Coefficient: 2; Profit Percent/NGH3NGJ3:FUT/Long/: UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition: Обновляю флаг " Пересечение цены EMA после открытия или изменения позиции". Текущее состояние флага: True 
+00:48:03.75[179]INFO:TradingSystemBollingerBands/Period Bollinger Band: 10; Standart Deviation Coefficient: 2; Profit Percent/NGH3NGJ3:FUT/Short/: GetLotsForChangePositionBasedOnOpenedLots: Получаем новый объём позиции, основанный на уже открытом объёме
