@@ -299,6 +299,10 @@ namespace TrendByPivotPointsStrategy
                     changePositionCounter = LoadChangePositionCounterFromLocalCache();                               //changePositionCounter не использую, в текущей версии робота
                     changePositionLastDealPrice = LoadChangePositionLastDealPriceFromLocalCache();
 
+                    SaveCurrentOpenedSharesToLocalCache();
+                    SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache();
+                    SaveChangePositionCounterToLocalCache();
+                    SaveChangePositionLastDealPriceToLocalCache();
                 }
                 catch (KeyNotFoundException) 
                 {
