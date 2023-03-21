@@ -47,6 +47,7 @@ namespace TrendByPivotPointsStrategy
         private int currentOpenedShares = 0;
         private int changePositionCounter = 0;
         private RealTimeTrading realTimeTrading;
+        private IOrder lastOrder;
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
             var securityTSLab = security as SecurityTSlab;
@@ -233,6 +234,12 @@ namespace TrendByPivotPointsStrategy
                     isPriceCrossedEmaAfterOpenOrChangePosition = LoadFlagIsPriceCrossedEmaAfterOpenOrChangePositionFromLocalCache();
                     changePositionCounter = LoadChangePositionCounterFromLocalCache();                               //changePositionCounter не использую, в текущей версии робота
                     changePositionLastDealPrice = LoadChangePositionLastDealPriceFromLocalCache();
+
+                    if (lastOrder != null)
+                    {
+                        changePositionLastDealPrice = lastOrder.Price;
+                        SaveChangePositionLastDealPriceToLocalCache();
+                    }                    
                 }
                 catch (KeyNotFoundException) 
                 {
@@ -543,15 +550,15 @@ namespace TrendByPivotPointsStrategy
                 var positionRt = position as IPositionRt;
                 if (positionRt.EntryOrders != null && positionRt.EntryOrders.Count() > 0)
                 {
-                    var order = positionRt.EntryOrders.Last();
+                    lastOrder = positionRt.EntryOrders.Last();
                     Log("{0} Последний ордер на открытие:\r\n{1}: {2}\r\n{3}: {4}\r\n{5}: {6}\r\n{7}: {8}\r\n{9}: {10}\r\n{11}: {12}\r\n{13}: {14}\r\n" +
                         "{15}: {16}\r\n{17}: {18}\r\n{19}: {20}\r\n{21}: {22}\r\n{23}: {24}\r\n{25}: {26}\r\n{27}: {28}\r\n{29}: {30}\r\n{31}: {32}\r\n" +
-                        "{33}: {34}\r\n", methodName, nameof(order.Id), order.Id, nameof(order.Price), order.Price, nameof(order.Quantity), order.Quantity, 
-                        nameof(order.IsExecuted), order.IsExecuted,nameof(order.RestQuantity), order.RestQuantity, nameof(order.Date), order.Date, 
-                        nameof(order.IsPriceFromTrades), order.IsPriceFromTrades, nameof(order.OrderPrice), order.OrderPrice, nameof(order.IsActive), order.IsActive, 
-                        nameof(order.Status), order.Status, nameof(order.IsBuy), order.IsBuy, nameof(order.Security), order.Security, 
-                        nameof(order.OrderType), order.OrderType, nameof(order.Notes), order.Notes, nameof(order.Comment), order.Comment, 
-                        nameof(order.Commission), order.Commission, nameof(order.Slippage), order.Slippage);
+                        "{33}: {34}\r\n", methodName, nameof(lastOrder.Id), lastOrder.Id, nameof(lastOrder.Price), lastOrder.Price, nameof(lastOrder.Quantity), lastOrder.Quantity, 
+                        nameof(lastOrder.IsExecuted), lastOrder.IsExecuted,nameof(lastOrder.RestQuantity), lastOrder.RestQuantity, nameof(lastOrder.Date), lastOrder.Date, 
+                        nameof(lastOrder.IsPriceFromTrades), lastOrder.IsPriceFromTrades, nameof(lastOrder.OrderPrice), lastOrder.OrderPrice, nameof(lastOrder.IsActive), lastOrder.IsActive, 
+                        nameof(lastOrder.Status), lastOrder.Status, nameof(lastOrder.IsBuy), lastOrder.IsBuy, nameof(lastOrder.Security), lastOrder.Security, 
+                        nameof(lastOrder.OrderType), lastOrder.OrderType, nameof(lastOrder.Notes), lastOrder.Notes, nameof(lastOrder.Comment), lastOrder.Comment, 
+                        nameof(lastOrder.Commission), lastOrder.Commission, nameof(lastOrder.Slippage), lastOrder.Slippage);
                 }
             }
             return Position.Create(position);
