@@ -6,6 +6,8 @@ using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
 using TrendByPivotPoints;
+using System.Linq;
+using TSLab.Utils;
 
 namespace TrendByPivotPointsStrategy
 {
@@ -524,17 +526,34 @@ namespace TrendByPivotPointsStrategy
 
         private Position GetPosition(string notes)
         {
+            var methodName = nameof(GetPosition);
             var fullSignalName = signalNameForOpenPosition + notes;
-            Log(nameof(GetPosition) + ": Получить последнюю активную позицию для сигнала: " + fullSignalName + "; для бара: " + barNumber);
+            Log(methodName + ": Получить последнюю активную позицию для сигнала: " + fullSignalName + "; для бара: " + barNumber);
             var position = sec.Positions.GetLastActiveForSignal(fullSignalName, barNumber);
             
             if (position == null)
             {
-                Log(nameof(GetPosition) + ": Позиции нет.");
+                Log(methodName + ": Позиции нет.");
                 return null; 
             }
 
-            Log(nameof(GetPosition) + ": Позиция найдена. Состояние позиции:\r\n"+position.GetPropertiesState());
+            Log(methodName + ": Позиция найдена. Состояние позиции:\r\n"+position.GetPropertiesState());
+            if (position is IPositionRt)
+            {
+                var positionRt = position as IPositionRt;
+                if (positionRt.EntryOrders != null && positionRt.EntryOrders.Count() > 0)
+                {
+                    var order = positionRt.EntryOrders.Last();
+                    Log("{0} Последний ордер на открытие:\r\n{1}: {2}\r\n{3}: {4}\r\n{5}: {6}\r\n{7}: {8}\r\n{9}: {10}\r\n{11}: {12}\r\n{13}: {14}\r\n" +
+                        "{15}: {16}\r\n{17}: {18}\r\n{19}: {20}\r\n{21}: {22}\r\n{23}: {24}\r\n{25}: {26}\r\n{27}: {28}\r\n{29}: {30}\r\n{31}: {32}\r\n" +
+                        "{33}: {34}\r\n", methodName, nameof(order.Id), order.Id, nameof(order.Price), order.Price, nameof(order.Quantity), order.Quantity, 
+                        nameof(order.IsExecuted), order.IsExecuted,nameof(order.RestQuantity), order.RestQuantity, nameof(order.Date), order.Date, 
+                        nameof(order.IsPriceFromTrades), order.IsPriceFromTrades, nameof(order.OrderPrice), order.OrderPrice, nameof(order.IsActive), order.IsActive, 
+                        nameof(order.Status), order.Status, nameof(order.IsBuy), order.IsBuy, nameof(order.Security), order.Security, 
+                        nameof(order.OrderType), order.OrderType, nameof(order.Notes), order.Notes, nameof(order.Comment), order.Comment, 
+                        nameof(order.Commission), order.Commission, nameof(order.Slippage), order.Slippage);
+                }
+            }
             return Position.Create(position);
         }
 
@@ -662,7 +681,7 @@ namespace TrendByPivotPointsStrategy
             else            
                 Log("{0}: Нет, это торговля в реальном времени.", methodName);
             
-            return result;
+            return result;            
         }
     }
 }
