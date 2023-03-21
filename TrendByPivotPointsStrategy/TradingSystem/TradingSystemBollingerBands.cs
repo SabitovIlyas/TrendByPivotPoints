@@ -184,11 +184,31 @@ namespace TrendByPivotPointsStrategy
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-            Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
-            Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
-            Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+            /////////////////////////////////////////////////////////////////////////////////////////
 
-            realTimeTrading.LoadObjectFromContainer(key);
+            try
+            {
+                key = nameof(changePositionLastDealPrice);
+                value = realTimeTrading.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, "Значения нет");
+            }
+
+            try
+            {
+                key = nameof(changePositionLastDealPrice);
+                value = realTimeTradingNew.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, "Значения нет");
+            }
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
         }
 
         public void CheckPositionOpenLongCase()
