@@ -45,6 +45,7 @@ namespace TrendByPivotPointsStrategy
         private int currentOpenedShares = 0;
         private int changePositionCounter = 0;
         private RealTimeTrading realTimeTrading;
+        private RealTimeTrading realTimeTradingNew;
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
             var securityTSLab = security as SecurityTSlab;
@@ -100,6 +101,93 @@ namespace TrendByPivotPointsStrategy
             {
                 Log("Исключение в методе Update(): " + e.ToString());
             }
+        }
+
+        private void CheckLocalCache()
+        {
+            var methodName = nameof(CheckLocalCache);
+            Log("{0}: Проверяем локальный кеш", methodName);
+            var key = string.Empty;
+            var value = string.Empty;
+            
+            ///////////////////////////////////////////////////////////////////////////////////////
+            try
+            {
+                key = nameof(isPriceCrossedEmaAfterOpenOrChangePosition);
+                value = realTimeTrading.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, "Значения нет");
+            }
+
+            try
+            {
+                key = nameof(isPriceCrossedEmaAfterOpenOrChangePosition);
+                value = realTimeTradingNew.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, "Значения нет");
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+            try
+            {
+                key = nameof(currentOpenedShares);
+                value = realTimeTrading.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, "Значения нет");
+            }
+
+            try
+            {
+                key = nameof(currentOpenedShares);
+                value = realTimeTradingNew.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, "Значения нет");
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////
+
+            try
+            {
+                key = nameof(changePositionCounter);
+                value = realTimeTrading.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, "Значения нет");
+            }
+
+            try
+            {
+                key = nameof(changePositionCounter);
+                value = realTimeTradingNew.LoadObjectFromContainer(key).ToString();
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, value);
+            }
+            catch
+            {
+                Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTradingNew), key, "Значения нет");
+            }
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+            Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+            Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+            Log("{0}: {1}: {2} = {3}", methodName, nameof(realTimeTrading), key, value);
+
+            realTimeTrading.LoadObjectFromContainer(key);
         }
 
         public void CheckPositionOpenLongCase()
@@ -338,6 +426,7 @@ namespace TrendByPivotPointsStrategy
             Log("{0}: Сохраняем \"Текущее количество открытых лотов\" в локальный кеш", methodName);
             var key = nameof(currentOpenedShares);
             realTimeTrading.SaveObjectToContainer(key, currentOpenedShares);
+            realTimeTradingNew.SaveObjectToContainer(key, currentOpenedShares);
         }
 
         private void SaveFlagIsPriceCrossedEmaAfterOpenOrChangePositionToLocalCache()
@@ -346,6 +435,7 @@ namespace TrendByPivotPointsStrategy
             Log("{0}: Сохраняем флаг \"Пересечение цены EMA после открытия\" в локальный кеш", methodName);
             var key = nameof(isPriceCrossedEmaAfterOpenOrChangePosition);
             realTimeTrading.SaveObjectToContainer(key, isPriceCrossedEmaAfterOpenOrChangePosition);
+            realTimeTradingNew.SaveObjectToContainer(key, isPriceCrossedEmaAfterOpenOrChangePosition);
         }
 
         private void SaveChangePositionCounterToLocalCache()
@@ -354,6 +444,7 @@ namespace TrendByPivotPointsStrategy
             Log("{0}: Сохраняем \"Текущее значение счётчика изменения позиции\" в локальный кеш", methodName);
             var key = nameof(changePositionCounter);
             realTimeTrading.SaveObjectToContainer(key, changePositionCounter);
+            realTimeTradingNew.SaveObjectToContainer(key, changePositionCounter);
         }
 
         private void SaveChangePositionLastDealPriceToLocalCache()
@@ -362,6 +453,7 @@ namespace TrendByPivotPointsStrategy
             Log("{0}: Сохраняем последнюю цену, использованную в сделке, в локальный кеш", methodName);
             var key = nameof(changePositionLastDealPrice);
             realTimeTrading.SaveObjectToContainer(key, changePositionLastDealPrice);
+            realTimeTradingNew.SaveObjectToContainer(key, changePositionLastDealPrice);
         }
 
         public void CheckPositionCloseCase(int barNumber)
@@ -445,6 +537,7 @@ namespace TrendByPivotPointsStrategy
             parametersCombination = string.Format("Period Bollinger Band: {0}; Standart Deviation Coefficient: {1}; Profit Percent", periodBollingerBandAndEma, standartDeviationCoef, profitPercent);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
             realTimeTrading = RealTimeTrading.Create(positionSide, tradingSystemDescription, Ctx);
+            realTimeTradingNew = RealTimeTrading.Create(positionSide, tradingSystemDescription: "", Ctx);
         }
 
         private string GetSignalNotesName()
