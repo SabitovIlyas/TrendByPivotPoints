@@ -94,6 +94,7 @@ namespace TrendByPivotPointsStrategy
                 else
                     Logger.SwitchOff();
 
+                LogLocalCacheContent();
                 CheckPositionOpenLongCase();
             }
 
@@ -103,9 +104,9 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private void CheckLocalCache()
+        private void LogLocalCacheContent()
         {
-            var methodName = nameof(CheckLocalCache);
+            var methodName = nameof(LogLocalCacheContent);
             Log("{0}: Проверяем локальный кеш", methodName);
             var key = string.Empty;
             var value = string.Empty;
