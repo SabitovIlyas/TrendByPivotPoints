@@ -12,6 +12,7 @@ BalanceStamp;Id	5;DateTime	23.02.2023 1:32:00;Value	2650746,92
 BalanceStamp;Id	6;DateTime	24.02.2023 21:00:00;Value	2738809,23
 BalanceStamp;Id	7;DateTime	24.02.2023 22:00:00;Value	2731338,36
 BalanceStamp;Id	8;DateTime	12.03.2023 00:19:00;Value	2883476,72
+BalanceStamp;Id	9;DateTime	22.03.2023 17:04:00;Value	2870811,05
 
 Transaction;Id	0;DateTime	25.01.2023 0:00:00;Operation	Deposit;Value	2276298,88;BalanceStampId	0;AccountId	1
 Transaction;Id	1;DateTime	25.01.2023 0:00:00;Operation	Deposit;Value	362858,35;BalanceStampId	1;AccountId	0
@@ -21,3 +22,4 @@ Transaction;Id	4;DateTime	08.02.2023 12:05:00;Operation	WithdrawProfit;Value	100
 Transaction;Id	5;DateTime	24.02.2023 12:38:00;Operation	WithdrawProfit;Value	10000,00;BalanceStampId	5;AccountId	1
 Transaction;Id	6;DateTime	24.02.2023 21:00:00;Operation	WithdrawProfit;Value	7470,87;BalanceStampId	6;AccountId	1
 Transaction;Id	7;DateTime	24.02.2023 22:00:00;Operation	Deposit;Value	7470,87;BalanceStampId	7;AccountId	3
+Transaction;Id	8;DateTime	22.03.2023 17:10:00;Operation	WithdrawProfit;Value	30000,00;BalanceStampId	9;AccountId	1
