@@ -603,17 +603,23 @@ namespace TrendByPivotPointsStrategy
 
         private void SetLimitOrdersForOpenPosition(string notes)
         {
+            var methodName = nameof(SetLimitOrdersForOpenPosition);
+            Log("{0}: Устанавливаем лимитный ордер для открытия позиции", methodName);
+
             if (barNumber < periodBollingerBandAndEma)
                 return;
 
             var lots = GetLotsForOpenPosition();
             lastUsedPrice = bollingerBand[barNumber];
 
+            var signalName = signalNameForOpenPosition + notes;
+            Log("{0}: Выставляем лимитный ордер на открытие позиции. Номер бара = {1}, Количество лотов = {2}, Цена = {3}, Название сигнала = {4}.", methodName, barNumber + 1, lots, bollingerBand[barNumber], signalName);
+
             if (positionSide == PositionSide.Long)
-                sec.Positions.BuyAtPrice(barNumber + 1, lots, bollingerBand[barNumber], signalNameForOpenPosition + notes);
+                sec.Positions.BuyAtPrice(barNumber + 1, lots, bollingerBand[barNumber], signalName);
 
             if (positionSide == PositionSide.Short)
-                sec.Positions.SellAtPrice(barNumber + 1, lots, bollingerBand[barNumber], signalNameForOpenPosition + notes);
+                sec.Positions.SellAtPrice(barNumber + 1, lots, bollingerBand[barNumber], signalName);
         }
 
         private void SetLimitOrdersForChangePosition(Position position, string notes)
@@ -633,9 +639,9 @@ namespace TrendByPivotPointsStrategy
                 return;
 
             changePositionPrice = bollingerBand[barNumber];
-            //changePositionPrice = convertable.Minimum(changePositionPrice, bollingerBand[barNumber]);
             lastUsedPrice = changePositionPrice;
-            var signalName = signalNameForOpenPosition + notes;            
+            var signalName = signalNameForOpenPosition + notes;
+            Log("{0}: Выставляем лимитный ордер на изменение позиции. Номер бара = {1}, Цена = {2}, Новое количество лотов = {3}, Название сигнала = {4}.", methodName, barNumber + 1, changePositionPrice, lots, signalName);
             iPosition.ChangeAtPrice(barNumber + 1, changePositionPrice, lots, signalName);
         }
 
@@ -654,7 +660,10 @@ namespace TrendByPivotPointsStrategy
 
             var price = convertable.Plus(position.iPosition.AverageEntryPrice, GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice);
             var iPosition = position.iPosition;
-            iPosition.CloseAtPrice(barNumber + 1, price, signalNameForClosePositionByTakeProfit + notes);
+
+            var signalName = signalNameForClosePositionByTakeProfit + notes;
+            Log("{0}: Выставляем лимитный ордер на закрытие позиции. Номер бара = {1}, Цена = {2}, Название сигнала = {3}.", methodName, barNumber + 1, price, signalName);
+            iPosition.CloseAtPrice(barNumber + 1, price, signalName);
         }        
 
         private void Log(string text)
