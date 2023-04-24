@@ -71,6 +71,28 @@ namespace TrendByPivotPointsStrategy.Tests
             var actual = Convert.ToBoolean(parameterForConvertion);
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod()]
+        public void ConvertDoubleNullableToDouble()
+        {
+            var expected = 0;
+            double? a = 0;
+            var actual = (double) a;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void MethodWithKeyWordOutForClassTest()
+        {
+            var expected = 1;
+            var param = 0;
+            var classForTestKeyWords = new ClassForTestKeyWords();
+            classForTestKeyWords.MethodWithKeyWordOutForClass(out param);
+
+            var actual = param;
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 
     public class ClassForTestKeyWords
@@ -93,6 +115,16 @@ namespace TrendByPivotPointsStrategy.Tests
         public void MethodWithoutKeyWordRefForClass(HelperForClassForTestKeyWords param)
         {
             param = new HelperForClassForTestKeyWords(2);
+        }
+
+        public void MethodWithKeyWordOutForClass(out int param)
+        {
+            param = 1;
+        }
+
+        public void MethodWithoutKeyWordOutForClass(int param)
+        {
+            param++;
         }
     }
 
