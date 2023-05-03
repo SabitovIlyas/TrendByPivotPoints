@@ -48,7 +48,8 @@ namespace TrendByPivotPointsStrategy
         private int currentOpenedShares = 0;
         private int changePositionCounter = 0;
         private RealTimeTrading realTimeTrading;
-        private IOrder lastExecutedOrder;
+        private IOrder lastExecutedOrder;        
+
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
             var securityTSLab = security as SecurityTSlab;
@@ -103,7 +104,7 @@ namespace TrendByPivotPointsStrategy
 
             catch (Exception e)
             {
-                Log("Исключение в методе Update(): " + e.ToString());
+                Log("Исключение в методе Update(): {0}.\r\n{1}.\r\n{2}.\r\n{3}.\r\n{4}.", e.ToString(), e.Message, e.Data, e.Source, e.StackTrace);
             }
         }
 
@@ -623,9 +624,9 @@ namespace TrendByPivotPointsStrategy
             {
                 Log("{0}: Номер последнего бара меньше периода индикаторов. Устанавливать ордер не будем.", methodName);
                 return;
-            }            
+            }
 
-            if (lastExecutedOrder.IsActive)
+            if (lastExecutedOrder != null && lastExecutedOrder.IsActive)
             {
                 Log("{0}: Последний исполненный ордер активный. Устанавливать новый ордер не будем.", methodName);
                 return;
@@ -654,7 +655,7 @@ namespace TrendByPivotPointsStrategy
 
         private void GetPriceAndLotsForOpenPosition(out double price, out double lots)
         {
-            if (lastExecutedOrder.RestQuantity > 0)
+            if (lastExecutedOrder!=null && lastExecutedOrder.RestQuantity > 0)
                 GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero(out price, out lots);
             else
             {
@@ -686,7 +687,7 @@ namespace TrendByPivotPointsStrategy
             {               
                 Log("{0}: Устанавливаем лимитный ордер для изменения позиции", methodName);
 
-                if (lastExecutedOrder.IsActive)
+                if (lastExecutedOrder != null && lastExecutedOrder.IsActive)
                 {
                     Log("{0}: Последний исполненный ордер активный. Устанавливать новый ордер не будем.", methodName);
                     return;
@@ -718,7 +719,7 @@ namespace TrendByPivotPointsStrategy
         {
             var methodName = nameof(GetPriceAndLotsForChangePosition);
 
-            if (lastExecutedOrder.RestQuantity > 0)
+            if (lastExecutedOrder != null && lastExecutedOrder.RestQuantity > 0)
             {
                 Log("{0}: Последний исполненный ордер был исполнен не полностью.", methodName);
                 GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero(out price, out lots);
@@ -748,7 +749,7 @@ namespace TrendByPivotPointsStrategy
 
         private double GetAdaptiveTakeProfitPercent()
         {
-            var constParam = 633;
+            var constParam = 400;
             var longEma = Series.EMA(sec.ClosePrices, period: 200);
             var longAtr = Series.AverageTrueRange(sec.Bars, period: 200);
             return constParam * longAtr[barNumber] / Math.Abs(longEma[barNumber]);
