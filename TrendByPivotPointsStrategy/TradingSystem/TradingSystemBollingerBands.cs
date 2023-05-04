@@ -20,7 +20,7 @@ namespace TrendByPivotPointsStrategy
 
         private PositionSide positionSide;
         private int barNumber;
-        private Converter convertable;
+        private Converter convertedLong;
         private string signalNameForOpenPosition = string.Empty;
         private string signalNameForClosePositionByTakeProfit = string.Empty;
         private string tradingSystemDescription;
@@ -48,7 +48,7 @@ namespace TrendByPivotPointsStrategy
         private int currentOpenedShares = 0;
         private int changePositionCounter = 0;
         private RealTimeTrading realTimeTrading;
-        private IOrder lastExecutedOrder;        
+        private IOrder lastExecutedOrderForOpenOrChangePosition;        
 
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
@@ -71,19 +71,19 @@ namespace TrendByPivotPointsStrategy
                     {
                         signalNameForOpenPosition = "LE";
                         signalNameForClosePositionByTakeProfit = "LXT";
-                        convertable = new Converter(isConverted: false);
+                        convertedLong = new Converter(isConverted: false);
                         break;
                     }
                 case PositionSide.Short:
                     {
                         signalNameForOpenPosition = "SE";
                         signalNameForClosePositionByTakeProfit = "SXT";
-                        convertable = new Converter(isConverted: true);
+                        convertedLong = new Converter(isConverted: true);
                         break;
                     }
             }
             ema = Series.EMA(sec.ClosePrices, periodBollingerBandAndEma);
-            bollingerBand = Series.BollingerBands(sec.ClosePrices, ema, periodBollingerBandAndEma, standartDeviationCoef, isTopLine: convertable.IsConverted);
+            bollingerBand = Series.BollingerBands(sec.ClosePrices, ema, periodBollingerBandAndEma, standartDeviationCoef, isTopLine: convertedLong.IsConverted);
         }
 
         public void Update(int barNumber)
@@ -154,12 +154,12 @@ namespace TrendByPivotPointsStrategy
             var methodName = nameof(CheckPositionOpenLongCase);
             
 
-            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
+            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertedLong.Long);
             var notes = GetSignalNotesName();
 
             if (!IsPositionOpen(notes))
             {
-                Log("{0} позиция не открыта.", convertable.Long);
+                Log("{0} позиция не открыта.", convertedLong.Long);
                 if (!IsTimeForTrading())
                     return;
 
@@ -178,7 +178,7 @@ namespace TrendByPivotPointsStrategy
             }
             else
             {
-                Log("{0} позиция открыта.", convertable.Long);
+                Log("{0} позиция открыта.", convertedLong.Long);
                 var currentPosition = GetPosition(notes);
 
                 UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition();
@@ -194,7 +194,7 @@ namespace TrendByPivotPointsStrategy
                     return;
                 }
 
-                var priceTakeProfit = convertable.Plus(currentPosition.iPosition.AverageEntryPrice,
+                var priceTakeProfit = convertedLong.Plus(currentPosition.iPosition.AverageEntryPrice,
                     GetAdaptiveTakeProfitPercent() / 100 * currentPosition.iPosition.AverageEntryPrice);
                 var priceChangePosition = bollingerBand[barNumber];
 
@@ -224,7 +224,7 @@ namespace TrendByPivotPointsStrategy
             Log(nameof(UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition) + ": Обновляю флаг \" Пересечение цены EMA после открытия" +
                 " или изменения позиции\". Текущее состояние флага: " + isPriceCrossedEmaAfterOpenOrChangePosition);
 
-            if (convertable.IsGreater(security.GetBarClose(barNumber), ema[barNumber]))
+            if (convertedLong.IsGreater(security.GetBarClose(barNumber), ema[barNumber]))
             {
                 isPriceCrossedEmaAfterOpenOrChangePosition = true;
                 if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
@@ -249,9 +249,9 @@ namespace TrendByPivotPointsStrategy
                     changePositionCounter = LoadChangePositionCounterFromLocalCache();                               //changePositionCounter не использую, в текущей версии робота
                     changePositionLastDealPrice = LoadChangePositionLastDealPriceFromLocalCache();
 
-                    if (lastExecutedOrder != null)
+                    if (lastExecutedOrderForOpenOrChangePosition != null)
                     {
-                        changePositionLastDealPrice = lastExecutedOrder.Price;
+                        changePositionLastDealPrice = lastExecutedOrderForOpenOrChangePosition.Price;
                         SaveChangePositionLastDealPriceToLocalCache();
                     }
                 }
@@ -568,15 +568,19 @@ namespace TrendByPivotPointsStrategy
 
                 if (executedOrders != null && executedOrders.Count() > 0)
                 {
-                    lastExecutedOrder = positionRt.EntryOrders.Where(p => p.IsExecuted).Last();
+                    var isBuy = true;
+                    if (convertedLong.IsConverted)
+                        isBuy = false;
+
+                    lastExecutedOrderForOpenOrChangePosition = positionRt.EntryOrders.Where(p => p.IsExecuted && p.IsBuy == isBuy).Last();
                     Log("{0} Последний ордер на открытие:\r\n{1}: {2}\r\n{3}: {4}\r\n{5}: {6}\r\n{7}: {8}\r\n{9}: {10}\r\n{11}: {12}\r\n{13}: {14}\r\n" +
                         "{15}: {16}\r\n{17}: {18}\r\n{19}: {20}\r\n{21}: {22}\r\n{23}: {24}\r\n{25}: {26}\r\n{27}: {28}\r\n{29}: {30}\r\n{31}: {32}\r\n" +
-                        "{33}: {34}\r\n", methodName, nameof(lastExecutedOrder.Id), lastExecutedOrder.Id, nameof(lastExecutedOrder.Price), lastExecutedOrder.Price, nameof(lastExecutedOrder.Quantity), lastExecutedOrder.Quantity,
-                        nameof(lastExecutedOrder.IsExecuted), lastExecutedOrder.IsExecuted, nameof(lastExecutedOrder.RestQuantity), lastExecutedOrder.RestQuantity, nameof(lastExecutedOrder.Date), lastExecutedOrder.Date,
-                        nameof(lastExecutedOrder.IsPriceFromTrades), lastExecutedOrder.IsPriceFromTrades, nameof(lastExecutedOrder.OrderPrice), lastExecutedOrder.OrderPrice, nameof(lastExecutedOrder.IsActive), lastExecutedOrder.IsActive,
-                        nameof(lastExecutedOrder.Status), lastExecutedOrder.Status, nameof(lastExecutedOrder.IsBuy), lastExecutedOrder.IsBuy, nameof(lastExecutedOrder.Security), lastExecutedOrder.Security,
-                        nameof(lastExecutedOrder.OrderType), lastExecutedOrder.OrderType, nameof(lastExecutedOrder.Notes), lastExecutedOrder.Notes, nameof(lastExecutedOrder.Comment), lastExecutedOrder.Comment,
-                        nameof(lastExecutedOrder.Commission), lastExecutedOrder.Commission, nameof(lastExecutedOrder.Slippage), lastExecutedOrder.Slippage);
+                        "{33}: {34}\r\n", methodName, nameof(lastExecutedOrderForOpenOrChangePosition.Id), lastExecutedOrderForOpenOrChangePosition.Id, nameof(lastExecutedOrderForOpenOrChangePosition.Price), lastExecutedOrderForOpenOrChangePosition.Price, nameof(lastExecutedOrderForOpenOrChangePosition.Quantity), lastExecutedOrderForOpenOrChangePosition.Quantity,
+                        nameof(lastExecutedOrderForOpenOrChangePosition.IsExecuted), lastExecutedOrderForOpenOrChangePosition.IsExecuted, nameof(lastExecutedOrderForOpenOrChangePosition.RestQuantity), lastExecutedOrderForOpenOrChangePosition.RestQuantity, nameof(lastExecutedOrderForOpenOrChangePosition.Date), lastExecutedOrderForOpenOrChangePosition.Date,
+                        nameof(lastExecutedOrderForOpenOrChangePosition.IsPriceFromTrades), lastExecutedOrderForOpenOrChangePosition.IsPriceFromTrades, nameof(lastExecutedOrderForOpenOrChangePosition.OrderPrice), lastExecutedOrderForOpenOrChangePosition.OrderPrice, nameof(lastExecutedOrderForOpenOrChangePosition.IsActive), lastExecutedOrderForOpenOrChangePosition.IsActive,
+                        nameof(lastExecutedOrderForOpenOrChangePosition.Status), lastExecutedOrderForOpenOrChangePosition.Status, nameof(lastExecutedOrderForOpenOrChangePosition.IsBuy), lastExecutedOrderForOpenOrChangePosition.IsBuy, nameof(lastExecutedOrderForOpenOrChangePosition.Security), lastExecutedOrderForOpenOrChangePosition.Security,
+                        nameof(lastExecutedOrderForOpenOrChangePosition.OrderType), lastExecutedOrderForOpenOrChangePosition.OrderType, nameof(lastExecutedOrderForOpenOrChangePosition.Notes), lastExecutedOrderForOpenOrChangePosition.Notes, nameof(lastExecutedOrderForOpenOrChangePosition.Comment), lastExecutedOrderForOpenOrChangePosition.Comment,
+                        nameof(lastExecutedOrderForOpenOrChangePosition.Commission), lastExecutedOrderForOpenOrChangePosition.Commission, nameof(lastExecutedOrderForOpenOrChangePosition.Slippage), lastExecutedOrderForOpenOrChangePosition.Slippage);
                 }
             }
             return Position.Create(position);
@@ -610,7 +614,7 @@ namespace TrendByPivotPointsStrategy
             if (result > maxLots)
                 result = maxLots;
 
-            if (convertable.IsConverted)
+            if (convertedLong.IsConverted)
                 result = -result;
             return result;
         }
@@ -626,7 +630,7 @@ namespace TrendByPivotPointsStrategy
                 return;
             }
 
-            if (lastExecutedOrder != null && lastExecutedOrder.IsActive)
+            if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.IsActive)
             {
                 Log("{0}: Последний исполненный ордер активный. Устанавливать новый ордер не будем.", methodName);
                 return;
@@ -655,7 +659,7 @@ namespace TrendByPivotPointsStrategy
 
         private void GetPriceAndLotsForOpenPosition(out double price, out double lots)
         {
-            if (lastExecutedOrder!=null && lastExecutedOrder.RestQuantity > 0)
+            if (lastExecutedOrderForOpenOrChangePosition!=null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0)
                 GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero(out price, out lots);
             else
             {
@@ -669,15 +673,15 @@ namespace TrendByPivotPointsStrategy
             var methodName = nameof(GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero);
             Log("{0}: Получаем количество неисполненных лотов последнего неактивного исполненного ордера и цену, по которой можно выставить новый ордер, исходя из цены последнего исполненного ордера.", methodName);
 
-            if (convertable.IsLessOrEqual(security.GetBarClose(barNumber), lastExecutedOrder.OrderPrice))
+            if (convertedLong.IsLessOrEqual(security.GetBarClose(barNumber), lastExecutedOrderForOpenOrChangePosition.OrderPrice))
                 if (security.StepPrice != null)
-                    price = convertable.Minus(security.GetBarClose(barNumber), (double)security.StepPrice);
+                    price = convertedLong.Minus(security.GetBarClose(barNumber), (double)security.StepPrice);
                 else
                     price = security.GetBarClose(barNumber);
             else
-                price = lastExecutedOrder.OrderPrice;
+                price = lastExecutedOrderForOpenOrChangePosition.OrderPrice;
 
-            lots = lastExecutedOrder.RestQuantity;
+            lots = lastExecutedOrderForOpenOrChangePosition.RestQuantity;
         }
 
         private void SetLimitOrdersForChangePosition(Position position, string notes)
@@ -687,7 +691,7 @@ namespace TrendByPivotPointsStrategy
             {               
                 Log("{0}: Устанавливаем лимитный ордер для изменения позиции", methodName);
 
-                if (lastExecutedOrder != null && lastExecutedOrder.IsActive)
+                if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.IsActive)
                 {
                     Log("{0}: Последний исполненный ордер активный. Устанавливать новый ордер не будем.", methodName);
                     return;
@@ -719,7 +723,7 @@ namespace TrendByPivotPointsStrategy
         {
             var methodName = nameof(GetPriceAndLotsForChangePosition);
 
-            if (lastExecutedOrder != null && lastExecutedOrder.RestQuantity > 0)
+            if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0)
             {
                 Log("{0}: Последний исполненный ордер был исполнен не полностью.", methodName);
                 GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero(out price, out lots);
@@ -729,16 +733,16 @@ namespace TrendByPivotPointsStrategy
                 var iPosition = position.iPosition;
                 lots = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
                 var changePositionIntervalPercent = GetAdaptiveTakeProfitPercent();
-                price = convertable.Minus(changePositionLastDealPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
-                if (convertable.IsGreater(bollingerBand[barNumber], price))
+                price = convertedLong.Minus(changePositionLastDealPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
+                if (convertedLong.IsGreater(bollingerBand[barNumber], price))
                 {
-                    var message = string.Format("{0}: Не выставляем ордер, потому что цена ордера находится {1} полосы Боллинджера", methodName, convertable.Under);
+                    var message = string.Format("{0}: Не выставляем ордер, потому что цена ордера находится {1} полосы Боллинджера", methodName, convertedLong.Under);
                     throw new Exception(message);
                 }
 
-                if (convertable.IsLessOrEqual(security.GetBarClose(barNumber), bollingerBand[barNumber]))
+                if (convertedLong.IsLessOrEqual(security.GetBarClose(barNumber), bollingerBand[barNumber]))
                 {
-                    var message = string.Format("{0}: Не выставляем ордер, потому что цена закрытия последнего бара {1} цены линии Боллинджера.", methodName, convertable.Under);
+                    var message = string.Format("{0}: Не выставляем ордер, потому что цена закрытия последнего бара {1} цены линии Боллинджера.", methodName, convertedLong.Under);
                     throw new Exception(message);
                 }
 
@@ -760,7 +764,7 @@ namespace TrendByPivotPointsStrategy
             var methodName = nameof(SetLimitOrdersForClosePosition);
             Log("{0}: Устанавливаем лимитный ордер для закрытия позиции", methodName);
 
-            var price = convertable.Plus(position.iPosition.AverageEntryPrice, GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice);
+            var price = convertedLong.Plus(position.iPosition.AverageEntryPrice, GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice);
             var iPosition = position.iPosition;
 
             if (price <= 0)
