@@ -681,8 +681,8 @@ namespace TrendByPivotPointsStrategy
                     price = security.GetBarClose(barNumber);
             else
                 price = lastExecutedOrderForOpenOrChangePosition.OrderPrice;
-            
-            lots = lastExecutedOrderForOpenOrChangePosition.Quantity;
+
+            lots = lastExecutedOrderForOpenOrChangePosition.Quantity * 2;
         }
 
         private void SetLimitOrdersForChangePosition(Position position, string notes)
