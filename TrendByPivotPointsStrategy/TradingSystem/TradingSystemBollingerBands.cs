@@ -562,17 +562,18 @@ namespace TrendByPivotPointsStrategy
             if (position is IPositionRt)
             {
                 var positionRt = position as IPositionRt;
-                IEnumerable<IOrder> executedOrders = null;
+                IEnumerable<IOrder> executedOrdersForOpenOrChangePosition = null;
+
+                var isBuy = true;
+                if (convertedLong.IsConverted)
+                    isBuy = false;
+
                 if (positionRt.EntryOrders != null)
-                    executedOrders = positionRt.EntryOrders.Where(p => p.IsExecuted);
+                    executedOrdersForOpenOrChangePosition = positionRt.EntryOrders.Where(p => p.IsExecuted && p.IsBuy == isBuy);
 
-                if (executedOrders != null && executedOrders.Count() > 0)
+                if (executedOrdersForOpenOrChangePosition != null && executedOrdersForOpenOrChangePosition.Count() > 0)
                 {
-                    var isBuy = true;
-                    if (convertedLong.IsConverted)
-                        isBuy = false;
-
-                    lastExecutedOrderForOpenOrChangePosition = positionRt.EntryOrders.Where(p => p.IsExecuted && p.IsBuy == isBuy).Last();
+                    lastExecutedOrderForOpenOrChangePosition = executedOrdersForOpenOrChangePosition.Last();
                     Log("{0} Последний ордер на открытие:\r\n{1}: {2}\r\n{3}: {4}\r\n{5}: {6}\r\n{7}: {8}\r\n{9}: {10}\r\n{11}: {12}\r\n{13}: {14}\r\n" +
                         "{15}: {16}\r\n{17}: {18}\r\n{19}: {20}\r\n{21}: {22}\r\n{23}: {24}\r\n{25}: {26}\r\n{27}: {28}\r\n{29}: {30}\r\n{31}: {32}\r\n" +
                         "{33}: {34}\r\n", methodName, nameof(lastExecutedOrderForOpenOrChangePosition.Id), lastExecutedOrderForOpenOrChangePosition.Id, nameof(lastExecutedOrderForOpenOrChangePosition.Price), lastExecutedOrderForOpenOrChangePosition.Price, nameof(lastExecutedOrderForOpenOrChangePosition.Quantity), lastExecutedOrderForOpenOrChangePosition.Quantity,
@@ -680,8 +681,8 @@ namespace TrendByPivotPointsStrategy
                     price = security.GetBarClose(barNumber);
             else
                 price = lastExecutedOrderForOpenOrChangePosition.OrderPrice;
-
-            lots = lastExecutedOrderForOpenOrChangePosition.RestQuantity;
+            
+            lots = lastExecutedOrderForOpenOrChangePosition.Quantity;
         }
 
         private void SetLimitOrdersForChangePosition(Position position, string notes)

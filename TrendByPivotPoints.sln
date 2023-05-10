@@ -28,6 +28,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogPreparator", "LogReader\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogPreparatorTests", "LogReaderTests\LogPreparatorTests.csproj", "{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationCalculator", "CorrelationCalculator\CorrelationCalculator.csproj", "{7A1EA8F0-C63C-4CDE-A973-A9D52D52BCDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationCalculatorTests", "CorrelationCalculatorTests\CorrelationCalculatorTests.csproj", "{9EF9DAA7-BFB7-4887-BE13-4C30198050D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +82,14 @@ Global
 		{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A1EA8F0-C63C-4CDE-A973-A9D52D52BCDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A1EA8F0-C63C-4CDE-A973-A9D52D52BCDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A1EA8F0-C63C-4CDE-A973-A9D52D52BCDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A1EA8F0-C63C-4CDE-A973-A9D52D52BCDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EF9DAA7-BFB7-4887-BE13-4C30198050D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EF9DAA7-BFB7-4887-BE13-4C30198050D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EF9DAA7-BFB7-4887-BE13-4C30198050D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EF9DAA7-BFB7-4887-BE13-4C30198050D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
