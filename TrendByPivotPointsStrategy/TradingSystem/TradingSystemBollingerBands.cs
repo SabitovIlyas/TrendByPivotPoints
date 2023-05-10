@@ -661,7 +661,7 @@ namespace TrendByPivotPointsStrategy
         private void GetPriceAndLotsForOpenPosition(out double price, out double lots)
         {
             if (lastExecutedOrderForOpenOrChangePosition!=null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0)
-                GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero(out price, out lots);
+                GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out price, out lots);
             else
             {
                 lots = GetLotsForOpenPosition();
@@ -669,9 +669,9 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-        private void GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero(out double price, out double lots)
+        private void GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out double price, out double lots)
         {
-            var methodName = nameof(GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero);
+            var methodName = nameof(GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero);
             Log("{0}: Получаем количество неисполненных лотов последнего неактивного исполненного ордера и цену, по которой можно выставить новый ордер, исходя из цены последнего исполненного ордера.", methodName);
 
             if (convertedLong.IsLessOrEqual(security.GetBarClose(barNumber), lastExecutedOrderForOpenOrChangePosition.OrderPrice))
@@ -683,6 +683,9 @@ namespace TrendByPivotPointsStrategy
                 price = lastExecutedOrderForOpenOrChangePosition.OrderPrice;
 
             lots = lastExecutedOrderForOpenOrChangePosition.Quantity * 2;
+
+            if (convertedLong.IsConverted)
+                lots = -lots;            
         }
 
         private void SetLimitOrdersForChangePosition(Position position, string notes)
@@ -727,7 +730,7 @@ namespace TrendByPivotPointsStrategy
             if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0)
             {
                 Log("{0}: Последний исполненный ордер был исполнен не полностью.", methodName);
-                GetPriceAndLotsForOrderIfRestQuantityGreaterThanZero(out price, out lots);
+                GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out price, out lots);
             }
             else
             {
