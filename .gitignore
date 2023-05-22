@@ -340,3 +340,4 @@ ASALocalRun/
 healthchecksdb
 
 !SabitovCapitalDataBase.txt
+/LogReader/bin/Debug/filterInclude.txt
