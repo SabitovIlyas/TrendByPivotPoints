@@ -783,12 +783,12 @@ namespace TrendByPivotPointsStrategy
                 GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out price, out lots);
             }
             else
-            {
+            {                
                 var iPosition = position.iPosition;
-                lots = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
+                var lotsResult = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
                 var changePositionIntervalPercent = GetAdaptiveTakeProfitPercent();
-                price = convertedLong.Minus(changePositionLastDealPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
-                if (convertedLong.IsGreater(bollingerBand[barNumber], price))
+                var priceLevel = convertedLong.Minus(changePositionLastDealPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
+                if (convertedLong.IsGreater(bollingerBand[barNumber], priceLevel))
                 {
                     var message = string.Format("{0}: Не выставляем ордер, потому что цена ордера находится {1} полосы Боллинджера", methodName, convertedLong.Under);
                     throw new Exception(message);
@@ -802,6 +802,9 @@ namespace TrendByPivotPointsStrategy
 
                 price = bollingerBand[barNumber];
                 lastUsedPrice = price;
+                lots = lotsResult;
+
+                Log("{0}: Устанавливаем цену ордера, соответствующую полосе Боллинджера: {1}; и количество лотов: {2}", methodName, price, lots);
             }
         }
 
