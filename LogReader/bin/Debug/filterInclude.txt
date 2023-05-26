@@ -1,1 +1,0 @@
-TradingSystemBollingerBands/Period Bollinger Band: 20; Standart Deviation Coefficient: 2; Profit Percent/NGK3NGM3:FUT/Long/
