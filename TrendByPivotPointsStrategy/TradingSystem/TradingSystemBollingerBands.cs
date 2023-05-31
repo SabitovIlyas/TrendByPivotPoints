@@ -215,20 +215,21 @@ namespace TrendByPivotPointsStrategy
 
                 if (useRelatedOrders)
                 {
-                    if (isPriceCrossedEmaAfterOpenOrChangePosition)
+                    if (isPriceCrossedEmaAfterOpenOrChangePosition || IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity())
                         SetLimitOrdersForChangePosition(currentPosition, notes);
                     SetLimitOrdersForClosePosition(currentPosition, notes);
                 }
                 else
                 {
                     if (!isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice &&
-                    isPriceCrossedEmaAfterOpenOrChangePosition)
+                    (isPriceCrossedEmaAfterOpenOrChangePosition || IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity()))
                         SetLimitOrdersForChangePosition(currentPosition, notes);
                     else
                         SetLimitOrdersForClosePosition(currentPosition, notes);
                 }
             }
         }
+
 
         private void UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition()
         {
@@ -656,13 +657,13 @@ namespace TrendByPivotPointsStrategy
                 return;
             }
 
-            if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.IsActive)
-            {
-                Log("{0}: Последний исполненный ордер для открытия или изменения позиции активный. Устанавливать новый ордер не будем. Выходим из метода.", methodName);
-                return;
-            }
+            //if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.IsActive)
+            //{
+            //    Log("{0}: Последний исполненный ордер для открытия или изменения позиции активный. Устанавливать новый ордер не будем. Выходим из метода.", methodName);
+            //    return;
+            //}
 
-            Log("{0}: Последний исполненный ордер не существует, или он не активный.", methodName);
+            //Log("{0}: Последний исполненный ордер не существует, или он не активный.", methodName);
 
             var signalName = signalNameForOpenPosition + notes;            
             var price = 0d;
@@ -679,28 +680,28 @@ namespace TrendByPivotPointsStrategy
             Log("{0}: Выставляем лимитный ордер на открытие позиции. Номер бара = {1}, Количество лотов = {2}, Цена = {3}, Название сигнала = {4}.", methodName, barNumber + 1, lots, price, signalName);
 
             if (positionSide == PositionSide.Long)
-                sec.Positions.BuyAtPrice(barNumber + 1, lots, price, signalName);
+                sec.Positions.BuyAtPrice(barNumber + 1, Math.Abs(lots), price, signalName);
 
             if (positionSide == PositionSide.Short)
-                sec.Positions.SellAtPrice(barNumber + 1, lots, price, signalName);
+                sec.Positions.SellAtPrice(barNumber + 1, Math.Abs(lots), price, signalName);
         }
 
         private void GetPriceAndLotsForOpenPosition(out double price, out double lots)
         {
             var methodName = nameof(GetPriceAndLotsForOpenPosition);
-            Log("{0}: Существует ли последний неактивный ордер исполненный для открытия или наращивания позиции, в котором есть неисполенные лоты?", methodName);
+            //Log("{0}: Существует ли последний неактивный ордер исполненный для открытия или наращивания позиции, в котором есть неисполненные лоты?", methodName);
 
-            if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0)
-            {
-                Log("{0}: Да, существует. Его Id: {1}; оставшееся количество неисполненных лотов: {2}.", methodName, lastExecutedOrderForOpenOrChangePosition.Id, lastExecutedOrderForOpenOrChangePosition.RestQuantity);
-                GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out price, out lots); 
-            }
-            else
-            {
-                Log("{0}: Нет, не существует.", methodName);
+            //if (IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity())
+            //{
+            //    Log("{0}: Да, существует. Его Id: {1}; оставшееся количество неисполненных лотов: {2}.", methodName, lastExecutedOrderForOpenOrChangePosition.Id, lastExecutedOrderForOpenOrChangePosition.RestQuantity);
+            //    GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out price, out lots); 
+            //}
+            //else
+            //{
+                //Log("{0}: Нет, не существует.", methodName);
                 lots = GetLotsForOpenPosition();
                 price = bollingerBand[barNumber];
-            }
+            //}
         }
 
         private void GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out double price, out double lots)
@@ -714,17 +715,9 @@ namespace TrendByPivotPointsStrategy
             if (convertedLong.IsLessOrEqual(security.GetBarClose(barNumber), lastExecutedOrderForOpenOrChangePosition.OrderPrice))
             {
                 Log("{0}: Да, цена закрытия бара {1} цены ордера.", methodName, convertedLong.Under);
-                Log("{0}: Есть ли у инструмента цена шага?", methodName);
-
-                if (security.StepPrice != null)
-                {
-                    Log("{0}: Да, есть. Цена шага равна: {1}.", methodName, security.StepPrice);
-                    price = convertedLong.Minus(security.GetBarClose(barNumber), (double)security.StepPrice);
-                }
-                else
-                {
-                    price = security.GetBarClose(barNumber);
-                }
+                Log("{0}: Цена шага равна: {1}.", methodName, sec.Tick);
+                price = convertedLong.Minus(security.GetBarClose(barNumber), sec.Tick);
+                
             }
             else
             {
@@ -732,7 +725,7 @@ namespace TrendByPivotPointsStrategy
                 price = lastExecutedOrderForOpenOrChangePosition.OrderPrice;
             }
 
-            lots = lastExecutedOrderForOpenOrChangePosition.Quantity * 2;
+            lots = lastExecutedOrderForOpenOrChangePosition.RestQuantity;
 
             if (convertedLong.IsConverted)
                 lots = -lots;            
@@ -777,7 +770,7 @@ namespace TrendByPivotPointsStrategy
         {
             var methodName = nameof(GetPriceAndLotsForChangePosition);
 
-            if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0)
+            if (IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity())
             {
                 Log("{0}: Последний исполненный ордер был исполнен не полностью.", methodName);
                 GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out price, out lots);
@@ -806,6 +799,18 @@ namespace TrendByPivotPointsStrategy
 
                 Log("{0}: Устанавливаем цену ордера, соответствующую полосе Боллинджера: {1}; и количество лотов: {2}", methodName, price, lots);
             }
+        }
+
+        private bool IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity()
+        {
+            var methodName = nameof(IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity);
+            Log("{0}: Последний исполненный ордер не активный и был исполнен не полностью?", methodName);
+            var result = lastExecutedOrderForOpenOrChangePosition != null && !lastExecutedOrderForOpenOrChangePosition.IsActive && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0;
+            if (result)
+                Log("{0}: Да.", methodName);
+            else
+                Log("{0}: Нет.", methodName);
+            return result;
         }
 
         private double GetAdaptiveTakeProfitPercent()
