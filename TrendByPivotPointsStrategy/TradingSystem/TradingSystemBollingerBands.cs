@@ -725,7 +725,8 @@ namespace TrendByPivotPointsStrategy
                 price = lastExecutedOrderForOpenOrChangePosition.OrderPrice;
             }
 
-            lots = lastExecutedOrderForOpenOrChangePosition.RestQuantity;
+            var newPositionFinalLots = lastExecutedOrderForOpenOrChangePosition.Quantity;
+            lots = newPositionFinalLots;
 
             if (convertedLong.IsConverted)
                 lots = -lots;            
