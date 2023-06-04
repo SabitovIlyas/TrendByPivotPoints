@@ -48,7 +48,7 @@ namespace TrendByPivotPointsStrategy
         private int currentOpenedShares = 0;
         private int changePositionCounter = 0;
         private RealTimeTrading realTimeTrading;
-        private IOrder lastExecutedOrderForOpenOrChangePosition;        
+        private IOrder lastExecutedOrderForOpenOrChangePosition;
 
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
@@ -567,7 +567,7 @@ namespace TrendByPivotPointsStrategy
 
             else
                 Log("{0}: Нет, позиция не найдена.", methodName);
-                        
+
             return result;
         }
 
@@ -665,7 +665,7 @@ namespace TrendByPivotPointsStrategy
 
             //Log("{0}: Последний исполненный ордер не существует, или он не активный.", methodName);
 
-            var signalName = signalNameForOpenPosition + notes;            
+            var signalName = signalNameForOpenPosition + notes;
             var price = 0d;
             var lots = 0d;
             GetPriceAndLotsForOpenPosition(out price, out lots);
@@ -698,9 +698,9 @@ namespace TrendByPivotPointsStrategy
             //}
             //else
             //{
-                //Log("{0}: Нет, не существует.", methodName);
-                lots = GetLotsForOpenPosition();
-                price = bollingerBand[barNumber];
+            //Log("{0}: Нет, не существует.", methodName);
+            lots = GetLotsForOpenPosition();
+            price = bollingerBand[barNumber];
             //}
         }
 
@@ -717,7 +717,7 @@ namespace TrendByPivotPointsStrategy
                 Log("{0}: Да, цена закрытия бара {1} цены ордера.", methodName, convertedLong.Under);
                 Log("{0}: Цена шага равна: {1}.", methodName, sec.Tick);
                 price = convertedLong.Minus(security.GetBarClose(barNumber), sec.Tick);
-                
+
             }
             else
             {
@@ -729,27 +729,27 @@ namespace TrendByPivotPointsStrategy
             lots = newPositionFinalLots;
 
             if (convertedLong.IsConverted)
-                lots = -lots;            
+                lots = -lots;
         }
 
         private void SetLimitOrdersForChangePosition(Position position, string notes)
         {
             var methodName = nameof(SetLimitOrdersForChangePosition);
             try
-            {               
+            {
                 Log("{0}: Устанавливаем лимитный ордер для изменения позиции", methodName);
 
-                if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.IsActive)
-                {
-                    Log("{0}: Последний исполненный ордер активный. Устанавливать новый ордер не будем.", methodName);
-                    return;
-                }
+                //if (lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.IsActive)
+                //{
+                //    Log("{0}: Последний исполненный ордер активный. Устанавливать новый ордер не будем.", methodName);
+                //    return;
+                //}
 
                 var iPosition = position.iPosition;
                 var signalName = signalNameForOpenPosition + notes;
                 var price = 0d;
                 var lots = 0d;
-                GetPriceAndLotsForChangePosition(position, out price, out lots);                
+                GetPriceAndLotsForChangePosition(position, out price, out lots);
 
                 if (price <= 0)
                 {
@@ -761,11 +761,11 @@ namespace TrendByPivotPointsStrategy
                     methodName, barNumber + 1, price, lots, signalName);
                 iPosition.ChangeAtPrice(barNumber + 1, price, lots, signalName);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 Log("{0}: Лимитный ордер для изменения позиции выставлять не будем по причине: {1}", methodName, exception.Message);
-            }            
-        }              
+            }
+        }
 
         private void GetPriceAndLotsForChangePosition(Position position, out double price, out double lots)
         {
@@ -777,7 +777,7 @@ namespace TrendByPivotPointsStrategy
                 GetPriceAndLotsForOrderForChangePositionIfRestQuantityGreaterThanZero(out price, out lots);
             }
             else
-            {                
+            {
                 var iPosition = position.iPosition;
                 var lotsResult = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
                 var changePositionIntervalPercent = GetAdaptiveTakeProfitPercent();
@@ -801,12 +801,18 @@ namespace TrendByPivotPointsStrategy
                 Log("{0}: Устанавливаем цену ордера, соответствующую полосе Боллинджера: {1}; и количество лотов: {2}", methodName, price, lots);
             }
         }
-
+        /// <summary>
+        /// Неактивность убрал
+        /// </summary>
+        /// <returns></returns>
         private bool IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity()
         {
             var methodName = nameof(IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity);
-            Log("{0}: Последний исполненный ордер не активный и был исполнен не полностью?", methodName);
-            var result = lastExecutedOrderForOpenOrChangePosition != null && !lastExecutedOrderForOpenOrChangePosition.IsActive && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0;
+            //Log("{0}: Последний исполненный ордер не активный и был исполнен не полностью?", methodName);
+            Log("{0}: Последний исполненный ордер был исполнен не полностью?", methodName);
+
+            //var result = lastExecutedOrderForOpenOrChangePosition != null && !lastExecutedOrderForOpenOrChangePosition.IsActive && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0;
+            var result = lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0;
             if (result)
                 Log("{0}: Да.", methodName);
             else
