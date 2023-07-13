@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using TrendByPivotPoints;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -49,6 +47,7 @@ namespace TrendByPivotPointsStrategy
         private int changePositionCounter = 0;
         private RealTimeTrading realTimeTrading;
         private IOrder lastExecutedOrderForOpenOrChangePosition;
+        private int constParam = 400;
 
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
@@ -197,13 +196,13 @@ namespace TrendByPivotPointsStrategy
 
                 var currentPrice = security.GetBarClose(barNumber);
 
-                if (currentPrice <= 0)
-                {
-                    Log("{0}: Текущая цена неположительная. Закрываем позицию по рынку.", methodName);
-                    var signalName = signalNameForClosePositionByTakeProfit + notes;
-                    currentPosition.iPosition.CloseAtMarket(barNumber + 1, signalName);
-                    return;
-                }
+                //if (currentPrice <= 0)
+                //{
+                //    Log("{0}: Текущая цена неположительная. Закрываем позицию по рынку.", methodName);
+                //    var signalName = signalNameForClosePositionByTakeProfit + notes;
+                //    currentPosition.iPosition.CloseAtMarket(barNumber + 1, signalName);
+                //    return;
+                //}
 
                 var priceTakeProfit = convertedLong.Plus(currentPosition.iPosition.AverageEntryPrice,
                     GetAdaptiveTakeProfitPercent() / 100 * currentPosition.iPosition.AverageEntryPrice);
@@ -670,9 +669,9 @@ namespace TrendByPivotPointsStrategy
             var lots = 0d;
             GetPriceAndLotsForOpenPosition(out price, out lots);
 
-            if (price <= 0)
+            if (price == 0)
             {
-                Log("{0}: Цена нового ордера неположительная. Ордер выставлять не будем.", methodName);
+                Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
                 return;
             }
 
@@ -751,9 +750,9 @@ namespace TrendByPivotPointsStrategy
                 var lots = 0d;
                 GetPriceAndLotsForChangePosition(position, out price, out lots);
 
-                if (price <= 0)
+                if (price == 0)
                 {
-                    Log("{0}: Цена нового ордера неположительная. Ордер выставлять не будем.", methodName);
+                    Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
                     return;
                 }
 
@@ -822,7 +821,7 @@ namespace TrendByPivotPointsStrategy
 
         private double GetAdaptiveTakeProfitPercent()
         {
-            var constParam = 400;
+            //var constParam = 400;
             var longEma = Series.EMA(sec.ClosePrices, period: 200);
             var longAtr = Series.AverageTrueRange(sec.Bars, period: 200);
             return constParam * longAtr[barNumber] / Math.Abs(longEma[barNumber]);
@@ -836,9 +835,9 @@ namespace TrendByPivotPointsStrategy
             var price = convertedLong.Plus(position.iPosition.AverageEntryPrice, GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice);
             var iPosition = position.iPosition;
 
-            if (price <= 0)
+            if (price == 0)
             {
-                Log("{0}: Цена нового ордера неположительная. Ордер выставлять не будем.", methodName);
+                Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
                 return;
             }
 
