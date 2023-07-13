@@ -229,7 +229,6 @@ namespace TrendByPivotPointsStrategy
             }
         }
 
-
         private void UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition()
         {
             Log(nameof(UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition) + ": Обновляю флаг \" Пересечение цены EMA после открытия" +
