@@ -670,8 +670,9 @@ namespace TrendByPivotPointsStrategy
 
             if (price == 0)
             {
-                Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
-                return;
+                price = convertedLong.Minus(price, sec.Tick);
+                //Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
+                //return;
             }
 
             lastUsedPrice = price;
@@ -751,8 +752,9 @@ namespace TrendByPivotPointsStrategy
 
                 if (price == 0)
                 {
-                    Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
-                    return;
+                    price = convertedLong.Minus(price, sec.Tick);
+                    //Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
+                    //return;
                 }
 
                 Log("{0}: Выставляем лимитный ордер на изменение позиции. Номер бара = {1}, Цена = {2}, Новое количество лотов = {3}, Название сигнала = {4}.",
@@ -836,8 +838,9 @@ namespace TrendByPivotPointsStrategy
 
             if (price == 0)
             {
-                Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
-                return;
+                price = convertedLong.Minus(price, sec.Tick);
+                //Log("{0}: Цена нового ордера нулевая. Ордер выставлять не будем.", methodName);
+                //return;
             }
 
             var signalName = signalNameForClosePositionByTakeProfit + notes;
