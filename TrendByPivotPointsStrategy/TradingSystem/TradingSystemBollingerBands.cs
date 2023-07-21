@@ -48,6 +48,8 @@ namespace TrendByPivotPointsStrategy
         private RealTimeTrading realTimeTrading;
         private IOrder lastExecutedOrderForOpenOrChangePosition;
         private int constParam = 400;
+        private int multiplyCoef;
+        private Position currentPosition;
 
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
@@ -189,7 +191,7 @@ namespace TrendByPivotPointsStrategy
             else
             {
                 Log("{0} позиция открыта.", convertedLong.Long);
-                var currentPosition = GetPosition(notes);
+                currentPosition = GetPosition(notes);
 
                 UpdateFlagIsPriceCrossedEmaAfterOpenOrChangePosition();
                 UpdateParametersOfCurrentPosition(currentPosition);
@@ -214,15 +216,19 @@ namespace TrendByPivotPointsStrategy
 
                 if (useRelatedOrders)
                 {
-                    if (isPriceCrossedEmaAfterOpenOrChangePosition || IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity())
+                    //if (isPriceCrossedEmaAfterOpenOrChangePosition || IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity())
+                    if (isPriceCrossedEmaAfterOpenOrChangePosition || !IsCurrentPositionSharesCorrect())
                         SetLimitOrdersForChangePosition(currentPosition, notes);
                     SetLimitOrdersForClosePosition(currentPosition, notes);
                 }
                 else
                 {
+                    //if (!isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice &&
+                    //(isPriceCrossedEmaAfterOpenOrChangePosition || IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity()))
+                    
                     if (!isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice &&
-                    (isPriceCrossedEmaAfterOpenOrChangePosition || IsLastExecutedOrderForOpenOrChangePositionNotActiveAndHasRestQuantity()))
-                        SetLimitOrdersForChangePosition(currentPosition, notes);
+                    (isPriceCrossedEmaAfterOpenOrChangePosition || !IsCurrentPositionSharesCorrect()))
+                            SetLimitOrdersForChangePosition(currentPosition, notes);
                     else
                         SetLimitOrdersForClosePosition(currentPosition, notes);
                 }
@@ -634,7 +640,7 @@ namespace TrendByPivotPointsStrategy
             var methodName = nameof(GetLotsForChangePositionBasedOnOpenedLots);
             Log("{0}: Получаем новый объём позиции, основанный на уже открытом объёме", methodName);
 
-            var result = (int)position.Shares * 2;
+            var result = (int)position.Shares * multiplyCoef;
 
             if (result > maxLots)
                 result = maxLots;
@@ -724,7 +730,8 @@ namespace TrendByPivotPointsStrategy
                 price = lastExecutedOrderForOpenOrChangePosition.OrderPrice;
             }
 
-            var newPositionFinalLots = lastExecutedOrderForOpenOrChangePosition.Quantity;
+            //var newPositionFinalLots = lastExecutedOrderForOpenOrChangePosition.Quantity;   //здесь ошибка
+            var newPositionFinalLots = GetLotsBasedOnStartLot();
             lots = newPositionFinalLots;
 
             if (convertedLong.IsConverted)
@@ -820,6 +827,27 @@ namespace TrendByPivotPointsStrategy
             return result;
         }
 
+        //private bool IsCurrentPositionSharesCorrect(Position position)
+        //{
+        //    var methodName = nameof(IsCurrentPositionSharesCorrect);
+        //    //Log("{0}: Последний исполненный ордер не активный и был исполнен не полностью?", methodName);
+        //    //Log("{0}: Последний исполненный ордер был исполнен не полностью?", methodName);
+        //    var iPosition = position.iPosition;
+
+        //    if (iPosition == null)
+        //        return true;
+
+        //    iPosition.Shares
+
+        //    //var result = lastExecutedOrderForOpenOrChangePosition != null && !lastExecutedOrderForOpenOrChangePosition.IsActive && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0;
+        //    var result = lastExecutedOrderForOpenOrChangePosition != null && lastExecutedOrderForOpenOrChangePosition.RestQuantity > 0;
+        //    if (result)
+        //        Log("{0}: Да.", methodName);
+        //    else
+        //        Log("{0}: Нет.", methodName);
+        //    return result;
+        //}
+
         private double GetAdaptiveTakeProfitPercent()
         {
             //var constParam = 400;
@@ -874,6 +902,43 @@ namespace TrendByPivotPointsStrategy
                 Log("{0}: Нет, это торговля в реальном времени.", methodName);
 
             return result;
+        }
+
+        private int GetLotsBasedOnStartLot()
+        {
+            var positionShares = GetCurrentSharesInt();
+
+            if (multiplyCoef <= 1)
+                throw new Exception("Коэффициент должен быть больше 1");
+            var lots = startLots;
+            while (positionShares > lots)
+                lots *= multiplyCoef;
+
+            return lots;
+        }
+
+        private bool IsCurrentPositionSharesCorrect()
+        {           
+            var positionShares = GetCurrentSharesInt();
+
+            if (multiplyCoef <= 1)
+                throw new Exception("Коэффициент должен быть больше 1");
+            var lots = startLots;
+            while (positionShares > lots)
+                lots *= multiplyCoef;
+
+            return positionShares == lots;
+        }
+
+        private int GetCurrentSharesInt()
+        {
+            if (currentPosition == null)
+                return 0;
+
+            if (currentPosition.iPosition == null)
+                return 0;
+
+            return (int)currentPosition.iPosition.Shares;
         }
     }
 }
