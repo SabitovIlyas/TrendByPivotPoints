@@ -48,7 +48,7 @@ namespace TrendByPivotPointsStrategy
         private RealTimeTrading realTimeTrading;
         private IOrder lastExecutedOrderForOpenOrChangePosition;
         private int constParam = 400;
-        private int multiplyCoef;
+        private int multiplyCoef = 2;
         private Position currentPosition;
 
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
