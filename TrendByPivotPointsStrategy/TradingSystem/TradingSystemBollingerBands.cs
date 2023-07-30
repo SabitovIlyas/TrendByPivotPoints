@@ -207,7 +207,7 @@ namespace TrendByPivotPointsStrategy
                 //}
 
                 var priceTakeProfit = convertedLong.Plus(currentPosition.iPosition.AverageEntryPrice,
-                    GetAdaptiveTakeProfitPercent() / 100 * currentPosition.iPosition.AverageEntryPrice);
+                    Math.Abs(GetAdaptiveTakeProfitPercent() / 100 * currentPosition.iPosition.AverageEntryPrice));
                 var priceChangePosition = bollingerBand[barNumber];
 
                 var isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice =
@@ -788,7 +788,7 @@ namespace TrendByPivotPointsStrategy
                 var iPosition = position.iPosition;
                 var lotsResult = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
                 var changePositionIntervalPercent = GetAdaptiveTakeProfitPercent();
-                var priceLevel = convertedLong.Minus(changePositionLastDealPrice, changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice);
+                var priceLevel = convertedLong.Minus(changePositionLastDealPrice, Math.Abs(changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice));
                 if (convertedLong.IsGreater(bollingerBand[barNumber], priceLevel))
                 {
                     var message = string.Format("{0}: Не выставляем ордер, потому что цена ордера находится {1} полосы Боллинджера", methodName, convertedLong.Under);
@@ -861,7 +861,7 @@ namespace TrendByPivotPointsStrategy
             var methodName = nameof(SetLimitOrdersForClosePosition);
             Log("{0}: Устанавливаем лимитный ордер для закрытия позиции", methodName);
 
-            var price = convertedLong.Plus(position.iPosition.AverageEntryPrice, GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice);
+            var price = convertedLong.Plus(position.iPosition.AverageEntryPrice, Math.Abs(GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice));
             var iPosition = position.iPosition;
 
             if (price == 0)
