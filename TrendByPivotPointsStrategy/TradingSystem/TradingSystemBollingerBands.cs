@@ -788,7 +788,8 @@ namespace TrendByPivotPointsStrategy
                 var iPosition = position.iPosition;
                 var lotsResult = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
                 var changePositionIntervalPercent = GetAdaptiveTakeProfitPercent();
-                var priceLevel = convertedLong.Minus(changePositionLastDealPrice, Math.Abs(changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice));
+                var priceTakeProfit = convertedLong.Plus(currentPosition.iPosition.AverageEntryPrice, Math.Abs(changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice));
+                var priceLevel = convertedLong.Minus(changePositionLastDealPrice, Math.Abs(priceTakeProfit - changePositionLastDealPrice));
                 if (convertedLong.IsGreater(bollingerBand[barNumber], priceLevel))
                 {
                     var message = string.Format("{0}: Не выставляем ордер, потому что цена ордера находится {1} полосы Боллинджера", methodName, convertedLong.Under);
