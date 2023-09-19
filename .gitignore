@@ -341,3 +341,4 @@ healthchecksdb
 
 !SabitovCapitalDataBase.txt
 /LogReader/bin/Debug/filterInclude.txt
+/LogReader/bin/Debug/filterExclude.txt

@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using TrendByPivotPoints;
+using TSLab.Script;
 using TSLab.Utils;
 
 namespace TrendByPivotPointsStrategy.Tests
@@ -93,6 +94,68 @@ namespace TrendByPivotPointsStrategy.Tests
 
             Assert.AreEqual(expected, actual);
         }
+
+        private int GetLotsBasedOnStartLot(int positionShares, int startLots, int coef)
+        {
+            if (coef <= 1)
+                throw new Exception("Коэффициент должен быть больше 1");
+            var lots = startLots;
+            while (positionShares > lots)            
+                lots *= coef;            
+
+            return lots;
+        }
+
+        [TestMethod()]
+        public void GetLotsBasedOnStartLotTest()
+        {
+            var expected = 8;
+            var positionShares = 7;
+            var startLorts = 4;
+            var coef = 2;
+
+            var actual = GetLotsBasedOnStartLot(positionShares, startLorts, coef);
+            
+            Assert.AreEqual(expected, actual);
+        }
+
+        private bool IsCurrentPositionSharesCorrect(int positionShares, int startLots, int coef)
+        {
+            if (coef <= 1)
+                throw new Exception("Коэффициент должен быть больше 1");
+            var lots = startLots;
+            while (positionShares > lots)
+                lots *= coef;            
+
+            return positionShares == lots;
+        }
+
+        [TestMethod()]
+        public void IsCurrentPositionSharesCorrectTest_False()
+        {
+            var expected = false;
+            var positionShares = 7;
+            var startLorts = 4;
+            var coef = 2;
+
+            var actual = IsCurrentPositionSharesCorrect(positionShares, startLorts, coef);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void IsCurrentPositionSharesCorrectTest_True()
+        {
+            var expected = true;
+            var positionShares = 8;
+            var startLorts = 4;
+            var coef = 2;
+
+            var actual = IsCurrentPositionSharesCorrect(positionShares, startLorts, coef);
+
+            Assert.AreEqual(expected, actual);
+        }
+
     }
 
     public class ClassForTestKeyWords
@@ -136,5 +199,5 @@ namespace TrendByPivotPointsStrategy.Tests
         {
             Property = property;
         }
-    }
+    }    
 }

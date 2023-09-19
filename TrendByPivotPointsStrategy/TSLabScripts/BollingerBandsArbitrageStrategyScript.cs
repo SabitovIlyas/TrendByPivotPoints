@@ -3,6 +3,7 @@ using TSLab.Script.Handlers;
 using TSLab.Script.Optimization;
 using TSLab.Script;
 using TSLab.Script.Realtime;
+using System.Reflection;
 
 namespace TrendByPivotPointsStrategy
 {    
