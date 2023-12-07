@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CorrelationCalculatorTests</RootNamespace>
     <AssemblyName>CorrelationCalculatorTests</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -66,6 +66,10 @@
     <ProjectReference Include="..\CorrelationCalculator\CorrelationCalculator.csproj">
       <Project>{7A1EA8F0-C63C-4CDE-A973-A9D52D52BCDD}</Project>
       <Name>CorrelationCalculator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TrendByPivotPointsPeparatorDataForSpread\TrendByPivotPointsPeparatorDataForSpread.csproj">
+      <Project>{02a019be-bd8f-4dcb-ac8f-69bf74827f47}</Project>
+      <Name>TrendByPivotPointsPeparatorDataForSpread</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

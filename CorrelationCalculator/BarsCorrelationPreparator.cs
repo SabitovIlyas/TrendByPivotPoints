@@ -1,23 +1,82 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TrendByPivotPointsPeparatorDataForSpread;
 
 namespace CorrelationCalculator
 {
     public class BarsCorrelationPreparator
     {
-        List<Bar> barsFirstSecurityPrepared = new List<Bar>();
-        List<Bar> barsSecondSecurityPrepared = new List<Bar>();
+        public List<Bar> BarsFirstSecurityPrepared { get; private set; } = new List<Bar>();
+        public List<Bar> BarsSecondSecurityPrepared { get; private set; } = new List<Bar>();
+
+        private List<Bar> barsFirstSecurity;
+        private List<Bar> barsSecondSecurity;
+        private List<DateTime> timeLine;
 
         public BarsCorrelationPreparator(List<Bar> barsFirstSecurity, List<Bar> barsSecondSecurity)
         {
-            //var dateTime
-
-            // barsFirstSecurity[0].DateTime
+            this.barsFirstSecurity = barsFirstSecurity;
+            this.barsSecondSecurity = barsSecondSecurity;
         }
 
-        public List<Bar> fff()
+        public void Prepare()
         {
-            return null;
+            timeLine = CreateTimeLine();
+            CreateMissedBars();
+            InterpolateMissedBars();
+        }       
+
+        private List<DateTime> CreateTimeLine()
+        {
+            var listDateTime = new List<DateTime>();
+            foreach (Bar bar in barsFirstSecurity)
+                listDateTime.Add(bar.DateTime);
+
+            foreach (Bar bar in barsSecondSecurity)
+                if (!listDateTime.Contains(bar.DateTime))
+                    listDateTime.Add(bar.DateTime);
+
+            listDateTime.Sort();
+            return listDateTime;
+        }
+
+        private void CreateMissedBars()
+        {
+            var doesBarsFirstSecurityHaveMarkedElements = false;
+            var doesBarsSecondSecurityHaveMarkedElements = false;
+            foreach (var time in timeLine)
+            {
+                if (barsFirstSecurity.Where(p => p.DateTime == time).Count() == 0)
+                {
+                    barsFirstSecurity.Add(Bar.Create(time, 0, 0, 0, 0, ticker: "Marked"));
+                    doesBarsFirstSecurityHaveMarkedElements = true;
+                }
+                if (barsSecondSecurity.Where(p => p.DateTime == time).Count() == 0)
+                {
+                    barsSecondSecurity.Add(Bar.Create(time, 0, 0, 0, 0, ticker: "Marked"));
+                    doesBarsSecondSecurityHaveMarkedElements = true;
+                }
+            }
+
+            var comparer = new BarsComparer();
+
+            if (doesBarsFirstSecurityHaveMarkedElements)
+                barsFirstSecurity.Sort(comparer);
+
+            if (doesBarsSecondSecurityHaveMarkedElements)
+                barsSecondSecurity.Sort(comparer);
+        }
+
+        private void InterpolateMissedBars()
+        {
+            Bar barLeft;
+            Bar barRight;
+
+            for (var i = 0; i < barsFirstSecurity.Count; i++)
+            {
+
+            }
         }
     }
 }
