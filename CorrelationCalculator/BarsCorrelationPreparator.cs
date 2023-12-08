@@ -69,12 +69,22 @@ namespace CorrelationCalculator
         }
 
         private void InterpolateMissedBars()
-        {
-            Bar barLeft;
-            Bar barRight;
-
+        {            
             for (var i = 0; i < barsFirstSecurity.Count; i++)
             {
+                Bar barLeft = null;
+                Bar barRight = null;
+                Bar bar = barsFirstSecurity[i];
+                if (i > 0)
+                    barLeft = barsFirstSecurity[i - 1]; //не просто слева, а слева, без пометки Marked
+
+                if (i < barsFirstSecurity.Count - 1)
+                    barRight = barsFirstSecurity[i + 1]; //не просто справа, а справа, без пометки Marked
+
+                //if (bar.Ticker == "Marked")
+                //    if (barLeft != null)
+
+
 
             }
         }
