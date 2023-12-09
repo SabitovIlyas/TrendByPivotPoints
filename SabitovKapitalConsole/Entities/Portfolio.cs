@@ -108,13 +108,14 @@
         public void RecalcSharesForAllAccounts(Account account)
         {
             var transaction = account.Transactions.Last();
-            //var balanceAfterTransaction = Balance.GetCurrentBalance() + transaction.ValueWithSign;
-            //Balance.get
+         
             foreach (var acc in Accounts)
             {
-                var accountBalanceBeforeTransaction = acc.Share * transaction.BalanceBeforeTransaction;
-                if (acc == account)
-                    accountBalanceBeforeTransaction += transaction.ValueWithSign;
+                var accountBalanceBeforeTransaction = 0m;
+                accountBalanceBeforeTransaction = acc.Share * transaction.BalanceBeforeTransaction;
+                if (acc == account && transaction.Operation != Operation.CloseAccount)                
+                    accountBalanceBeforeTransaction += transaction.ValueWithSign; 
+
                 acc.Share = accountBalanceBeforeTransaction / transaction.BalanceAfterTransaction;               
             }
         }

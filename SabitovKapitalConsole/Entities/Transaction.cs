@@ -15,6 +15,8 @@
                         return Value;
                     case Operation.WithdrawProfit:
                         return -Value;
+                    case Operation.CloseAccount:
+                        return -Value;
                 }
                 return 0;
             }

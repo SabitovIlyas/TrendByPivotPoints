@@ -2,6 +2,6 @@
 {
     public enum Operation
     {
-        Deposit, WithdrawProfit, WithdrawDeposit
+        Deposit, WithdrawProfit, WithdrawDeposit, CloseAccount
     }
 }

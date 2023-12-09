@@ -11,6 +11,7 @@ namespace SabitovCapitalConsole.Entities
         public decimal Share { get; set; }
         private Balance balance;
         private Portfolio portfolio;
+        public bool isClosed = false;
         
         public static Account Create(string name, Portfolio portfolio)
         {
@@ -43,6 +44,12 @@ namespace SabitovCapitalConsole.Entities
             Name = name;
             balance = portfolio.Balance;
             this.portfolio = portfolio;
+        }
+
+        public void CloseAccount(DateTime dateTime)
+        {
+            var totalBalance = GetDeposit() + GetProfit();
+            CreateTransaction(Operation.CloseAccount, totalBalance, dateTime);
         }
 
         public void CreateTransaction(Operation operation, decimal value, DateTime dateTime)
