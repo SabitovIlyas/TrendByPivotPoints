@@ -44,13 +44,7 @@ namespace SabitovCapitalConsole.Entities
             Name = name;
             balance = portfolio.Balance;
             this.portfolio = portfolio;
-        }
-
-        public void CloseAccount(DateTime dateTime)
-        {
-            var totalBalance = GetDeposit() + GetProfit();
-            CreateTransaction(Operation.CloseAccount, totalBalance, dateTime);
-        }
+        }        
 
         public void CreateTransaction(Operation operation, decimal value, DateTime dateTime)
         {

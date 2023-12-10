@@ -152,7 +152,7 @@ namespace SabitovCapitalConsole.Tests
         }
 
         [TestMethod()]
-        public void GetDepositTest()
+        public void CloseAccountTest()
         {
             var expectedBalanceAccount1 = 300000m;
             var expectedBalanceAccount2 = 0m;
@@ -160,7 +160,7 @@ namespace SabitovCapitalConsole.Tests
             portfolio = Portfolio.Create(balance);
             var account1 = Account.Create("Сабитов Ильяс Ильдарович", portfolio);
             var account2 = Account.Create("Пятанов Иван Вадимович", portfolio);
-            GetDepositTestHelperCase(account1, account2);
+            CloseAccountHelper(account1, account2);
 
             var actualBalanceAccount1 = account1.GetDeposit() + account1.GetProfit();
             var actualBalanceAccount2 = account2.GetDeposit() + account2.GetProfit();
@@ -174,7 +174,7 @@ namespace SabitovCapitalConsole.Tests
                 Assert.Fail(string.Format("expected = {0}, actual = {1}", expectedBalanceAccount2, actualBalanceAccount2));
         }
 
-        private void GetDepositTestHelperCase(Account account1, Account account2)
+        private void CloseAccountHelper(Account account1, Account account2)
         {
             dateTime = new DateTime(2022, 12, 01);
             balance.Update(dateTime, value: 0m);            
@@ -187,30 +187,14 @@ namespace SabitovCapitalConsole.Tests
             dateTime = new DateTime(2022, 12, 03);
             balance.Update(dateTime, value: 400000m);            
 
-            //balance.Update(dateTime, value: 400000m);
-
             dateTime = new DateTime(2023, 01, 04);
-            balance.Update(dateTime, value: 200000m);   //200 000
+            balance.Update(dateTime, value: 200000m);   //200 000            
 
-            var deposit1 = account1.GetDeposit();
-            var profit1 = account1.GetProfit();
-
-            var deposit2 = account2.GetDeposit();   //100 000
-            var profit2 = account2.GetProfit();     //-50 000
-
-            dateTime = new DateTime(2023, 01, 05);
-            account2.CloseAccount(dateTime);
-
-            deposit2 = account2.GetDeposit();
-            profit2 = account2.GetProfit();
-            var total = deposit2 + profit2;
+            dateTime = new DateTime(2023, 01, 05);            
+            account2.CreateTransaction(Operation.CloseAccount, 50000, dateTime); //50 000
 
             dateTime = new DateTime(2023, 01, 06);
             balance.Update(dateTime, value: 300000m);
-
-            deposit1 = account1.GetDeposit();
-            profit1 = account1.GetProfit();
-            total = deposit1 + profit1;
         }
 
         [TestMethod()]

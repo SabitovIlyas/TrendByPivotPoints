@@ -111,9 +111,8 @@
          
             foreach (var acc in Accounts)
             {
-                var accountBalanceBeforeTransaction = 0m;
-                accountBalanceBeforeTransaction = acc.Share * transaction.BalanceBeforeTransaction;
-                if (acc == account && transaction.Operation != Operation.CloseAccount)                
+                decimal accountBalanceBeforeTransaction = acc.Share * transaction.BalanceBeforeTransaction;
+                if (acc == account)                
                     accountBalanceBeforeTransaction += transaction.ValueWithSign; 
 
                 acc.Share = accountBalanceBeforeTransaction / transaction.BalanceAfterTransaction;               
