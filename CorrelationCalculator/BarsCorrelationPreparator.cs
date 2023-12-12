@@ -13,20 +13,26 @@ namespace CorrelationCalculator
         private List<Bar> barsFirstSecurity;
         private List<Bar> barsSecondSecurity;
         private List<DateTime> timeLine;
+        private string marked = "Marked";
+        private string firstSecurityPeriod = string.Empty;
+        private string secondSecurityPeriod = string.Empty;
 
         public BarsCorrelationPreparator(List<Bar> barsFirstSecurity, List<Bar> barsSecondSecurity)
         {
             this.barsFirstSecurity = barsFirstSecurity;
             this.barsSecondSecurity = barsSecondSecurity;
+            firstSecurityPeriod = barsFirstSecurity.First().Period;
+            secondSecurityPeriod = barsSecondSecurity.First().Period;
         }
 
         public void Prepare()
         {
             timeLine = CreateTimeLine();
             CreateMissedBars();
+            ExtraPolateMissedBars();
             InterpolateMissedBars();
-        }       
-
+        }
+        
         private List<DateTime> CreateTimeLine()
         {
             var listDateTime = new List<DateTime>();
@@ -49,12 +55,12 @@ namespace CorrelationCalculator
             {
                 if (barsFirstSecurity.Where(p => p.DateTime == time).Count() == 0)
                 {
-                    barsFirstSecurity.Add(Bar.Create(time, 0, 0, 0, 0, ticker: "Marked"));
+                    barsFirstSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked));
                     doesBarsFirstSecurityHaveMarkedElements = true;
                 }
                 if (barsSecondSecurity.Where(p => p.DateTime == time).Count() == 0)
                 {
-                    barsSecondSecurity.Add(Bar.Create(time, 0, 0, 0, 0, ticker: "Marked"));
+                    barsSecondSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked));
                     doesBarsSecondSecurityHaveMarkedElements = true;
                 }
             }
@@ -68,24 +74,58 @@ namespace CorrelationCalculator
                 barsSecondSecurity.Sort(comparer);
         }
 
+        private void ExtraPolateMissedBars()
+        {
+            int index;
+
+            index = 0;
+            if (barsFirstSecurity[index].Ticker == marked)
+            {
+                var bar = barsFirstSecurity.Find(p => p.Ticker != marked);
+                barsFirstSecurity[index].Open = bar.Open;
+                barsFirstSecurity[index].High = bar.High;
+                barsFirstSecurity[index].Low = bar.Low;
+                barsFirstSecurity[index].Close = bar.Close;
+                barsFirstSecurity[index].Volume = bar.Volume;
+                barsFirstSecurity[index].Ticker = bar.Ticker;
+            }
+
+            index = barsFirstSecurity.Count - 1;
+            if (barsFirstSecurity[index].Ticker == marked)
+            {
+                var bar = barsFirstSecurity.FindLast(p => p.Ticker != marked);
+                barsFirstSecurity[index].Open = bar.Open;
+                barsFirstSecurity[index].High = bar.High;
+                barsFirstSecurity[index].Low = bar.Low;
+                barsFirstSecurity[index].Close = bar.Close;
+                barsFirstSecurity[index].Volume = bar.Volume;
+                barsFirstSecurity[index].Ticker = bar.Ticker;
+            }
+        }
+
+
         private void InterpolateMissedBars()
         {            
-            for (var i = 0; i < barsFirstSecurity.Count; i++)
+            for (var i = 1; i < barsFirstSecurity.Count-1; i++)
             {
-                Bar barLeft = null;
-                Bar barRight = null;
-                Bar bar = barsFirstSecurity[i];
-                if (i > 0)
-                    barLeft = barsFirstSecurity[i - 1]; //не просто слева, а слева, без пометки Marked
+                if (barsFirstSecurity[i].Ticker != marked)
+                    continue;
 
-                if (i < barsFirstSecurity.Count - 1)
-                    barRight = barsFirstSecurity[i + 1]; //не просто справа, а справа, без пометки Marked
+                var bar = barsFirstSecurity[i];
+                var barLeft = barsFirstSecurity[i-1];
 
-                //if (bar.Ticker == "Marked")
-                //    if (barLeft != null)
+                int j;
+                for (j = i + 1; j < barsFirstSecurity.Count; j++)
+                    if (barsFirstSecurity[j].Ticker != marked)
+                        break;
 
+                var barRight = barsFirstSecurity[j];
 
-
+                bar.Open = barLeft.Open + (barRight.Open - barLeft.Open) / (j - i + 1);
+                bar.High = barLeft.High + (barRight.High - barLeft.High) / (j - i + 1);
+                bar.Low = barLeft.Low + (barRight.Low - barLeft.Low) / (j - i + 1);
+                bar.Close = barLeft.Close + (barRight.Close - barLeft.Close) / (j - i + 1);
+                bar.Volume = barLeft.Volume + (barRight.Volume - barLeft.Volume) / (j - i + 1);
             }
         }
     }

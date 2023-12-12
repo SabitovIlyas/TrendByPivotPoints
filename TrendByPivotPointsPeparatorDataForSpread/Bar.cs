@@ -7,14 +7,14 @@ namespace TrendByPivotPointsPeparatorDataForSpread
 {
     public class Bar
     {
-        public string Ticker { get; private set; }
+        public string Ticker { get; set; }
         public string Period { get; private set; }
         public DateTime DateTime { get; private set; }        
-        public double Open { get; private set; }
-        public double High { get; private set; }
-        public double Low { get; private set; }
-        public double Close { get; private set; }
-        public double Volume { get; private set; }
+        public double Open { get; set; }
+        public double High { get; set; }
+        public double Low { get; set; }
+        public double Close { get; set; }
+        public double Volume { get; set; }
 
         public static Bar Create(DateTime dateTime, double open, double high, double low, double close,
             double volume = 0, string ticker = "", string period = "")
