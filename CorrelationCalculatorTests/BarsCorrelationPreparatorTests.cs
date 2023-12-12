@@ -16,10 +16,10 @@ namespace CorrelationCalculator.Tests
                 Bar.Create(new DateTime(2023, 11, 20), 91036, 91233, 88744, 89003),
                 Bar.Create(new DateTime(2023, 11, 24), 89127, 90080, 88830, 89463) };
             var goldBars = new List<Bar>() {
-                Bar.Create(new DateTime(2023, 11, 20), 1979.9, 1982.0, 1964.5, 1972.4),
-                Bar.Create(new DateTime(2023, 11, 22), 1999.8, 2004.0, 1985.5, 1988.5),
-                Bar.Create(new DateTime(2023, 11, 24), 1985.1, 2000.0, 1982.4, 1994.9),
-                Bar.Create(new DateTime(2023, 11, 27), 1994.8, 2014.9, 1991.7, 2004.3),
+                Bar.Create(new DateTime(2023, 11, 20), 1979.9, 1982.0, 1964.5, 1972.4, digitsAfterPoint:1),
+                Bar.Create(new DateTime(2023, 11, 22), 1999.8, 2004.0, 1985.5, 1988.5, digitsAfterPoint:1),
+                Bar.Create(new DateTime(2023, 11, 24), 1985.1, 2000.0, 1982.4, 1994.9, digitsAfterPoint:1),
+                Bar.Create(new DateTime(2023, 11, 27), 1994.8, 2014.9, 1991.7, 2004.3, digitsAfterPoint:1),
             };
 
             var expectedSiBars = new List<Bar>() {
@@ -30,21 +30,19 @@ namespace CorrelationCalculator.Tests
                 Bar.Create(new DateTime(2023, 11, 27), 89127, 90080, 88830, 89463)
             };
             var expectedGoldBars = new List<Bar>() {
-                Bar.Create(new DateTime(2023, 11, 17), 1979.9, 1982.0, 1964.5, 1972.4),
-                Bar.Create(new DateTime(2023, 11, 20), 1979.9, 1982.0, 1964.5, 1972.4),
-                Bar.Create(new DateTime(2023, 11, 22), 1999.8, 2004.0, 1985.5, 1988.5),
-                Bar.Create(new DateTime(2023, 11, 24), 1985.1, 2000.0, 1982.4, 1994.9),
-                Bar.Create(new DateTime(2023, 11, 27), 1994.8, 2014.9, 1991.7, 2004.3),
+                Bar.Create(new DateTime(2023, 11, 17), 1979.9, 1982.0, 1964.5, 1972.4, digitsAfterPoint:1),
+                Bar.Create(new DateTime(2023, 11, 20), 1979.9, 1982.0, 1964.5, 1972.4, digitsAfterPoint:1),
+                Bar.Create(new DateTime(2023, 11, 22), 1999.8, 2004.0, 1985.5, 1988.5, digitsAfterPoint:1),
+                Bar.Create(new DateTime(2023, 11, 24), 1985.1, 2000.0, 1982.4, 1994.9, digitsAfterPoint:1),
+                Bar.Create(new DateTime(2023, 11, 27), 1994.8, 2014.9, 1991.7, 2004.3, digitsAfterPoint:1),
             };
 
             var barsCorrelationPreparator = new BarsCorrelationPreparator(siBars, goldBars);
-            barsCorrelationPreparator.Prepare();
-            var actualSiBars = barsCorrelationPreparator.BarsFirstSecurityPrepared;
-            var actualGoldBars = barsCorrelationPreparator.BarsSecondSecurityPrepared;            
+            barsCorrelationPreparator.Prepare();            
 
             Assert.IsTrue(
-                IsListBarEquals(expectedSiBars, actualSiBars) && 
-                IsListBarEquals(expectedGoldBars, actualGoldBars));            
+                IsListBarEquals(expectedSiBars, siBars) &&
+                IsListBarEquals(expectedGoldBars, goldBars));
         }
 
         private bool IsListBarEquals(List<Bar> expectedBars, List<Bar> actualBars)

@@ -7,8 +7,8 @@ namespace CorrelationCalculator
 {
     public class BarsCorrelationPreparator
     {
-        public List<Bar> BarsFirstSecurityPrepared { get; private set; } = new List<Bar>();
-        public List<Bar> BarsSecondSecurityPrepared { get; private set; } = new List<Bar>();
+        //public List<Bar> BarsFirstSecurityPrepared { get; private set; } = new List<Bar>();
+        //public List<Bar> BarsSecondSecurityPrepared { get; private set; } = new List<Bar>();
 
         private List<Bar> barsFirstSecurity;
         private List<Bar> barsSecondSecurity;
@@ -16,21 +16,29 @@ namespace CorrelationCalculator
         private string marked = "Marked";
         private string firstSecurityPeriod = string.Empty;
         private string secondSecurityPeriod = string.Empty;
+        private int firstSecurityDigitsAfterPoint = 0;
+        private int secondSecurityDigitsAfterPoint = 0;
 
         public BarsCorrelationPreparator(List<Bar> barsFirstSecurity, List<Bar> barsSecondSecurity)
         {
             this.barsFirstSecurity = barsFirstSecurity;
             this.barsSecondSecurity = barsSecondSecurity;
+
             firstSecurityPeriod = barsFirstSecurity.First().Period;
             secondSecurityPeriod = barsSecondSecurity.First().Period;
+            firstSecurityDigitsAfterPoint = barsFirstSecurity.First().DigitsAfterPoint;
+            secondSecurityDigitsAfterPoint = barsSecondSecurity.First().DigitsAfterPoint;
         }
 
         public void Prepare()
         {
             timeLine = CreateTimeLine();
             CreateMissedBars();
-            ExtraPolateMissedBars();
-            InterpolateMissedBars();
+            ExtraPolateMissedBars(barsFirstSecurity);
+            InterpolateMissedBars(barsFirstSecurity, firstSecurityDigitsAfterPoint);
+
+            ExtraPolateMissedBars(barsSecondSecurity);
+            InterpolateMissedBars(barsSecondSecurity, secondSecurityDigitsAfterPoint);
         }
         
         private List<DateTime> CreateTimeLine()
@@ -55,12 +63,12 @@ namespace CorrelationCalculator
             {
                 if (barsFirstSecurity.Where(p => p.DateTime == time).Count() == 0)
                 {
-                    barsFirstSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked));
+                    barsFirstSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked, period: firstSecurityPeriod));
                     doesBarsFirstSecurityHaveMarkedElements = true;
                 }
                 if (barsSecondSecurity.Where(p => p.DateTime == time).Count() == 0)
                 {
-                    barsSecondSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked));
+                    barsSecondSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked, period: secondSecurityPeriod));
                     doesBarsSecondSecurityHaveMarkedElements = true;
                 }
             }
@@ -74,58 +82,58 @@ namespace CorrelationCalculator
                 barsSecondSecurity.Sort(comparer);
         }
 
-        private void ExtraPolateMissedBars()
+        private void ExtraPolateMissedBars(List<Bar> bars)
         {
             int index;
 
             index = 0;
-            if (barsFirstSecurity[index].Ticker == marked)
+            if (bars[index].Ticker == marked)
             {
-                var bar = barsFirstSecurity.Find(p => p.Ticker != marked);
-                barsFirstSecurity[index].Open = bar.Open;
-                barsFirstSecurity[index].High = bar.High;
-                barsFirstSecurity[index].Low = bar.Low;
-                barsFirstSecurity[index].Close = bar.Close;
-                barsFirstSecurity[index].Volume = bar.Volume;
-                barsFirstSecurity[index].Ticker = bar.Ticker;
+                var bar = bars.Find(p => p.Ticker != marked);
+                bars[index].Open = bar.Open;
+                bars[index].High = bar.High;
+                bars[index].Low = bar.Low;
+                bars[index].Close = bar.Close;
+                bars[index].Volume = bar.Volume;
+                bars[index].Ticker = bar.Ticker;
             }
 
-            index = barsFirstSecurity.Count - 1;
-            if (barsFirstSecurity[index].Ticker == marked)
+            index = bars.Count - 1;
+            if (bars[index].Ticker == marked)
             {
-                var bar = barsFirstSecurity.FindLast(p => p.Ticker != marked);
-                barsFirstSecurity[index].Open = bar.Open;
-                barsFirstSecurity[index].High = bar.High;
-                barsFirstSecurity[index].Low = bar.Low;
-                barsFirstSecurity[index].Close = bar.Close;
-                barsFirstSecurity[index].Volume = bar.Volume;
-                barsFirstSecurity[index].Ticker = bar.Ticker;
+                var bar = bars.FindLast(p => p.Ticker != marked);
+                bars[index].Open = bar.Open;
+                bars[index].High = bar.High;
+                bars[index].Low = bar.Low;
+                bars[index].Close = bar.Close;
+                bars[index].Volume = bar.Volume;
+                bars[index].Ticker = bar.Ticker;
             }
         }
 
-
-        private void InterpolateMissedBars()
+        private void InterpolateMissedBars(List<Bar> bars, int digitsAfterPoint)
         {            
-            for (var i = 1; i < barsFirstSecurity.Count-1; i++)
+            for (var i = 1; i < bars.Count-1; i++)
             {
-                if (barsFirstSecurity[i].Ticker != marked)
+                if (bars[i].Ticker != marked)
                     continue;
 
-                var bar = barsFirstSecurity[i];
-                var barLeft = barsFirstSecurity[i-1];
+                var bar = bars[i];
+                var barLeft = bars[i-1];
 
                 int j;
-                for (j = i + 1; j < barsFirstSecurity.Count; j++)
-                    if (barsFirstSecurity[j].Ticker != marked)
+                for (j = i + 1; j < bars.Count; j++)
+                    if (bars[j].Ticker != marked)
                         break;
 
-                var barRight = barsFirstSecurity[j];
+                var barRight = bars[j];
 
-                bar.Open = barLeft.Open + (barRight.Open - barLeft.Open) / (j - i + 1);
-                bar.High = barLeft.High + (barRight.High - barLeft.High) / (j - i + 1);
-                bar.Low = barLeft.Low + (barRight.Low - barLeft.Low) / (j - i + 1);
-                bar.Close = barLeft.Close + (barRight.Close - barLeft.Close) / (j - i + 1);
-                bar.Volume = barLeft.Volume + (barRight.Volume - barLeft.Volume) / (j - i + 1);
+                bar.Open = Math.Round(barLeft.Open + (barRight.Open - barLeft.Open) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                bar.High = Math.Round(barLeft.High + (barRight.High - barLeft.High) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                bar.Low = Math.Round(barLeft.Low + (barRight.Low - barLeft.Low) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                bar.Close = Math.Round(barLeft.Close + (barRight.Close - barLeft.Close) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                bar.Volume = Math.Round(barLeft.Volume + (barRight.Volume - barLeft.Volume) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                bar.Ticker = barLeft.Ticker;
             }
         }
     }

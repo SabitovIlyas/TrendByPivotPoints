@@ -15,15 +15,16 @@ namespace TrendByPivotPointsPeparatorDataForSpread
         public double Low { get; set; }
         public double Close { get; set; }
         public double Volume { get; set; }
+        public int DigitsAfterPoint { get; set; }
 
         public static Bar Create(DateTime dateTime, double open, double high, double low, double close,
-            double volume = 0, string ticker = "", string period = "")
+            double volume = 0, string ticker = "", string period = "", int digitsAfterPoint = 0)
         {
-            return new Bar(dateTime, open, high, low, close, volume, ticker, period);
+            return new Bar(dateTime, open, high, low, close, volume, ticker, period, digitsAfterPoint);
         }
 
         private Bar(DateTime dateTime, double open, double high, double low, double close,
-            double volume, string ticker, string period)
+            double volume, string ticker, string period, int digitsAfterPoint)
         {
             Ticker = ticker;
             Period = period;
@@ -33,6 +34,7 @@ namespace TrendByPivotPointsPeparatorDataForSpread
             Low = low;
             Close = close;
             Volume = volume;
+            DigitsAfterPoint = digitsAfterPoint;
         }
 
         public static Bar operator -(Bar a, Bar b)
