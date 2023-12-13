@@ -7,9 +7,6 @@ namespace CorrelationCalculator
 {
     public class BarsCorrelationPreparator
     {
-        //public List<Bar> BarsFirstSecurityPrepared { get; private set; } = new List<Bar>();
-        //public List<Bar> BarsSecondSecurityPrepared { get; private set; } = new List<Bar>();
-
         private List<Bar> barsFirstSecurity;
         private List<Bar> barsSecondSecurity;
         private List<DateTime> timeLine;
