@@ -20,17 +20,18 @@ namespace CorrelationCalculator
                 fullFileName = openFileDialog.FileName;
             else
                 return;
+            Console.WriteLine("Ок!\n");
 
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var barsFirstSecurity = converter.ConvertFileWithBarsToListOfBars();
-
-            Console.WriteLine("Ок!");
+            
             Console.WriteLine("Введите путь ко второму файлу:");
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
                 fullFileName = openFileDialog.FileName;
             else
                 return;
+            Console.WriteLine("Ок!\n");
 
             converter.FullFileName = fullFileName;
             var barsSecondSecurity = converter.ConvertFileWithBarsToListOfBars();
@@ -48,7 +49,7 @@ namespace CorrelationCalculator
 
             var result = ComputeCoeff(values1.ToArray(), values2.ToArray());
 
-            Console.WriteLine(result);
+            Console.WriteLine("Корреляция = " + (int)(result * 100) + "%");
             Console.ReadLine();
         }
 
