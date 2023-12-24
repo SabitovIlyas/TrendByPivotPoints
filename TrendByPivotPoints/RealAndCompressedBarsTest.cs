@@ -1,5 +1,4 @@
-﻿using TrendByPivotPointsStrategy;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using TSLab.Script;
@@ -8,7 +7,7 @@ using TSLab.DataSource;
 namespace TrendByPivotPointsStrategy.Tests
 {
     [TestClass()]
-    public class SecurityRealTests
+    public class RealAndCompressedBarsTest
     {
         Security security;
 

@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
     <Compile Include="ClassForTestReflection.cs" />
+    <Compile Include="CompressionBarsTest.cs" />
     <Compile Include="SomeCalcTests.cs" />
     <Compile Include="OtherTests.cs" />
     <Compile Include="ObjectDiagnosticExtensionsTests.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="PivotPointsIndicatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityISecurityFake.cs" />
-    <Compile Include="SecurityRealTests.cs" />
+    <Compile Include="RealAndCompressedBarsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
