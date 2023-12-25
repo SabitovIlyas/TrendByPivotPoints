@@ -313,5 +313,10 @@ namespace TrendByPivotPointsStrategy
             }
             return new Bar();
         }
+
+        public ISecurity CompressLessIntervalTo1DayInterval()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

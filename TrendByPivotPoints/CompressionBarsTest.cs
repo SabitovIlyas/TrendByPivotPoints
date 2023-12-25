@@ -46,7 +46,8 @@ namespace TrendByPivotPointsStrategy.Tests
             var securityCompressedAccessAdding = (SecurityISecurityFake)securityCompressed;
             securityCompressedAccessAdding.Bars = barsCompressedAccessAdding;
 
-            var security = new SecurityTSlab(securityCompressed, securityBase);
+            var security = new SecurityTSlab(securityBase);
+            var securityCompressed1 = security.CompressLessIntervalTo1DayInterval();
 
             //act            
 
