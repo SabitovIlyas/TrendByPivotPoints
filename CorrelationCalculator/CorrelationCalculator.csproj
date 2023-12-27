@@ -58,6 +58,10 @@
       <Project>{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}</Project>
       <Name>TrendByPivotPointsPeparatorDataForSpread</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TrendByPivotPointsStrategy\TradingSystems.csproj">
+      <Project>{b9a9953f-e415-44d8-aba8-35a77304ccfa}</Project>
+      <Name>TradingSystems</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

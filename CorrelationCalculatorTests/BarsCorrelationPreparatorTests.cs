@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using TrendByPivotPointsPeparatorDataForSpread;
+using TradingSystems;
 
 namespace CorrelationCalculator.Tests
 {
@@ -53,7 +53,7 @@ namespace CorrelationCalculator.Tests
                 int counter;
                 for (counter = 0; counter < expectedBars.Count; counter++)
                 {
-                    if (expectedBars[counter].DateTime != actualBars[counter].DateTime ||
+                    if (expectedBars[counter].Date != actualBars[counter].Date ||
                         expectedBars[counter].Open != actualBars[counter].Open ||
                         expectedBars[counter].High != actualBars[counter].High ||
                         expectedBars[counter].Low != actualBars[counter].Low ||

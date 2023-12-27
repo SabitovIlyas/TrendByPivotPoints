@@ -1,6 +1,6 @@
 ﻿using TSLab.Script.Handlers;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class ContextTSLab: Context
     {

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using TSLab.Script;
 using SystemColor = System.Drawing.Color;
-using Security = TrendByPivotPointsStrategy.Security;
-using Converter = TrendByPivotPointsStrategy.Converter;
-using Account = TrendByPivotPointsStrategy.Account;
+using Security = TradingSystems.Security;
+using Converter = TradingSystems.Converter;
+using Account = TradingSystems.Account;
 using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
-using TrendByPivotPointsStrategy;
+using TradingSystems;
 
 namespace TrendByPivotPointsStarter
 {

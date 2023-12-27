@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TrendByPivotPointsPeparatorDataForSpread;
+using TradingSystems;
 
 namespace CorrelationCalculator
 {
@@ -42,11 +42,11 @@ namespace CorrelationCalculator
         {
             var listDateTime = new List<DateTime>();
             foreach (Bar bar in barsFirstSecurity)
-                listDateTime.Add(bar.DateTime);
+                listDateTime.Add(bar.Date);
 
             foreach (Bar bar in barsSecondSecurity)
-                if (!listDateTime.Contains(bar.DateTime))
-                    listDateTime.Add(bar.DateTime);
+                if (!listDateTime.Contains(bar.Date))
+                    listDateTime.Add(bar.Date);
 
             listDateTime.Sort();
             return listDateTime;
@@ -58,12 +58,12 @@ namespace CorrelationCalculator
             var doesBarsSecondSecurityHaveMarkedElements = false;
             foreach (var time in timeLine)
             {
-                if (barsFirstSecurity.Where(p => p.DateTime == time).Count() == 0)
+                if (barsFirstSecurity.Where(p => p.Date == time).Count() == 0)
                 {
                     barsFirstSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked, period: firstSecurityPeriod));
                     doesBarsFirstSecurityHaveMarkedElements = true;
                 }
-                if (barsSecondSecurity.Where(p => p.DateTime == time).Count() == 0)
+                if (barsSecondSecurity.Where(p => p.Date == time).Count() == 0)
                 {
                     barsSecondSecurity.Add(Bar.Create(time, 0, 0, 0, 0, 0, ticker: marked, period: secondSecurityPeriod));
                     doesBarsSecondSecurityHaveMarkedElements = true;

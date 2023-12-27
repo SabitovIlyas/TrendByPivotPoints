@@ -89,9 +89,9 @@
       <Project>{A9C7C965-F0F0-48ED-986A-21D98A8221FC}</Project>
       <Name>TrendByPivotPointsStarter</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TrendByPivotPointsStrategy\TrendByPivotPointsStrategy.csproj">
+    <ProjectReference Include="..\TrendByPivotPointsStrategy\TradingSystems.csproj">
       <Project>{b9a9953f-e415-44d8-aba8-35a77304ccfa}</Project>
-      <Name>TrendByPivotPointsStrategy</Name>
+      <Name>TradingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

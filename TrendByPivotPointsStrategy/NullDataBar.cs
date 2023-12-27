@@ -2,7 +2,7 @@
 using TSLab.DataSource;
 using System.IO;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class NullDataBar : IDataBar
     {

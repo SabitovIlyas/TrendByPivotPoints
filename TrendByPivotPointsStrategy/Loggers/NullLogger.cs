@@ -1,4 +1,4 @@
-﻿namespace TrendByPivotPointsStrategy
+﻿namespace TradingSystems
 {
     public class NullLogger : Logger
     {

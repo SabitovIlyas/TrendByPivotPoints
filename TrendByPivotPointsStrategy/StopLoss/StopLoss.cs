@@ -4,7 +4,7 @@ using TSLab.Script;
 using TSLab.Script.Handlers;
 using Math = System.Math;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     class StopLoss : IStopLoss
     {

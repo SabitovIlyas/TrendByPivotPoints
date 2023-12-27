@@ -2,7 +2,7 @@
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class RealTimeTrading
     {

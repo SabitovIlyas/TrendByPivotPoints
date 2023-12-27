@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
+using TradingSystems;
+using TSLab.DataSource;
 
 namespace TrendByPivotPoints
 {
@@ -18,6 +21,31 @@ namespace TrendByPivotPoints
             }
 
             return objectDiagnostic.ToString();
+        }
+    }
+
+    public static class ListIDataBarExtensions
+    {
+        public static bool IsListBarEquals(this IReadOnlyList<IDataBar> expectedBars, IReadOnlyList<IDataBar> actualBars)
+        {
+            var checkBars = false;
+            if (expectedBars.Count == actualBars.Count)
+            {
+                int counter;
+                for (counter = 0; counter < expectedBars.Count; counter++)
+                {
+                    if (expectedBars[counter].Date != actualBars[counter].Date ||
+                        expectedBars[counter].Open != actualBars[counter].Open ||
+                        expectedBars[counter].High != actualBars[counter].High ||
+                        expectedBars[counter].Low != actualBars[counter].Low ||
+                        expectedBars[counter].Close != actualBars[counter].Close)
+                        break;
+                }
+                if (counter == expectedBars.Count)
+                    checkBars = true;
+            }
+
+            return checkBars;
         }
     }
 }

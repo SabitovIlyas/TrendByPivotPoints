@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections;
 
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
-    public class ReadOnlyList<IDataBar> : IReadOnlyList<IDataBar>, IEnumerator<IDataBar>
+    public class ReadAndAddList<IDataBar> : IReadOnlyList<IDataBar>, IEnumerator<IDataBar>
     {
         private List<IDataBar> bars = new List<IDataBar>();
         public IDataBar this[int index]

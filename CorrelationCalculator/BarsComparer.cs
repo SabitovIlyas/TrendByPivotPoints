@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using TrendByPivotPointsPeparatorDataForSpread;
+using TradingSystems;
 
 namespace CorrelationCalculator
 {
@@ -9,9 +9,9 @@ namespace CorrelationCalculator
         {
             try
             {
-                if (x.DateTime > y.DateTime)
+                if (x.Date > y.Date)
                     return 1;
-                else if (x.DateTime < y.DateTime)
+                else if (x.Date < y.Date)
                     return -1;
 
                 return 0;

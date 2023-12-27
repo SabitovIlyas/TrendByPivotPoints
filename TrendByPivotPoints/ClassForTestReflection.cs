@@ -1,4 +1,4 @@
-﻿namespace TrendByPivotPointsStrategy.Tests
+﻿namespace TradingSystems.Tests
 {
     public class ClassForTestReflection
     {

@@ -3,7 +3,7 @@ using SystemColor = System.Drawing.Color;
 using TSLab.Script.GraphPane;
 using System.Collections.Generic;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public interface Pane
     {

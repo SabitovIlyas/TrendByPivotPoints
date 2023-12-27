@@ -4,9 +4,10 @@ using TSLab.DataSource;
 using TSLab.Script.Realtime;
 using System;
 using TSLab.Script.Handlers;
+using TradingSystems;
 
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class SecurityTSlab : Security
     {
@@ -62,8 +63,9 @@ namespace TrendByPivotPointsStrategy
                 return barNumber;
             }
         }
-
+        
         public ISecurity security;
+
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
@@ -89,6 +91,17 @@ namespace TrendByPivotPointsStrategy
             finInfo = baseSecurity.FinInfo;
             InitializeSecurity(security);
             this.context = context;
+        }
+
+        public SecurityTSlab(ISecurity baseSecurity, List<Bar> bars)
+        {
+            this.baseSecurity = baseSecurity;
+            finInfo = baseSecurity.FinInfo;
+            //
+            //
+            
+            InitializeSecurity(baseSecurity);
+            CompareBarsBaseSecurityWithCompressedSecurity();
         }
 
         public bool IsRealTimeActualBar(int barNumber)
@@ -316,6 +329,9 @@ namespace TrendByPivotPointsStrategy
 
         public ISecurity CompressLessIntervalTo1DayInterval()
         {
+            //CustomSecurity
+            var result = new SecurityTSlab((ISecurity)this);
+            var r = result as SecurityTSlab;
             throw new NotImplementedException();
         }
     }

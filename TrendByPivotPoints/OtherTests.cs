@@ -6,7 +6,7 @@ using TrendByPivotPoints;
 using TSLab.Script;
 using TSLab.Utils;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     [TestClass()]
     public class OtherTests

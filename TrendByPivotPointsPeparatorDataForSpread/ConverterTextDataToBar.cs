@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using TradingSystems;
 
-namespace TrendByPivotPointsPeparatorDataForSpread
+namespace PeparatorDataForSpreadTradingSystems
 {
     public class ConverterTextDataToBar
     {

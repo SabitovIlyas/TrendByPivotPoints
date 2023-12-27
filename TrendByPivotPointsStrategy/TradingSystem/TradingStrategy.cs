@@ -1,7 +1,7 @@
 ﻿using TSLab.Script;
 using TSLab.Script.Handlers;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public interface TradingStrategy
     {

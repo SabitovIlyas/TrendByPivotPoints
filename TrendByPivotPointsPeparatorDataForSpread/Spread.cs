@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using TradingSystems;
 
-namespace TrendByPivotPointsPeparatorDataForSpread
+namespace PeparatorDataForSpreadTradingSystems
 {
     public class Spread
     {
@@ -27,7 +28,7 @@ namespace TrendByPivotPointsPeparatorDataForSpread
             {                
                 foreach (var bar2 in bars2)
                 {
-                    if (bar1.DateTime == bar2.DateTime)
+                    if (bar1.Date == bar2.Date)
                         Bars.Add(bar1 - bar2);
                 }
             }

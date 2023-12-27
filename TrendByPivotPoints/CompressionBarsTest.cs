@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.DataSource;
-using System.Runtime.InteropServices;
+using TrendByPivotPoints;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     [TestClass()]
     public class CompressionBarsTest
@@ -14,38 +14,38 @@ namespace TrendByPivotPointsStrategy.Tests
         public void GetBarsBaseFromBarCompressedTest_barNumber0_returned0_1()
         {
             //arrange                        
-            IReadOnlyList<IDataBar> barsBase = new ReadOnlyList<IDataBar>();
-            var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
 
-            IDataBar bar;
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 1, 0), Open = 9, High = 10, Low = 8, Close = 10 };
-            barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 2, 0), Open = 10, High = 10, Low = 7, Close = 7 };
-            barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 15, 30, 0), Open = 12, High = 14, Low = 8, Close = 10 };
-            barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 17, 33, 0), Open = 6, High = 7, Low = 6, Close = 6 };
-            barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 19, 14, 34, 0), Open = 15, High = 17, Low = 15, Close = 17 };
-            barsBaseAccessAdding.Add(bar);
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 19, 14, 40, 0), Open = 16, High = 18, Low = 15, Close = 15 };
-            barsBaseAccessAdding.Add(bar);
+            IReadOnlyList<Bar> barsBase = new ReadAndAddList<Bar>();
+            var sourceBars = (ReadAndAddList<Bar>)barsBase;
+
+            Bar bar;
+            bar = new Bar() { Date = new DateTime(2021, 6, 18, 14, 1, 0), Open = 9, High = 10, Low = 8, Close = 10 };
+            sourceBars.Add(bar);
+            bar = new Bar() { Date = new DateTime(2021, 6, 18, 14, 2, 0), Open = 10, High = 10, Low = 7, Close = 7 };
+            sourceBars.Add(bar);
+            bar = new Bar() { Date = new DateTime(2021, 6, 18, 15, 30, 0), Open = 12, High = 14, Low = 8, Close = 10 };
+            sourceBars.Add(bar);
+            bar = new Bar() { Date = new DateTime(2021, 6, 18, 17, 33, 0), Open = 6, High = 7, Low = 6, Close = 6 };
+            sourceBars.Add(bar);
+            bar = new Bar() { Date = new DateTime(2021, 6, 19, 14, 34, 0), Open = 15, High = 17, Low = 15, Close = 17 };
+            sourceBars.Add(bar);
+            bar = new Bar() { Date = new DateTime(2021, 6, 19, 14, 40, 0), Open = 16, High = 18, Low = 15, Close = 15 };
+            sourceBars.Add(bar);
 
             ISecurity securityBase = new SecurityISecurityFake();
             var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
-            securityBaseAccessAdding.Bars = barsBaseAccessAdding;
+            securityBaseAccessAdding.Bars = sourceBars;
 
-            IReadOnlyList<IDataBar> barsCompressed = new ReadOnlyList<IDataBar>();
-            var expected = (ReadOnlyList<IDataBar>)barsCompressed;
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 10, 0, 0), Open = 9, High = 14, Low = 6, Close = 6 };
-            expected.Add(bar);
-            bar = new DataBarFake() { Date = new DateTime(2021, 6, 19, 10, 0, 0), Open = 15, High = 18, Low = 15, Close = 15 };
-            expected.Add(bar);
+            IReadOnlyList<Bar> exptectedBars = new ReadAndAddList<Bar>();
+            var barsCompressed = (ReadAndAddList<Bar>)exptectedBars;
+            bar = new Bar() { Date = new DateTime(2021, 6, 18, 10, 0, 0), Open = 9, High = 14, Low = 6, Close = 6 };
+            barsCompressed.Add(bar);
+            bar = new Bar() { Date = new DateTime(2021, 6, 19, 10, 0, 0), Open = 15, High = 18, Low = 15, Close = 15 };
+            barsCompressed.Add(bar);
 
-            //act            
-            var security = new SecurityTSlab(securityBase);
-            var securityCompressed = security.CompressLessIntervalTo1DayInterval();
-            var actual = securityCompressed.Bars;
+            //ISecurity securityCompressed = new SecurityISecurityFake();
+            //var securityCompressedAccessAdding = (SecurityISecurityFake)securityCompressed;
+            //securityCompressedAccessAdding.Bars = barsCompressed;
 
             //assert
             if (expected.Count == expected.Count)
@@ -59,7 +59,15 @@ namespace TrendByPivotPointsStrategy.Tests
             }
             
             Assert.Fail();
+            //act            
 
+            var security = new SecurityTSlab(securityBase);
+            var securityCompressed = security.CompressLessIntervalTo1DayInterval();
+            var actualBars = securityCompressed.Bars;
+                        
+            //assert
+
+            Assert.IsTrue(exptectedBars.IsListBarEquals(actualBars));
         }        
     }
 }

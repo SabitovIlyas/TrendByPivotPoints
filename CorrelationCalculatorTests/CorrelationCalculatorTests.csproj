@@ -71,6 +71,10 @@
       <Project>{02a019be-bd8f-4dcb-ac8f-69bf74827f47}</Project>
       <Name>TrendByPivotPointsPeparatorDataForSpread</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TrendByPivotPointsStrategy\TradingSystems.csproj">
+      <Project>{B9A9953F-E415-44D8-ABA8-35A77304CCFA}</Project>
+      <Name>TradingSystems</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

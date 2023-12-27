@@ -5,11 +5,11 @@ using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Utils;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class SecurityNull : ISecurity
     {
-        IReadOnlyList<IDataBar> bars = new ReadOnlyList<DataBar>();
+        IReadOnlyList<IDataBar> bars = new ReadAndAddList<DataBar>();
         public string Symbol => throw new NotImplementedException();
 
         public IDataSourceSecurity SecurityDescription => throw new NotImplementedException();

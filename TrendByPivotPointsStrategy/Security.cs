@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using TSLab.DataSource;
 using TSLab.Script;
+using TradingSystems;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public interface Security
     {

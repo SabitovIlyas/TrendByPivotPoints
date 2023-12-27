@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using TSLab.Script.Optimization;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class SystemParameters
     {

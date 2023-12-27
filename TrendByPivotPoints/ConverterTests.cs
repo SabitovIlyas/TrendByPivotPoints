@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     [TestClass()]
     public class ConverterTests

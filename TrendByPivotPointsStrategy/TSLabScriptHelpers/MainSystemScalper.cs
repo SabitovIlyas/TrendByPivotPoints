@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrendByPivotPointsStrategy;
+using TradingSystems;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class MainSystemScalper : MainSystem
     {

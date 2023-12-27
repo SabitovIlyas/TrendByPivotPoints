@@ -6,7 +6,7 @@ using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using System.Linq;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class TradingSystemScalper : TradingStrategy
     {
