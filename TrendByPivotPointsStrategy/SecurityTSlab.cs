@@ -5,6 +5,7 @@ using TSLab.Script.Realtime;
 using System;
 using TSLab.Script.Handlers;
 using TradingSystems;
+using System.Linq;
 
 
 namespace TradingSystems
@@ -328,9 +329,31 @@ namespace TradingSystems
         }
 
         public ISecurity CompressLessIntervalTo1DayInterval()
-        {            
+        {
             var bars = new ReadAndAddList<IDataBar>();
-            var result = CustomSecurity.Create(bars);
+            //{
+            //    new Bar() { Date = new DateTime(2021, 6, 18, 10, 0, 0), Open = 9, High = 14, Low = 6, Close = 6 },
+            //    new Bar() { Date = new DateTime(2021, 6, 19, 10, 0, 0), Open = 15, High = 18, Low = 15, Close = 15 }
+            //};
+
+
+            var baseBarFirst = security.Bars.First();
+            var date = baseBarFirst.Date.Date;
+            var open = baseBarFirst.Open;
+            var high = baseBarFirst.High;
+            var low = baseBarFirst.Low;
+            var close = baseBarFirst.Close;
+
+            foreach(var baseBar in security.Bars)
+            {
+
+                if (date!=baseBar.Date.Date)
+                {
+
+                }    
+            }
+
+            var result = CustomSecurity.Create(bars);                  
 
             return result;
         }
