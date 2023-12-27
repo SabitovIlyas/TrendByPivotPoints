@@ -47,18 +47,7 @@ namespace TradingSystems.Tests
             //var securityCompressedAccessAdding = (SecurityISecurityFake)securityCompressed;
             //securityCompressedAccessAdding.Bars = barsCompressed;
 
-            //assert
-            if (expected.Count == expected.Count)
-            {
-                int i;
-                for (i = 0; i < expected.Count; i++)                
-                    if (expected[i] != expected[i])
-                        break;
-                
-                    Assert.IsTrue(i == securityCompressed.Bars.Count);
-            }
             
-            Assert.Fail();
             //act            
 
             var security = new SecurityTSlab(securityBase);

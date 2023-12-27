@@ -5,16 +5,26 @@ using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Utils;
 
-namespace TrendByPivotPointsStarter
+namespace TradingSystems
 {
     public class CustomSecurity : ISecurity
     {
         FinInfo finInfo;
         IReadOnlyList<IDataBar> bars;
+        
+        public static CustomSecurity Create(IReadOnlyList<IDataBar> bars)
+        {
+            return new CustomSecurity(bars);
+        }
 
         public static CustomSecurity Create(float initDeposit, FinInfo finInfo, IReadOnlyList<IDataBar> bars)
         {
             return new CustomSecurity(initDeposit, finInfo, bars);
+        }
+
+        private CustomSecurity(IReadOnlyList<IDataBar> bars)
+        {       
+            this.bars = bars;
         }
 
         private CustomSecurity(float initDeposit, FinInfo finInfo, IReadOnlyList<IDataBar> bars)
@@ -22,7 +32,7 @@ namespace TrendByPivotPointsStarter
             InitDeposit = initDeposit;
             this.finInfo = finInfo;
             this.bars = bars;
-        }
+        }        
 
         public string Symbol => throw new NotImplementedException();
 

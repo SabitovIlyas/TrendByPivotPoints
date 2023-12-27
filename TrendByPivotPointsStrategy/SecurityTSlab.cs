@@ -328,11 +328,11 @@ namespace TradingSystems
         }
 
         public ISecurity CompressLessIntervalTo1DayInterval()
-        {
-            //CustomSecurity
-            var result = new SecurityTSlab((ISecurity)this);
-            var r = result as SecurityTSlab;
-            throw new NotImplementedException();
+        {            
+            var bars = new ReadAndAddList<IDataBar>();
+            var result = CustomSecurity.Create(bars);
+
+            return result;
         }
     }
 }

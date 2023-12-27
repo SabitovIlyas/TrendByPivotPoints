@@ -62,6 +62,7 @@
     <Compile Include="ContextTSLab.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Currency.cs" />
+    <Compile Include="CustomSecurity.cs" />
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
     <Compile Include="Indicator.cs" />
