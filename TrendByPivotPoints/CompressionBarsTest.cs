@@ -32,9 +32,13 @@ namespace TradingSystems.Tests
             bar = new Bar() { Date = new DateTime(2021, 6, 19, 14, 40, 0), Open = 16, High = 18, Low = 15, Close = 15 };
             sourceBars.Add(bar);
 
-            ISecurity securityBase = new SecurityISecurityFake();
-            var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
-            securityBaseAccessAdding.Bars = sourceBars;
+            //ISecurity securityBase = new SecurityISecurityFake();
+            //var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
+            //securityBaseAccessAdding.Bars = sourceBars;
+
+            ISecurity securityBase = CustomSecurity.Create(sourceBars);
+            //var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
+            //securityBaseAccessAdding.Bars = sourceBars;
 
             IReadOnlyList<Bar> exptectedBars = new ReadAndAddList<Bar>();
             var barsCompressed = (ReadAndAddList<Bar>)exptectedBars;

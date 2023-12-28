@@ -36,12 +36,21 @@ namespace TradingSystems
                 if (firstBar.Period.Contains('D'))
                 {
                     IntervalBase = DataIntervals.DAYS;
-                    var p = firstBar.Period.Remove('D');
+                    var p = firstBar.Period.Replace("DAYS", "");
+                    p = p.Replace("D", "");
                     Interval = int.Parse(p);
                 }
-
-                Interval = int.Parse(firstBar.Period);                
+                else
+                {
+                    var p = firstBar.Period;
+                    if (firstBar.Period.Contains("MINUTE"))
+                        p = firstBar.Period.Replace("MINUTE", "");
+                    
+                    Interval = int.Parse(p);
+                    IntervalBase = DataIntervals.MINUTE;
+                }
             }
+
         }
 
         private CustomSecurity(float initDeposit, FinInfo finInfo, IReadOnlyList<IDataBar> bars)

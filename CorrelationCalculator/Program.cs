@@ -34,14 +34,16 @@ namespace CorrelationCalculator
                 var securityBase = CustomSecurity.Create(barsBase);
                 var securityTsLab = new SecurityTSlab(securityBase);
                 var securityCompressed = securityTsLab.CompressLessIntervalTo1DayInterval();
-                listCompressedSecurity.Add(securityCompressed);
-
-                var s = listCompressedSecurity[0];
-                Console.WriteLine("{0} {1} {2}", s.Symbol, s.Interval, s.IntervalBase);
+                listCompressedSecurity.Add(securityCompressed);                
             }
 
-            
-            
+            for (var i = 0; i < listCompressedSecurity.Count; i++)
+            {
+                var s = listCompressedSecurity[i];
+                Console.WriteLine("{0} {1} {2}", s.Symbol, s.Interval, s.IntervalBase);
+            }           
+
+
 
             Console.WriteLine("Стоп!");
             Console.ReadLine();
@@ -62,11 +64,6 @@ namespace CorrelationCalculator
 
             //Console.WriteLine("Корреляция = " + (int)(result * 100) + "%");
             //Console.ReadLine();
-        }
-
-        private static void OpenFileDialog()
-        {
-
         }
 
         public static double ComputeCoeff(double[] values1, double[] values2)
