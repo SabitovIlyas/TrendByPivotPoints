@@ -331,31 +331,40 @@ namespace TradingSystems
         public ISecurity CompressLessIntervalTo1DayInterval()
         {
             var bars = new ReadAndAddList<IDataBar>();
-            //{
-            //    new Bar() { Date = new DateTime(2021, 6, 18, 10, 0, 0), Open = 9, High = 14, Low = 6, Close = 6 },
-            //    new Bar() { Date = new DateTime(2021, 6, 19, 10, 0, 0), Open = 15, High = 18, Low = 15, Close = 15 }
-            //};
+            fillBarParams(security.Bars.First(), out var date, out var open, out var high, out var low, out var close, out var volume);
 
-
-            var baseBarFirst = security.Bars.First();
-            var date = baseBarFirst.Date.Date;
-            var open = baseBarFirst.Open;
-            var high = baseBarFirst.High;
-            var low = baseBarFirst.Low;
-            var close = baseBarFirst.Close;
-
-            foreach(var baseBar in security.Bars)
+            for (int i = 1; i < security.Bars.Count; i++)
             {
+                IDataBar baseBar = security.Bars[i];                
 
-                if (date!=baseBar.Date.Date)
+                if (date.Date != baseBar.Date.Date)
                 {
-
-                }    
+                    bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume });                   
+                    fillBarParams(security.Bars[i], out date, out open, out high, out low, out close, out volume);
+                }
+                else
+                {
+                    high = Math.Max(high, baseBar.High);
+                    low = Math.Min(low, baseBar.Low);
+                    close = baseBar.Close;
+                    volume += baseBar.Volume;
+                }
             }
 
-            var result = CustomSecurity.Create(bars);                  
-
+            bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume });
+            
+            var result = CustomSecurity.Create(bars);
             return result;
+        }
+
+        private void fillBarParams(IDataBar bar, out DateTime date, out double open, out double high, out double low, out double close, out double volume)
+        {
+            date = new DateTime(bar.Date.Year, bar.Date.Month, bar.Date.Day, 10, 0, 0);
+            open = bar.Open;
+            high = bar.High;
+            low = bar.Low;
+            close = bar.Close;
+            volume = bar.Volume;
         }
     }
 }

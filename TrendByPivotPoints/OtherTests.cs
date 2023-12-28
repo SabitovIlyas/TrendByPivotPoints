@@ -1,10 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Linq;
-using System.Reflection;
-using TrendByPivotPoints;
-using TSLab.Script;
-using TSLab.Utils;
 
 namespace TradingSystems.Tests
 {
