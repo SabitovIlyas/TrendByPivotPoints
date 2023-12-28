@@ -42,11 +42,6 @@ namespace TradingSystems.Tests
             barsCompressed.Add(bar);
             bar = new Bar() { Date = new DateTime(2021, 6, 19, 10, 0, 0), Open = 15, High = 18, Low = 15, Close = 15 };
             barsCompressed.Add(bar);
-
-            //ISecurity securityCompressed = new SecurityISecurityFake();
-            //var securityCompressedAccessAdding = (SecurityISecurityFake)securityCompressed;
-            //securityCompressedAccessAdding.Bars = barsCompressed;
-
             
             //act            
 

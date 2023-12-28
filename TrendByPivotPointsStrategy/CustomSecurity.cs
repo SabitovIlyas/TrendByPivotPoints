@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -11,7 +12,7 @@ namespace TradingSystems
     {
         FinInfo finInfo;
         IReadOnlyList<IDataBar> bars;
-        
+
         public static CustomSecurity Create(IReadOnlyList<IDataBar> bars)
         {
             return new CustomSecurity(bars);
@@ -23,8 +24,24 @@ namespace TradingSystems
         }
 
         private CustomSecurity(IReadOnlyList<IDataBar> bars)
-        {       
+        {
             this.bars = bars;
+
+            if (bars is List<Bar> && bars.Count > 0)
+            {
+                var barsList = (List<Bar>)bars;
+                var firstBar = barsList.First();
+                Symbol = firstBar.Ticker;
+
+                if (firstBar.Period.Contains('D'))
+                {
+                    IntervalBase = DataIntervals.DAYS;
+                    var p = firstBar.Period.Remove('D');
+                    Interval = int.Parse(p);
+                }
+
+                Interval = int.Parse(firstBar.Period);                
+            }
         }
 
         private CustomSecurity(float initDeposit, FinInfo finInfo, IReadOnlyList<IDataBar> bars)
@@ -32,9 +49,9 @@ namespace TradingSystems
             InitDeposit = initDeposit;
             this.finInfo = finInfo;
             this.bars = bars;
-        }        
+        }
 
-        public string Symbol => throw new NotImplementedException();
+        public string Symbol { get; private set; }
 
         public IDataSourceSecurity SecurityDescription => throw new NotImplementedException();
 
@@ -56,9 +73,9 @@ namespace TradingSystems
 
         public Interval IntervalInstance => throw new NotImplementedException();
 
-        public int Interval => throw new NotImplementedException();
+        public int Interval { get; private set; }
 
-        public DataIntervals IntervalBase => throw new NotImplementedException();
+        public DataIntervals IntervalBase { get; private set; }
 
         public double LotSize => throw new NotImplementedException();
 

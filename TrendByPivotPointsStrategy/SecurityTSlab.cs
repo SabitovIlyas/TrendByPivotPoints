@@ -331,7 +331,7 @@ namespace TradingSystems
         public ISecurity CompressLessIntervalTo1DayInterval()
         {
             var bars = new ReadAndAddList<IDataBar>();
-            fillBarParams(security.Bars.First(), out var date, out var open, out var high, out var low, out var close, out var volume);
+            fillBarParams(security.Bars.First(), out var date, out var open, out var high, out var low, out var close, out var volume);//, out var ticker, out var period);
 
             for (int i = 1; i < security.Bars.Count; i++)
             {
@@ -339,7 +339,7 @@ namespace TradingSystems
 
                 if (date.Date != baseBar.Date.Date)
                 {
-                    bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume });                   
+                    bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume, Ticker = security.Symbol, Period = security.Interval.ToString() + security.IntervalBase.ToString() });
                     fillBarParams(security.Bars[i], out date, out open, out high, out low, out close, out volume);
                 }
                 else
@@ -351,20 +351,20 @@ namespace TradingSystems
                 }
             }
 
-            bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume });
+            bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume, Ticker = security.Symbol, Period = security.Interval.ToString() + security.IntervalBase.ToString() });
             
             var result = CustomSecurity.Create(bars);
             return result;
         }
 
-        private void fillBarParams(IDataBar bar, out DateTime date, out double open, out double high, out double low, out double close, out double volume)
+        private void fillBarParams(IDataBar bar, out DateTime date, out double open, out double high, out double low, out double close, out double volume)//, out string ticker, out string period)
         {
             date = new DateTime(bar.Date.Year, bar.Date.Month, bar.Date.Day, 10, 0, 0);
             open = bar.Open;
             high = bar.High;
             low = bar.Low;
             close = bar.Close;
-            volume = bar.Volume;
+            volume = bar.Volume;            
         }
     }
 }
