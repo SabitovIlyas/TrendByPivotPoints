@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using PeparatorDataForSpreadTradingSystems;
@@ -24,6 +25,7 @@ namespace CorrelationCalculator
                         
             Console.WriteLine("Ок!\n");
             var listCompressedSecurity = new List<ISecurity>();
+            var securityInfos = new List<SecurityInfo>();
 
             for (var i = 0; i < openFileDialog.FileNames.Length; i++)
             {
@@ -34,16 +36,33 @@ namespace CorrelationCalculator
                 var securityBase = CustomSecurity.Create(barsBase);
                 var securityTsLab = new SecurityTSlab(securityBase);
                 var securityCompressed = securityTsLab.CompressLessIntervalTo1DayInterval();
-                listCompressedSecurity.Add(securityCompressed);                
+                listCompressedSecurity.Add(securityCompressed);
+
+                var t = securityCompressed.Bars.Last().Date - securityCompressed.Bars.First().Date;
+                var months = t.TotalDays / 29.3d;
+
+                securityInfos.Add(new SecurityInfo()
+                {
+                    Security = securityCompressed,
+                    Symbol = securityCompressed.Symbol,
+                    Interval = securityCompressed.Interval.ToString() + securityCompressed.IntervalBase.ToString(),
+                    startDate = securityCompressed.Bars.First().Date,
+                    endDate = securityCompressed.Bars.Last().Date,
+                    months = (int)months
+                });             
             }
 
-            for (var i = 0; i < listCompressedSecurity.Count; i++)
+            //for (var i = 0; i < listCompressedSecurity.Count; i++)
+            //{
+            //    var s = listCompressedSecurity[i];
+            //    Console.WriteLine("{0} {1} {2}", s.Symbol, s.Interval, s.IntervalBase);
+            //}            
+
+            for (var i = 0; i < securityInfos.Count; i++)
             {
-                var s = listCompressedSecurity[i];
-                Console.WriteLine("{0} {1} {2}", s.Symbol, s.Interval, s.IntervalBase);
-            }           
-
-
+                var s = securityInfos[i];
+                Console.WriteLine(securityInfos[i].Print());
+            }
 
             Console.WriteLine("Стоп!");
             Console.ReadLine();
@@ -82,6 +101,21 @@ namespace CorrelationCalculator
             var result = sum1 / Math.Sqrt(sumSqr1 * sumSqr2);
 
             return result;
+        }
+    }
+
+    struct SecurityInfo
+    {
+        public ISecurity Security;
+        public string Symbol;
+        public string Interval;
+        public DateTime startDate;
+        public DateTime endDate;
+        public int months;
+
+        public string Print()
+        {
+            return string.Format("{0} {1} {2} {3} {4}", Symbol, Interval, startDate.Date, endDate.Date, months);
         }
     }
 }
