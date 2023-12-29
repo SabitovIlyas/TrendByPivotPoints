@@ -58,10 +58,14 @@ namespace CorrelationCalculator
             //    Console.WriteLine("{0} {1} {2}", s.Symbol, s.Interval, s.IntervalBase);
             //}            
 
-            for (var i = 0; i < securityInfos.Count; i++)
+            var orderedSecurityInfos = (from securityInfo in securityInfos
+                                       orderby securityInfo.months
+                                       select securityInfo).ToList();
+
+            for (var i = 0; i < orderedSecurityInfos.Count; i++)
             {
-                var s = securityInfos[i];
-                Console.WriteLine(securityInfos[i].Print());
+                var s = orderedSecurityInfos[i];
+                Console.WriteLine(orderedSecurityInfos[i].Print());
             }
 
             Console.WriteLine("Стоп!");
