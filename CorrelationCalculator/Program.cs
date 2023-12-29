@@ -49,14 +49,10 @@ namespace CorrelationCalculator
                     startDate = securityCompressed.Bars.First().Date,
                     endDate = securityCompressed.Bars.Last().Date,
                     months = (int)months
-                });             
+                });
+                Console.WriteLine("{0} / {1})\tСжато {2}", i + 1, openFileDialog.FileNames.Length, securityInfos[i].Symbol);
             }
-
-            //for (var i = 0; i < listCompressedSecurity.Count; i++)
-            //{
-            //    var s = listCompressedSecurity[i];
-            //    Console.WriteLine("{0} {1} {2}", s.Symbol, s.Interval, s.IntervalBase);
-            //}            
+            Console.WriteLine();
 
             var orderedSecurityInfos = (from securityInfo in securityInfos
                                        orderby securityInfo.months
@@ -65,7 +61,7 @@ namespace CorrelationCalculator
             for (var i = 0; i < orderedSecurityInfos.Count; i++)
             {
                 var s = orderedSecurityInfos[i];
-                Console.WriteLine(orderedSecurityInfos[i].Print());
+                Console.WriteLine("{0} / {1})\t{2}", i + 1, orderedSecurityInfos.Count, orderedSecurityInfos[i].Print());
             }
 
             Console.WriteLine("Стоп!");
@@ -119,7 +115,7 @@ namespace CorrelationCalculator
 
         public string Print()
         {
-            return string.Format("{0} {1} {2} {3} {4}", Symbol, Interval, startDate.Date, endDate.Date, months);
+            return string.Format("{0} {1} {2} {3} {4}", Symbol, Interval, startDate.Date.ToShortDateString(), endDate.Date.ToShortDateString(), months);
         }
     }
 }
