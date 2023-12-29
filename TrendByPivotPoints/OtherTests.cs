@@ -151,6 +151,17 @@ namespace TradingSystems.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod()]
+        public void DateTimeWithdrawTest()
+        {            
+            var endDate = new DateTime(2023, 11, 30);
+            var tS = TimeSpan.FromDays(30);
+            var expected = new DateTime(2023, 10, 31);
+
+            var actual = endDate - tS;
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 
     public class ClassForTestKeyWords

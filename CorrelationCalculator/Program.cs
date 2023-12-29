@@ -41,7 +41,8 @@ namespace CorrelationCalculator
                 listCompressedSecurity.Add(securityCompressed);
 
                 var t = securityCompressed.Bars.Last().Date - securityCompressed.Bars.First().Date;
-                var months = t.TotalDays / 29.3d;
+                var averageDaysPerMonth = 29.3d;
+                var months = t.TotalDays / averageDaysPerMonth;
 
                 securityInfos.Add(new SecurityInfo()
                 {
@@ -84,6 +85,11 @@ namespace CorrelationCalculator
             var periodsForCorrelationAnalysis = int.Parse(Console.ReadLine());
             Console.Write("Размер периода для анализа корреляции: ");
             var periodCorrelation = int.Parse(Console.ReadLine());            
+
+
+
+
+
 
             Console.WriteLine("Стоп!");
             Console.ReadLine();
