@@ -27,6 +27,8 @@ namespace CorrelationCalculator
             var listCompressedSecurity = new List<ISecurity>();
             var securityInfos = new List<SecurityInfo>();
 
+            var startTime = DateTime.Now;
+
             for (var i = 0; i < openFileDialog.FileNames.Length; i++)
             {
                 var fullFileName = openFileDialog.FileNames[i];
@@ -63,6 +65,25 @@ namespace CorrelationCalculator
                 var s = orderedSecurityInfos[i];
                 Console.WriteLine("{0} / {1})\t{2}", i + 1, orderedSecurityInfos.Count, orderedSecurityInfos[i].Print());
             }
+
+            var endTime = DateTime.Now;
+
+            Console.WriteLine("Прошло {0} секунд.", (int)(endTime - startTime).TotalSeconds);
+
+            Console.Write("Количество месяцев для форвардного тестирования: ");
+            var forward = int.Parse(Console.ReadLine());
+            Console.Write("Количество месяцев для бэктеста: ");
+            var backward = int.Parse(Console.ReadLine());
+            Console.Write("Количество периодов для анализа тестирования: ");
+            var periodsForTesting = int.Parse(Console.ReadLine());
+
+            var totalMonthsForAnalysis = periodsForTesting * forward + backward;
+            Console.WriteLine("{0}", totalMonthsForAnalysis);
+
+            Console.Write("Количество периодов для анализа корреляции: ");
+            var periodsForCorrelationAnalysis = int.Parse(Console.ReadLine());
+            Console.Write("Размер периода для анализа корреляции: ");
+            var periodCorrelation = int.Parse(Console.ReadLine());            
 
             Console.WriteLine("Стоп!");
             Console.ReadLine();
