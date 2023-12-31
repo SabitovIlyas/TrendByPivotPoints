@@ -26,6 +26,7 @@ namespace CorrelationCalculator
             Console.WriteLine("Ок!\n");
             var listCompressedSecurity = new List<ISecurity>();
             var securityInfos = new List<SecurityInfo>();
+            var averageDaysPerMonth = 365.25 / 12;
 
             var startTime = DateTime.Now;
 
@@ -41,7 +42,6 @@ namespace CorrelationCalculator
                 listCompressedSecurity.Add(securityCompressed);
 
                 var t = securityCompressed.Bars.Last().Date - securityCompressed.Bars.First().Date;
-                var averageDaysPerMonth = 29.3d;
                 var months = t.TotalDays / averageDaysPerMonth;
 
                 securityInfos.Add(new SecurityInfo()
@@ -79,18 +79,38 @@ namespace CorrelationCalculator
             var periodsForTesting = int.Parse(Console.ReadLine());
 
             var totalMonthsForAnalysis = periodsForTesting * forward + backward;
-            Console.WriteLine("{0}", totalMonthsForAnalysis);
+            Console.WriteLine("Необходимое количество месяцев для тестирования: {0}\n", totalMonthsForAnalysis);
+
+            var selectedSecurityInfos = (from securityInfo in orderedSecurityInfos
+                                         where securityInfo.months >= totalMonthsForAnalysis
+                                         select securityInfo).ToList();
+
+            for (var i = 0; i < selectedSecurityInfos.Count; i++)
+            {
+                var s = selectedSecurityInfos[i];
+                Console.WriteLine("{0} / {1})\t{2}", i + 1, selectedSecurityInfos.Count, selectedSecurityInfos[i].Print());
+            }
 
             Console.Write("Количество периодов для анализа корреляции: ");
             var periodsForCorrelationAnalysis = int.Parse(Console.ReadLine());
             Console.Write("Размер периода для анализа корреляции: ");
-            var periodCorrelation = int.Parse(Console.ReadLine());            
+            var periodCorrelation = int.Parse(Console.ReadLine());
+
+            var endDate = selectedSecurityInfos.First().endDate;
+            //var startDate = endDate - TimeSpan.FromDays(periodCorrelation * averageDaysPerMonth - 1);
+            
+            var totalMonthsEndDate = endDate.Year * 12 + endDate.Month;
+            var totalMonthsStartDate = totalMonthsEndDate - periodCorrelation + 1;
+            var actualYear = totalMonthsStartDate / 12;
+            var actualMonth = totalMonthsStartDate % 12;
+            var startDate = new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
+
+            var tmp = (from bar in selectedSecurityInfos.First().Security.Bars
+                       where bar.Date >= startDate && bar.Date <= endDate
+                       select bar).ToList();
 
 
-
-
-
-
+            Console.WriteLine(startDate);
             Console.WriteLine("Стоп!");
             Console.ReadLine();
             return;

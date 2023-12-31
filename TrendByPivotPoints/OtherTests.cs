@@ -152,13 +152,96 @@ namespace TradingSystems.Tests
         }
 
         [TestMethod()]
-        public void DateTimeWithdrawTest()
+        public void DateTimeWithdrawTest1()
         {            
             var endDate = new DateTime(2023, 11, 30);
             var tS = TimeSpan.FromDays(30);
             var expected = new DateTime(2023, 10, 31);
 
             var actual = endDate - tS;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest2()
+        {
+            var endDate = new DateTime(2023, 11, 30);
+            var expected = new DateTime(2023, 11, 01);
+
+            var actual = (endDate - TimeSpan.FromDays(30-1)).Date;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest3()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);
+            var expected = new DateTime(2021, 12, 1, 10, 0, 0);
+
+            var diff = 24;
+
+            var totalMonthsEndDate = endDate.Year * 12 + endDate.Month;
+            var totalMonthsStartDate = totalMonthsEndDate - diff + 1;
+            var actualYear = totalMonthsStartDate / 12;
+            var actualMonth = totalMonthsStartDate % 12;
+
+            var actual = new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest4()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);
+            var expected = new DateTime(2022, 11, 1, 10, 0, 0);
+
+            var diff = 13;
+
+            var totalMonthsEndDate = endDate.Year * 12 + endDate.Month;
+            var totalMonthsStartDate = totalMonthsEndDate - diff + 1;
+            var actualYear = totalMonthsStartDate / 12;
+            var actualMonth = totalMonthsStartDate % 12;
+
+            var actual = new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest5()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);
+            var expected = new DateTime(2022, 12, 1, 10, 0, 0);
+
+            var diff = 12;
+
+            var totalMonthsEndDate = endDate.Year * 12 + endDate.Month;
+            var totalMonthsStartDate = totalMonthsEndDate - diff + 1;
+            var actualYear = totalMonthsStartDate / 12;
+            var actualMonth = totalMonthsStartDate % 12;
+
+            var actual = new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest6()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);
+            var expected = new DateTime(2023, 11, 1, 10, 0, 0);
+
+            var diff = 1;
+
+            var totalMonthsEndDate = endDate.Year * 12 + endDate.Month;
+            var totalMonthsStartDate = totalMonthsEndDate - diff + 1;
+            var actualYear = totalMonthsStartDate / 12;
+            var actualMonth = totalMonthsStartDate % 12;
+
+            var actual = new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
 
             Assert.AreEqual(expected, actual);
         }
