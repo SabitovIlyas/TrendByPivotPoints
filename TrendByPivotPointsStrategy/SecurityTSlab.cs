@@ -97,10 +97,7 @@ namespace TradingSystems
         public SecurityTSlab(ISecurity baseSecurity, List<Bar> bars)
         {
             this.baseSecurity = baseSecurity;
-            finInfo = baseSecurity.FinInfo;
-            //
-            //
-            
+            finInfo = baseSecurity.FinInfo;          
             InitializeSecurity(baseSecurity);
             CompareBarsBaseSecurityWithCompressedSecurity();
         }
@@ -269,7 +266,10 @@ namespace TradingSystems
         {
             var bars = new List<Bar>();
             for (var i = 0; i <= barNumber; i++)
-                bars.Add(new Bar() { Open = GetBarIDataBar(i).Open, High = GetBarIDataBar(i).High, Low = GetBarIDataBar(i).Low, Close = GetBarIDataBar(i).Close, Date = GetBarIDataBar(i).Date });
+            {
+                var bar = GetBarIDataBar(i);
+                bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date, Volume = bar.Volume }); 
+            }
 
             return bars;
         }

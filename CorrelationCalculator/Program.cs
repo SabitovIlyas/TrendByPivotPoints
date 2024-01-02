@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using PeparatorDataForSpreadTradingSystems;
 using TradingSystems;
 using TSLab.Script;
+using TSLab.Utils;
 
 namespace CorrelationCalculator
 {
@@ -66,7 +68,7 @@ namespace CorrelationCalculator
                 var s = orderedSecurityInfos[i];
                 Console.WriteLine("{0} / {1})\t{2}", i + 1, orderedSecurityInfos.Count, orderedSecurityInfos[i].Print());
             }
-
+            
             var endTime = DateTime.Now;
 
             Console.WriteLine("Прошло {0} секунд.", (int)(endTime - startTime).TotalSeconds);
@@ -91,26 +93,80 @@ namespace CorrelationCalculator
                 Console.WriteLine("{0} / {1})\t{2}", i + 1, selectedSecurityInfos.Count, selectedSecurityInfos[i].Print());
             }
 
+            var maxEndDate = selectedSecurityInfos.Max(securityInfo => securityInfo.endDate);
+
+            Console.WriteLine("Последняя дата: {0}\n", maxEndDate);
+
+            selectedSecurityInfos = (from securityInfo in orderedSecurityInfos
+                                     where securityInfo.endDate == maxEndDate
+                                     select securityInfo).ToList();
+
+            for (var i = 0; i < selectedSecurityInfos.Count; i++)
+            {
+                var s = selectedSecurityInfos[i];
+                Console.WriteLine("{0} / {1})\t{2}", i + 1, selectedSecurityInfos.Count, selectedSecurityInfos[i].Print());
+            }
+
             Console.Write("Количество периодов для анализа корреляции: ");
             var periodsForCorrelationAnalysis = int.Parse(Console.ReadLine());
             Console.Write("Размер периода для анализа корреляции: ");
             var periodCorrelation = int.Parse(Console.ReadLine());
 
-            var endDate = selectedSecurityInfos.First().endDate;
-            //var startDate = endDate - TimeSpan.FromDays(periodCorrelation * averageDaysPerMonth - 1);
-            
-            var totalMonthsEndDate = endDate.Year * 12 + endDate.Month;
-            var totalMonthsStartDate = totalMonthsEndDate - periodCorrelation + 1;
-            var actualYear = totalMonthsStartDate / 12;
-            var actualMonth = totalMonthsStartDate % 12;
-            var startDate = new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
+            //var endDate = selectedSecurityInfos.First().endDate;            
+            //var startDate = GetStartDateTime(endDate, periodCorrelation);
 
-            var tmp = (from bar in selectedSecurityInfos.First().Security.Bars
-                       where bar.Date >= startDate && bar.Date <= endDate
-                       select bar).ToList();
+            //var tmp = (from bar in selectedSecurityInfos.First().Security.Bars
+            //           where bar.Date >= startDate && bar.Date <= endDate
+            //           select bar).ToList();
 
+            if (selectedSecurityInfos.Count == 0)
+                return;
 
-            Console.WriteLine(startDate);
+            var matrix = new List<CorrMatrixElement>();
+
+            var startDate = selectedSecurityInfos.First().endDate + new TimeSpan(1, 0, 0, 0);
+            for (var i = 0; i < periodsForCorrelationAnalysis; i++)
+            {
+                foreach(var sec1 in selectedSecurityInfos)
+                {
+                    var endDate = startDate - new TimeSpan(1, 0, 0, 0);
+                    startDate = GetStartDateTime(endDate, periodCorrelation);
+                    
+                    var bars1 = (from bar in sec1.Security.Bars
+                                 where bar.Date >= startDate && bar.Date <= endDate
+                                 select bar).ToList();
+
+                    var bars1list = new List<Bar>();
+                    foreach (var bar in bars1)
+                        bars1list.Add(new Bar() { Ticker = sec1.Symbol, Period = sec1.Interval, Date = bar.Date, Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Volume = bar.Volume, DigitsAfterPoint = -1 });
+
+                    foreach (var sec2 in selectedSecurityInfos)
+                    {
+                        var bars2 = (from bar in sec2.Security.Bars
+                                     where bar.Date >= startDate && bar.Date <= endDate
+                                     select bar).ToList();
+
+                        var bars2list = new List<Bar>();
+                        foreach (var bar in bars2)
+                            bars2list.Add(new Bar() { Ticker = sec2.Symbol, Period = sec2.Interval, Date = bar.Date, Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Volume = bar.Volume, DigitsAfterPoint = -1 });
+
+                        var barsCorrelationPreparator = new BarsCorrelationPreparator(bars1list, bars2list);
+                        barsCorrelationPreparator.Prepare();
+
+                        var values1 = new List<double>();
+                        foreach (var bar in bars1list)
+                            values1.Add(bar.Close);
+
+                        var values2 = new List<double>();
+                        foreach (var bar in bars2list)
+                            values2.Add(bar.Close);
+
+                        var result = ComputeCoeff(values1.ToArray(), values2.ToArray());
+                        matrix.Add(new CorrMatrixElement() { startDate = startDate, endDate = endDate, corrCoef = result, Symbol1 = sec1.Symbol, Symbol2 = sec2.Symbol, Interval = sec1.Interval });
+                    }
+                }
+            }            
+                        
             Console.WriteLine("Стоп!");
             Console.ReadLine();
             return;
@@ -130,6 +186,26 @@ namespace CorrelationCalculator
 
             //Console.WriteLine("Корреляция = " + (int)(result * 100) + "%");
             //Console.ReadLine();
+        }
+
+        private static DateTime GetStartDateTime(DateTime endDate, int diff)
+        {
+            int actualYear = endDate.Year;
+            int actualMonth = endDate.Month - diff + 1;
+
+            if (endDate.Month == diff)
+            {
+                actualYear = endDate.Year - 1;
+                actualMonth = 12;
+            }
+            else if (endDate.Month < diff)
+            {
+                int n = diff / 12;
+                actualMonth = endDate.Month - diff + 1 + n * 12;
+                actualYear = endDate.Year - n;
+            }
+
+            return new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
         }
 
         public static double ComputeCoeff(double[] values1, double[] values2)
@@ -164,5 +240,15 @@ namespace CorrelationCalculator
         {
             return string.Format("{0} {1} {2} {3} {4}", Symbol, Interval, startDate.Date.ToShortDateString(), endDate.Date.ToShortDateString(), months);
         }
+    }
+
+    struct CorrMatrixElement
+    {        
+        public string Symbol1;
+        public string Symbol2;
+        public string Interval;
+        public DateTime startDate;
+        public DateTime endDate;        
+        public double corrCoef;        
     }
 }

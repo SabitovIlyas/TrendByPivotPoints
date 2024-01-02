@@ -27,6 +27,22 @@ namespace CorrelationCalculator
             secondSecurityDigitsAfterPoint = barsSecondSecurity.First().DigitsAfterPoint;
         }
 
+        //public BarsCorrelationPreparator(SecurityInfo securityFirst, SecurityInfo securitySecond)
+        //{
+        //    var n = securityFirst.Security.GetBarsCountReal();
+        //    barsFirstSecurity = securityFirst.GetBars(n - 1);
+
+        //    n = securitySecond.GetBarsCountReal();
+        //    barsSecondSecurity = securitySecond.GetBars(n - 1);
+
+        //    var sec1 = (SecurityTSlab)securityFirst;
+        //    firstSecurityPeriod = sec1.security.Interval.ToString() + sec1.security.IntervalBase.ToString();
+        //    var sec2 = (SecurityTSlab)securityFirst;
+        //    secondSecurityPeriod = sec2.security.Interval.ToString() + sec2.security.IntervalBase.ToString();
+        //    firstSecurityDigitsAfterPoint = -1;
+        //    secondSecurityDigitsAfterPoint = -1;
+        //}
+
         public void Prepare()
         {
             timeLine = CreateTimeLine();
@@ -106,17 +122,17 @@ namespace CorrelationCalculator
                 bars[index].Volume = bar.Volume;
                 bars[index].Ticker = bar.Ticker;
             }
-        }
+        }       
 
         private void InterpolateMissedBars(List<Bar> bars, int digitsAfterPoint)
-        {            
-            for (var i = 1; i < bars.Count-1; i++)
+        {
+            for (var i = 1; i < bars.Count - 1; i++)
             {
                 if (bars[i].Ticker != marked)
                     continue;
 
                 var bar = bars[i];
-                var barLeft = bars[i-1];
+                var barLeft = bars[i - 1];
 
                 int j;
                 for (j = i + 1; j < bars.Count; j++)
@@ -125,12 +141,24 @@ namespace CorrelationCalculator
 
                 var barRight = bars[j];
 
-                bar.Open = Math.Round(barLeft.Open + (barRight.Open - barLeft.Open) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
-                bar.High = Math.Round(barLeft.High + (barRight.High - barLeft.High) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
-                bar.Low = Math.Round(barLeft.Low + (barRight.Low - barLeft.Low) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
-                bar.Close = Math.Round(barLeft.Close + (barRight.Close - barLeft.Close) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
-                bar.Volume = Math.Round(barLeft.Volume + (barRight.Volume - barLeft.Volume) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
-                bar.Ticker = barLeft.Ticker;
+                if (digitsAfterPoint != -1)
+                {
+                    bar.Open = Math.Round(barLeft.Open + (barRight.Open - barLeft.Open) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                    bar.High = Math.Round(barLeft.High + (barRight.High - barLeft.High) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                    bar.Low = Math.Round(barLeft.Low + (barRight.Low - barLeft.Low) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                    bar.Close = Math.Round(barLeft.Close + (barRight.Close - barLeft.Close) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                    bar.Volume = Math.Round(barLeft.Volume + (barRight.Volume - barLeft.Volume) / (j - i + 1), digitsAfterPoint, MidpointRounding.AwayFromZero);
+                    bar.Ticker = barLeft.Ticker;
+                }
+                else
+                {
+                    bar.Open = barLeft.Open + (barRight.Open - barLeft.Open) / (j - i + 1);
+                    bar.High = barLeft.High + (barRight.High - barLeft.High) / (j - i + 1);
+                    bar.Low = barLeft.Low + (barRight.Low - barLeft.Low) / (j - i + 1);
+                    bar.Close = barLeft.Close + (barRight.Close - barLeft.Close) / (j - i + 1);
+                    bar.Volume = barLeft.Volume + (barRight.Volume - barLeft.Volume) / (j - i + 1);
+                    bar.Ticker = barLeft.Ticker;
+                }                
             }
         }
     }
