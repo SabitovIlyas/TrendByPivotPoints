@@ -66,5 +66,31 @@ namespace CorrelationCalculator.Tests
 
             return checkSiBars;
         }
+
+        [TestMethod()]
+        public void ComputeCoeffTest1()
+        {
+            var values1 = new List<double> { 2, 5, 7, 1, 8 };
+            var values2 = new List<double> { 4, 3, 6, 1, 5 };
+            var expected = 0.7927032095;
+
+            var barsCorrelationPreparator = new BarsCorrelationPreparator();
+            var actual = barsCorrelationPreparator.ComputeCoeff(values1.ToArray(), values2.ToArray());
+
+            Assert.AreEqual(expected, actual, 0.00000001);
+        }
+
+        [TestMethod()]
+        public void ComputeCoeffTest2()
+        {
+            var values1 = new List<double> { 4, 3, 6, 1, 5 };
+            var values2 = new List<double> { 2, 5, 7, 1, 8 };            
+            var expected = 0.7927032095;
+
+            var barsCorrelationPreparator = new BarsCorrelationPreparator();
+            var actual = barsCorrelationPreparator.ComputeCoeff(values1.ToArray(), values2.ToArray());
+
+            Assert.AreEqual(expected, actual, 0.00000001);
+        }
     }
 }

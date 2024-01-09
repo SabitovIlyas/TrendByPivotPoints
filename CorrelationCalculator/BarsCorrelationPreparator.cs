@@ -16,7 +16,11 @@ namespace CorrelationCalculator
         private int firstSecurityDigitsAfterPoint = 0;
         private int secondSecurityDigitsAfterPoint = 0;
 
-        public BarsCorrelationPreparator(List<Bar> barsFirstSecurity, List<Bar> barsSecondSecurity)
+        public BarsCorrelationPreparator()
+        {
+        }
+
+            public BarsCorrelationPreparator(List<Bar> barsFirstSecurity, List<Bar> barsSecondSecurity)
         {
             this.barsFirstSecurity = barsFirstSecurity;
             this.barsSecondSecurity = barsSecondSecurity;
@@ -26,23 +30,7 @@ namespace CorrelationCalculator
             firstSecurityDigitsAfterPoint = barsFirstSecurity.First().DigitsAfterPoint;
             secondSecurityDigitsAfterPoint = barsSecondSecurity.First().DigitsAfterPoint;
         }
-
-        //public BarsCorrelationPreparator(SecurityInfo securityFirst, SecurityInfo securitySecond)
-        //{
-        //    var n = securityFirst.Security.GetBarsCountReal();
-        //    barsFirstSecurity = securityFirst.GetBars(n - 1);
-
-        //    n = securitySecond.GetBarsCountReal();
-        //    barsSecondSecurity = securitySecond.GetBars(n - 1);
-
-        //    var sec1 = (SecurityTSlab)securityFirst;
-        //    firstSecurityPeriod = sec1.security.Interval.ToString() + sec1.security.IntervalBase.ToString();
-        //    var sec2 = (SecurityTSlab)securityFirst;
-        //    secondSecurityPeriod = sec2.security.Interval.ToString() + sec2.security.IntervalBase.ToString();
-        //    firstSecurityDigitsAfterPoint = -1;
-        //    secondSecurityDigitsAfterPoint = -1;
-        //}
-
+        
         public void Prepare()
         {
             timeLine = CreateTimeLine();
@@ -160,6 +148,24 @@ namespace CorrelationCalculator
                     bar.Ticker = barLeft.Ticker;
                 }                
             }
+        }
+
+        public double ComputeCoeff(double[] values1, double[] values2)
+        {
+            if (values1.Length != values2.Length)
+                throw new ArgumentException("values must be the same length");
+
+            var avg1 = values1.Average();
+            var avg2 = values2.Average();
+
+            var sum1 = values1.Zip(values2, (x1, y1) => (x1 - avg1) * (y1 - avg2)).Sum();
+
+            var sumSqr1 = values1.Sum(x => Math.Pow((x - avg1), 2.0));
+            var sumSqr2 = values2.Sum(y => Math.Pow((y - avg2), 2.0));
+
+            var result = sum1 / Math.Sqrt(sumSqr1 * sumSqr2);
+
+            return result;
         }
     }
 }

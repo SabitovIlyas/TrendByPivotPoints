@@ -161,7 +161,7 @@ namespace CorrelationCalculator
                         foreach (var bar in bars2list)
                             values2.Add(bar.Close);
 
-                        var result = ComputeCoeff(values1.ToArray(), values2.ToArray());
+                        var result = barsCorrelationPreparator.ComputeCoeff(values1.ToArray(), values2.ToArray());
                         matrix.Add(new CorrMatrixElement() { startDate = startDate, endDate = endDate, corrCoef = result, Symbol1 = sec1.Symbol, Symbol2 = sec2.Symbol, Interval = sec1.Interval });
                     }
                 }
@@ -208,23 +208,7 @@ namespace CorrelationCalculator
             return new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
         }
 
-        public static double ComputeCoeff(double[] values1, double[] values2)
-        {
-            if (values1.Length != values2.Length)
-                throw new ArgumentException("values must be the same length");
-
-            var avg1 = values1.Average();
-            var avg2 = values2.Average();
-
-            var sum1 = values1.Zip(values2, (x1, y1) => (x1 - avg1) * (y1 - avg2)).Sum();
-
-            var sumSqr1 = values1.Sum(x => Math.Pow((x - avg1), 2.0));
-            var sumSqr2 = values2.Sum(y => Math.Pow((y - avg2), 2.0));
-
-            var result = sum1 / Math.Sqrt(sumSqr1 * sumSqr2);
-
-            return result;
-        }
+       
     }
 
     struct SecurityInfo
