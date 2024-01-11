@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Windows.Forms;
 using PeparatorDataForSpreadTradingSystems;
 using TradingSystems;
 using TSLab.Script;
+using TSLab.Utils;
 
 namespace CorrelationCalculator
 {
@@ -16,7 +19,7 @@ namespace CorrelationCalculator
         {
             Console.WriteLine("Старт!");
             Console.WriteLine("Сжимаем бары в дневные!");
-
+            
             OpenFileDialog openFileDialog = new OpenFileDialog();            
             openFileDialog.Multiselect = true;
             openFileDialog.Title = "Выберите файлы с историческими данными";
@@ -152,13 +155,14 @@ namespace CorrelationCalculator
                         foreach (var bar in bars2list)
                             values2.Add(bar.Close);
 
-                        var result = barsCorrelationPreparator.ComputeCoeff(values1.ToArray(), values2.ToArray());  //передавать ли данные?
+                        var result = barsCorrelationPreparator.ComputeCoeff(values1.ToArray(), values2.ToArray());
                         matrix.Add(new CorrMatrixElement() { startDate = startDate, endDate = endDate, corrCoef = result, Symbol1 = sec1.Symbol, Symbol2 = sec2.Symbol, Interval = sec1.Interval });
                     }
                 }
             }            
                         
             Console.WriteLine("Стоп!");
+            PrintMatrixToCSV(matrix);
             Console.ReadLine();
             return;
         }
@@ -181,7 +185,70 @@ namespace CorrelationCalculator
             }
 
             return new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
-        }       
+        }  
+        
+        private static void PrintMatrixToCSV(List<CorrMatrixElement> matrix)
+        {
+            if (matrix.Count == 0)
+                return;
+
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Выберите папку для сохранения результата";                        
+            
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            var maxEndDate = matrix.Max(element => element.endDate);                       
+
+            var symbols = (from element in matrix
+                           where element.endDate == maxEndDate
+                           select element.Symbol1).ToList();
+
+            symbols = symbols.Distinct().ToList();
+
+            var endDates = (from element in matrix
+                            where element.Symbol1 == matrix.First().Symbol1
+                            select element.endDate).ToList();
+
+            endDates = endDates.Distinct().ToList();
+
+            foreach (var endDate in endDates)
+            {
+                var separator = ";";
+                var body = String.Empty;
+
+                var header = separator;
+                foreach (var symbol in symbols)
+                    header += symbol + separator;
+                
+                header = header.TrimEnd(separator.First());                                
+
+                foreach (var symbol1 in symbols)
+                {
+                    body += '\n' + symbol1 + separator;
+
+                    foreach (var symbol2 in symbols)
+                    {
+                        var el = (from element in matrix
+                                  where element.endDate == endDate && 
+                                  element.Symbol1 == symbol1 && 
+                                  element.Symbol2 == symbol2
+                                  select Math.Round(element.corrCoef * 100)).First();
+                        
+                        body += el + separator;
+                    }                        
+                }
+
+                var startDate = (from element in matrix
+                          where element.endDate == endDate
+                          select element.startDate).First();
+                var path = saveFileDialog.FileName;
+                StreamWriter sw = new StreamWriter(path + startDate.ToShortDateString() + " -- " + endDate.ToShortDateString() + ".csv");
+
+                sw.WriteLine(header + body);             
+                sw.Close();
+            }
+        }
     }
 
     struct SecurityInfo
