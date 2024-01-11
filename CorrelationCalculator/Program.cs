@@ -160,9 +160,9 @@ namespace CorrelationCalculator
                     }
                 }
             }            
-                        
-            Console.WriteLine("Стоп!");
+                                    
             PrintMatrixToCSV(matrix);
+            Console.WriteLine("Стоп!");
             Console.ReadLine();
             return;
         }
@@ -242,8 +242,7 @@ namespace CorrelationCalculator
                           where element.endDate == endDate
                           select element.startDate).First();
                 var path = fbw.SelectedPath;
-                StreamWriter sw = new StreamWriter(path + startDate.ToShortDateString() + " -- " + endDate.ToShortDateString() + ".csv");
-
+                StreamWriter sw = new StreamWriter(path + "\\" + startDate.ToShortDateString() + " -- " + endDate.ToShortDateString() + ".csv");
                 sw.WriteLine(header + body);             
                 sw.Close();
             }
