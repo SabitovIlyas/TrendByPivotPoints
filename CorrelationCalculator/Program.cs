@@ -74,8 +74,9 @@ namespace CorrelationCalculator
 
             Console.WriteLine("Прошло {0} секунд.", (int)(endTime - startTime).TotalSeconds);
 
-            Console.Write("Количество месяцев для форвардного тестирования: ");
+            Console.Write("Количество месяцев для форвардного тестирования: "); 
             var forward = int.Parse(Console.ReadLine());
+
             Console.Write("Количество месяцев для бэктеста: ");
             var backward = int.Parse(Console.ReadLine());
             Console.Write("Количество периодов для анализа тестирования: ");
@@ -172,12 +173,13 @@ namespace CorrelationCalculator
             int actualYear = endDate.Year;
             int actualMonth = endDate.Month - diff + 1;
 
-            if (endDate.Month == diff)
-            {
-                actualYear = endDate.Year - 1;
-                actualMonth = 12;
-            }
-            else if (endDate.Month < diff)
+            //if (endDate.Month == diff)
+            //{
+            //    actualYear = endDate.Year - 1;
+            //    actualMonth = 12;
+            //}
+            //else 
+            if (endDate.Month < diff)
             {
                 int n = diff / 12;
                 actualMonth = endDate.Month - diff + 1 + n * 12;
