@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using PeparatorDataForSpreadTradingSystems;
 using TradingSystems;
 using TSLab.Script;
-using TSLab.Utils;
 
 namespace CorrelationCalculator
 {
@@ -112,13 +110,6 @@ namespace CorrelationCalculator
             Console.Write("Размер периода для анализа корреляции: ");
             var periodCorrelation = int.Parse(Console.ReadLine());
 
-            //var endDate = selectedSecurityInfos.First().endDate;            
-            //var startDate = GetStartDateTime(endDate, periodCorrelation);
-
-            //var tmp = (from bar in selectedSecurityInfos.First().Security.Bars
-            //           where bar.Date >= startDate && bar.Date <= endDate
-            //           select bar).ToList();
-
             if (selectedSecurityInfos.Count == 0)
                 return;
 
@@ -127,11 +118,11 @@ namespace CorrelationCalculator
             var startDate = selectedSecurityInfos.First().endDate + new TimeSpan(1, 0, 0, 0);
             for (var i = 0; i < periodsForCorrelationAnalysis; i++)
             {
-                foreach(var sec1 in selectedSecurityInfos)
-                {
-                    var endDate = startDate - new TimeSpan(1, 0, 0, 0);
-                    startDate = GetStartDateTime(endDate, periodCorrelation);
-                    
+                var endDate = startDate - new TimeSpan(1, 0, 0, 0);
+                startDate = GetStartDateTime(endDate, periodCorrelation);
+
+                foreach (var sec1 in selectedSecurityInfos)
+                {   
                     var bars1 = (from bar in sec1.Security.Bars
                                  where bar.Date >= startDate && bar.Date <= endDate
                                  select bar).ToList();
@@ -161,7 +152,7 @@ namespace CorrelationCalculator
                         foreach (var bar in bars2list)
                             values2.Add(bar.Close);
 
-                        var result = barsCorrelationPreparator.ComputeCoeff(values1.ToArray(), values2.ToArray());
+                        var result = barsCorrelationPreparator.ComputeCoeff(values1.ToArray(), values2.ToArray());  //передавать ли данные?
                         matrix.Add(new CorrMatrixElement() { startDate = startDate, endDate = endDate, corrCoef = result, Symbol1 = sec1.Symbol, Symbol2 = sec2.Symbol, Interval = sec1.Interval });
                     }
                 }
@@ -170,22 +161,6 @@ namespace CorrelationCalculator
             Console.WriteLine("Стоп!");
             Console.ReadLine();
             return;
-
-            //var barsCorrelationPreparator = new BarsCorrelationPreparator(barsFirstSecurity, barsSecondSecurity);
-            //barsCorrelationPreparator.Prepare();
-
-            //var values1 = new List<double>();
-            //foreach (var bar in barsFirstSecurity)
-            //    values1.Add(bar.Close);
-
-            //var values2 = new List<double>();
-            //foreach (var bar in barsSecondSecurity)
-            //    values2.Add(bar.Close);
-
-            //var result = ComputeCoeff(values1.ToArray(), values2.ToArray());
-
-            //Console.WriteLine("Корреляция = " + (int)(result * 100) + "%");
-            //Console.ReadLine();
         }
 
         private static DateTime GetStartDateTime(DateTime endDate, int diff)
@@ -206,9 +181,7 @@ namespace CorrelationCalculator
             }
 
             return new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
-        }
-
-       
+        }       
     }
 
     struct SecurityInfo
