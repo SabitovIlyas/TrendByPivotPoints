@@ -192,10 +192,9 @@ namespace CorrelationCalculator
             if (matrix.Count == 0)
                 return;
 
-            var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Title = "Выберите папку для сохранения результата";                        
+            var fbw = new FolderBrowserDialog();            
             
-            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+            if (fbw.ShowDialog() != DialogResult.OK)
                 return;
 
             var maxEndDate = matrix.Max(element => element.endDate);                       
@@ -242,7 +241,7 @@ namespace CorrelationCalculator
                 var startDate = (from element in matrix
                           where element.endDate == endDate
                           select element.startDate).First();
-                var path = saveFileDialog.FileName;
+                var path = fbw.SelectedPath;
                 StreamWriter sw = new StreamWriter(path + startDate.ToShortDateString() + " -- " + endDate.ToShortDateString() + ".csv");
 
                 sw.WriteLine(header + body);             
