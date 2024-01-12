@@ -92,5 +92,122 @@ namespace CorrelationCalculator.Tests
 
             Assert.AreEqual(expected, actual, 0.00000001);
         }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest1()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);
+            var expected = new DateTime(2022, 11, 1, 10, 0, 0);
+            var diff = 13;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest2()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);//1-11 2-10 3-9 4-8 5-7 6-6 7-5 8-4 9-3 10-2 11-1 12-12 13-11 14-10 15 -9 16-8 17-7 18-6 19-5 20-4 21-3 22-2 23-1 24-12 
+            var expected = new DateTime(2022, 12, 1, 10, 0, 0);
+            var diff = 12;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest3()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);
+            var expected = new DateTime(2023, 11, 1, 10, 0, 0);
+            var diff = 1;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest4()
+        {
+            var endDate = new DateTime(2023, 12, 29, 10, 0, 0);
+            var expected = new DateTime(2023, 01, 1, 10, 0, 0);
+            var diff = 12;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest5()
+        {
+            var endDate = new DateTime(2023, 12, 31, 10, 0, 0);
+            var expected = new DateTime(2023, 01, 1, 10, 0, 0);
+            var diff = 12;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest6()
+        {
+            var endDate = new DateTime(2023, 12, 31, 10, 0, 0);
+            var expected = new DateTime(2014, 01, 1, 10, 0, 0);
+            var diff = 120;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest7()
+        {
+            var endDate = new DateTime(2023, 12, 31, 10, 0, 0);
+            var expected = new DateTime(2022, 01, 1, 10, 0, 0);
+            var diff = 24;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest8()
+        {
+            var endDate = new DateTime(2023, 11, 30, 10, 0, 0);
+            var expected = new DateTime(2021, 12, 1, 10, 0, 0);
+            var diff = 24;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void DateTimeWithdrawTest9()
+        {
+            var endDate = new DateTime(0002, 11, 30, 10, 0, 0);
+            var expected = new DateTime(0001, 11, 1, 10, 0, 0);
+            var diff = 13;
+            var prep = new BarsCorrelationPreparator();
+
+            var actual = prep.GetStartDateTime(endDate, diff);
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

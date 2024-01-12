@@ -4,11 +4,14 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 using PeparatorDataForSpreadTradingSystems;
 using TradingSystems;
 using TSLab.Script;
+using TSLab.Script.Options;
 using TSLab.Utils;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace CorrelationCalculator
 {
@@ -99,7 +102,7 @@ namespace CorrelationCalculator
 
             Console.WriteLine("Последняя дата: {0}\n", maxEndDate);
 
-            selectedSecurityInfos = (from securityInfo in orderedSecurityInfos
+            selectedSecurityInfos = (from securityInfo in selectedSecurityInfos
                                      where securityInfo.endDate == maxEndDate
                                      select securityInfo).ToList();
 
@@ -123,7 +126,8 @@ namespace CorrelationCalculator
             for (var i = 0; i < periodsForCorrelationAnalysis; i++)
             {
                 var endDate = startDate - new TimeSpan(1, 0, 0, 0);
-                startDate = GetStartDateTime(endDate, periodCorrelation);
+                var prep = new BarsCorrelationPreparator();
+                startDate =  prep.GetStartDateTime(endDate, periodCorrelation);
 
                 foreach (var sec1 in selectedSecurityInfos)
                 {   
@@ -163,30 +167,10 @@ namespace CorrelationCalculator
             }            
                                     
             PrintMatrixToCSV(matrix);
+            PrintMatrixToCSV1(matrix);
             Console.WriteLine("Стоп!");
             Console.ReadLine();
             return;
-        }
-
-        private static DateTime GetStartDateTime(DateTime endDate, int diff)
-        {
-            int actualYear = endDate.Year;
-            int actualMonth = endDate.Month - diff + 1;
-
-            //if (endDate.Month == diff)
-            //{
-            //    actualYear = endDate.Year - 1;
-            //    actualMonth = 12;
-            //}
-            //else 
-            if (endDate.Month < diff)
-            {
-                int n = diff / 12;
-                actualMonth = endDate.Month - diff + 1 + n * 12;
-                actualYear = endDate.Year - n;
-            }
-
-            return new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
         }  
         
         private static void PrintMatrixToCSV(List<CorrMatrixElement> matrix)
@@ -248,6 +232,69 @@ namespace CorrelationCalculator
                 sw.WriteLine(header + body);             
                 sw.Close();
             }
+        }
+
+        private static void PrintMatrixToCSV1(List<CorrMatrixElement> matrix)
+        {
+            if (matrix.Count == 0)
+                return;
+
+            var fbw = new FolderBrowserDialog();
+
+            if (fbw.ShowDialog() != DialogResult.OK)
+                return;
+
+            var maxEndDate = matrix.Max(element => element.endDate);
+
+            var symbols = (from element in matrix
+                           where element.endDate == maxEndDate
+                           select element.Symbol1).ToList();
+
+            symbols = symbols.Distinct().ToList();
+
+            var endDates = (from element in matrix
+                            where element.Symbol1 == matrix.First().Symbol1
+                            select element.endDate).ToList();
+
+            endDates = endDates.Distinct().ToList();
+
+            var separator = ";";
+            var body = String.Empty;
+
+            var header = separator;
+            foreach (var symbol in symbols)
+                header += symbol + separator;
+
+            header = header.TrimEnd(separator.First());
+
+            foreach (var symbol1 in symbols)
+            {
+                body += '\n' + symbol1 + separator;
+
+                foreach (var symbol2 in symbols)
+                {
+                    var els = (from element in matrix
+                              where element.Symbol1 == symbol1 &&
+                              element.Symbol2 == symbol2
+                              select Math.Round(element.corrCoef * 100)).ToList();
+
+                    var max = els.Max();
+                    var min = els.Min();
+
+                    var r = Math.Max(Math.Abs(max), Math.Abs(min));
+                    r = els.Find(p => Math.Abs(p) == Math.Abs(r));
+
+                    body += r + separator;
+                }
+            }            
+
+            var path = fbw.SelectedPath;
+            var endDate = matrix.Max(element => element.endDate);
+            var startDate = matrix.Min(element => element.startDate);
+
+            StreamWriter sw = new StreamWriter(path + "\\" + startDate.ToShortDateString() + " -- " + endDate.ToShortDateString() + "_pessimistic.csv");
+            sw.WriteLine(header + body);
+            sw.Close();
         }
     }
 

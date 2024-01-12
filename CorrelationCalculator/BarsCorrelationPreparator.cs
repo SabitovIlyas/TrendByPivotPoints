@@ -166,9 +166,15 @@ namespace CorrelationCalculator
             return result;
         }
 
-        //public double ComputeCoeff()
-        //{
+        public DateTime GetStartDateTime(DateTime endDate, int diff)
+        {
+            var totalMonths = endDate.Year * 12 + endDate.Month;
+            var resMonths = totalMonths - diff;
+
+            var actualYear = resMonths / 12;
+            var actualMonth = resMonths - actualYear * 12 + 1;
             
-        //}
+            return new DateTime(actualYear, actualMonth, 1, 10, 0, 0);
+        }
     }
 }
