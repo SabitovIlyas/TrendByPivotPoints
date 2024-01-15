@@ -1,4 +1,4 @@
-﻿using TrendByPivotPointsStrategy;
+﻿using TradingSystems;
 using TSLab.DataSource;
 
 namespace TrendByPivotPointsStarter
@@ -12,7 +12,7 @@ namespace TrendByPivotPointsStarter
 
             var initDeposit = 100000;
             var finInfo = new FinInfo();
-            var bars = new ReadOnlyList<DataBar>();
+            var bars = new ReadAndAddList<DataBar>();
 
             var security = CustomSecurity.Create(initDeposit, finInfo, bars);
             script.Execute(context, security);

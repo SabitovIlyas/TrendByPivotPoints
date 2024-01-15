@@ -3,7 +3,7 @@ using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Optimization;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class ScriptTrendByDonchian : IExternalScriptMultiSec
     {        

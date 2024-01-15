@@ -70,9 +70,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TrendByPivotPointsStrategy\TrendByPivotPointsStrategy.csproj">
+    <ProjectReference Include="..\TrendByPivotPointsStrategy\TradingSystems.csproj">
       <Project>{B9A9953F-E415-44D8-ABA8-35A77304CCFA}</Project>
-      <Name>TrendByPivotPointsStrategy</Name>
+      <Name>TradingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

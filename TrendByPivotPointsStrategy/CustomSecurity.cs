@@ -1,20 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Utils;
 
-namespace TrendByPivotPointsStarter
+namespace TradingSystems
 {
     public class CustomSecurity : ISecurity
     {
         FinInfo finInfo;
         IReadOnlyList<IDataBar> bars;
 
+        public static CustomSecurity Create(IReadOnlyList<IDataBar> bars)
+        {
+            return new CustomSecurity(bars);
+        }
+
         public static CustomSecurity Create(float initDeposit, FinInfo finInfo, IReadOnlyList<IDataBar> bars)
         {
             return new CustomSecurity(initDeposit, finInfo, bars);
+        }
+
+        private CustomSecurity(IReadOnlyList<IDataBar> bars)
+        {
+            this.bars = bars;
+
+            if (bars is List<Bar> && bars.Count > 0)
+            {
+                var barsList = (List<Bar>)bars;
+                var firstBar = barsList.First();
+                Symbol = firstBar.Ticker;
+
+                if (firstBar.Period.Contains('D'))
+                {
+                    IntervalBase = DataIntervals.DAYS;
+                    var p = firstBar.Period.Replace("DAYS", "");
+                    p = p.Replace("D", "");
+                    Interval = int.Parse(p);
+                }
+                else
+                {
+                    var p = firstBar.Period;
+                    if (firstBar.Period.Contains("MINUTE"))
+                        p = firstBar.Period.Replace("MINUTE", "");
+                    
+                    Interval = int.Parse(p);
+                    IntervalBase = DataIntervals.MINUTE;
+                }
+            }
+
         }
 
         private CustomSecurity(float initDeposit, FinInfo finInfo, IReadOnlyList<IDataBar> bars)
@@ -24,7 +60,7 @@ namespace TrendByPivotPointsStarter
             this.bars = bars;
         }
 
-        public string Symbol => throw new NotImplementedException();
+        public string Symbol { get; private set; }
 
         public IDataSourceSecurity SecurityDescription => throw new NotImplementedException();
 
@@ -46,9 +82,9 @@ namespace TrendByPivotPointsStarter
 
         public Interval IntervalInstance => throw new NotImplementedException();
 
-        public int Interval => throw new NotImplementedException();
+        public int Interval { get; private set; }
 
-        public DataIntervals IntervalBase => throw new NotImplementedException();
+        public DataIntervals IntervalBase { get; private set; }
 
         public double LotSize => throw new NotImplementedException();
 

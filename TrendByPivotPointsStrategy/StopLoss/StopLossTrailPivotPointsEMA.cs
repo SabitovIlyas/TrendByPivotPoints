@@ -2,7 +2,7 @@
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     class StopLossTrailPivotPointsEMA : IStopLoss
     {

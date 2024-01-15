@@ -8,7 +8,7 @@ using TSLab.Script.Helpers;
 using TSLab.Script.Realtime;
 using SystemColor = System.Drawing.Color;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class TradingSystemBollingerBands : TradingStrategy
     {

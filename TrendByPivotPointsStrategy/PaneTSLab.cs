@@ -4,7 +4,7 @@ using TsLabColor = TSLab.Script.Color;
 using TSLab.Script.GraphPane;
 using System.Collections.Generic;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class PaneTSLab: Pane
     {

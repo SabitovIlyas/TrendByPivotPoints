@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.DataSource;
+using TradingSystems;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     [TestClass()]
     public class PivotPointsIndicatorTests
@@ -22,8 +23,8 @@ namespace TrendByPivotPointsStrategy.Tests
             bars = dataBarsForTesting.GetBars();
             pivotPointsIndicator = new PivotPointsIndicator();
 
-            IReadOnlyList<IDataBar> barsBase = new ReadOnlyList<IDataBar>();
-            var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
+            IReadOnlyList<IDataBar> barsBase = new ReadAndAddList<IDataBar>();
+            var barsBaseAccessAdding = (ReadAndAddList<IDataBar>)barsBase;
 
             IDataBar bar;
             foreach (var b in bars)

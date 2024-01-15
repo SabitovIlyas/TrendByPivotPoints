@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TrendByPivotPointsPeparatorDataForSpread;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.ConstrainedExecution;
 using System.IO;
+using TradingSystems;
 
-namespace TrendByPivotPointsPeparatorDataForSpread.Tests
+namespace PeparatorDataForSpreadTradingSystems.Tests
 {
     [TestClass()]
     public class ConverterTextDataToBarTests

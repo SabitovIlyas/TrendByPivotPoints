@@ -1,22 +1,21 @@
-﻿using TrendByPivotPointsStrategy;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.DataSource;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     [TestClass()]
-    public class SecurityRealTests
+    public class RealAndCompressedBarsTest
     {
         Security security;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            IReadOnlyList<IDataBar> barsBase = new ReadOnlyList<IDataBar>();
-            var barsBaseAccessAdding = (ReadOnlyList<IDataBar>)barsBase;
+            IReadOnlyList<IDataBar> barsBase = new ReadAndAddList<IDataBar>();
+            var barsBaseAccessAdding = (ReadAndAddList<IDataBar>)barsBase;
 
             IDataBar bar;
             bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 5, 0) };
@@ -36,8 +35,8 @@ namespace TrendByPivotPointsStrategy.Tests
             var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
             securityBaseAccessAdding.Bars = barsBaseAccessAdding;
 
-            IReadOnlyList<IDataBar> barsCompressed = new ReadOnlyList<IDataBar>();
-            var barsCompressedAccessAdding = (ReadOnlyList<IDataBar>)barsCompressed;
+            IReadOnlyList<IDataBar> barsCompressed = new ReadAndAddList<IDataBar>();
+            var barsCompressedAccessAdding = (ReadAndAddList<IDataBar>)barsCompressed;
             bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 5, 0) };
             barsCompressedAccessAdding.Add(bar);
             bar = new DataBarFake() { Date = new DateTime(2021, 6, 18, 14, 15, 0) };

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrendByPivotPointsStrategy;
+using TradingSystems;
 using TSLab.DataSource;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     class DataBarsForTesting
     {

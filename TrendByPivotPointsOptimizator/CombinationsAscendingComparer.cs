@@ -15,12 +15,9 @@ namespace TrendByPivotPointsOptimizator
         {
             try
             {
-                var combination1 = x as Combination;
-                var combination2 = y as Combination;
-
-                if (combination1.GetAverageValue() > combination2.GetAverageValue())
+                if (x.GetAverageValue() > y.GetAverageValue())
                     return 1;
-                else if (combination1.GetAverageValue() < combination2.GetAverageValue())
+                else if (x.GetAverageValue() < y.GetAverageValue())
                     return -1;
 
                 return 0;

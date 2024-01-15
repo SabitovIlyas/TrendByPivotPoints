@@ -3,12 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStrategyTests", "TrendByPivotPoints\TrendByPivotPointsStrategyTests.csproj", "{0194D529-32BB-42F5-A9FF-FC531CDCB684}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSystemsTests", "TrendByPivotPoints\TradingSystemsTests.csproj", "{0194D529-32BB-42F5-A9FF-FC531CDCB684}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B9A9953F-E415-44D8-ABA8-35A77304CCFA} = {B9A9953F-E415-44D8-ABA8-35A77304CCFA}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStrategy", "TrendByPivotPointsStrategy\TrendByPivotPointsStrategy.csproj", "{B9A9953F-E415-44D8-ABA8-35A77304CCFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingSystems", "TrendByPivotPointsStrategy\TradingSystems.csproj", "{B9A9953F-E415-44D8-ABA8-35A77304CCFA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendByPivotPointsStarter", "TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj", "{A9C7C965-F0F0-48ED-986A-21D98A8221FC}"
 EndProject
@@ -29,6 +29,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogPreparatorTests", "LogReaderTests\LogPreparatorTests.csproj", "{55C89EA1-13FD-4FAF-81FC-3D031109E8ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationCalculator", "CorrelationCalculator\CorrelationCalculator.csproj", "{7A1EA8F0-C63C-4CDE-A973-A9D52D52BCDD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B9A9953F-E415-44D8-ABA8-35A77304CCFA} = {B9A9953F-E415-44D8-ABA8-35A77304CCFA}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationCalculatorTests", "CorrelationCalculatorTests\CorrelationCalculatorTests.csproj", "{9EF9DAA7-BFB7-4887-BE13-4C30198050D1}"
 EndProject

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using TSLab.Script;
+using TradingSystems;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     /// <summary>
     /// Я не пользуюсь этим классом

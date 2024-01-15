@@ -4,7 +4,7 @@ using System.Reflection;
 using TrendByPivotPoints;
 using TSLab.Utils;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     [TestClass()]
     public class ObjectDiagnosticExtensionsTests

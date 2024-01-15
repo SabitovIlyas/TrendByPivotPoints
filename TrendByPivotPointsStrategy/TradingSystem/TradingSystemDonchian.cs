@@ -6,7 +6,7 @@ using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class TradingSystemDonchian : TradingStrategy
     {

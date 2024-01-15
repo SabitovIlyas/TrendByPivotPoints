@@ -4,7 +4,7 @@ using TrendByPivotPoints;
 using TSLab.DataSource;
 using TSLab.Script;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class AccountFake : Account
     {

@@ -3,7 +3,7 @@ using TSLab.Script.Handlers;
 using TSLab.Script.Optimization;
 using TSLab.Script;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class ScriptScalperStrategy : IExternalScript
     {

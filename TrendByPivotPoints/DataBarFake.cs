@@ -2,7 +2,7 @@
 using TSLab.DataSource;
 using System.IO;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     class DataBarFake : IDataBar
     {

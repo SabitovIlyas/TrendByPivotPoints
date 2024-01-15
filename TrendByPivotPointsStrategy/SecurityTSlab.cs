@@ -4,9 +4,11 @@ using TSLab.DataSource;
 using TSLab.Script.Realtime;
 using System;
 using TSLab.Script.Handlers;
+using TradingSystems;
+using System.Linq;
 
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class SecurityTSlab : Security
     {
@@ -62,8 +64,9 @@ namespace TrendByPivotPointsStrategy
                 return barNumber;
             }
         }
-
+        
         public ISecurity security;
+
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
@@ -89,6 +92,14 @@ namespace TrendByPivotPointsStrategy
             finInfo = baseSecurity.FinInfo;
             InitializeSecurity(security);
             this.context = context;
+        }
+
+        public SecurityTSlab(ISecurity baseSecurity, List<Bar> bars)
+        {
+            this.baseSecurity = baseSecurity;
+            finInfo = baseSecurity.FinInfo;          
+            InitializeSecurity(baseSecurity);
+            CompareBarsBaseSecurityWithCompressedSecurity();
         }
 
         public bool IsRealTimeActualBar(int barNumber)
@@ -255,7 +266,10 @@ namespace TrendByPivotPointsStrategy
         {
             var bars = new List<Bar>();
             for (var i = 0; i <= barNumber; i++)
-                bars.Add(new Bar() { Open = GetBarIDataBar(i).Open, High = GetBarIDataBar(i).High, Low = GetBarIDataBar(i).Low, Close = GetBarIDataBar(i).Close, Date = GetBarIDataBar(i).Date });
+            {
+                var bar = GetBarIDataBar(i);
+                bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date, Volume = bar.Volume }); 
+            }
 
             return bars;
         }
@@ -312,6 +326,45 @@ namespace TrendByPivotPointsStrategy
                 return bars[barNumber];
             }
             return new Bar();
+        }
+
+        public ISecurity CompressLessIntervalTo1DayInterval()
+        {
+            var bars = new List<Bar>();
+            fillBarParams(security.Bars.First(), out var date, out var open, out var high, out var low, out var close, out var volume);//, out var ticker, out var period);
+
+            for (int i = 1; i < security.Bars.Count; i++)
+            {
+                IDataBar baseBar = security.Bars[i];                
+
+                if (date.Date != baseBar.Date.Date)
+                {
+                    bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume, Ticker = security.Symbol, Period = "1D" });
+                    fillBarParams(security.Bars[i], out date, out open, out high, out low, out close, out volume);
+                }
+                else
+                {
+                    high = Math.Max(high, baseBar.High);
+                    low = Math.Min(low, baseBar.Low);
+                    close = baseBar.Close;
+                    volume += baseBar.Volume;
+                }
+            }
+
+            bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume, Ticker = security.Symbol, Period = "1D" });
+            
+            var result = CustomSecurity.Create(bars);
+            return result;
+        }
+
+        private void fillBarParams(IDataBar bar, out DateTime date, out double open, out double high, out double low, out double close, out double volume)//, out string ticker, out string period)
+        {
+            date = new DateTime(bar.Date.Year, bar.Date.Month, bar.Date.Day, 10, 0, 0);
+            open = bar.Open;
+            high = bar.High;
+            low = bar.Low;
+            close = bar.Close;
+            volume = bar.Volume;            
         }
     }
 }

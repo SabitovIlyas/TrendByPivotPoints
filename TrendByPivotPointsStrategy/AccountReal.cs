@@ -4,7 +4,7 @@ using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {
     public class AccountReal : Account
     {

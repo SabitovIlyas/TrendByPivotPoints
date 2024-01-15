@@ -5,7 +5,7 @@ using TSLab.Script;
 using TSLab.Script.Realtime;
 using System.Reflection;
 
-namespace TrendByPivotPointsStrategy
+namespace TradingSystems
 {    
     public class BollingerBandsArbitrageStrategyScript : IExternalScript
     {

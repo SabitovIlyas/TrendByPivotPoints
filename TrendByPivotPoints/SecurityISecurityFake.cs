@@ -5,7 +5,7 @@ using TSLab.DataSource;
 using TSLab.Utils;
 using TSLab.Script.Handlers;
 
-namespace TrendByPivotPointsStrategy.Tests
+namespace TradingSystems.Tests
 {
     public class SecurityISecurityFake : ISecurity
     {
