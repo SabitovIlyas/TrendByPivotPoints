@@ -1,16 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Data.SqlTypes;
-using System.Dynamic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using TradingSystems;
 
 namespace TrendByPivotPointsOptimizator
@@ -23,8 +11,49 @@ namespace TrendByPivotPointsOptimizator
         private static int dimension;
         static void Main(string[] args)
         {
+            const int useCase = 2;
+
+            switch (useCase)
+            {
+                case 1:
+                    {
+                        UseCase1();
+                        break;
+                    }
+                case 2:
+                    {
+                        UseCase2();
+                        break;
+                    }
+            }
+        }
+
+        private static void PrintOptimalParameters(PositionSide side, int[] radiusNeighbour, int barrier)
+        {
+            var fullFileName = path;
+            if (side == PositionSide.Long)
+                fullFileName += fileNameLong;
+            else if (side == PositionSide.Short)
+                fullFileName += fileNameShort;
+
+            Console.WriteLine("\r\n{0}, + dimension: {1}, radiusNeighbour: {2}; {3}, barrier: {4}\r\n", side, dimension, radiusNeighbour[0], radiusNeighbour[1], barrier);
+            var result = GetOptimalParameters(fullFileName, dimension, radiusNeighbour, barrier);
+            Console.WriteLine(result.ToString());
+            Console.WriteLine("\r\n=============================================================================================\r\n");
+        }
+
+        private static string GetOptimalParameters(string fullFileName, int dimension, int[] radiusNeighbour, double barrier, bool isCheckedPass = true)
+        {
+            var parser = ParserPointValueFromFile.Create(fullFileName);
+            var points = parser.ParseForPoints();
+            var optimizator = Optimizator.Create();
+            return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+        }
+
+        private static void UseCase1()
+        {
             path = "C:\\Users\\1\\Dropbox\\Трейдинг\\";
-            
+
             fileNameLong = "results_Long.csv";
             fileNameShort = "results_Short.csv";
             dimension = 2;
@@ -48,32 +77,23 @@ namespace TrendByPivotPointsOptimizator
             PrintOptimalParameters(PositionSide.Short, new int[2] { 2, 2 }, barrier: 3);
 
             Console.WriteLine("Finished!");
-            Console.ReadLine();            
+            Console.ReadLine();
         }
 
-        private static void PrintOptimalParameters(PositionSide side, int[] radiusNeighbour, int barrier)
+        private static void UseCase2()
         {
-            var fullFileName = path;
-            if (side == PositionSide.Long)
-                fullFileName += fileNameLong;
-            else if (side == PositionSide.Short)
-                fullFileName += fileNameShort;
+            path = "C:\\Users\\1\\Dropbox\\Трейдинг\\";
 
-            //Console.WriteLine("\r\n {0}, dimension: 2, radiusNeighbour: new int[2] { 2, 2 }, barrier: 2\r\n", side.ToString());
-            //Console.WriteLine("\r\n" + side + ", dimension: 2, radiusNeighbour: new int[2] { 2, 2 }, barrier: 2\r\n");
-            Console.WriteLine("\r\n{0}, + dimension: {1}, radiusNeighbour: {2}; {3}, barrier: {4}\r\n", side, dimension, radiusNeighbour[0], radiusNeighbour[1], barrier);
-            var result = GetOptimalParameters(fullFileName, dimension, radiusNeighbour, barrier);
-            Console.WriteLine(result.ToString());
-            Console.WriteLine("\r\n=============================================================================================\r\n");
-        }
+            fileNameLong = "results_Long.csv";
+            fileNameShort = "results_Short.csv";
+            dimension = 2;
 
-        private static string GetOptimalParameters(string fullFileName, int dimension, int[] radiusNeighbour, double barrier, bool isCheckedPass = true)
-        {
+            Console.WriteLine("Start!");
 
-            var parser = ParserPointValueFromFile.Create(fullFileName);
-            var points = parser.ParseForPoints();
-            var optimizator = Optimizator.Create();
-            return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+            PrintOptimalParameters(PositionSide.Long, new int[2] { 10, 10 }, barrier: 1);
+
+            Console.WriteLine("Finished!");
+            Console.ReadLine();
         }
     }
 }

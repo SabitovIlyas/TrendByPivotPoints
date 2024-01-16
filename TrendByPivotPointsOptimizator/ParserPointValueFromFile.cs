@@ -9,6 +9,10 @@ namespace TrendByPivotPointsOptimizator
         public class ParserPointValueFromFile
         {
             string fullFileName = string.Empty;
+
+            public string Param1Str { get; set; } = "ВнешнийСкрипт.period";
+            public string Param2Str { get; set; } = "ВнешнийСкрипт.rsiBand";
+
             public static ParserPointValueFromFile Create(string fullFileName)
             {
                 return new ParserPointValueFromFile(fullFileName);
@@ -33,7 +37,7 @@ namespace TrendByPivotPointsOptimizator
                     if (listStrings == null)
                         throw new Exception("Файл пустой!");
 
-                    int recoveryFactorIndex = 0, periodIndex = 0, rsiBandIndex = 0, stringNumber = 0;
+                    int recoveryFactorIndex = 0, param1 = 0, param2 = 0, stringNumber = 0;
 
                     foreach (string str in listStrings)
                     {
@@ -44,9 +48,9 @@ namespace TrendByPivotPointsOptimizator
 
                             if (stringNumber == 0)
                             {
-                                recoveryFactorIndex = split.FindIndex(p => p.Contains("Фикс. Фактор восст."));
-                                periodIndex = split.FindIndex(p => p.Contains("ВнешнийСкрипт.period"));
-                                rsiBandIndex = split.FindIndex(p => p.Contains("ВнешнийСкрипт.rsiBand"));
+                                recoveryFactorIndex = split.FindIndex(p => p.Contains("Фикс. Фактор восст."));// TODO: Переработать этот хардкодинг
+                                param1 = split.FindIndex(p => p.Contains(Param1Str));
+                                param2 = split.FindIndex(p => p.Contains(Param2Str));
                             }
 
                             if (stringNumber > 0)
@@ -60,11 +64,11 @@ namespace TrendByPivotPointsOptimizator
                                 else if (tmpStr[0] == '+')
                                     recoveryFactor = double.MaxValue;
 
-                                tmpStr = split[periodIndex].Replace('.', ',');                                
+                                tmpStr = split[param1].Replace('.', ',');
                                 var doubleTmp = double.Parse(tmpStr);
                                 var period = (int)doubleTmp;
 
-                                tmpStr = split[rsiBandIndex].Replace('.', ',');
+                                tmpStr = split[param2].Replace('.', ',');
                                 doubleTmp = double.Parse(tmpStr);
                                 var rsiBand = (int)doubleTmp;
 
@@ -80,6 +84,6 @@ namespace TrendByPivotPointsOptimizator
                 }
                 return points;
             }
-        }        
+        }
     }
 }
