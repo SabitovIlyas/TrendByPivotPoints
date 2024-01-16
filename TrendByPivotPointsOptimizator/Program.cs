@@ -45,9 +45,12 @@ namespace TrendByPivotPointsOptimizator
         private static string GetOptimalParameters(string fullFileName, int dimension, int[] radiusNeighbour, double barrier, bool isCheckedPass = true)
         {
             var parser = ParserPointValueFromFile.Create(fullFileName);
+            parser.Param1Str = "ВнешнийСкрипт.period";
+            parser.Param2Str = "ВнешнийСкрипт.rsiBand";
             var points = parser.ParseForPoints();
             var optimizator = Optimizator.Create();
-            return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+            //return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);  // TODO: не удалять комментарий, а сделать нормально
+            return optimizator.GetOptimalParametersPercent(points, dimension, radiusNeighbour, barrier, isCheckedPass);
         }
 
         private static void UseCase1()
