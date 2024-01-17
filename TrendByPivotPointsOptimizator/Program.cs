@@ -49,7 +49,7 @@ namespace TrendByPivotPointsOptimizator
             parser.Param2Str = "ВнешнийСкрипт.rsiBand";
             var points = parser.ParseForPoints();
             var optimizator = Optimizator.Create();
-            //return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);  // TODO: не удалять комментарий, а сделать нормально
+            return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);  // TODO: не удалять комментарий, а сделать нормально
             return optimizator.GetOptimalParametersPercent(points, dimension, radiusNeighbour, barrier, isCheckedPass);
         }
 

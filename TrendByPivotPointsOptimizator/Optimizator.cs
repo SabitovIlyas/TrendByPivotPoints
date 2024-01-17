@@ -65,5 +65,10 @@ namespace TrendByPivotPointsOptimizator
             }
             return result;
         }
+
+        public string GetOptimalParametersPercent(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
+        {
+            return "";
+        }
     }
 }

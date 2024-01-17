@@ -48,7 +48,7 @@ namespace TrendByPivotPointsOptimizator
 
                             if (stringNumber == 0)
                             {
-                                recoveryFactorIndex = split.FindIndex(p => p.Contains("Фикс. Фактор восст."));// TODO: Переработать этот хардкодинг
+                                recoveryFactorIndex = split.FindIndex(p => p.Contains("Фикс. Фактор восст."));// TODO: Переработать этот хардкод
                                 param1 = split.FindIndex(p => p.Contains(Param1Str));
                                 param2 = split.FindIndex(p => p.Contains(Param2Str));
                             }
