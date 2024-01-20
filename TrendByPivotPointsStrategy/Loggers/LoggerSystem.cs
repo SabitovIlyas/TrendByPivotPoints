@@ -8,7 +8,6 @@ namespace TradingSystems
         bool switchOn = true;
         bool locked = false;
 
-        //public static LoggerSystem ()
         public LoggerSystem(IContext context)
         {
             this.context = context;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -45,8 +46,7 @@ namespace TrendByPivotPointsOptimizator
                 for (var z = 0; z < dimension; z++)
                 {
                     lowerBand[z] = combination.GetCoord(z) - radiusNeighbour[z];
-                    upperBand[z] = combination.GetCoord(z) + radiusNeighbour[z];                    
-                    
+                    upperBand[z] = combination.GetCoord(z) + radiusNeighbour[z];
                 }                
 
                 foreach (var potentialNeighbour in combinations)
@@ -66,6 +66,58 @@ namespace TrendByPivotPointsOptimizator
                 }
 
                 combination.AddNearCombinations(neighbourList);                              
+            }
+
+            var result = new List<Combination>();
+            foreach (var combinationDecorator in combinations)
+                result.Add(combinationDecorator.Combination);
+            return result;
+        }
+
+        public List<Combination> CreateMatrixPercent()
+        {
+            foreach (var point in points)
+            {
+                var combination = Combination.Create(point.Value);
+                var combinationDecorator = CombinationDecorator.Create(combination, point);
+                combinations.Add(combinationDecorator);
+            }
+
+            foreach (var combination in combinations)
+            {
+                var neighbourList = new List<CombinationDecorator>();
+                var coords = new int[dimension];
+                for (var z = 0; z < dimension; z++)
+                {
+                    coords[z] = combination.GetCoord(z);
+                }
+
+                var lowerBand = new int[dimension];
+                var upperBand = new int[dimension];
+
+                for (var z = 0; z < dimension; z++)
+                {
+                    lowerBand[z] = (int)(combination.GetCoord(z) - Math.Round(combination.GetCoord(z) * (float)radiusNeighbour[z] / 100, MidpointRounding.AwayFromZero));
+                    upperBand[z] = (int)(combination.GetCoord(z) + Math.Round(combination.GetCoord(z) * (float)radiusNeighbour[z] / 100, MidpointRounding.AwayFromZero));
+                }
+
+                foreach (var potentialNeighbour in combinations)
+                {
+                    var passed = true;
+                    for (var z = 0; z < dimension; z++)
+                    {
+                        if (potentialNeighbour.GetCoord(z) < lowerBand[z] || potentialNeighbour.GetCoord(z) > upperBand[z])
+                        {
+                            passed = false;
+                            break;
+                        }
+                    }
+
+                    if (passed && potentialNeighbour != combination)
+                        neighbourList.Add(potentialNeighbour);
+                }
+
+                combination.AddNearCombinations(neighbourList);
             }
 
             var result = new List<Combination>();
