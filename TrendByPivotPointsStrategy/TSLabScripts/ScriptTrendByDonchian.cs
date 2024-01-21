@@ -27,6 +27,9 @@ namespace TradingSystems
 
         public void Execute(IContext context, ISecurity[] securities)        
         {
+            if ((int)fastDonchian > (int)slowDonchian)
+                return;
+
             var logger = new LoggerSystem(context);
             PivotPointsMainSystem system;
 
