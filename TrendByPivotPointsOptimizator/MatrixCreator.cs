@@ -47,24 +47,9 @@ namespace TrendByPivotPointsOptimizator
                 {
                     lowerBand[z] = combination.GetCoord(z) - radiusNeighbour[z];
                     upperBand[z] = combination.GetCoord(z) + radiusNeighbour[z];
-                }                
-
-                foreach (var potentialNeighbour in combinations)
-                {
-                    var passed = true;
-                    for (var z = 0; z < dimension; z++)
-                    {
-                        if (potentialNeighbour.GetCoord(z) < lowerBand[z] || potentialNeighbour.GetCoord(z) > upperBand[z])
-                        {
-                            passed = false;
-                            break;
-                        }
-                    }
-
-                    if (passed && potentialNeighbour != combination)
-                        neighbourList.Add(potentialNeighbour);
                 }
 
+                NeighbourListFill(combination, neighbourList, lowerBand, upperBand);
                 combination.AddNearCombinations(neighbourList);                              
             }
 
@@ -101,22 +86,7 @@ namespace TrendByPivotPointsOptimizator
                     upperBand[z] = (int)(combination.GetCoord(z) + Math.Round(combination.GetCoord(z) * (float)radiusNeighbour[z] / 100, MidpointRounding.AwayFromZero));
                 }
 
-                foreach (var potentialNeighbour in combinations)
-                {
-                    var passed = true;
-                    for (var z = 0; z < dimension; z++)
-                    {
-                        if (potentialNeighbour.GetCoord(z) < lowerBand[z] || potentialNeighbour.GetCoord(z) > upperBand[z])
-                        {
-                            passed = false;
-                            break;
-                        }
-                    }
-
-                    if (passed && potentialNeighbour != combination)
-                        neighbourList.Add(potentialNeighbour);
-                }
-
+                NeighbourListFill(combination, neighbourList, lowerBand, upperBand);
                 combination.AddNearCombinations(neighbourList);
             }
 
@@ -124,7 +94,7 @@ namespace TrendByPivotPointsOptimizator
             foreach (var combinationDecorator in combinations)
                 result.Add(combinationDecorator.Combination);
             return result;
-        }
+        }       
 
         public int[] GetCoords(Combination combination)
         {
@@ -134,6 +104,25 @@ namespace TrendByPivotPointsOptimizator
             for (var i = 0; i < dimension; i++)
                 result[i] = cmb.GetCoord(i);
             return result;
+        }
+
+        private void NeighbourListFill(CombinationDecorator combination, List<CombinationDecorator> neighbourList, int[] lowerBand, int[] upperBand)
+        {
+            foreach (var potentialNeighbour in combinations)
+            {
+                var passed = true;
+                for (var z = 0; z < dimension; z++)
+                {
+                    if (potentialNeighbour.GetCoord(z) < lowerBand[z] || potentialNeighbour.GetCoord(z) > upperBand[z])
+                    {
+                        passed = false;
+                        break;
+                    }
+                }
+
+                if (passed && potentialNeighbour != combination)
+                    neighbourList.Add(potentialNeighbour);
+            }
         }
     }
 }

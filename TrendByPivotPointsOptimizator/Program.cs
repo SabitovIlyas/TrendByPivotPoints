@@ -9,20 +9,22 @@ namespace TrendByPivotPointsOptimizator
         private static string fileNameLong;
         private static string fileNameShort;
         private static int dimension;
+        private static int useCase = 2;
+
         static void Main(string[] args)
         {
-            const int useCase = 2;
-
+            Console.WriteLine("Введите номер примера использования");
+            useCase = int.Parse(Console.ReadLine());
             switch (useCase)
             {
                 case 1:
                     {
-                        UseCase1();
+                        PrintOptomalParametersUseCase();
                         break;
                     }
                 case 2:
                     {
-                        UseCase2();
+                        PrintOptimalParametersPercentUseCase();
                         break;
                     }
             }
@@ -49,11 +51,23 @@ namespace TrendByPivotPointsOptimizator
             parser.Param2Str = "ВнешнийСкрипт.rsiBand";
             var points = parser.ParseForPoints();
             var optimizator = Optimizator.Create();
-            return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);  // TODO: не удалять комментарий, а сделать нормально
-            return optimizator.GetOptimalParametersPercent(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+
+            switch (useCase)
+            {
+                case 1:
+                    {
+                        return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);  // TODO: не удалять комментарий, а сделать нормально
+                    }
+                case 2:
+                    {
+                        return optimizator.GetOptimalParametersPercent(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+                    }
+            }
+
+            return "";
         }
 
-        private static void UseCase1()
+        private static void PrintOptomalParametersUseCase()
         {
             path = "C:\\Users\\1\\Dropbox\\Трейдинг\\";
 
@@ -83,7 +97,7 @@ namespace TrendByPivotPointsOptimizator
             Console.ReadLine();
         }
 
-        private static void UseCase2()
+        private static void PrintOptimalParametersPercentUseCase()
         {
             path = "C:\\Users\\1\\Dropbox\\Трейдинг\\";
 
