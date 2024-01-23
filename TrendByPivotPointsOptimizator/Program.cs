@@ -47,8 +47,8 @@ namespace TrendByPivotPointsOptimizator
         private static string GetOptimalParameters(string fullFileName, int dimension, int[] radiusNeighbour, double barrier, bool isCheckedPass = true)
         {
             var parser = ParserPointValueFromFile.Create(fullFileName);
-            parser.Param1Str = "ВнешнийСкрипт.period";
-            parser.Param2Str = "ВнешнийСкрипт.rsiBand";
+            parser.Param1Str = "ВнешнийСкрипт.slowDonchian";
+            parser.Param2Str = "ВнешнийСкрипт.fastDonchian";
             var points = parser.ParseForPoints();
             var optimizator = Optimizator.Create();
 
@@ -99,10 +99,10 @@ namespace TrendByPivotPointsOptimizator
 
         private static void PrintOptimalParametersPercentUseCase()
         {
-            path = "C:\\Users\\1\\Dropbox\\Трейдинг\\";
+            path = "C:\\Users\\Ильяс\\Documents\\Трейдинг\\Оптимизация\\Backward\\";
 
-            fileNameLong = "results_Long.csv";
-            fileNameShort = "results_Short.csv";
+            fileNameLong = "Donchian_Br_Script_Long---BR-1D-01-01-2015--31-12-2018.csv";
+            //fileNameShort = "results_Short.csv";
             dimension = 2;
 
             Console.WriteLine("Start!");
