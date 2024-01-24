@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Remoting.Messaging;
 using TradingSystems;
 
 namespace TrendByPivotPointsOptimizator
@@ -42,25 +45,36 @@ namespace TrendByPivotPointsOptimizator
             var result = GetOptimalParameters(fullFileName, dimension, radiusNeighbour, barrier);
             Console.WriteLine(result.ToString());
             Console.WriteLine("\r\n=============================================================================================\r\n");
+            
+            if (useCase == 2)
+            {
+                StreamWriter sw = new StreamWriter(fullFileName.Trim(".csv".ToCharArray()) + "_result.csv");
+                sw.WriteLine(result);
+                sw.Close();
+            }
         }
 
         private static string GetOptimalParameters(string fullFileName, int dimension, int[] radiusNeighbour, double barrier, bool isCheckedPass = true)
         {
-            var parser = ParserPointValueFromFile.Create(fullFileName);
-            parser.Param1Str = "ВнешнийСкрипт.slowDonchian";
-            parser.Param2Str = "ВнешнийСкрипт.fastDonchian";
-            var points = parser.ParseForPoints();
-            var optimizator = Optimizator.Create();
+            var parser = ParserPointValueFromFile.Create(fullFileName);            
 
             switch (useCase)
             {
                 case 1:
                     {
+                        parser.Param1Str = "ВнешнийСкрипт.slowDonchian";    //тут другие были параметры
+                        parser.Param2Str = "ВнешнийСкрипт.fastDonchian";
+                        var points = parser.ParseForPoints();
+                        var optimizator = Optimizator.Create();
                         return optimizator.GetOptimalParameters(points, dimension, radiusNeighbour, barrier, isCheckedPass);  // TODO: не удалять комментарий, а сделать нормально
                     }
                 case 2:
                     {
-                        return optimizator.GetOptimalParametersPercent(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+                        parser.Param1Str = "ВнешнийСкрипт.slowDonchian";
+                        parser.Param2Str = "ВнешнийСкрипт.fastDonchian";
+                        var points = parser.ParseForPoints();
+                        var optimizator = Optimizator.Create();
+                        return optimizator.GetOptimalParametersPercent1(points, dimension, radiusNeighbour, barrier, isCheckedPass);
                     }
             }
 
@@ -98,8 +112,8 @@ namespace TrendByPivotPointsOptimizator
         }
 
         private static void PrintOptimalParametersPercentUseCase()
-        {
-            path = "C:\\Users\\Ильяс\\Documents\\Трейдинг\\Оптимизация\\Backward\\";
+        {            
+            path = "C:\\Users\\sabitovii\\Documents\\Трейдинг\\Оптимизация\\Backward\\";
 
             fileNameLong = "Donchian_Br_Script_Long---BR-1D-01-01-2015--31-12-2018.csv";
             //fileNameShort = "results_Short.csv";
@@ -107,7 +121,7 @@ namespace TrendByPivotPointsOptimizator
 
             Console.WriteLine("Start!");
 
-            PrintOptimalParameters(PositionSide.Long, new int[2] { 10, 10 }, barrier: 1);
+            PrintOptimalParameters(PositionSide.Long, new int[2] { 10, 10 }, barrier: 2);
 
             Console.WriteLine("Finished!");
             Console.ReadLine();

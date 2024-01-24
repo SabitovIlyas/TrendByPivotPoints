@@ -71,7 +71,6 @@ namespace TrendByPivotPointsOptimizator
             var matirxCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
             var matrix = matirxCreator.CreateMatrixPercent();
 
-
             var combinationsPassedBarrier = new List<Combination>();
             foreach (var combination in matrix)
                 if (isCheckedPass)
@@ -112,6 +111,32 @@ namespace TrendByPivotPointsOptimizator
 
                 if (i < combinationsPassedBarrier.Count - 1)
                     result += "; ";
+            }
+            return result;
+        }
+
+        public string GetOptimalParametersPercent1(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
+        {
+            var matirxCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
+            var matrix = matirxCreator.CreateMatrixPercent();           
+
+            var result = string.Empty;
+
+            for (int i = 0; i < matrix.Count; i++)
+            {
+                var id = "";
+                var coords = matirxCreator.GetCoords(matrix[i]);
+                for (var j = 0; j < coords.Length; j++)
+                {
+                    result += coords[j] + ";";
+                    id += coords[j] + "000";
+                }
+
+                result += id.Trim("000".ToCharArray()) + ";";
+                if (matrix[i].IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(barrier))
+                    result += Math.Round(matrix[i].GetAverageValue(),2) + ";\n";
+                else
+                    result += ";\n";                
             }
             return result;
         }
