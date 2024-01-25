@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Remoting.Messaging;
+using System.Windows.Forms;
 using TradingSystems;
 
 namespace TrendByPivotPointsOptimizator
@@ -14,6 +15,7 @@ namespace TrendByPivotPointsOptimizator
         private static int dimension;
         private static int useCase = 2;
 
+        [STAThread]
         static void Main(string[] args)
         {
             Console.WriteLine("Введите номер примера использования");
@@ -35,19 +37,24 @@ namespace TrendByPivotPointsOptimizator
 
         private static void PrintOptimalParameters(PositionSide side, int[] radiusNeighbour, int barrier)
         {
-            var fullFileName = path;
-            if (side == PositionSide.Long)
-                fullFileName += fileNameLong;
-            else if (side == PositionSide.Short)
-                fullFileName += fileNameShort;
+            if (useCase == 1)
+            {
+                var fullFileName = path;
+                if (side == PositionSide.Long)
+                    fullFileName += fileNameLong;
+                else if (side == PositionSide.Short)
+                    fullFileName += fileNameShort;
 
-            Console.WriteLine("\r\n{0}, + dimension: {1}, radiusNeighbour: {2}; {3}, barrier: {4}\r\n", side, dimension, radiusNeighbour[0], radiusNeighbour[1], barrier);
-            var result = GetOptimalParameters(fullFileName, dimension, radiusNeighbour, barrier);
-            Console.WriteLine(result.ToString());
-            Console.WriteLine("\r\n=============================================================================================\r\n");
+                Console.WriteLine("\r\n{0}, + dimension: {1}, radiusNeighbour: {2}; {3}, barrier: {4}\r\n", side, dimension, radiusNeighbour[0], radiusNeighbour[1], barrier);
+                var result = GetOptimalParameters(fullFileName, dimension, radiusNeighbour, barrier);
+                Console.WriteLine(result.ToString());
+                Console.WriteLine("\r\n=============================================================================================\r\n");
+            }            
             
             if (useCase == 2)
             {
+                var fullFileName = path;
+                var result = GetOptimalParameters(fullFileName, dimension, radiusNeighbour, barrier);
                 StreamWriter sw = new StreamWriter(fullFileName.Trim(".csv".ToCharArray()) + "_result.csv");
                 sw.WriteLine(result);
                 sw.Close();
@@ -111,17 +118,27 @@ namespace TrendByPivotPointsOptimizator
             Console.ReadLine();
         }
 
-        private static void PrintOptimalParametersPercentUseCase()
-        {            
-            path = "C:\\Users\\sabitovii\\Documents\\Трейдинг\\Оптимизация\\Backward\\";
+        private static void PrintOptimalParametersPercentUseCase()               
+        {
+            Console.WriteLine("Start!");
 
-            fileNameLong = "Donchian_Br_Script_Long---BR-1D-01-01-2015--31-12-2018.csv";
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
+            openFileDialog.Title = "Выберите файлы с историческими данными";
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            //path = "C:\\Users\\sabitovii\\Documents\\Трейдинг\\Оптимизация\\Backward\\";
+
+            //fileNameLong = "Donchian_Br_Script_Long---BR-1D-01-01-2015--31-12-2018.csv";
             //fileNameShort = "results_Short.csv";
             dimension = 2;
 
-            Console.WriteLine("Start!");
-
-            PrintOptimalParameters(PositionSide.Long, new int[2] { 10, 10 }, barrier: 2);
+            for (var i = 0; i < openFileDialog.FileNames.Length; i++)
+            {
+                path = openFileDialog.FileNames[i];
+                PrintOptimalParameters(PositionSide.Long, new int[2] { 10, 10 }, barrier: 1);
+            }               
 
             Console.WriteLine("Finished!");
             Console.ReadLine();
