@@ -137,7 +137,7 @@ namespace TrendByPivotPointsOptimizator
             for (var i = 0; i < openFileDialog.FileNames.Length; i++)
             {
                 path = openFileDialog.FileNames[i];
-                PrintOptimalParameters(PositionSide.Long, new int[2] { 10, 10 }, barrier: 1);
+                PrintOptimalParameters(PositionSide.Long, new int[2] { 5, 5 }, barrier: 1); //29; 24
             }               
 
             Console.WriteLine("Finished!");
