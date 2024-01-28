@@ -129,10 +129,11 @@ namespace TrendByPivotPointsOptimizator
                 for (var j = 0; j < coords.Length; j++)
                 {
                     result += coords[j] + ";";
-                    id += coords[j] + "000";
+                    if (i < matrix.Count - 1)
+                        id += coords[j] + "000";
                 }
 
-                result += id.Trim("000".ToCharArray()) + ";";
+                //result += id.Trim("000".ToCharArray()) + ";";
                 if (matrix[i].IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(barrier))
                     result += Math.Round(matrix[i].GetAverageValue(),2) + ";\n";
                 else
