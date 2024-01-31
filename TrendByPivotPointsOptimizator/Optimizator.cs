@@ -131,6 +131,8 @@ namespace TrendByPivotPointsOptimizator
                     result += coords[j] + ";";
                     if (j < coords.Length - 1)  //ошибка
                         id += coords[j] + "000";
+                    else
+                        id += coords[j];
                 }
 
                 result += id + ";";
