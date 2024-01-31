@@ -129,7 +129,7 @@ namespace TrendByPivotPointsOptimizator
                 for (var j = 0; j < coords.Length; j++)
                 {
                     result += coords[j] + ";";
-                    if (j < coords.Length - 1)  //ошибка
+                    if (j < coords.Length - 1)
                         id += coords[j] + "000";
                     else
                         id += coords[j];
