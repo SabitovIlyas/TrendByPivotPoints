@@ -5,6 +5,7 @@ using SystemColor = System.Drawing.Color;
 using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using System.Linq;
+using System.Diagnostics.Contracts;
 
 namespace TradingSystems
 {
@@ -226,13 +227,45 @@ namespace TradingSystems
                 else
                     Logger.SwitchOff();
 
-                CheckPositionOpenLongCase();
+                //CheckPositionOpenLongCase();
+                CheckPositionOpenLongCaseTestEvents();
             }
 
             catch (Exception e)
             {
                 Log("Исключение в методе Update(): " + e.ToString());
             }
+        }
+
+        private void CheckPositionOpenLongCaseTestEvents()
+        {
+            var listReasons = Ctx.Runtime.LastRecalcReasons.Select(x => x.Name).Distinct().ToList();
+            var listReasonsSt = string.Join(", ", listReasons);
+            Log($"RecalcReasons: " + listReasonsSt, MessageType.Info, true);
+
+            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
+            var notes = GetSignalNotesName(0);
+            if (!IsPositionOpen(notes))
+            {
+                Log("{0} позиция не открыта.", convertable.Long);
+
+                Log("Есть ли сигнал?");
+                if (security.GetBar(barNumber).Date.Minute != new DateTime(2024, 02, 05, 21,30,00).Minute)
+                {
+                    Log("Нет, сигнала нет.");
+                    return;
+                }
+
+                Log("Да, появился сигнал!");
+                sec.Positions.BuyAtMarket(barNumber + 1, 1, signalNameForOpenPosition + notes);
+            }
+            else
+            {
+                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
+                {
+                    Ctx.Log($"Позиция открыта! Надо выставлять стоп-лосс!", MessageType.Info, true);
+                }
+            }            
         }
 
         public void CheckPositionOpenLongCase()
