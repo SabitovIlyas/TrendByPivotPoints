@@ -261,9 +261,17 @@ namespace TradingSystems
             }
             else
             {
+                var realTimeTrading = RealTimeTrading.Create(PositionSide.Long, nameof(TradingSystemScalper), Ctx);
                 if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
                 {
-                    Ctx.Log($"Позиция открыта! Надо выставлять стоп-лосс!", MessageType.Info, true);
+                    Log("Позиция открыта! Надо выставлять стоп-лосс!");                    
+                    realTimeTrading.SaveObjectToContainer("Количество юнитов", 1);
+                }
+
+                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionClosing.ToString()))
+                {
+                    Log("Позиция закрыта!");                    
+                    realTimeTrading.SaveObjectToContainer("Количество юнитов", 0);
                 }
             }            
         }

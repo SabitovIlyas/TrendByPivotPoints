@@ -114,6 +114,32 @@ namespace TradingSystems
             return barDate;
         }
 
+        public void SaveObjectToGlobalContainer(string key, object value)
+        {
+            if (ctx.IsOptimization)
+                return;
+
+            var containerName = tradingSystemDescription + key;
+            var container = new NotClearableContainer<object>(value);
+            ctx.StoreGlobalObject(containerName, container, toStorage: true) ;
+        }
+
+        public object LoadObjectFromGlobalContainer(string key)
+        {
+            if (ctx.IsOptimization)
+                throw new Exception("Чтение объекта из глобального контейнера невозможно в режиме оптимизации.");
+
+            var containerName = tradingSystemDescription + key;
+            var container = ctx.LoadGlobalObject(containerName) as NotClearableContainer<object>;
+            object value;
+            if (container != null)
+                value = container.Content;
+            else
+                throw new NullReferenceException("container равно null"); //TODO: Переделать на KeyNotFoundException(key)
+
+            return value;
+        }
+
         public void SetFlagNewPositionOpened()
         {
             SaveFlagNewPositionOpened(true);

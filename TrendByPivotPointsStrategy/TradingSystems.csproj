@@ -123,6 +123,7 @@
     <Compile Include="TSLabScriptHelpers\MainSystemForTrading.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForTradingDonchian.cs" />
     <Compile Include="TSLabScripts\BollingerBandsArbitrageStrategyScript.cs" />
+    <Compile Include="TSLabScripts\GlobalCacheManager.cs" />
     <Compile Include="TSLabScripts\ScriptScalperStrategy.cs" />
     <Compile Include="TSLabScripts\ScriptTrendByDonchian.cs" />
     <Compile Include="TSLabScripts\ScriptTrendByPivotPoints.cs" />
