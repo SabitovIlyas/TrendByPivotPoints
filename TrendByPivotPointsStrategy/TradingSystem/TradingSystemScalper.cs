@@ -6,6 +6,9 @@ using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using System.Linq;
 using System.Diagnostics.Contracts;
+using TSLab.DataSource;
+using System.IO;
+using System.Threading;
 
 namespace TradingSystems
 {
@@ -239,6 +242,16 @@ namespace TradingSystems
 
         private void CheckPositionOpenLongCaseTestEvents()
         {
+            Log("Попробую записать информацию в текстовый файла.");
+            var path = System.IO.Directory.GetCurrentDirectory();
+            Log("Текущая директория: {0}.", path);
+
+            var file = "testIO.txt";
+            StreamWriter sw = new StreamWriter(file);
+            sw.WriteLine("1-ая тестовая строка");
+            sw.WriteLine("2-ая тестовая строка");
+            sw.Close();
+
             var listReasons = Ctx.Runtime.LastRecalcReasons.Select(x => x.Name).Distinct().ToList();
             var listReasonsSt = string.Join(", ", listReasons);
             Log($"RecalcReasons: " + listReasonsSt, MessageType.Info, true);
@@ -266,6 +279,10 @@ namespace TradingSystems
                 {
                     Log("Позиция открыта! Надо выставлять стоп-лосс!");                    
                     realTimeTrading.SaveObjectToContainer("Количество юнитов", 1);
+
+                    //Нужен DataSourceHelper
+                    //var cache = new BinaryCache<BidAskBar>(Folder, CacheName);
+                    //cache.SaveCached("BTCUSDT", "1M", bars, BaseBar.CacheVersion);
                 }
 
                 if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionClosing.ToString()))

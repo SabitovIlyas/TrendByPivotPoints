@@ -17,12 +17,36 @@ namespace TradingSystems
             {                
                 case 1:
                     {
-                        logger.Log("Менеджер глобального кеша находится в режиме редактирования");
+                        logger.Log("Менеджер глобального кеша находится в режиме редактирования.");
                         break;
                     }
                 default:
                     {
-                        logger.Log("Менеджер глобального кеша находится в режиме чтения");
+                        logger.Log("Менеджер глобального кеша находится в режиме чтения.");
+                        logger.Log("Попробую прочитать информацию из текстового файла.");
+                        var path = System.IO.Directory.GetCurrentDirectory();
+                        logger.Log("Текущая директория: {0}.", path);
+                        
+                        var file = "testIO.txt";
+                        if (!System.IO.File.Exists(file))
+                        {
+                            logger.Log("Файл не найден!");
+                            break;
+                        }
+                                                
+                        string[] listStrings = System.IO.File.ReadAllLines(file);
+                        
+                        if (listStrings == null)
+                        {
+                            logger.Log("Файл пустой!");
+                            break;
+                        }
+
+                        logger.Log("Вывод содержимого файла\r\n=====================!");
+                        foreach (string str in listStrings)
+                            logger.Log(str);
+                        logger.Log("======================!\r\nКонец файла!");
+
                         break;
                     }
             }
