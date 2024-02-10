@@ -12,11 +12,12 @@ namespace TradingSystems
             var logger = new LoggerSystem(context);
 
             logger.Log("Попробую записать информацию в текстовый файла.");
-            var path = System.IO.Directory.GetCurrentDirectory();
-            logger.Log("Текущая директория: {0}.", path);
-
+            //var path = System.IO.Directory.GetCurrentDirectory();
+            //logger.Log("Текущая директория: {0}.", path);
+            var folder = @"C:\Users\Ильяс\Documents\Трейдинг\Обмен между скриптами\";
             var file = "testIO.txt";
-            StreamWriter sw = new StreamWriter(file);
+            var path = Path.Combine(folder, file);
+            StreamWriter sw = new StreamWriter(path);
             sw.WriteLine(DateTime.Now + ": 1-ая тестовая строка");
             sw.WriteLine(DateTime.Now + ": 2-ая тестовая строка");
             sw.Close();

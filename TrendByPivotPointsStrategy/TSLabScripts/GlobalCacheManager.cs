@@ -1,4 +1,6 @@
-﻿using TSLab.Script;
+﻿using System.IO;
+using System.Xml.Linq;
+using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Optimization;
 
@@ -23,17 +25,18 @@ namespace TradingSystems
                     {
                         logger.Log("Менеджер глобального кеша находится в режиме чтения.");
                         logger.Log("Попробую прочитать информацию из текстового файла.");
-                        var path = System.IO.Directory.GetCurrentDirectory();
-                        logger.Log("Текущая директория: {0}.", path);
-                        
+                        //var path = System.IO.Directory.GetCurrentDirectory();
+                        //logger.Log("Текущая директория: {0}.", path);
+                        var folder = @"C:\Users\Ильяс\Documents\Трейдинг\Обмен между скриптами\";
                         var file = "testIO.txt";
-                        if (!System.IO.File.Exists(file))
+                        var path = Path.Combine(folder, file);
+                        if (!File.Exists(path))
                         {
                             logger.Log("Файл не найден!");
                             break;
                         }
                                                 
-                        string[] listStrings = System.IO.File.ReadAllLines(file);
+                        string[] listStrings = File.ReadAllLines(path);
                         
                         if (listStrings == null)
                         {
