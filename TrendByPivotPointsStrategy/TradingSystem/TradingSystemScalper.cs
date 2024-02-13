@@ -242,15 +242,15 @@ namespace TradingSystems
 
         private void CheckPositionOpenLongCaseTestEvents()
         {
-            Log("Попробую записать информацию в текстовый файла.");
-            var path = System.IO.Directory.GetCurrentDirectory();
-            Log("Текущая директория: {0}.", path);
+            //Log("Попробую записать информацию в текстовый файла.");
+            //var path = System.IO.Directory.GetCurrentDirectory();
+            //Log("Текущая директория: {0}.", path);
 
-            var file = "testIO.txt";
-            StreamWriter sw = new StreamWriter(file);
-            sw.WriteLine("1-ая тестовая строка");
-            sw.WriteLine("2-ая тестовая строка");
-            sw.Close();
+            //var file = "testIO.txt";
+            //StreamWriter sw = new StreamWriter(file);
+            //sw.WriteLine("1-ая тестовая строка");
+            //sw.WriteLine("2-ая тестовая строка");
+            //sw.Close();
 
             var listReasons = Ctx.Runtime.LastRecalcReasons.Select(x => x.Name).Distinct().ToList();
             var listReasonsSt = string.Join(", ", listReasons);
@@ -263,7 +263,7 @@ namespace TradingSystems
                 Log("{0} позиция не открыта.", convertable.Long);
 
                 Log("Есть ли сигнал?");
-                if (security.GetBar(barNumber).Date.Minute != new DateTime(2024, 02, 05, 21,30,00).Minute)
+                if (security.GetBar(barNumber).Date.Minute != new DateTime(2024, 02, 13, 14,30,00).Minute)
                 {
                     Log("Нет, сигнала нет.");
                     return;

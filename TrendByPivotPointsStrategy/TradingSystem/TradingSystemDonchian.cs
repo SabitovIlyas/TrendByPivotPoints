@@ -6,8 +6,7 @@ using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
 using System.IO;
-using System.Runtime.Remoting.Contexts;
-using static System.Net.Mime.MediaTypeNames;
+using System.Linq;
 
 namespace TradingSystems
 {
@@ -168,6 +167,9 @@ namespace TradingSystems
 
             else
             {
+                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))                
+                    Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
+
                 var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", convertable.Long);
                 stopPrice = GetStopPrice(notes);
