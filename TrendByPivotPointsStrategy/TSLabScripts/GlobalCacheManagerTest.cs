@@ -11,9 +11,7 @@ namespace TradingSystems
         {
             var logger = new LoggerSystem(context);
 
-            logger.Log("Попробую записать информацию в текстовый файла.");
-            //var path = System.IO.Directory.GetCurrentDirectory();
-            //logger.Log("Текущая директория: {0}.", path);
+            logger.Log("Попробую записать информацию в текстовый файл.");            
             var folder = @"C:\Users\Ильяс\Documents\Трейдинг\Обмен между скриптами\";
             var file = "testIO.txt";
             var path = Path.Combine(folder, file);

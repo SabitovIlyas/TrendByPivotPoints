@@ -5,6 +5,9 @@ using SystemColor = System.Drawing.Color;
 using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
+using System.IO;
+using System.Runtime.Remoting.Contexts;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TradingSystems
 {
@@ -121,7 +124,7 @@ namespace TradingSystems
 
         public void CheckPositionOpenLongCase()
         {
-            for (var i = 0; i < limitOpenedPositions; i++)
+            for (var i = 0; i < limitOpenedPositions; i++)           
                 CheckPositionOpenLongCase(i);
         }
 
@@ -171,6 +174,34 @@ namespace TradingSystems
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
             }
+        }
+
+        private void UpdateFileWithExchangeData()
+        {
+            Log("Попробую записать информацию в текстовый файл.");
+
+            var folder = @"C:\Users\Ильяс\Documents\Трейдинг\Обмен между скриптами\";            
+            var path = Path.Combine(folder, name);
+            StreamWriter sw = new StreamWriter(path, true);
+
+            var units = GetQtyUnits();
+            sw.WriteLine("{0};{1};{2};{3}", tradingSystemDescription, security.Name, positionSide, units);
+            sw.Close();
+        }
+
+        private int GetQtyUnits()
+        {
+            var units = 0;
+            for (var i = limitOpenedPositions; i > 0; i--)
+            {                
+                var notes = " Вход №" + i;
+                if (IsPositionOpen(notes))
+                {
+                    units = i;
+                    break;
+                }
+            }
+            return units;
         }
 
         public void SetParameters(SystemParameters systemParameters)
