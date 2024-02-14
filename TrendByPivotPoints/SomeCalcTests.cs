@@ -21,5 +21,5 @@ namespace TradingSystems.Tests
                 Math.Abs(priceChangePosition - currentPrice);
             Assert.AreEqual(expected, actual);
         }
-    }   
+    }
 }
