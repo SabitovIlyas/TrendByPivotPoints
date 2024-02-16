@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
 
@@ -10,15 +11,31 @@ namespace TradingSystems.Tests
     {
         [DataTestMethod]
         public void FooTest()
-        {            
-            var tradingSystem = new XElement("TradingSystem", new XAttribute("Description", "TradingSystemDonchian5520"),
-                new XElement("Security", "BRH4"),
-                new XElement("PositionSide", "Long"),
-                new XElement("Units", "4")
-                );
+        {
+            //var tradingSystems = new List<XElement>()
+            //{
+            //    new XElement("TradingSystem",
+            //    new XAttribute("Description", "TradingSystemDonchianBr"),
+            //    new XAttribute("Security", "BRH4"),
+            //    new XAttribute("PositionSide", "Long"),
+            //    new XElement("Units", "4")
+            //    ),
 
-            var doc = new XDocument(new XDeclaration("1.0", "utf-16", "yes"), tradingSystem);
-            doc.Save("test.xml");            
+            //    new XElement("TradingSystem",
+            //    new XAttribute("Description", "TradingSystemDonchianEu"),
+            //    new XAttribute("Security", "EuH4"),
+            //    new XAttribute("PositionSide", "Long"),
+            //    new XElement("Units", "1")
+            //    )
+            //};
+
+            //var docOut = new XDocument(new XDeclaration("1.0", "utf-16", "yes"), tradingSystems);
+            //var fileName = "test.xml";
+            //docOut.Save(fileName);
+
+            //var docIn = XDocument.Load(fileName);
+
+            //var els = docIn.Elements();
 
             Assert.AreEqual(true, true);
         }
