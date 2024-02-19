@@ -17,7 +17,12 @@ namespace TradingSystems
             {
                 var rtSec = sec as ISecurityRt;
                 if (rtSec != null)
+                {
+                    logger.Log("Получаем Equity: ISecurityRt.EstimatedBalance = {0}", rtSec.EstimatedBalance);
                     return rtSec.EstimatedBalance;
+                }
+
+                logger.Log("rtSec == null");
                 return 0;
             } 
         }

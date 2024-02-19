@@ -141,6 +141,8 @@ namespace TradingSystems
                 if (positionNumber == 0)
                     fixedAtr = atr[barNumber];
 
+                Log("Фиксированный ATR = {0}", fixedAtr);
+
                 Log("Вычисляем стоп-цену...");
                 stopPrice = GetStopPrice(notes);
 
@@ -160,7 +162,10 @@ namespace TradingSystems
                 if (positionNumber == 0)
                     openPositionPrice = highest[barNumber];
 
-                BuyIfGreater(convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition), contracts, notes);
+                var price = convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
+                Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, convertable.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
+
+                BuyIfGreater(price, contracts, notes);
 
                 Log("Отправляем ордер.", convertable.Long);
             }
@@ -213,7 +218,7 @@ namespace TradingSystems
             kAtrForStopLoss = systemParameters.GetDouble("kAtr");
             atrPeriod = systemParameters.GetInt("atrPeriod");
             limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");
-            kAtrForOpenPosition = kAtrForStopLoss;
+            //kAtrForOpenPosition = kAtrForStopLoss;
 
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
