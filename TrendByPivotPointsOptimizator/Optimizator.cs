@@ -144,5 +144,19 @@ namespace TrendByPivotPointsOptimizator
             }
             return result;
         }
+
+        private int CreateID(int[] coords)
+        {
+            var id = string.Empty;
+            for (var j = 0; j < coords.Length; j++)
+            {                
+                if (j < coords.Length - 1)
+                    id += coords[j] + "000";
+                else
+                    id += coords[j];
+            }
+
+            return int.Parse(id);
+        }
     }
 }
