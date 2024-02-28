@@ -13,7 +13,7 @@ namespace TrendByPivotPointsOptimizator
 
         public int Compare(Combination x, Combination y)
         {
-            var comparer = CombinationsAscendingComparer.Create();
+            var comparer = AverageValueCombinationsAscendingComparer.Create();
             return -comparer.Compare(x, y);
         }
     }

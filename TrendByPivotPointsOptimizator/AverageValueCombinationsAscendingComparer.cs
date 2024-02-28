@@ -2,14 +2,14 @@
 
 namespace TrendByPivotPointsOptimizator
 {
-    public class CombinationsAscendingComparer : IComparer<Combination>
+    public class AverageValueCombinationsAscendingComparer : IComparer<Combination>
     {
-        public static CombinationsAscendingComparer Create()
+        public static AverageValueCombinationsAscendingComparer Create()
         {
-            return new CombinationsAscendingComparer();
+            return new AverageValueCombinationsAscendingComparer();
         }
 
-        private CombinationsAscendingComparer() { }
+        private AverageValueCombinationsAscendingComparer() { }
         
         public int Compare(Combination x, Combination y)
         {

@@ -58,8 +58,10 @@
   <ItemGroup>
     <Compile Include="Combination.cs" />
     <Compile Include="CombinationDecorator.cs" />
-    <Compile Include="CombinationsAscendingComparer.cs" />
+    <Compile Include="AverageValueCombinationsAscendingComparer.cs" />
     <Compile Include="CombinationsDescendingComparer.cs" />
+    <Compile Include="IdCombinationDecoratorsDescendingComparer.cs" />
+    <Compile Include="IdCombinationDecoratorsAscendingComparer.cs" />
     <Compile Include="MatrixCreator.cs" />
     <Compile Include="Optimizator.cs" />
     <Compile Include="ParserPointValueFromFile.cs" />

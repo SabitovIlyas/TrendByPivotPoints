@@ -117,46 +117,56 @@ namespace TrendByPivotPointsOptimizator
 
         public string GetOptimalParametersPercent1(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
         {
-            var matirxCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
-            var matrix = matirxCreator.CreateMatrixPercent();           
+            var matrixCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
+            matrixCreator.CreateMatrixPercent();
+            var combinations = matrixCreator.Combinations;
+            SetIdToCombination(matrixCreator);
+            SortCombinationsById(matrixCreator);
 
             var result = string.Empty;
 
-            for (int i = 0; i < matrix.Count; i++)
+            for (int i = 0; i < combinations.Count; i++)
             {
                 var id = "";
-                var coords = matirxCreator.GetCoords(matrix[i]);
-                for (var j = 0; j < coords.Length; j++)
-                {
+                var coords = matrixCreator.GetCoords(combinations[i].Combination);
+                for (var j = 0; j < coords.Length; j++)                
                     result += coords[j] + ";";
-                    if (j < coords.Length - 1)
-                        id += coords[j] + "000";
-                    else
-                        id += coords[j];
-                }
 
-                result += id + ";";
-                result += matrix[i].Value + ";";
-                if (matrix[i].IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(barrier))
-                    result += Math.Round(matrix[i].GetAverageValue(),2) + ";\n";
+                result += matrixCreator.Combinations[i].Id + ";";
+                result += combinations[i].Value + ";";
+                if (combinations[i].Combination.IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(barrier))
+                    result += Math.Round(combinations[i].Combination.GetAverageValue(),2) + ";\n";
                 else
                     result += ";\n";                
             }
             return result;
         }
 
-        private int CreateID(int[] coords)
+        private void SetIdToCombination(MatrixCreator matrixCreator)
         {
-            var id = string.Empty;
-            for (var j = 0; j < coords.Length; j++)
-            {                
-                if (j < coords.Length - 1)
-                    id += coords[j] + "000";
-                else
-                    id += coords[j];
-            }
+            var combinations = matrixCreator.Combinations;
+            for (int i = 0; i < combinations.Count; i++)
+            {
+                var id = string.Empty;
+                var coords = matrixCreator.GetCoords(combinations[i].Combination);
 
-            return int.Parse(id);
+                for (var j = 0; j < coords.Length; j++)
+                {
+                    if (j < coords.Length - 1)
+                        id += coords[j] + "000";
+                    else
+                        id += coords[j];
+                }
+
+                matrixCreator.Combinations[i].Id = int.Parse(id);
+            }                        
         }
+
+        private void SortCombinationsById(MatrixCreator matrixCreator)
+        {
+            var combinations = matrixCreator.Combinations;
+            var comparer = IdCombinationDecoratorsAscendingComparer.Create();
+            combinations.Sort(comparer);
+        }       
     }
 }

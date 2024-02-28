@@ -5,12 +5,14 @@ namespace TrendByPivotPointsOptimizator
     public class CombinationDecorator
     {
         public Combination Combination { get; private set; }
-        public int Id { get; private set; }
+        public int Id { get; set; }
+        public double Value { get {  return Combination.Value; } }
+
 
         private PointValue point;  
 
         public static CombinationDecorator Create(Combination combination, PointValue point)
-        {
+        {            
             return new CombinationDecorator(combination, point);
         }
 

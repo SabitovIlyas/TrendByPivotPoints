@@ -5,6 +5,8 @@ namespace TrendByPivotPointsOptimizator
 {
     public class MatrixCreator
     {
+        public List<CombinationDecorator> Combinations { get {  return combinations; } }
+
         List<CombinationDecorator> combinations = new List<CombinationDecorator>();
         List<PointValue> points;
         private int dimension;
