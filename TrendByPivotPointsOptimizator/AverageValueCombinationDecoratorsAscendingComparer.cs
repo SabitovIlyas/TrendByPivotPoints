@@ -17,7 +17,7 @@ namespace TrendByPivotPointsOptimizator
             {
                 if (x.Combination.GetAverageValue() > y.Combination.GetAverageValue())
                     return 1;
-                else if (x.Id < y.Id)
+                else if (x.Combination.GetAverageValue() < y.Combination.GetAverageValue())
                     return -1;
 
                 return 0;
