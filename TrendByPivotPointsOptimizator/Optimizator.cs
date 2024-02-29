@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsOptimizator
@@ -40,7 +41,7 @@ namespace TrendByPivotPointsOptimizator
                     max = element.GetAverageValue();                               
             }
 
-            IComparer<Combination> comparer = CombinationsDescendingComparer.Create();
+            IComparer<Combination> comparer = AverageValueCombinationsDescendingComparer.Create();
             combinationsPassedBarrier.Sort(comparer);
 
             var result = string.Empty;
@@ -89,7 +90,7 @@ namespace TrendByPivotPointsOptimizator
                     max = element.GetAverageValue();
             }
 
-            IComparer<Combination> comparer = CombinationsDescendingComparer.Create();
+            IComparer<Combination> comparer = AverageValueCombinationsDescendingComparer.Create();
             combinationsPassedBarrier.Sort(comparer);
 
             var result = string.Empty;
@@ -120,29 +121,28 @@ namespace TrendByPivotPointsOptimizator
             var matrixCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
             matrixCreator.CreateMatrixPercent();
             var combinations = matrixCreator.Combinations;
-            SetIdToCombination(matrixCreator);
+            SetIdsToCombinations(matrixCreator);
+            SetRanksToCombinations(matrixCreator, barrier);
             SortCombinationsById(matrixCreator);
 
             var result = string.Empty;
 
             for (int i = 0; i < combinations.Count; i++)
             {
-                var id = "";
-                var coords = matrixCreator.GetCoords(combinations[i].Combination);
-                for (var j = 0; j < coords.Length; j++)                
-                    result += coords[j] + ";";
+                //var coords = matrixCreator.GetCoords(combinations[i].Combination);
+                //for (var j = 0; j < coords.Length; j++)                
+                //    result += coords[j] + ";";
 
                 result += matrixCreator.Combinations[i].Id + ";";
-                result += combinations[i].Value + ";";
-                if (combinations[i].Combination.IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(barrier))
-                    result += Math.Round(combinations[i].Combination.GetAverageValue(),2) + ";\n";
-                else
-                    result += ";\n";                
+                //result += combinations[i].Value + ";";
+                result += combinations[i].AverageValue + ";";
+                result += combinations[i].Rank + ";\n";
             }
+
             return result;
         }
 
-        private void SetIdToCombination(MatrixCreator matrixCreator)
+        private void SetIdsToCombinations(MatrixCreator matrixCreator)
         {
             var combinations = matrixCreator.Combinations;
             for (int i = 0; i < combinations.Count; i++)
@@ -160,6 +160,39 @@ namespace TrendByPivotPointsOptimizator
 
                 matrixCreator.Combinations[i].Id = int.Parse(id);
             }                        
+        }
+
+        private void SetRanksToCombinations(MatrixCreator matrixCreator, double barrier)
+        {
+            SortCombinationsByAverageValue(matrixCreator, barrier);
+            var combinations = matrixCreator.Combinations;
+
+            var firstCombination = combinations.First();
+            if (firstCombination.AverageValue > 0)
+            {
+                firstCombination.Rank = 1;
+                for (int i = 1; i < combinations.Count; i++)
+                {
+                    if (combinations[i].AverageValue < combinations[i - 1].AverageValue)
+                        combinations[i].Rank = combinations[i - 1].Rank + 1;
+                    else
+                        combinations[i].Rank = combinations[i - 1].Rank;
+                }
+            }
+        }
+
+        private void SortCombinationsByAverageValue(MatrixCreator matrixCreator, double barrier)
+        {
+            var combinations = matrixCreator.Combinations;
+
+            foreach (var combination in combinations)
+                if (combination.IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(barrier))
+                    combination.AverageValue = combination.Combination.GetAverageValue();
+                else
+                    combination.AverageValue = 0;
+
+            IComparer<CombinationDecorator> comparer = AverageValueCombinationDecoratorsDescendingComparer.Create();
+            combinations.Sort(comparer);
         }
 
         private void SortCombinationsById(MatrixCreator matrixCreator)

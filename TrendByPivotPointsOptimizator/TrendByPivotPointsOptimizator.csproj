@@ -56,10 +56,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AverageValueCombinationDecoratorsAscendingComparer.cs" />
+    <Compile Include="AverageValueCombinationDecoratorsDescendingComparer.cs" />
     <Compile Include="Combination.cs" />
     <Compile Include="CombinationDecorator.cs" />
     <Compile Include="AverageValueCombinationsAscendingComparer.cs" />
-    <Compile Include="CombinationsDescendingComparer.cs" />
+    <Compile Include="AverageValueCombinationsDescendingComparer.cs" />
     <Compile Include="IdCombinationDecoratorsDescendingComparer.cs" />
     <Compile Include="IdCombinationDecoratorsAscendingComparer.cs" />
     <Compile Include="MatrixCreator.cs" />

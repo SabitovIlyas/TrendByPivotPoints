@@ -6,8 +6,9 @@ namespace TrendByPivotPointsOptimizator
     {
         public Combination Combination { get; private set; }
         public int Id { get; set; }
+        public int Rank { get; set; }
         public double Value { get {  return Combination.Value; } }
-
+        public double AverageValue { get; set; }
 
         private PointValue point;  
 
@@ -31,6 +32,11 @@ namespace TrendByPivotPointsOptimizator
         {
             foreach (var combination in combinations)            
                 Combination.AddNearCombination(combination.Combination);            
+        }
+
+        public bool IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(double barrier)
+        {
+            return Combination.IsCombinationPassedTestWhenTheyAreAllGreaterOrEqualThenValue(barrier);
         }
     }
 }
