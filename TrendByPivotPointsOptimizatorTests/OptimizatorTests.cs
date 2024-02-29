@@ -81,5 +81,31 @@ namespace TrendByPivotPointsOptimizator.Tests
                 barrier: 1, isCheckedPass: true);
             Assert.AreEqual(exptected, actual);
         }
+
+        //[TestMethod()]
+        //public void SortTest()
+        //{
+        //    ma
+
+        //    var points = new List<PointValue>
+        //    {
+        //        PointValue.Create(4.76, new int[2] { 21, 11 }),
+        //        PointValue.Create(3.95, new int[2] { 21, 10 }),
+        //        PointValue.Create(3.66, new int[2] { 21, 9 }),
+        //        PointValue.Create(2.23, new int[2] { 22, 11 }),
+        //        PointValue.Create(6.39, new int[2] { 22, 10}),
+        //        PointValue.Create(3.67, new int[2] { 22, 9 }),
+        //        PointValue.Create(-0.32, new int[2] { 23, 11 }),
+        //        PointValue.Create(4.9, new int[2] { 23, 10 }),
+        //        PointValue.Create(4.08, new int[2] { 23, 9 })
+        //    };
+
+        //    var exptected = "4,44: (21; 9); 4,44: (22; 9); 4,44: (23; 9)";
+        //    var optimizator = Optimizator.Create();
+        //    var actual =
+        //        optimizator.GetOptimalParametersPercent(points, dimension: 2, radiusNeighbourInPercent: new int[2] { 10, 10 },
+        //        barrier: 1, isCheckedPass: true);
+        //    Assert.AreEqual(exptected, actual);
+        //}
     }
 }
