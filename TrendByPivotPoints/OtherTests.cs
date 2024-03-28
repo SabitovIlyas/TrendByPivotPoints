@@ -9,12 +9,12 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void MethodWithKeyWordRefForStructTest()
         {
-            var expected = 2;            
+            var expected = 2;
 
             var actual = 1;
             var classForTestKeyWords = new ClassForTestKeyWords();
             classForTestKeyWords.MethodWithKeyWordRefForStruct(ref actual);
-            
+
             Assert.AreEqual(expected, actual);
         }
 
@@ -33,10 +33,10 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void MethodWithKeyWordRefForClassTest()
         {
-            var expected = 2;            
+            var expected = 2;
 
-            var param = new HelperForClassForTestKeyWords(property: 1);            
-            var classForTestKeyWords = new ClassForTestKeyWords();            
+            var param = new HelperForClassForTestKeyWords(property: 1);
+            var classForTestKeyWords = new ClassForTestKeyWords();
             classForTestKeyWords.MethodWithKeyWordRefForClass(ref param);
             var actual = param.Property;
 
@@ -57,7 +57,7 @@ namespace TradingSystems.Tests
         }
 
         [DataTestMethod()]
-        [DataRow(0,false)]
+        [DataRow(0, false)]
         [DataRow(1, true)]
         [DataRow(-1, true)]
         [DataRow(2, true)]
@@ -73,7 +73,7 @@ namespace TradingSystems.Tests
         {
             var expected = 0;
             double? a = 0;
-            var actual = (double) a;
+            var actual = (double)a;
             Assert.AreEqual(expected, actual);
         }
 
@@ -81,24 +81,11 @@ namespace TradingSystems.Tests
         public void MethodWithKeyWordOutForClassTest()
         {
             var expected = 1;
-            var param = 0;
             var classForTestKeyWords = new ClassForTestKeyWords();
-            classForTestKeyWords.MethodWithKeyWordOutForClass(out param);
+            classForTestKeyWords.MethodWithKeyWordOutForClass(out int param);
 
             var actual = param;
-
             Assert.AreEqual(expected, actual);
-        }
-
-        private int GetLotsBasedOnStartLot(int positionShares, int startLots, int coef)
-        {
-            if (coef <= 1)
-                throw new Exception("Коэффициент должен быть больше 1");
-            var lots = startLots;
-            while (positionShares > lots)            
-                lots *= coef;            
-
-            return lots;
         }
 
         [TestMethod()]
@@ -110,19 +97,18 @@ namespace TradingSystems.Tests
             var coef = 2;
 
             var actual = GetLotsBasedOnStartLot(positionShares, startLorts, coef);
-            
             Assert.AreEqual(expected, actual);
         }
 
-        private bool IsCurrentPositionSharesCorrect(int positionShares, int startLots, int coef)
+        private int GetLotsBasedOnStartLot(int positionShares, int startLots, int coef)
         {
             if (coef <= 1)
                 throw new Exception("Коэффициент должен быть больше 1");
             var lots = startLots;
             while (positionShares > lots)
-                lots *= coef;            
+                lots *= coef;
 
-            return positionShares == lots;
+            return lots;
         }
 
         [TestMethod()]
@@ -134,7 +120,6 @@ namespace TradingSystems.Tests
             var coef = 2;
 
             var actual = IsCurrentPositionSharesCorrect(positionShares, startLorts, coef);
-
             Assert.AreEqual(expected, actual);
         }
 
@@ -147,124 +132,18 @@ namespace TradingSystems.Tests
             var coef = 2;
 
             var actual = IsCurrentPositionSharesCorrect(positionShares, startLorts, coef);
-
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
-        public void DateTimeWithdrawTest1()
-        {            
-            var endDate = new DateTime(2023, 11, 30);
-            var tS = TimeSpan.FromDays(30);
-            var expected = new DateTime(2023, 10, 31);
-
-            var actual = endDate - tS;
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void DateTimeWithdrawTest2()
+        private bool IsCurrentPositionSharesCorrect(int positionShares, int startLots, int coef)
         {
-            var endDate = new DateTime(2023, 11, 30);
-            var expected = new DateTime(2023, 11, 01);
+            if (coef <= 1)
+                throw new Exception("Коэффициент должен быть больше 1");
+            var lots = startLots;
+            while (positionShares > lots)
+                lots *= coef;
 
-            var actual = (endDate - TimeSpan.FromDays(30-1)).Date;
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void MathRoundTest1()
-        {            
-            var expected = 3;
-
-            var actual = Math.Floor(3.6d);
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void MathRoundTest2()
-        {
-            var expected = 5;
-
-            var actual = Math.Ceiling(4.4d);
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void MathRoundTest3()
-        {
-            var expected = 5;
-
-            var actual = Math.Round(4.5d, MidpointRounding.AwayFromZero);
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void MathRoundTest4()
-        {
-            var expected = 4;
-
-            var actual = Math.Round(4.4d);
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void MathRoundTest5()
-        {
-            var expected = 5;
-
-            var actual = Math.Round(4.6d);
-
-            Assert.AreEqual(expected, actual);
+            return positionShares == lots;
         }
     }
-
-    public class ClassForTestKeyWords
-    {
-        public void MethodWithKeyWordRefForStruct(ref int param)
-        {
-            param++;
-        }
-
-        public void MethodWithoutKeyWordRefForStruct(int param)
-        {
-            param++;
-        }
-
-        public void MethodWithKeyWordRefForClass(ref HelperForClassForTestKeyWords param)
-        {
-            param = new HelperForClassForTestKeyWords(2);
-        }
-
-        public void MethodWithoutKeyWordRefForClass(HelperForClassForTestKeyWords param)
-        {
-            param = new HelperForClassForTestKeyWords(2);
-        }
-
-        public void MethodWithKeyWordOutForClass(out int param)
-        {
-            param = 1;
-        }
-
-        public void MethodWithoutKeyWordOutForClass(int param)
-        {
-            param++;
-        }
-    }
-
-    public class HelperForClassForTestKeyWords
-    {
-        public int Property { get; }
-
-        public HelperForClassForTestKeyWords(int property)
-        {
-            Property = property;
-        }
-    }    
 }

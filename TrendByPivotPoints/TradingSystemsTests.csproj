@@ -64,8 +64,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
+    <Compile Include="ClassForTestKeyWords.cs" />
     <Compile Include="ClassForTestReflection.cs" />
     <Compile Include="CompressionBarsTest.cs" />
+    <Compile Include="DateTimeTests.cs" />
+    <Compile Include="HelperForClassForTestKeyWords.cs" />
+    <Compile Include="MathTests.cs" />
     <Compile Include="SomeCalcTests.cs" />
     <Compile Include="OtherTests.cs" />
     <Compile Include="ObjectDiagnosticExtensionsTests.cs" />

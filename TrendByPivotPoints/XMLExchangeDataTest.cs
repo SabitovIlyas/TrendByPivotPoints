@@ -1,8 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
 
 namespace TradingSystems.Tests
@@ -11,8 +8,11 @@ namespace TradingSystems.Tests
     public class XMLExchangeDataTest
     {
         [DataTestMethod]
-        public void XMLCreateTest()
+        public void XMLSaveLoadLinqTest()
         {
+            var expectedLong = 7;
+            var expectedShort = 1;
+
             var tradingSystems = new XElement
             (
                 new XElement
@@ -43,12 +43,13 @@ namespace TradingSystems.Tests
             var fileName = "test.xml";
             docOut.Save(fileName);
 
-            ReadXML();
+            ReadXMLForTotalPostiions(out int actualLong, out int actualShort);
 
-            Assert.AreEqual(true, true);
+            Assert.AreEqual(expectedLong, actualLong);
+            Assert.AreEqual(expectedShort, actualShort);
         }
 
-        private void ReadXML()
+        private void ReadXMLForTotalPostiions(out int totalLongPosition, out int totalShortPosition)
         {
             var fileName = "test.xml";
             var docIn = XDocument.Load(fileName);
@@ -69,19 +70,8 @@ namespace TradingSystems.Tests
             var shortValues = from ts in shortPositions
                              select ts.Element("Units");
             
-            var totalLongPosition = longValues.Sum(l => int.Parse(l.Value));
-            var totalShortPosition = shortValues.Sum(l => int.Parse(l.Value));
-        }
-
-        private void Foo(XElement el, IEnumerable<XElement> els)
-        {
-            var cnt = els.Count();
-            var ths = el;
-            var parent = el.Parent;
-            var fn = el.FirstNode;
-            var ln = el.LastNode;
-            var nn = el.NextNode;
-            var pn = el.PreviousNode;
+            totalLongPosition = longValues.Sum(l => int.Parse(l.Value));
+            totalShortPosition = shortValues.Sum(l => int.Parse(l.Value));
         }
     }
 }
