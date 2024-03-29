@@ -10,7 +10,7 @@ namespace TrendByPivotPointsStarter
             var script = new SampleScript();
             var context = CustomContext.Create();
 
-            var initDeposit = 100000;
+            var initDeposit = 1000000;
             var finInfo = new FinInfo();
             var bars = new ReadAndAddList<DataBar>();
 

@@ -19,8 +19,7 @@ namespace TrendByPivotPointsStarter
         public OptimProperty isUSD = new OptimProperty(0, 0, 1, 1);
 
         public void Execute(IContext context, ISecurity security)
-        {
-            //ContextTSLab ctx = ContextTSLab.
+        {            
             var logger = new LoggerSystem(context);
             MainSystem system = new SampleMainSystem();
 
