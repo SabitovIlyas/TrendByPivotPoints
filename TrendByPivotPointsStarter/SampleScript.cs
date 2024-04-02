@@ -28,12 +28,11 @@ namespace TrendByPivotPointsStarter
 
             var systemParameters = new SystemParameters();
 
-            systemParameters.Add("rateUSD", rateUSD);
             systemParameters.Add("positionSide", positionSide);
-            systemParameters.Add("comission", comission);
-            systemParameters.Add("riskValuePrcnt", riskValuePrcnt);
-            systemParameters.Add("shares", shares);
             systemParameters.Add("isUSD", isUSD);
+            systemParameters.Add("rateUSD", rateUSD);                        
+            systemParameters.Add("shares", shares);
+            systemParameters.Add("specialParameter", new OptimProperty(1,1,1,1));
 
             var securities = new ISecurity[1];
             securities[0] = security;

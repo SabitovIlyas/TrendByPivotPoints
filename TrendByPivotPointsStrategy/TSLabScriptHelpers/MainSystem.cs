@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
@@ -29,6 +30,23 @@ namespace TradingSystems
         public abstract void Paint();
         public abstract void Run();
         public abstract void SetParameters(SystemParameters systemParameters);
+        public void SetBaseParameters(SystemParameters systemParameters)
+        {
+            this.systemParameters = systemParameters;
+            try
+            {                
+                positionSide = systemParameters.GetInt("positionSide");
+                isUSD = systemParameters.GetInt("isUSD");
+                rateUSD = systemParameters.GetDouble("rateUSD");
+                shares = systemParameters.GetInt("shares");
+
+            }
+            catch (KeyNotFoundException e)
+            {
+                logger.Log("Прекращаем работу, так как не установлен параметр: ", e.Message);
+                throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
+            }
+        }        
 
         protected bool IsLaboratory(ISecurity security)
         {
