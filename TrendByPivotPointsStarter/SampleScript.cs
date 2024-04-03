@@ -32,7 +32,7 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("isUSD", isUSD);
             systemParameters.Add("rateUSD", rateUSD);                        
             systemParameters.Add("shares", shares);
-            systemParameters.Add("specialParameter", new OptimProperty(1,1,1,1));
+            systemParameters.Add("SMA", new OptimProperty(value: 13, minValue: 9, maxValue: 50, step: 1));
 
             var securities = new ISecurity[1];
             securities[0] = security;
@@ -40,7 +40,7 @@ namespace TrendByPivotPointsStarter
             try
             {
                 system.SetParameters(systemParameters);
-                system.Initialize(securities, context);
+                system.Initialize(securities, context); //подумать над тем, чтобы сюда передавать свой Security
                 system.Run();
 
                 if (isPaint == 1)

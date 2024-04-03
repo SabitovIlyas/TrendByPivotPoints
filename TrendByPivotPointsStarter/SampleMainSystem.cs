@@ -8,12 +8,12 @@ namespace TrendByPivotPointsStarter
     {
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
-
+            InitializeBase(securities, ctx);            
         }
 
         public override void Paint()
         {
-            throw new System.NotImplementedException();
+
         }
 
         public override void Run()
@@ -24,7 +24,7 @@ namespace TrendByPivotPointsStarter
         public override void SetParameters(SystemParameters systemParameters)
         {
             SetBaseParameters(systemParameters);
-            var specialParameter = systemParameters.GetInt("specialParameter");
+            var sma = systemParameters.GetInt("SMA");
         }
     }
 }

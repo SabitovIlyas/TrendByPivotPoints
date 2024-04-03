@@ -24,9 +24,14 @@ namespace TradingSystems
         protected SystemParameters systemParameters;
         protected Security securityFirst;
 
-        public  Logger Logger { get { return logger; } set { logger = value; } }
+
+        public Logger Logger { get { return logger; } set { logger = value; } }
 
         public abstract void Initialize(ISecurity[] securities, IContext ctx);
+        public void InitializeBase(ISecurity[] securities, IContext ctx)
+        {
+            CreateAccount();
+        }
         public abstract void Paint();
         public abstract void Run();
         public abstract void SetParameters(SystemParameters systemParameters);
@@ -46,7 +51,15 @@ namespace TradingSystems
                 logger.Log("Прекращаем работу, так как не установлен параметр: ", e.Message);
                 throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
             }
-        }        
+        }
+        
+        protected Account CreateAccount()
+        {
+            if (IsLaboratory(securityFirst))
+                account = new AccountLab(securityFirst);
+            else
+                account = new AccountReal(securityFirst);
+        }
 
         protected bool IsLaboratory(ISecurity security)
         {
