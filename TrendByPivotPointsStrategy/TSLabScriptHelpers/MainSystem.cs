@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
@@ -22,14 +23,15 @@ namespace TradingSystems
         protected Logger logger = new NullLogger();
         protected Account account;
         protected SystemParameters systemParameters;
+        protected List<Security> securities;
         protected Security securityFirst;
-
 
         public Logger Logger { get { return logger; } set { logger = value; } }
 
-        public abstract void Initialize(ISecurity[] securities, IContext ctx);
-        public void InitializeBase(ISecurity[] securities, IContext ctx)
+        public abstract void Initialize(List<Security> securities);
+        public void InitializeBase()
         {
+            securityFirst = securities.First();
             CreateAccount();
         }
         public abstract void Paint();

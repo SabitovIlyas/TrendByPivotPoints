@@ -14,7 +14,7 @@ namespace TrendByPivotPointsStarter
             var finInfo = new FinInfo();
             var bars = new ReadAndAddList<DataBar>();
 
-            var security = CustomSecurity.Create(initDeposit, finInfo, bars);
+            var security = CustomSecurity.Create(initDeposit, finInfo, bars); //переделать. Не CustomSecurity, а SecurityLab
             script.Execute(context, security);
         }
     }

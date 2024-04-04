@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TradingSystems;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -6,7 +7,7 @@ using TSLab.Script.Optimization;
 
 namespace TrendByPivotPointsStarter
 {
-    public class SampleScript : IExternalScript
+    public class SampleScript : IExternalScriptMultiSec
     {
         public OptimProperty rateUSD = new OptimProperty(61, 1, 200, 1);
         public OptimProperty positionSide = new OptimProperty(0, 1, 2, 1);  //0 -- для лонга, 1 -- для шорта, 2 -- для null
@@ -19,6 +20,11 @@ namespace TrendByPivotPointsStarter
         public OptimProperty isUSD = new OptimProperty(0, 0, 1, 1);
 
         public void Execute(IContext context, ISecurity security)
+        {
+            Execute(context, new ISecurity[1] { security });
+        }
+
+        public void Execute(IContext context, ISecurity[] securities)
         {            
             var logger = new LoggerSystem(context);
             MainSystem system = new SampleMainSystem();
@@ -33,14 +39,14 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("rateUSD", rateUSD);                        
             systemParameters.Add("shares", shares);
             systemParameters.Add("SMA", new OptimProperty(value: 13, minValue: 9, maxValue: 50, step: 1));
-
+                        
             var securities = new ISecurity[1];
             securities[0] = security;
 
             try
             {
                 system.SetParameters(systemParameters);
-                system.Initialize(securities, context); //подумать над тем, чтобы сюда передавать свой Security
+                system.Initialize(securities); //подумать над тем, чтобы сюда передавать свой Security
                 system.Run();
 
                 if (isPaint == 1)
@@ -49,6 +55,16 @@ namespace TrendByPivotPointsStarter
             catch (Exception e)
             {
                 logger.Log(e.ToString());
+            }
+        }
+
+        private List<Security> Pack(ISecurity[] securities)
+        {
+            var securityList = new List<Security>();
+            for (int i = 0; i < securities.Length; i++)
+            {
+                var sec = CustomSecurity.Create()
+                securityList.Add(Sec securities[i]);
             }
         }
     }
