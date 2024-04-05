@@ -8,8 +8,8 @@ namespace TradingSystems
         Account account;
         GlobalMoneyManager globalMoneyManager;
         int shares = 1;
-        public Logger Logger { get { return logger; } set { logger = value; } }
-        private Logger logger = new NullLogger();
+        public ILogger Logger { get { return logger; } set { logger = value; } }
+        private ILogger logger = new NullLogger();
 
         public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency)
         {

@@ -1,6 +1,6 @@
 ﻿namespace TradingSystems
 {
-    public class NullLogger : Logger
+    public class NullLogger : ILogger
     {
         public void LockCurrentStatus()
         {

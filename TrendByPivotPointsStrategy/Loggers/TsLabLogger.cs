@@ -2,13 +2,13 @@
 
 namespace TradingSystems
 {
-    public class LoggerSystem : Logger
+    public class TsLabLogger : ILogger
     {
         IContext context;
         bool switchOn = true;
         bool locked = false;
 
-        public LoggerSystem(IContext context)
+        public TsLabLogger(IContext context)
         {
             this.context = context;
         }

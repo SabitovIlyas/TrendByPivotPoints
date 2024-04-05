@@ -15,7 +15,7 @@ namespace TradingSystems
 
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
-            logger = new LoggerSystem(ctx);
+            logger = new TsLabLogger(ctx);
             List<Security> securityList = null;
             this.ctx = ctx;
 

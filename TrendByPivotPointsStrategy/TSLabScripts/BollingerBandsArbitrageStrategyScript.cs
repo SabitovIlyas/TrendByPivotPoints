@@ -28,12 +28,12 @@ namespace TradingSystems
 
         public void Execute(IContext context, ISecurity security)
         {
-            var logger = new LoggerSystem(context);
+            var logger = new TsLabLogger(context);
             logger.Log("Запуск скрипта.");
             MainSystem system = new MainSystemBollingerBands();
 
             if (isLoggerOn == 1)
-                system.Logger = new LoggerSystem(context);
+                system.Logger = new TsLabLogger(context);
 
             var systemParameters = new SystemParameters();
 

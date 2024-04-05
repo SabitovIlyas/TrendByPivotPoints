@@ -15,7 +15,7 @@ namespace TradingSystems
         static DateTime lastClosedBarDateTime = DateTime.MinValue;
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
-            logger = new LoggerSystem(ctx);
+            logger = new TsLabLogger(ctx);
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountLab(securityFirst);
@@ -56,7 +56,7 @@ namespace TradingSystems
         public override void Run()
         {
             logger.SwitchOff();
-            var localLogger = new LoggerSystem(ctx);
+            var localLogger = new TsLabLogger(ctx);
 
             foreach (var tradingSystem in tradingSystems)
                 tradingSystem.CalculateIndicators();

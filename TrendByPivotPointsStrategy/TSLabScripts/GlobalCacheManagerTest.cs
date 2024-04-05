@@ -9,7 +9,7 @@ namespace TradingSystems
     {       
         public void Execute(IContext context, ISecurity[] securities)
         {
-            var logger = new LoggerSystem(context);
+            var logger = new TsLabLogger(context);
 
             logger.Log("Попробую записать информацию в текстовый файл.");            
             var folder = @"C:\Users\Ильяс\Documents\Трейдинг\Обмен между скриптами\";

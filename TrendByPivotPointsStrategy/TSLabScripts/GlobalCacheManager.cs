@@ -12,7 +12,7 @@ namespace TradingSystems
         public OptimProperty isLoggerOn = new OptimProperty(1, 0, 1, 1);
         public void Execute(IContext context, ISecurity[] securities)
         {
-            var logger = new LoggerSystem(context);
+            var logger = new TsLabLogger(context);
 
             switch ((int)mode)
             {                

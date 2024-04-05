@@ -34,9 +34,9 @@ namespace TradingSystems
         public double Rate { get { return rate; } set { rate = value; } }
         private double rate;
 
-        Logger logger = new NullLogger();
+        ILogger logger = new NullLogger();
 
-        public Logger Logger
+        public ILogger Logger
         {
             get
             {

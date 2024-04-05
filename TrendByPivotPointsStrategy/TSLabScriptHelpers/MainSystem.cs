@@ -20,13 +20,13 @@ namespace TradingSystems
         protected int isUSD;
 
         protected int shares;
-        protected Logger logger = new NullLogger();
+        protected ILogger logger = new NullLogger();
         protected Account account;
         protected SystemParameters systemParameters;
         protected List<Security> securities;
         protected Security securityFirst;
 
-        public Logger Logger { get { return logger; } set { logger = value; } }
+        public ILogger Logger { get { return logger; } set { logger = value; } }
 
         public abstract void Initialize(List<Security> securities);
         public void InitializeBase()

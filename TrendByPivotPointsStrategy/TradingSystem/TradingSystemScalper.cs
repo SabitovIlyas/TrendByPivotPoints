@@ -14,7 +14,7 @@ namespace TradingSystems
 {
     public class TradingSystemScalper : TradingStrategy
     {
-        public Logger Logger { get; set; } = new NullLogger();
+        public ILogger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }
         public IContext Ctx { get; set; }
 

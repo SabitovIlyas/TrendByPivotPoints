@@ -30,7 +30,7 @@ namespace TradingSystems
             if ((int)fastDonchian > (int)slowDonchian)
                 return;
 
-            var logger = new LoggerSystem(context);
+            var logger = new TsLabLogger(context);
             PivotPointsMainSystem system;
 
             switch ((int)mode)
@@ -53,7 +53,7 @@ namespace TradingSystems
             }
 
             if ((int)isLoggerOn == 1)
-                system.Logger = new LoggerSystem(context);
+                system.Logger = new TsLabLogger(context);
 
             var systemParameters = new SystemParameters();            
             systemParameters.Add("slowDonchian", slowDonchian);

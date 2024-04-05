@@ -6,15 +6,14 @@ using TradingSystems;
 namespace TradingSystems
 {
     /// <summary>
-    /// Я не пользуюсь этим классом
+    /// Я не пользуюсь этим классом. Но им надо пользоваться! Возрождаю этот класс.
     /// </summary>
-    internal class SecurityLab : Security
+    public class SecurityLab : Security
     {
         private ISecurity sec;
         //TODO: Удалить эту реализацию Security. Но сперва рефакторить SecurityTSlab.
-        public SecurityLab(ISecurity sec)
-        {
-            this.sec = sec;
+        public SecurityLab()
+        {            
         }
 
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
