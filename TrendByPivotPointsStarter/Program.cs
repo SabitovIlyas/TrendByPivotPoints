@@ -22,20 +22,17 @@ namespace TrendByPivotPointsStarter
             //script.Execute(context, security);
 
             var security = new SecurityLab();
-
             var logger = new Logger();
-            MainSystem system = new SampleMainSystem();
-
-            if (isLoggerOn == 1)
-                system.Logger = new LoggerSystem(context);
-
+            MainSystem system = new SampleMainSystem();                        
+            system.Logger = logger;
+            
             var systemParameters = new SystemParameters();
 
-            systemParameters.Add("positionSide", positionSide);
-            systemParameters.Add("isUSD", isUSD);
-            systemParameters.Add("rateUSD", rateUSD);
-            systemParameters.Add("shares", shares);
-            systemParameters.Add("SMA", new OptimProperty(value: 13, minValue: 9, maxValue: 50, step: 1));
+            systemParameters.Add("positionSide", PositionSide.Long);
+            systemParameters.Add("isUSD", true);
+            systemParameters.Add("rateUSD", 90);
+            systemParameters.Add("shares", 10);
+            systemParameters.Add("SMA", 9);
 
         }
     }
