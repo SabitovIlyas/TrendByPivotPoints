@@ -9,9 +9,9 @@ namespace TradingSystems
     {
         private ISecurity sec;
         private double equity;
-        ILogger logger = new NullLogger();
+        Logger logger = new NullLogger();
 
-        public ILogger Logger
+        public Logger Logger
         {
             get
             {

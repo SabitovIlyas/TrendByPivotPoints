@@ -18,7 +18,7 @@ namespace TradingSystems
         void Update(int barNumber);
         void Initialize(List<Security> securities);
 
-        ILogger Logger { get; set; }
+        Logger Logger { get; set; }
         double FreeBalance { get; }
     }
 }

@@ -22,7 +22,7 @@ namespace TrendByPivotPointsStarter
             //script.Execute(context, security);
 
             var security = new SecurityLab();
-            var logger = new Logger();
+            var logger = new ConsoleLogger();
             MainSystem system = new SampleMainSystem();                        
             system.Logger = logger;
             

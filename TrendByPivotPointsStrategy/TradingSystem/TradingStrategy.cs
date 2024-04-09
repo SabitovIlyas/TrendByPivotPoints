@@ -5,7 +5,7 @@ namespace TradingSystems
 {
     public interface TradingStrategy
     {
-        ILogger Logger { get; set; }
+        Logger Logger { get; set; }
         PositionSide PositionSide { get; }
 
         IContext Ctx { get; set; }

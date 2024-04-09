@@ -74,9 +74,9 @@
     <Compile Include="GlobalMoneyManager.cs" />
     <Compile Include="GlobalMoneyManagerReal.cs" />
     <Compile Include="Indicator.cs" />
-    <Compile Include="Loggers\ILogger.cs" />
-    <Compile Include="LocalMoneyManager.cs" />
     <Compile Include="Loggers\Logger.cs" />
+    <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="Loggers\ConsoleLogger.cs" />
     <Compile Include="NullDataBar.cs" />
     <Compile Include="Loggers\NullLogger.cs" />
     <Compile Include="ObjectDiagnosticExtensions.cs" />

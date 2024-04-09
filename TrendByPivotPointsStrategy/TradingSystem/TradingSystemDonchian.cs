@@ -13,7 +13,7 @@ namespace TradingSystems
     public class TradingSystemDonchian : TradingStrategy
     {
         public IContext Ctx { get; set; }
-        public ILogger Logger { get; set; } = new NullLogger();
+        public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }
 
         private LocalMoneyManager localMoneyManager;

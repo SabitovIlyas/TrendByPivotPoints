@@ -8,8 +8,8 @@ namespace TradingSystems
         private double riskValuePrcnt;
         private double riskValue;
         private Account account;
-        private ILogger logger = new NullLogger();
-        public ILogger Logger { get { return logger; } set { logger = value; } }
+        private Logger logger = new NullLogger();
+        public Logger Logger { get { return logger; } set { logger = value; } }
 
         public GlobalMoneyManagerReal(Account account, double riskValuePrcnt=100)
         {

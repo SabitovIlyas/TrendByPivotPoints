@@ -15,7 +15,7 @@ namespace TradingSystems
         public double Rate { get; set; }
 
         public ISecurity Security { get; set; }
-        public ILogger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public double FreeBalance { get; set; }
 

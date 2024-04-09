@@ -2,7 +2,7 @@
 
 namespace TradingSystems
 {
-    public class TsLabLogger : ILogger
+    public class TsLabLogger : Logger
     {
         IContext context;
         bool switchOn = true;

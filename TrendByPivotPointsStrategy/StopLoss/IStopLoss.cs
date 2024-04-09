@@ -8,6 +8,6 @@ namespace TradingSystems
     {
         IContext ctx { get; set; }
         bool IsStopLossUpdateWhenBarIsClosedOnly { get; set; }
-        ILogger Logger { get; set; }
+        Logger Logger { get; set; }
     }
 }

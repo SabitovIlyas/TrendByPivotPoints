@@ -26,7 +26,7 @@ namespace TradingSystems
         double stopLossLong;
         double stopLossShort;
 
-        public ILogger Logger { get; set; } = new NullLogger();
+        public Logger Logger { get; set; } = new NullLogger();
         bool flagToDebugLog = false;
 
         Indicator lastLowForOpenLongPosition = null;
