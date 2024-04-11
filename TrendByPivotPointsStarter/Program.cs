@@ -1,8 +1,7 @@
-﻿using System.CodeDom;
-using System.Runtime.Remoting.Contexts;
+﻿using System;
 using TradingSystems;
-using TSLab.DataSource;
-using TSLab.Script.Optimization;
+using Security = TradingSystems.Security;
+using System.Collections.Generic;
 
 namespace TrendByPivotPointsStarter
 {
@@ -21,10 +20,14 @@ namespace TrendByPivotPointsStarter
 
             //script.Execute(context, security);
 
+            //var initDeposit = 1000000; //1 млн
+            //var finInfo = new FinInfo();
+            //var bars = new ReadAndAddList<DataBar>();
+
+
             var security = new SecurityLab();
+            var securities = new List<Security> { security };
             var logger = new ConsoleLogger();
-            MainSystem system = new SampleMainSystem();                        
-            system.Logger = logger;
             
             var systemParameters = new SystemParameters();
 
@@ -34,6 +37,15 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("shares", 10);
             systemParameters.Add("SMA", 9);
 
+            try
+            {
+                var system = new SampleMainSystem(securities, logger);                
+                system.Run();                
+            }
+            catch (Exception e)
+            {
+                logger.Log(e.ToString());
+            }
         }
     }
 }

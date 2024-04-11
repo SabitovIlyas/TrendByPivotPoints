@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace TradingSystems
 {
-    public class SecurityTSlab : Security
+    public class TSLabSecurity : Security
     {
         public int BarNumber
         {
@@ -72,13 +72,13 @@ namespace TradingSystems
         private ISecurity baseSecurity = new SecurityNull();
         private IContext context;
 
-        public SecurityTSlab(ISecurity security)
+        public TSLabSecurity(ISecurity security)
         {
             finInfo = security.FinInfo;
             InitializeSecurity(security);
         }
 
-        public SecurityTSlab(ISecurity compressedSecurity, ISecurity baseSecurity)
+        public TSLabSecurity(ISecurity compressedSecurity, ISecurity baseSecurity)
         {
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;
@@ -86,14 +86,14 @@ namespace TradingSystems
             CompareBarsBaseSecurityWithCompressedSecurity();
         }
 
-        public SecurityTSlab(ISecurity security, IContext context)
+        public TSLabSecurity(ISecurity security, IContext context)
         {
             finInfo = baseSecurity.FinInfo;
             InitializeSecurity(security);
             this.context = context;
         }
 
-        public SecurityTSlab(ISecurity baseSecurity, List<Bar> bars)
+        public TSLabSecurity(ISecurity baseSecurity, List<Bar> bars)
         {
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;          

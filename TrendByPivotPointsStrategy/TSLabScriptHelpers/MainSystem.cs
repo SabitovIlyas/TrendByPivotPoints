@@ -29,7 +29,7 @@ namespace TradingSystems
         public Logger Logger { get { return logger; } set { logger = value; } }
 
         public abstract void Initialize(List<Security> securities);
-        public void InitializeBase()
+        protected void InitializeBase()
         {
             securityFirst = securities.First();
             CreateAccount();
@@ -37,7 +37,7 @@ namespace TradingSystems
         public abstract void Paint();
         public abstract void Run();
         public abstract void SetParameters(SystemParameters systemParameters);
-        public void SetBaseParameters(SystemParameters systemParameters)
+        protected void SetBaseParameters(SystemParameters systemParameters)
         {
             this.systemParameters = systemParameters;
             try

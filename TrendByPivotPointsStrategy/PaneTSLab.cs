@@ -18,7 +18,7 @@ namespace TradingSystems
         public void AddList(string name, Security security, CandleStyles listSlyle, SystemColor color, PaneSides side)
         {
             var colorTSlab = new TsLabColor(color.ToArgb());
-            var securityTSLab = (SecurityTSlab)security;
+            var securityTSLab = (TSLabSecurity)security;
             pane.AddList(name, securityTSLab.security, listSlyle, colorTSlab, side);
         }
 

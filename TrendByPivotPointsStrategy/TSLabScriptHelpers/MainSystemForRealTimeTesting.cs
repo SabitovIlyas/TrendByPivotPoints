@@ -26,7 +26,7 @@ namespace TradingSystems
 
             var securityList = new List<Security>();
 
-            this.securityFirst = new SecurityTSlab(securityFirst);
+            this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
@@ -42,7 +42,7 @@ namespace TradingSystems
             tradingSystems.Add(ts);
             ts.SetParameters(5, 5, 10, 50);
 
-            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new SecurityTSlab(securities[1]), PositionSide.Long); //br-5min
+            ts = new TradingSystemPivotPointsEMA(localMoneyManagerRuble, account, new TSLabSecurity(securities[1]), PositionSide.Long); //br-5min
             ts.Logger = logger;
             tradingSystems.Add(ts);
             ts.SetParameters(5, 5, 10, 50);

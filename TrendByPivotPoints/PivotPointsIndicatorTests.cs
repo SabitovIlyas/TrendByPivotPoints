@@ -36,7 +36,7 @@ namespace TradingSystems.Tests
             var securityBaseAccessAdding = (SecurityISecurityFake)securityBase;
             securityBaseAccessAdding.Bars = barsBaseAccessAdding;
 
-            security = new SecurityTSlab(securityBase);
+            security = new TSLabSecurity(securityBase);
             lastBarNumber = security.GetBarsCountReal() - 1;
         }      
 

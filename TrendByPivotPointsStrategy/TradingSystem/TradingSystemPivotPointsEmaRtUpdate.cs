@@ -59,7 +59,7 @@ namespace TradingSystems
         {
             this.localMoneyManager = localMoneyManager;
             this.account = account;
-            var securityTSLab = security as SecurityTSlab;
+            var securityTSLab = security as TSLabSecurity;
             sec = securityTSLab.security;
             this.security = security;
             pivotPointsIndicator = new PivotPointsIndicator();
@@ -368,7 +368,7 @@ namespace TradingSystems
             //var colorTSlab = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
             //var securityTSLab = (SecurityTSlab)security;
             var colorTSlab = SystemColor.Blue;
-            var securityTSLab = (SecurityTSlab)security;
+            var securityTSLab = (TSLabSecurity)security;
 
             pane.AddList(sec.ToString(), securityTSLab.security, CandleStyles.BAR_CANDLE, colorTSlab, PaneSides.RIGHT);
 

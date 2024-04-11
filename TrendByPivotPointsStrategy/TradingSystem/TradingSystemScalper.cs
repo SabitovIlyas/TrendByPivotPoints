@@ -73,7 +73,7 @@ namespace TradingSystems
         private int minuteStopTrading = 45;
         public TradingSystemScalper(Security security, PositionSide positionSide)
         {
-            var securityTSLab = security as SecurityTSlab;
+            var securityTSLab = security as TSLabSecurity;
             sec = securityTSLab.security;
 
             this.security = security;

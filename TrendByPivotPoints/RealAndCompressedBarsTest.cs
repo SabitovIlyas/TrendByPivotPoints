@@ -48,7 +48,7 @@ namespace TradingSystems.Tests
             var securityCompressedAccessAdding = (SecurityISecurityFake)securityCompressed;
             securityCompressedAccessAdding.Bars = barsCompressedAccessAdding;
 
-            security = new SecurityTSlab(securityCompressed, securityBase);
+            security = new TSLabSecurity(securityCompressed, securityBase);
         }
 
         [TestMethod()]

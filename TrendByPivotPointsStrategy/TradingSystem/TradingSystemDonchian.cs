@@ -48,7 +48,7 @@ namespace TradingSystems
         public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
-            var securityTSLab = security as SecurityTSlab;
+            var securityTSLab = security as TSLabSecurity;
             sec = securityTSLab.security;
             this.security = security;
             secCompressed = sec.CompressTo(Interval.D1);

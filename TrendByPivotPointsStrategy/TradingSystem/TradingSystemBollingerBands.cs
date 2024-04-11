@@ -53,7 +53,7 @@ namespace TradingSystems
 
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
-            var securityTSLab = security as SecurityTSlab;
+            var securityTSLab = security as TSLabSecurity;
             sec = securityTSLab.security;
             this.security = security;
             this.positionSide = positionSide;

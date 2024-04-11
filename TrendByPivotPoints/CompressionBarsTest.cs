@@ -49,7 +49,7 @@ namespace TradingSystems.Tests
             
             //act            
 
-            var security = new SecurityTSlab(securityBase);
+            var security = new TSLabSecurity(securityBase);
             var securityCompressed = security.CompressLessIntervalTo1DayInterval();
             var actualBars = securityCompressed.Bars;
                         

@@ -91,7 +91,7 @@
     <Compile Include="ReadAndAddList.cs" />
     <Compile Include="RealTimeTrading.cs" />
     <Compile Include="SecurityNull.cs" />
-    <Compile Include="SecurityTSlab.cs" />
+    <Compile Include="TSLabSecurity.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
     <Compile Include="StopLoss\IStopLoss.cs" />

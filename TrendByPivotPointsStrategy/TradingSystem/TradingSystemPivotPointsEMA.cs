@@ -47,7 +47,7 @@ namespace TradingSystems
         public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
-            var securityTSLab = security as SecurityTSlab;
+            var securityTSLab = security as TSLabSecurity;
             sec = securityTSLab.security;
             this.security = security;
             pivotPointsIndicator = new PivotPointsIndicator();
@@ -744,7 +744,7 @@ namespace TradingSystems
             var pane = contextTSLab.CreateGraphPane(name: name, title: name);
             //var colorTSlab = new TSLab.Script.Color(SystemColor.Blue.ToArgb());
             var colorTSlab = SystemColor.Blue;
-            var securityTSLab = (SecurityTSlab)security;
+            var securityTSLab = (TSLabSecurity)security;
             pane.AddList(sec.ToString(), securityTSLab.security, CandleStyles.BAR_CANDLE, colorTSlab, PaneSides.RIGHT);
 
             //colorTSlab = new TSLab.Script.Color(SystemColor.Gold.ToArgb());

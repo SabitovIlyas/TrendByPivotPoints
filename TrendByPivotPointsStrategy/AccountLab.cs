@@ -75,7 +75,7 @@ namespace TradingSystems
         {
             this.securities = securities;
             var securityFirst = securities[0];
-            var security = securityFirst as SecurityTSlab;
+            var security = securityFirst as TSLabSecurity;
             sec = security.security;
             equity = sec.InitDeposit;
             lastLongPositionsClosed = new Dictionary<Security, Position>();

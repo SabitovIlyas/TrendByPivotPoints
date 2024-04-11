@@ -6,7 +6,20 @@ using TSLab.Script.Handlers;
 namespace TrendByPivotPointsStarter
 {
     public class SampleMainSystem : MainSystem
-    {
+    {        
+        public SampleMainSystem(List<Security> securities, Logger logger, SystemParameters system)        
+        {
+            this.logger = logger;
+            this.securities = securities;
+            SetParameters(system);
+            Initialize();
+        }
+        
+        private void Initialize()
+        {
+            Initialize(securities);
+        }
+
         public override void Initialize(List<Security> securities)
         {
             InitializeBase();            

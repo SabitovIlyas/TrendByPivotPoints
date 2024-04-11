@@ -43,7 +43,7 @@ namespace CorrelationCalculator
                 var barsBase = converter.ConvertFileWithBarsToListOfBars();
 
                 var securityBase = CustomSecurity.Create(barsBase);
-                var securityTsLab = new SecurityTSlab(securityBase);
+                var securityTsLab = new TSLabSecurity(securityBase);
                 var securityCompressed = securityTsLab.CompressLessIntervalTo1DayInterval();
                 listCompressedSecurity.Add(securityCompressed);
 
