@@ -25,9 +25,9 @@ namespace TrendByPivotPointsStarter
             //var bars = new ReadAndAddList<DataBar>();
 
 
-            var security = new SecurityLab();
+            Security security = new SecurityLab();
             var securities = new List<Security> { security };
-            var logger = new ConsoleLogger();
+            Logger logger = new ConsoleLogger();
             
             var systemParameters = new SystemParameters();
 
@@ -39,7 +39,7 @@ namespace TrendByPivotPointsStarter
 
             try
             {
-                var system = new SampleMainSystem(securities, logger);                
+                MainSystem system = new LabMainSystem(securities, logger, systemParameters);                
                 system.Run();                
             }
             catch (Exception e)

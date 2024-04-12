@@ -60,7 +60,7 @@
     <Compile Include="CustomContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleMainSystem.cs" />
+    <Compile Include="LabMainSystem.cs" />
     <Compile Include="SampleScript.cs" />
     <Compile Include="SampleTradingStrategy.cs" />
   </ItemGroup>

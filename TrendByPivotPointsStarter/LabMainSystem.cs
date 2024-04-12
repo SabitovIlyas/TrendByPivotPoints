@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TradingSystems;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStarter
 {
-    public class SampleMainSystem : MainSystem
+    public class LabMainSystem : MainSystem
     {        
-        public SampleMainSystem(List<Security> securities, Logger logger, SystemParameters system)        
+        public LabMainSystem(List<Security> securities, Logger logger, SystemParameters system)        
         {
             this.logger = logger;
             this.securities = securities;
@@ -27,7 +28,7 @@ namespace TrendByPivotPointsStarter
 
         public override void Paint()
         {
-
+            throw new NotImplementedException();
         }
 
         public override void Run()
