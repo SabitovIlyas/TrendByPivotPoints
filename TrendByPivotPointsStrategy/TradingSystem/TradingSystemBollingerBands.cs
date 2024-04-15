@@ -10,7 +10,7 @@ using SystemColor = System.Drawing.Color;
 
 namespace TradingSystems
 {
-    public class TradingSystemBollingerBands : TradingStrategy
+    public class TradingSystemBollingerBands : TradingSystem
     {
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }

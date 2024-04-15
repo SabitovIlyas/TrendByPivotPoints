@@ -10,7 +10,7 @@ namespace TradingSystems
     public abstract class MainSystem
     {
         protected Context context;
-        protected List<TradingStrategy> tradingSystems;
+        protected List<TradingSystem> tradingSystems;
         protected int securityNumber;
 
         protected double rateUSD;

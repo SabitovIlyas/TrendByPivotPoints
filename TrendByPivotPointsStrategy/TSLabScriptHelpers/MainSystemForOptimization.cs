@@ -29,11 +29,11 @@ namespace TradingSystems
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares);
                         
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
-            TradingStrategy ts;
+            TradingSystem ts;
                         
             ts = new TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;

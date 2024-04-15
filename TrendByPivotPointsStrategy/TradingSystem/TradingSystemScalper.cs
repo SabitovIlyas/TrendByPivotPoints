@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace TradingSystems
 {
-    public class TradingSystemScalper : TradingStrategy
+    public class TradingSystemScalper : TradingSystem
     {
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }

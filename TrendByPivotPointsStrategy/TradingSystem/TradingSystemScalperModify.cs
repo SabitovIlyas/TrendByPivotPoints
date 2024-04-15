@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace TradingSystems
 {
-    public class TradingSystemScalperModify : TradingStrategy
+    public class TradingSystemScalperModify : TradingSystem
     {
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }

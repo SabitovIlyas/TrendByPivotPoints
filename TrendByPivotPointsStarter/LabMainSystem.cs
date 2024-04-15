@@ -8,11 +8,12 @@ namespace TrendByPivotPointsStarter
 {
     public class LabMainSystem : MainSystem
     {        
-        public LabMainSystem(List<Security> securities, Logger logger, SystemParameters system)        
+        public LabMainSystem(List<TradingSystem> tradingSystems, SystemParameters systemParameters, List<Security> securities, Logger logger)
         {
+            this.tradingSystems = tradingSystems;
             this.logger = logger;
             this.securities = securities;
-            SetParameters(system);
+            SetParameters(systemParameters);
             Initialize();
         }
         
@@ -33,13 +34,27 @@ namespace TrendByPivotPointsStarter
 
         public override void Run()
         {
+            foreach (var tradingSystem in tradingSystems)
+                tradingSystem.CalculateIndicators();
 
+            var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
+            if (lastBarNumber < 1)
+                return;
+
+            for (var barNumber = 0; barNumber <= lastBarNumber; barNumber++)
+            {
+                foreach (var tradingSystem in tradingSystems)
+                {
+                    tradingSystem.Update(barNumber);
+                    account.Update(barNumber);
+                }
+            }
         }
 
         public override void SetParameters(SystemParameters systemParameters)
         {
             SetBaseParameters(systemParameters);
-            var sma = systemParameters.GetInt("SMA");
+            var sma = systemParameters.GetValue("SMA");
         }
     }
 }

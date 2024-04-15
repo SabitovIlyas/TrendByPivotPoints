@@ -8,7 +8,7 @@ using TSLab.DataSource;
 
 namespace TradingSystems
 {
-    public class TradingSystemPivotPointsEMA : TradingStrategy
+    public class TradingSystemPivotPointsEMA : TradingSystem
     {
         public IContext Ctx { get; set; }
         LocalMoneyManager localMoneyManager;

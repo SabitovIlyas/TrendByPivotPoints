@@ -33,7 +33,7 @@ namespace TradingSystems
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
             
             TradingSystemPivotPointsEMA ts;
 

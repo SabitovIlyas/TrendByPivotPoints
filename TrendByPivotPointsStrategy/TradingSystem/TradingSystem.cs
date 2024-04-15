@@ -3,7 +3,7 @@ using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
-    public interface TradingStrategy
+    public interface TradingSystem
     {
         Logger Logger { get; set; }
         PositionSide PositionSide { get; }

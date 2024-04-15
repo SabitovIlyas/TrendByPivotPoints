@@ -63,6 +63,7 @@
     <Compile Include="LabMainSystem.cs" />
     <Compile Include="SampleScript.cs" />
     <Compile Include="SampleTradingStrategy.cs" />
+    <Compile Include="TradingSystemSMA.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

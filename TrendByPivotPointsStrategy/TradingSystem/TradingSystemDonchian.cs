@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace TradingSystems
 {
-    public class TradingSystemDonchian : TradingStrategy
+    public class TradingSystemDonchian : TradingSystem
     {
         public IContext Ctx { get; set; }
         public Logger Logger { get; set; } = new NullLogger();

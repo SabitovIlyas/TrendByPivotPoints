@@ -44,11 +44,11 @@ namespace TradingSystems
             account.Rate = rateUSD;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, currency, shares);
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
-            TradingStrategy ts;
+            TradingSystem ts;
 
             ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;

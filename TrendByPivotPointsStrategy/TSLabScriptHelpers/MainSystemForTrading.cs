@@ -88,9 +88,9 @@ namespace TradingSystems
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
                         
-            TradingStrategy ts;
+            TradingSystem ts;
                         
             ts = new TradingSystemPivotPointsEmaRtUpdate(localMoneyManagerUSD, account, this.securityFirst, PositionSide.Long);   //Security: GOLD Long 15min
             ts.Logger = logger;
@@ -119,7 +119,7 @@ namespace TradingSystems
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, shares: 1000);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -202,7 +202,7 @@ namespace TradingSystems
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, shares: 10);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -269,7 +269,7 @@ namespace TradingSystems
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares: 10);
             localMoneyManagerRuble.Logger = logger;
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -316,7 +316,7 @@ namespace TradingSystems
             var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
             localMoneyManagerUSD.Logger = logger;
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -366,7 +366,7 @@ namespace TradingSystems
             var localMoneyManagerUSD10Shares = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, 10); //заменить на USD            
             localMoneyManagerUSD10Shares.Logger = logger;
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -447,7 +447,7 @@ namespace TradingSystems
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
             localMoneyManagerRuble.Logger = logger;
 
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
@@ -773,7 +773,7 @@ namespace TradingSystems
             globalMoneyManager.Logger = logger;
             var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
                         
-            tradingSystems = new List<TradingStrategy>();
+            tradingSystems = new List<TradingSystem>();
 
             double totalComission;
             AbsolutCommission absoluteComission;

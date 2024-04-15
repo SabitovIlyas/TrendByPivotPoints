@@ -12,7 +12,7 @@ using TradingSystems;
 
 namespace TrendByPivotPointsStarter
 {
-    public class SampleTradingStrategy : TradingStrategy
+    public class SampleTradingStrategy : TradingSystem
     {
         public IContext Ctx { get; set; }
         public Logger Logger { get; set; } = new NullLogger();
