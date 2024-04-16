@@ -1,25 +1,28 @@
-﻿using TSLab.Script;
+﻿using System.Collections.Generic;
+using TSLab.Script;
 using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
-    public interface TradingSystem
+    public abstract class TradingSystem
     {
-        Logger Logger { get; set; }
-        PositionSide PositionSide { get; }
-
         IContext Ctx { get; set; }
 
-        void CalculateIndicators();
-        void CheckPositionCloseCase(int barNumber);
-        void CheckPositionOpenLongCase(double lastPrice, int barNumber);
-        void CheckPositionOpenShortCase(double lastPrice, int barNumber);
-        bool CheckShortPositionCloseCase(IPosition se, int barNumber);
-        bool HasOpenPosition();
-        void Paint(Context context);
-        void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide);
-        void SetParameters(SystemParameters systemParameters);
-        void Update(int barNumber);
-        void Initialize(IContext ctx);
+        protected Logger logger;
+        protected PositionSide positionSide;
+        protected SystemParameters systemParameters;
+        protected List<Security> securities { get; set; }               
+
+        public abstract void CalculateIndicators();
+        public abstract void CheckPositionCloseCase(int barNumber);
+        public abstract void CheckPositionOpenLongCase(double lastPrice, int barNumber);
+        public abstract void CheckPositionOpenShortCase(double lastPrice, int barNumber);
+        public abstract bool CheckShortPositionCloseCase(IPosition se, int barNumber);
+        public abstract bool HasOpenPosition();
+        public abstract void Paint(Context context);
+        public abstract void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide);
+        public abstract void SetParameters(SystemParameters systemParameters);
+        public abstract void Update(int barNumber);
+        public abstract void Initialize(IContext ctx);
     }
 }

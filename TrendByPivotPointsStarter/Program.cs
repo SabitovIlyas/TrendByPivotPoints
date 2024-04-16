@@ -28,8 +28,11 @@ namespace TrendByPivotPointsStarter
             Security security = new SecurityLab();
             var securities = new List<Security> { security };
             Logger logger = new ConsoleLogger();
-            List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA() };
-            
+            Account account = new AccountLab();
+            GlobalMoneyManager globalMoneyManager = new GlobalMoneyManagerReal(account);
+            LocalMoneyManager localMoneyManager = new LocalMoneyManager(globalMoneyManager, account);
+
+
             var systemParameters = new SystemParameters();
 
             systemParameters.Add("positionSide", PositionSide.Long);
@@ -37,7 +40,10 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("rateUSD", 90);
             systemParameters.Add("shares", 10);
             systemParameters.Add("SMA", 9);
+
             
+
+            List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA(securities, systemParameters, localMoneyManager, logger ) };
 
             try
             {
