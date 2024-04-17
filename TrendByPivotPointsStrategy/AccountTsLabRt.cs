@@ -4,7 +4,7 @@ using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public class AccountReal : Account
+    public class AccountTsLabRt : Account
     {
         public ISecurity Security { get => sec;}
         ISecurity sec;
@@ -60,7 +60,7 @@ namespace TradingSystems
             }
         }
 
-        public AccountReal(ISecurity sec)
+        public AccountTsLabRt(ISecurity sec)
         {
             this.sec = sec;
         }

@@ -16,16 +16,16 @@ namespace TradingSystems
             Logger.Log("Инициализация.");
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account);
+            var globalMoneyManager = new RiskManagerReal(account);
             globalMoneyManager.Logger = Logger;
 
             Currency currency;
@@ -35,7 +35,7 @@ namespace TradingSystems
                 currency = Currency.USD;
 
             account.Rate = rateUSD;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, currency, shares);
+            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, currency, shares);
 
             tradingSystems = new List<TradingSystem>();
 

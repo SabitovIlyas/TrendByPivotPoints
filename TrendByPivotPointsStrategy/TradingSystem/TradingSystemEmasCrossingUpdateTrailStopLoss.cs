@@ -11,7 +11,7 @@ namespace TradingSystems
     public class TradingSystemEmasCrossingUpdateTrailStopLoss : TradingSystem
     {
         public IContext Ctx { get; set; }
-        LocalMoneyManager localMoneyManager;
+        ContractsManager localMoneyManager;
         ISecurity sec;
         PivotPointsIndicator pivotPointsIndicator;
         Security security;
@@ -61,7 +61,7 @@ namespace TradingSystems
         private int emaFastPeriod;
         private int emaSlowPeriod;
 
-        public TradingSystemEmasCrossingUpdateTrailStopLoss(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        public TradingSystemEmasCrossingUpdateTrailStopLoss(ContractsManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
             this.account = account;

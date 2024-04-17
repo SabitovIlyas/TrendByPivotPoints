@@ -11,7 +11,7 @@ namespace TradingSystems
     public class TradingSystemPivotPointsEMA : TradingSystem
     {
         public IContext Ctx { get; set; }
-        LocalMoneyManager localMoneyManager;
+        ContractsManager localMoneyManager;
         ISecurity sec;
         PivotPointsIndicator pivotPointsIndicator;
         Security security;
@@ -44,7 +44,7 @@ namespace TradingSystems
 
         public PositionSide PositionSide { get { return positionSide; } }
 
-        public TradingSystemPivotPointsEMA(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        public TradingSystemPivotPointsEMA(ContractsManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
             var securityTSLab = security as TSLabSecurity;

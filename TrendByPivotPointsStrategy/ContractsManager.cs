@@ -2,23 +2,23 @@
 
 namespace TradingSystems
 {
-    public class LocalMoneyManager
+    public class ContractsManager
     {
         Currency currency;
         Account account;
-        GlobalMoneyManager globalMoneyManager;
+        RiskManager globalMoneyManager;
         int shares = 1;
         public Logger Logger { get { return logger; } set { logger = value; } }
         private Logger logger = new NullLogger();
 
-        public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency)
+        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
             this.currency = currency;
         }
 
-        public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency, int shares)
+        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency, int shares)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;

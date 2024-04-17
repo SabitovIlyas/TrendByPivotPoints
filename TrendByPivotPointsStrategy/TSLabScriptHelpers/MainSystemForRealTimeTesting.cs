@@ -18,9 +18,9 @@ namespace TradingSystems
             logger = new TsLabLogger(ctx);
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             account.Rate = rateUSD;
 
@@ -29,9 +29,9 @@ namespace TradingSystems
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
+            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, Currency.USD);
 
             tradingSystems = new List<TradingSystem>();
             

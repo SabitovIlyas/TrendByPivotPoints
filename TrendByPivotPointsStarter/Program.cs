@@ -9,29 +9,12 @@ namespace TrendByPivotPointsStarter
     {
         static void Main(string[] args)
         {
-            //var script = new SampleScript();
-            //var context = CustomContext.Create();
-
-            //var initDeposit = 1000000; //1 млн
-            //var finInfo = new FinInfo();
-            //var bars = new ReadAndAddList<DataBar>();
-
-            //var security = CustomSecurity.Create(initDeposit, finInfo, bars); //переделать. Не CustomSecurity, а SecurityLab          
-
-            //script.Execute(context, security);
-
-            //var initDeposit = 1000000; //1 млн
-            //var finInfo = new FinInfo();
-            //var bars = new ReadAndAddList<DataBar>();
-
-
-            Security security = new SecurityLab();
+            Security security = new SecurityLab(Currency.Ruble, shares: 1);
             var securities = new List<Security> { security };
             Logger logger = new ConsoleLogger();
-            Account account = new AccountLab();
-            GlobalMoneyManager globalMoneyManager = new GlobalMoneyManagerReal(account);
-            LocalMoneyManager localMoneyManager = new LocalMoneyManager(globalMoneyManager, account);
-
+            Account account = new AccountLab(initDeposit: 1000000, logger);
+            RiskManager riskManager = new RiskManagerReal(account);
+            ContractsManager contractsManager = new ContractsManager(riskManager, account, securities);
 
             var systemParameters = new SystemParameters();
 
@@ -43,7 +26,7 @@ namespace TrendByPivotPointsStarter
 
             
 
-            List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA(securities, systemParameters, localMoneyManager, logger ) };
+            List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA(securities, systemParameters, logger ) };
 
             try
             {

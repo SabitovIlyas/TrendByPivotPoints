@@ -16,7 +16,7 @@ namespace TradingSystems
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }
 
-        private LocalMoneyManager localMoneyManager;
+        private ContractsManager localMoneyManager;
         private ISecurity sec;
         private ISecurity secCompressed;
         private Security security;
@@ -45,7 +45,7 @@ namespace TradingSystems
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
 
-        public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        public TradingSystemDonchian(ContractsManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
             var securityTSLab = security as TSLabSecurity;

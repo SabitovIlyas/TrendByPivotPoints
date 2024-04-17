@@ -1,6 +1,6 @@
 ﻿namespace TradingSystems
 {
-    public interface GlobalMoneyManager
+    public interface RiskManager
     {
         double RiskValuePrcnt { get; }
         double GetMoneyForDeal();

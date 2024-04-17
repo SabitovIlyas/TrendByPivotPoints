@@ -18,9 +18,9 @@ namespace TradingSystems
             var logger = Logger;
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
@@ -32,7 +32,7 @@ namespace TradingSystems
                 throw new System.Exception("Превышен уровень риска");
 
             riskValuePrcnt = kAtr;
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
 
             Currency currency;
@@ -42,7 +42,7 @@ namespace TradingSystems
                 currency = Currency.USD;
 
             account.Rate = rateUSD;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, currency, shares);
+            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, currency, shares);
 
             tradingSystems = new List<TradingSystem>();
 

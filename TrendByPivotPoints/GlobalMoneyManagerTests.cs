@@ -12,14 +12,14 @@ namespace TrendByPivotPoints.Tests
     public class GlobalMoneyManagerTests
     {
         AccountFake account;
-        GlobalMoneyManagerReal globalMoneyManager;
+        RiskManagerReal globalMoneyManager;
 
         [TestInitialize]
         public void TestInitialize()
         {
             account = new AccountFake();
             account.Equity = 1000.0;
-            globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 5.00); ;
+            globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 5.00); ;
         }
 
         [TestMethod()]

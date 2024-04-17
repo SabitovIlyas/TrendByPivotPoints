@@ -12,8 +12,8 @@ namespace TrendByPivotPoints.Tests
     public class LocalMoneyManagerTests
     {
         AccountFake account;
-        LocalMoneyManager localMoneyManager;
-        GlobalMoneyManagerReal globalMoneyManager;
+        ContractsManager localMoneyManager;
+        RiskManagerReal globalMoneyManager;
         
         [TestInitialize]
         public void TestInitialize()
@@ -27,7 +27,7 @@ namespace TrendByPivotPoints.Tests
             account.Equity = estimatedBalance;
             account.FreeBalance = currencyBalance;
             //account.InitDeposit = estimatedBalance;                  
-            globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 5);            
+            globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 5);            
             //globalMoneyManager.Money = 50000;
         }
 
@@ -42,7 +42,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 69000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 11;
 
@@ -60,7 +60,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 60000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 5;
 
@@ -78,7 +78,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 71000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -96,7 +96,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 80000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -117,7 +117,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 69000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -135,7 +135,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 60000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -153,7 +153,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 71000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 12;
 
@@ -171,7 +171,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 80000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 5;
 
@@ -196,7 +196,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1090;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 11;
 
@@ -214,7 +214,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1000;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 10;
 
@@ -232,7 +232,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1110;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -250,7 +250,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1200;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -271,7 +271,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1090;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -289,7 +289,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1000;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 0;
 
@@ -307,7 +307,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1110;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 12;
 
@@ -325,7 +325,7 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1200;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new LocalMoneyManager(globalMoneyManager, account, currency);
+            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
 
             var expected = 10;
 

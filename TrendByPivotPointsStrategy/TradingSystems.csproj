@@ -64,18 +64,19 @@
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="AccountLab.cs" />
-    <Compile Include="AccountReal.cs" />
+    <Compile Include="AccountTsLab.cs" />
+    <Compile Include="AccountTsLabRt.cs" />
     <Compile Include="Bar.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="ContextTSLab.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Currency.cs" />
     <Compile Include="CustomSecurity.cs" />
-    <Compile Include="GlobalMoneyManager.cs" />
-    <Compile Include="GlobalMoneyManagerReal.cs" />
+    <Compile Include="RiskManager.cs" />
+    <Compile Include="RiskManagerReal.cs" />
     <Compile Include="Indicator.cs" />
     <Compile Include="Loggers\Logger.cs" />
-    <Compile Include="LocalMoneyManager.cs" />
+    <Compile Include="ContractsManager.cs" />
     <Compile Include="Loggers\ConsoleLogger.cs" />
     <Compile Include="NullDataBar.cs" />
     <Compile Include="Loggers\NullLogger.cs" />

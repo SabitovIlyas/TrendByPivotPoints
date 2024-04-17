@@ -74,18 +74,18 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.01);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 0.01);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
+            var localMoneyManagerUSD = new ContractsManager(globalMoneyManager, account, Currency.USD);
             localMoneyManagerUSD.Logger = logger;
 
             tradingSystems = new List<TradingSystem>();
@@ -105,18 +105,18 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.01);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 0.01);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, shares: 1000);
+            var localMoneyManagerUSD = new ContractsManager(globalMoneyManager, account, Currency.USD, shares: 1000);
             localMoneyManagerUSD.Logger = logger;
 
             tradingSystems = new List<TradingSystem>();
@@ -188,18 +188,18 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.01);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 0.01);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, shares: 10);
+            var localMoneyManagerUSD = new ContractsManager(globalMoneyManager, account, Currency.USD, shares: 10);
             localMoneyManagerUSD.Logger = logger;
 
             tradingSystems = new List<TradingSystem>();
@@ -255,18 +255,18 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
                         
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.01);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 0.01);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble, shares: 10);
+            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, Currency.Ruble, shares: 10);
             localMoneyManagerRuble.Logger = logger;
 
             tradingSystems = new List<TradingSystem>();
@@ -302,18 +302,18 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
                         
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.01);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 0.01);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD);
+            var localMoneyManagerUSD = new ContractsManager(globalMoneyManager, account, Currency.USD);
             localMoneyManagerUSD.Logger = logger;
 
             tradingSystems = new List<TradingSystem>();
@@ -349,21 +349,21 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerUSD = new LocalMoneyManager(globalMoneyManager, account, Currency.USD); //заменить на USD
+            var localMoneyManagerUSD = new ContractsManager(globalMoneyManager, account, Currency.USD); //заменить на USD
             localMoneyManagerUSD.Logger = logger;
 
-            var localMoneyManagerUSD10Shares = new LocalMoneyManager(globalMoneyManager, account, Currency.USD, 10); //заменить на USD            
+            var localMoneyManagerUSD10Shares = new ContractsManager(globalMoneyManager, account, Currency.USD, 10); //заменить на USD            
             localMoneyManagerUSD10Shares.Logger = logger;
 
             tradingSystems = new List<TradingSystem>();
@@ -433,18 +433,18 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: 0.01);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 0.01);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
+            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, Currency.Ruble);
             localMoneyManagerRuble.Logger = logger;
 
             tradingSystems = new List<TradingSystem>();
@@ -760,18 +760,18 @@ namespace TradingSystems
         {
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
+                account = new AccountTsLab(securityFirst);
             else
-                account = new AccountReal(securityFirst);
+                account = new AccountTsLabRt(securityFirst);
 
             var securityList = new List<Security>();
 
             this.securityFirst = new TSLabSecurity(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, Currency.Ruble);
+            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, Currency.Ruble);
                         
             tradingSystems = new List<TradingSystem>();
 

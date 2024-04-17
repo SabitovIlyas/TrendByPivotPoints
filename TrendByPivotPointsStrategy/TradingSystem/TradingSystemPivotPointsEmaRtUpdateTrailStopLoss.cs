@@ -11,7 +11,7 @@ namespace TradingSystems
     public class TradingSystemPivotPointsEmaRtUpdateTrailStopLoss : TradingSystem
     {
         public IContext Ctx { get; set; }
-        LocalMoneyManager localMoneyManager;
+        ContractsManager localMoneyManager;
         ISecurity sec;
         PivotPointsIndicator pivotPointsIndicator;
         Security security;
@@ -57,7 +57,7 @@ namespace TradingSystems
         private StopLossTrailPivotPoints stopLoss;
         private RealTimeTrading realTimeTrading;
 
-        public TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        public TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(ContractsManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
             this.account = account;

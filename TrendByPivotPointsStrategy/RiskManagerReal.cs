@@ -2,7 +2,7 @@
 
 namespace TradingSystems
 {
-    public class GlobalMoneyManagerReal : GlobalMoneyManager
+    public class RiskManagerReal : RiskManager
     {
         public double RiskValuePrcnt { get { return riskValuePrcnt; } }
         private double riskValuePrcnt;
@@ -11,7 +11,7 @@ namespace TradingSystems
         private Logger logger = new NullLogger();
         public Logger Logger { get { return logger; } set { logger = value; } }
 
-        public GlobalMoneyManagerReal(Account account, double riskValuePrcnt=100)
+        public RiskManagerReal(Account account, double riskValuePrcnt=100)
         {
             this.account = account;
             this.riskValuePrcnt = riskValuePrcnt;
