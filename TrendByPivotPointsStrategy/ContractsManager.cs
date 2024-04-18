@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TradingSystems
 {
@@ -16,6 +18,15 @@ namespace TradingSystems
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
             this.currency = currency;
+        }
+
+        public ContractsManager(RiskManager globalMoneyManager, Account account, List<Security> securities)
+        {
+            this.globalMoneyManager = globalMoneyManager;
+            this.account = account;
+            var security = securities.First();
+            this.currency = security.Currency;
+
         }
 
         public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency, int shares)

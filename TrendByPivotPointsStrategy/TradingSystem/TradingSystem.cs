@@ -19,8 +19,7 @@ namespace TradingSystems
         public abstract void CheckPositionOpenShortCase(double lastPrice, int barNumber);
         public abstract bool CheckShortPositionCloseCase(IPosition se, int barNumber);
         public abstract bool HasOpenPosition();
-        public abstract void Paint(Context context);
-        public abstract void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide);
+        public abstract void Paint(Context context);        
         public abstract void SetParameters(SystemParameters systemParameters);
         public abstract void Update(int barNumber);
         public abstract void Initialize(IContext ctx);

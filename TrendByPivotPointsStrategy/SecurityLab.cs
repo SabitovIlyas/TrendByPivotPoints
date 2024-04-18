@@ -4,15 +4,18 @@ using TSLab.Script;
 
 namespace TradingSystems
 {
-    /// <summary>
-    /// Я не пользуюсь этим классом. Но им надо пользоваться! Возрождаю этот класс.
-    /// </summary>
     public class SecurityLab : Security
     {
-        private ISecurity sec;
-        //TODO: Удалить эту реализацию Security. Но сперва рефакторить SecurityTSlab.
-        public SecurityLab()
+        public Currency Currency { get => currency; set { } }
+        public int Shares { get => shares; set { } }
+                
+        private Currency currency;
+        private int shares;
+
+        public SecurityLab(Currency currency, int shares)
         {            
+            this.currency = currency;
+            this.shares = shares;
         }
 
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
@@ -32,7 +35,7 @@ namespace TradingSystems
         public string Name => throw new NotImplementedException();
 
         public int RealTimeActualBarNumber => throw new NotImplementedException();
-
+ 
         public Bar GetBar(int barNumer)
         {
             throw new NotImplementedException();

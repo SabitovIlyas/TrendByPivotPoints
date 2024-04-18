@@ -22,16 +22,14 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("isUSD", true);
             systemParameters.Add("rateUSD", 90);
             systemParameters.Add("shares", 10);
-            systemParameters.Add("SMA", 9);
+            systemParameters.Add("SMA", 9);            
 
-            
-
-            List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA(securities, systemParameters, logger ) };
+            List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA(securities, systemParameters, contractsManager, logger) };
 
             try
             {
                 MainSystem system = new LabMainSystem(tradingSystems, systemParameters, securities, logger);                
-                system.Run();                
+                system.Run();                //реализовать этот метод в TradingSystem. От класса MainSystem отказываемся
             }
             catch (Exception e)
             {

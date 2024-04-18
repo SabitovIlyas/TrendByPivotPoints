@@ -7,64 +7,59 @@ namespace TrendByPivotPointsStarter
 {
     internal class TradingSystemSMA : TradingSystem
     {
-        public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, Logger logger)
+        public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Logger logger)
         {
             this.securities = securities;
             this.systemParameters = systemParameters;
             this.logger = logger;
-        }
+        }               
 
-        public void CalculateIndicators()
+        public override void CalculateIndicators()
+        {
+            throw new System.NotImplementedException();
+        }        
+
+        public override void CheckPositionCloseCase(int barNumber)
+        {
+            throw new System.NotImplementedException();
+        }        
+
+        public override void CheckPositionOpenLongCase(double lastPrice, int barNumber)
         {
             throw new System.NotImplementedException();
         }
 
-        public void CheckPositionCloseCase(int barNumber)
+        public override void CheckPositionOpenShortCase(double lastPrice, int barNumber)
         {
             throw new System.NotImplementedException();
         }
 
-        public void CheckPositionOpenLongCase(double lastPrice, int barNumber)
+        public override bool CheckShortPositionCloseCase(IPosition se, int barNumber)
         {
             throw new System.NotImplementedException();
         }
 
-        public void CheckPositionOpenShortCase(double lastPrice, int barNumber)
+        public override bool HasOpenPosition()
+        {
+            throw new System.NotImplementedException();
+        }        
+
+        public override void Initialize(IContext ctx)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CheckShortPositionCloseCase(IPosition se, int barNumber)
+        public override void Paint(Context context)
+        {
+            throw new System.NotImplementedException();
+        }        
+
+        public override void SetParameters(SystemParameters systemParameters)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool HasOpenPosition()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Initialize(IContext ctx)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Paint(Context context)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SetParameters(SystemParameters systemParameters)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Update(int barNumber)
+        public override void Update(int barNumber)
         {
             throw new System.NotImplementedException();
         }
