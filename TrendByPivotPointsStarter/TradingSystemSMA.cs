@@ -7,11 +7,10 @@ namespace TrendByPivotPointsStarter
 {
     internal class TradingSystemSMA : TradingSystem
     {
-        public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Logger logger)
+        public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Logger logger):
+            base(securities, systemParameters, contractsManager, logger)
         {
-            this.securities = securities;
-            this.systemParameters = systemParameters;
-            this.logger = logger;
+          
         }               
 
         public override void CalculateIndicators()

@@ -29,7 +29,7 @@ namespace TrendByPivotPointsStarter
             try
             {
                 MainSystem system = new LabMainSystem(tradingSystems, systemParameters, securities, logger);                
-                system.Run();                //реализовать этот метод в TradingSystem. От класса MainSystem отказываемся
+                system.Run();                //реализовать этот метод в TradingSystem. От класса MainSystem отказываемся. Или не отказываться, а назвать его Starter или Runner
             }
             catch (Exception e)
             {
