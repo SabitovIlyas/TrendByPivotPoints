@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TradingSystems;
 using TSLab.Script;
 using TSLab.Script.Handlers;
+using TSLab.Script.Helpers;
 
 namespace TrendByPivotPointsStarter
 {
-    internal class TradingSystemSMA : TradingSystem
+
+    public class TradingSystemSMA : TradingSystem
     {
         public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Logger logger):
             base(securities, systemParameters, contractsManager, logger)
@@ -15,7 +18,7 @@ namespace TrendByPivotPointsStarter
 
         public override void CalculateIndicators()
         {
-            throw new System.NotImplementedException();
+            //Series.SMA
         }        
 
         public override void CheckPositionCloseCase(int barNumber)

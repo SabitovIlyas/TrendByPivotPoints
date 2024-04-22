@@ -40,17 +40,6 @@ namespace TradingSystems
         public abstract void Paint(Context context);        
         public abstract void SetParameters(SystemParameters systemParameters);
         public abstract void Update(int barNumber);
-        public abstract void Initialize(IContext ctx);
-
-        public void Run()
-        {           
-            CalculateIndicators();
-            
-            for (var i = 0; i <= lastBarNumber; i++)
-            {
-                tradingSystem.Update(i);
-                account.Update(i);
-            }
-        }
+        public abstract void Initialize(IContext ctx);       
     }
 }

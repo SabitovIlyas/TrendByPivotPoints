@@ -32,7 +32,6 @@ namespace TradingSystems
         protected void InitializeBase()
         {
             securityFirst = securities.First();
-            CreateAccount();
         }
         public abstract void Paint();
         public abstract void Run();
@@ -42,10 +41,10 @@ namespace TradingSystems
             this.systemParameters = systemParameters;
             try
             {                
-                positionSide = systemParameters.GetInt("positionSide");
-                isUSD = systemParameters.GetInt("isUSD");
-                rateUSD = systemParameters.GetDouble("rateUSD");
-                shares = systemParameters.GetInt("shares");
+                positionSide = (int)systemParameters.GetValue("positionSide");
+                isUSD = (int)systemParameters.GetValue("isUSD");
+                rateUSD = (double)systemParameters.GetValue("rateUSD");
+                shares = (int)systemParameters.GetValue("shares");
 
             }
             catch (KeyNotFoundException e)
@@ -53,14 +52,6 @@ namespace TradingSystems
                 logger.Log("Прекращаем работу, так как не установлен параметр: ", e.Message);
                 throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
             }
-        }
-        
-        protected Account CreateAccount()
-        {
-            if (IsLaboratory(securityFirst))
-                account = new AccountLab(securityFirst);
-            else
-                account = new AccountReal(securityFirst);
         }
 
         protected bool IsLaboratory(ISecurity security)
