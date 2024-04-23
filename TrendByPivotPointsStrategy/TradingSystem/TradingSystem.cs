@@ -17,8 +17,9 @@ namespace TradingSystems
         protected int lastBarNumber;
         protected Security security;
         protected ContractsManager contractsManager;
+        protected Indicators indicators;
 
-        public TradingSystem(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Logger logger)
+        public TradingSystem(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Indicators indicators, Logger logger)
         {
             if (securities.Count == 0)            
                 throw new ArgumentOutOfRangeException(nameof(securities));
@@ -28,6 +29,7 @@ namespace TradingSystems
             lastBarNumber = security.GetBarsCountReal() - 1;
             this.systemParameters = systemParameters;
             this.contractsManager = contractsManager;
+            this.indicators = indicators;
             this.logger = logger;
         }
 

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Linq;
 using TradingSystems;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -10,15 +11,19 @@ namespace TrendByPivotPointsStarter
 
     public class TradingSystemSMA : TradingSystem
     {
-        public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Logger logger):
-            base(securities, systemParameters, contractsManager, logger)
+        public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger):
+            base(securities, systemParameters, contractsManager, indicators, logger)
         {
           
         }               
 
         public override void CalculateIndicators()
         {
-            //Series.SMA
+            var bars = security.GetBars(security.BarNumber);
+            var closes = (from bar in bars
+                         select bar.Close).ToList();
+
+            indicators.SMA(closes, period: 10);
         }        
 
         public override void CheckPositionCloseCase(int barNumber)
