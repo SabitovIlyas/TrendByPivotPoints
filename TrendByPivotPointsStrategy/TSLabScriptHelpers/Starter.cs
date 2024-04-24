@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script;
-using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public abstract class MainSystem
+    public abstract class Starter
     {
         protected Context context;
         protected List<TradingSystem> tradingSystems;
@@ -28,19 +27,18 @@ namespace TradingSystems
 
         public Logger Logger { get { return logger; } set { logger = value; } }
 
-        public abstract void Initialize(List<Security> securities);
-        protected void InitializeBase()
+        public virtual void Initialize()
         {
             securityFirst = securities.First();
         }
+        
         public abstract void Paint();
-        public abstract void Run();
-        public abstract void SetParameters(SystemParameters systemParameters);
-        protected void SetBaseParameters(SystemParameters systemParameters)
+        public abstract void Run(); //можно будет потом выделить этот метод в отдельный чистый класс Runner
+        public virtual void SetParameters(SystemParameters systemParameters)
         {
             this.systemParameters = systemParameters;
             try
-            {                
+            {
                 positionSide = (int)systemParameters.GetValue("positionSide");
                 isUSD = (int)systemParameters.GetValue("isUSD");
                 rateUSD = (double)systemParameters.GetValue("rateUSD");
@@ -58,6 +56,13 @@ namespace TradingSystems
         {
             var realTimeSecurity = security as ISecurityRt;
             return realTimeSecurity == null;
+        }
+
+        protected Currency GetCurrency()
+        {
+            if (isUSD == 1)
+                return Currency.USD;
+            return Currency.Ruble;
         }
     }
 }

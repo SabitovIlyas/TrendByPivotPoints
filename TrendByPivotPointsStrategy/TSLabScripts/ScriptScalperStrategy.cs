@@ -25,7 +25,7 @@ namespace TradingSystems
         {            
             var logger = new TsLabLogger(context);
             logger.Log("Запуск скрипта.");
-            MainSystem system = new MainSystemScalper();
+            Starter. system = new ScalperStarter();
 
             if (isLoggerOn == 1)
                 system.Logger = new TsLabLogger(context);

@@ -121,10 +121,10 @@
     <Compile Include="TradingSystem\TradingSystemBollingerBands.cs" />
     <Compile Include="TradingSystem\TradingSystemScalperModify.cs" />
     <Compile Include="TradingSystem\TradingSystemScalper.cs" />
-    <Compile Include="TSLabScriptHelpers\MainSystem.cs" />
-    <Compile Include="TSLabScriptHelpers\MainSystemBollingerBands.cs" />
-    <Compile Include="TSLabScriptHelpers\MainSystemScalper.cs" />
-    <Compile Include="TSLabScriptHelpers\PivotPointsMainSystem.cs" />
+    <Compile Include="TSLabScriptHelpers\Starter.cs" />
+    <Compile Include="TSLabScriptHelpers\BollingerBandsStarter.cs" />
+    <Compile Include="TSLabScriptHelpers\ScalperStarter.cs" />
+    <Compile Include="TSLabScriptHelpers\PivotPointsStarter.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForOptimization.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForOptimization2.cs" />
     <Compile Include="TSLabScriptHelpers\MainSystemForOptimizationDonchian.cs" />

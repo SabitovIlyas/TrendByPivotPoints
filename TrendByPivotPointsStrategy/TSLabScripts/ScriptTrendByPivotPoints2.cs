@@ -26,7 +26,7 @@ namespace TradingSystems
         {
             var logger = new TsLabLogger(context);
             logger.Log("Hello!");
-            PivotPointsMainSystem system;
+            PivotPointsStarter system;
 
             switch ((int)mode)
             {

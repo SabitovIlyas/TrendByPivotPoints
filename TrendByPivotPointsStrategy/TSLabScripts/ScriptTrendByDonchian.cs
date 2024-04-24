@@ -31,7 +31,7 @@ namespace TradingSystems
                 return;
 
             var logger = new TsLabLogger(context);
-            PivotPointsMainSystem system;
+            PivotPointsStarter system;
 
             switch ((int)mode)
             {

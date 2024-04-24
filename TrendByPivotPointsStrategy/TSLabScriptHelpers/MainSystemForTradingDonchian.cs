@@ -5,7 +5,7 @@ using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
-    public class MainSystemForTradingDonchian : PivotPointsMainSystem
+    public class MainSystemForTradingDonchian : PivotPointsStarter
     {
         private IContext ctx;
         private double kAtr;
@@ -53,7 +53,7 @@ namespace TradingSystems
             ts.Logger = logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
-            ts.SetParameters(systemParameters);
+            ts.SetParameters();
 
             totalComission = comission * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };

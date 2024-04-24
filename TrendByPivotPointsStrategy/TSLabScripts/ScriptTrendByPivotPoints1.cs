@@ -27,7 +27,7 @@ namespace TradingSystems
         public void Execute(IContext context, ISecurity[] securities)        
         {
             var logger = new TsLabLogger(context);
-            PivotPointsMainSystem system;
+            PivotPointsStarter system;
 
             switch ((int)mode)
             {

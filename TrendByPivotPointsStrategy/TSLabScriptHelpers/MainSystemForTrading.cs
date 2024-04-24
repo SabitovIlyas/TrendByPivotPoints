@@ -7,7 +7,7 @@ using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public class MainSystemForTrading : PivotPointsMainSystem
+    public class MainSystemForTrading : PivotPointsStarter
     {        
         Security securityFirst;
         IContext ctx;
@@ -96,7 +96,7 @@ namespace TradingSystems
             ts.Logger = logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
-            ts.SetParameters(7, 7, 10, 140);            
+            ts.SetParameters(7, 10, 140);            
             
             return securityList;
         }

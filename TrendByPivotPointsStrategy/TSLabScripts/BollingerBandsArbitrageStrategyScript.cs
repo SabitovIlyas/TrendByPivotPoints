@@ -30,7 +30,7 @@ namespace TradingSystems
         {
             var logger = new TsLabLogger(context);
             logger.Log("Запуск скрипта.");
-            MainSystem system = new MainSystemBollingerBands();
+            Starter. system = new BollingerBandsStarter();
 
             if (isLoggerOn == 1)
                 system.Logger = new TsLabLogger(context);

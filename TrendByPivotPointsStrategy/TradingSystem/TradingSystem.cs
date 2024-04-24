@@ -40,7 +40,22 @@ namespace TradingSystems
         public abstract bool CheckShortPositionCloseCase(IPosition se, int barNumber);
         public abstract bool HasOpenPosition();
         public abstract void Paint(Context context);        
-        public abstract void SetParameters(SystemParameters systemParameters);
+        public void SetParameters()
+        {
+            try
+            {
+                positionSide = (int)systemParameters.GetValue("positionSide");
+                isUSD = (int)systemParameters.GetValue("isUSD");
+                rateUSD = (double)systemParameters.GetValue("rateUSD");
+                shares = (int)systemParameters.GetValue("shares");
+
+            }
+            catch (KeyNotFoundException e)
+            {
+                logger.Log("Прекращаем работу, так как не установлен параметр: ", e.Message);
+                throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
+            }
+        }
         public abstract void Update(int barNumber);
         public abstract void Initialize(IContext ctx);       
     }

@@ -7,7 +7,7 @@ using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public class MainSystemForRealTimeTesting : PivotPointsMainSystem
+    public class MainSystemForRealTimeTesting : PivotPointsStarter
     {        
         Security securityFirst;
         IContext ctx;                

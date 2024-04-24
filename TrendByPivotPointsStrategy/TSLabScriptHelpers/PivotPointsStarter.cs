@@ -4,7 +4,7 @@ using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
-    public abstract class PivotPointsMainSystem : MainSystem
+    public abstract class PivotPointsStarter : Starter
     {
 
         protected int instrumentsGroup;

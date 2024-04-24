@@ -27,7 +27,7 @@ namespace TrendByPivotPointsStarter
         public void Execute(IContext context, ISecurity[] securities)
         {            
             var logger = new TsLabLogger(context);
-            MainSystem system = new SampleMainSystem();
+            Starter. system = new SampleMainSystem();
 
             if (isLoggerOn == 1)
                 system.Logger = new TsLabLogger(context);

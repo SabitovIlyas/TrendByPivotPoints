@@ -14,7 +14,7 @@ namespace TrendByPivotPointsStarter
         public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger):
             base(securities, systemParameters, contractsManager, indicators, logger)
         {
-          
+            base.SetParameters();
         }               
 
         public override void CalculateIndicators()
@@ -61,7 +61,7 @@ namespace TrendByPivotPointsStarter
             throw new System.NotImplementedException();
         }        
 
-        public override void SetParameters(SystemParameters systemParameters)
+        public override void SetParameters()
         {
             throw new System.NotImplementedException();
         }

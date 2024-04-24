@@ -9,7 +9,7 @@ using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
-    public class MainSystemScalper : MainSystem
+    public class BollingerBandsStarter : Starter
     {
         public override void Initialize(ISecurity[] securities, IContext ctx)
         {
@@ -43,12 +43,12 @@ namespace TradingSystems
             AbsolutCommission absoluteComission;
             TradingSystem ts;
 
-            ts = new TradingSystemScalper(this.securityFirst, (PositionSide)positionSide);
+            ts = new TradingSystemBollingerBands(this.securityFirst, (PositionSide)positionSide);
             localMoneyManagerRuble.Logger = Logger;
             ts.Logger = Logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
-            ts.SetParameters(systemParameters);
+            ts.SetParameters();
 
             totalComission = comission * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };

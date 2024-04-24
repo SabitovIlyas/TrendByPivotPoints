@@ -6,7 +6,7 @@ using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public class MainSystemForOptimizationDonchian : PivotPointsMainSystem
+    public class MainSystemForOptimizationDonchian : PivotPointsStarter
     {
         private Security securityFirst;
         private IContext ctx;
@@ -55,7 +55,7 @@ namespace TradingSystems
             ts.Logger = logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
-            ts.SetParameters(systemParameters);
+            ts.SetParameters();
 
             totalComission = comission * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
