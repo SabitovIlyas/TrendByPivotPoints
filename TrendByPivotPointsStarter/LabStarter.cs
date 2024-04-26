@@ -27,16 +27,23 @@ namespace TrendByPivotPointsStarter
             ContractsManager contractsManager = new ContractsManager(riskManager, account, securities);
             Indicators indicators = new IndicatorsTsLab();
 
-            SystemParameters systemParameters = new SystemParameters();
+            systemParameters = new SystemParameters();
 
-            //systemParameters.Add("positionSide", PositionSide.Long);
-            //systemParameters.Add("isUSD", true);
-            //systemParameters.Add("rateUSD", 90);
-            //systemParameters.Add("shares", 10);
-            //systemParameters.Add("SMA", 9);
+            systemParameters.Add("positionSide", PositionSide.Long);
+            systemParameters.Add("isUSD", true);
+            systemParameters.Add("rateUSD", 90);
+            systemParameters.Add("shares", 10);
+            systemParameters.Add("SMA", 9);
+
+            positionSide = (int)PositionSide.Long;
+
+
+            //List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA(securities, systemParameters, contractsManager, indicators, logger) };
+            SetParameters(systemParameters);
+
         }
 
-        
+
 
         public override void Paint()
         {
@@ -64,7 +71,6 @@ namespace TrendByPivotPointsStarter
 
         public override void SetParameters(SystemParameters systemParameters)
         {
-            base.SetParameters(systemParameters);
             var sma = systemParameters.GetValue("SMA");           
         }
     }

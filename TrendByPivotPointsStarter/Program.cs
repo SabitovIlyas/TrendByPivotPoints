@@ -8,29 +8,15 @@ namespace TrendByPivotPointsStarter
     class Program
     {
         static void Main(string[] args)
-        {
-            Security security = new SecurityLab(Currency.Ruble, shares: 1);
-            List<Security> securities = new List<Security> { security };
-            Logger logger = new ConsoleLogger();
-            Account account = new AccountLab(initDeposit: 1000000, logger);
-            RiskManager riskManager = new RiskManagerReal(account);
-            ContractsManager contractsManager = new ContractsManager(riskManager, account, securities);
-            Indicators indicators = new IndicatorsTsLab();
-
-            SystemParameters systemParameters = new SystemParameters();
-
-            systemParameters.Add("positionSide", PositionSide.Long);
-            systemParameters.Add("isUSD", true);
-            systemParameters.Add("rateUSD", 90);
-            systemParameters.Add("shares", 10);
-            systemParameters.Add("SMA", 9);            
-
-            List<TradingSystem> tradingSystems = new List<TradingSystem>() { new TradingSystemSMA(securities, systemParameters, contractsManager, indicators, logger) };
+        {            
+            Logger logger = new ConsoleLogger();           
 
             try
             {
-                Starter system = new LabStarter(tradingSystems, systemParameters, securities, logger);                
-                system.Run();                //реализовать этот метод в TradingSystem. От класса MainSystem отказываемся. Или не отказываться, а назвать его Starter или Runner
+                Starter system = new LabStarter(logger);
+                system.Initialize();
+                system.Run();
+                system.Paint();
             }
             catch (Exception e)
             {

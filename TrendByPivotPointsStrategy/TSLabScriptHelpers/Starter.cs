@@ -39,10 +39,15 @@ namespace TradingSystems
             this.systemParameters = systemParameters;
             try
             {
-                positionSide = (int)systemParameters.GetValue("positionSide");
-                isUSD = (int)systemParameters.GetValue("isUSD");
-                rateUSD = (double)systemParameters.GetValue("rateUSD");
-                shares = (int)systemParameters.GetValue("shares");
+                var positionSide = (int)systemParameters.GetValue("positionSide");
+                var isUSD = (int)systemParameters.GetValue("isUSD");
+                var rateUSD = (double)systemParameters.GetValue("rateUSD");
+                var shares = (int)systemParameters.GetValue("shares");
+
+                this.positionSide = positionSide; //реализовать здесь нормальные типы переменных, а не int вместо bool и т.д.
+                this.isUSD = isUSD;
+                this.rateUSD = rateUSD;
+                this.shares = shares;
 
             }
             catch (KeyNotFoundException e)
