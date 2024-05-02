@@ -1,7 +1,5 @@
 ﻿using System;
 using TradingSystems;
-using Security = TradingSystems.Security;
-using System.Collections.Generic;
 
 namespace TrendByPivotPointsStarter
 {
@@ -9,11 +7,11 @@ namespace TrendByPivotPointsStarter
     {
         static void Main(string[] args)
         {            
-            Logger logger = new ConsoleLogger();           
+            var logger = new ConsoleLogger();           
 
             try
             {
-                Starter system = new LabStarter(logger);
+                var system = new LabStarterSMATradingSystem(logger);
                 system.Initialize();
                 system.Run();
                 system.Paint();

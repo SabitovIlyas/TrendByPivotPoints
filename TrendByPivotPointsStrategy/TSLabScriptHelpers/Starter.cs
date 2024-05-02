@@ -13,10 +13,10 @@ namespace TradingSystems
         protected int securityNumber;
 
         protected double rateUSD;
-        protected int positionSide;
+        protected PositionSide positionSide;
         protected double comission;
         protected double riskValuePrcnt;
-        protected int isUSD;
+        protected Currency currency;
 
         protected int shares;
         protected Logger logger = new NullLogger();
@@ -44,11 +44,18 @@ namespace TradingSystems
                 var rateUSD = (double)systemParameters.GetValue("rateUSD");
                 var shares = (int)systemParameters.GetValue("shares");
 
-                this.positionSide = positionSide; //реализовать здесь нормальные типы переменных, а не int вместо bool и т.д.
-                this.isUSD = isUSD;
+                this.positionSide = PositionSide.Null;
+                if (positionSide == 0)
+                    this.positionSide = PositionSide.Long;
+                else if (positionSide == 1)
+                    this.positionSide = PositionSide.Short;
+
+                if (isUSD == 1)
+                    currency = Currency.USD;
+                currency = Currency.Ruble;
+
                 this.rateUSD = rateUSD;
                 this.shares = shares;
-
             }
             catch (KeyNotFoundException e)
             {
@@ -61,13 +68,6 @@ namespace TradingSystems
         {
             var realTimeSecurity = security as ISecurityRt;
             return realTimeSecurity == null;
-        }
-
-        protected Currency GetCurrency()
-        {
-            if (isUSD == 1)
-                return Currency.USD;
-            return Currency.Ruble;
         }
     }
 }
