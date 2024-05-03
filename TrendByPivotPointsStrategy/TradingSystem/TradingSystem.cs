@@ -19,15 +19,14 @@ namespace TradingSystems
         protected ContractsManager contractsManager;
         protected Indicators indicators;
 
-        public TradingSystem(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, Indicators indicators, Logger logger)
+        public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Logger logger)
         {
             if (securities.Count == 0)            
                 throw new ArgumentOutOfRangeException(nameof(securities));
 
             this.securities = securities;
             security = securities.First();
-            lastBarNumber = security.GetBarsCountReal() - 1;
-            this.systemParameters = systemParameters;
+            lastBarNumber = security.GetBarsCountReal() - 1;            
             this.contractsManager = contractsManager;
             this.indicators = indicators;
             this.logger = logger;
@@ -39,23 +38,7 @@ namespace TradingSystems
         public abstract void CheckPositionOpenShortCase(double lastPrice, int barNumber);
         public abstract bool CheckShortPositionCloseCase(IPosition se, int barNumber);
         public abstract bool HasOpenPosition();
-        public abstract void Paint(Context context);        
-        public void SetParameters()
-        {
-            try
-            {
-                positionSide = (int)systemParameters.GetValue("positionSide");
-                isUSD = (int)systemParameters.GetValue("isUSD");
-                rateUSD = (double)systemParameters.GetValue("rateUSD");
-                shares = (int)systemParameters.GetValue("shares");
-
-            }
-            catch (KeyNotFoundException e)
-            {
-                logger.Log("Прекращаем работу, так как не установлен параметр: ", e.Message);
-                throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
-            }
-        }
+        public abstract void Paint(Context context);               
         public abstract void Update(int barNumber);
         public abstract void Initialize(IContext ctx);       
     }

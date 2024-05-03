@@ -25,33 +25,18 @@ namespace TrendByPivotPointsStarter
             var riskManager = new RiskManagerReal(account);
             var contractsManager = new ContractsManager(riskManager, account, securities);
             var indicators = new IndicatorsTsLab();
-            
-            //остановился здесь. Надо создать tradingSystems
+
+            tradingSystems = new List<TradingSystem>();
+            var tradingSystem = new TradingSystemSMA(securities, contractsManager, indicators, logger);
+            tradingSystem.PositionSide = positionSide;
+            tradingSystem.SMAperiod = sma;
+            tradingSystems.Add(tradingSystem);
         }
 
         public override void Paint()
         {
             throw new NotImplementedException();
-        }
-
-        public override void Run() //можно будет потом выделить этот метод в отдельный чистый класс Runner
-        {
-            foreach (var tradingSystem in tradingSystems)
-                tradingSystem.CalculateIndicators();
-
-            var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
-            if (lastBarNumber < 1)
-                return;
-
-            for (var barNumber = 0; barNumber <= lastBarNumber; barNumber++)
-            {
-                foreach (var tradingSystem in tradingSystems)
-                {
-                    tradingSystem.Update(barNumber);
-                    account.Update(barNumber);
-                }
-            }
-        }
+        }      
 
         public void SetParameters()
         {

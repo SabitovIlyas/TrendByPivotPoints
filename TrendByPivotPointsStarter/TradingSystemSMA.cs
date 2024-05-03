@@ -11,20 +11,30 @@ namespace TrendByPivotPointsStarter
 
     public class TradingSystemSMA : TradingSystem
     {
-        public TradingSystemSMA(List<Security> securities, SystemParameters systemParameters, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger):
-            base(securities, systemParameters, contractsManager, indicators, logger)
-        {
-            base.SetParameters();
+        public PositionSide PositionSide { get; set; }
+        public int SMAperiod { get; set; }
+
+        private List<double> sma;
+
+        public TradingSystemSMA(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger):
+            base(securities, contractsManager, indicators, logger)
+        {            
         }               
 
         public override void CalculateIndicators()
         {
+            //Остановился здесь. Проследить за этим параметром security.BarNumber
             var bars = security.GetBars(security.BarNumber);
             var closes = (from bar in bars
                          select bar.Close).ToList();
 
-            indicators.SMA(closes, period: 10);
-        }        
+            sma = indicators.SMA(closes, SMAperiod);
+        }
+
+        public override void Update(int barNumber)
+        {
+            throw new System.NotImplementedException();
+        }
 
         public override void CheckPositionCloseCase(int barNumber)
         {
@@ -59,16 +69,6 @@ namespace TrendByPivotPointsStarter
         public override void Paint(Context context)
         {
             throw new System.NotImplementedException();
-        }        
-
-        public override void SetParameters()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void Update(int barNumber)
-        {
-            throw new System.NotImplementedException();
-        }
+        }                
     }
 }

@@ -33,7 +33,24 @@ namespace TradingSystems
         }
         
         public abstract void Paint();
-        public abstract void Run(); //можно будет потом выделить этот метод в отдельный чистый класс Runner
+        public void Run()
+        {
+            foreach (var tradingSystem in tradingSystems)
+                tradingSystem.CalculateIndicators();
+
+            var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
+            if (lastBarNumber < 1)
+                return;
+
+            for (var barNumber = 0; barNumber <= lastBarNumber; barNumber++)
+            {
+                foreach (var tradingSystem in tradingSystems)
+                {
+                    tradingSystem.Update(barNumber);
+                    account.Update(barNumber);
+                }
+            }
+        }
         public virtual void SetParameters(SystemParameters systemParameters)
         {
             this.systemParameters = systemParameters;
