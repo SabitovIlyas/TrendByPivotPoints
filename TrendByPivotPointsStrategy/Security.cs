@@ -7,7 +7,6 @@ namespace TradingSystems
     {
         Currency Currency { get; set; }
         int Shares { get; set; }
-        int BarNumber { get; set; }
         double? SellDeposit { get; }
         double? StepPrice { get; }
         double? BuyDeposit { get; }

@@ -35,12 +35,12 @@ namespace TradingSystems
         public abstract void Paint();
         public void Run()
         {
-            foreach (var tradingSystem in tradingSystems)
-                tradingSystem.CalculateIndicators();
-
             var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
             if (lastBarNumber < 1)
                 return;
+
+            foreach (var tradingSystem in tradingSystems)
+                tradingSystem.CalculateIndicators(lastBarNumber);
 
             for (var barNumber = 0; barNumber <= lastBarNumber; barNumber++)
             {

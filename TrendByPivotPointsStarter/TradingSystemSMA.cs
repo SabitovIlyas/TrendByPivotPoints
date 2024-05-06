@@ -21,10 +21,9 @@ namespace TrendByPivotPointsStarter
         {            
         }               
 
-        public override void CalculateIndicators()
-        {
-            //Остановился здесь. Проследить за этим параметром security.BarNumber
-            var bars = security.GetBars(security.BarNumber);
+        public override void CalculateIndicators(int barNumber)
+        {            
+            var bars = security.GetBars(barNumber);
             var closes = (from bar in bars
                          select bar.Close).ToList();
 

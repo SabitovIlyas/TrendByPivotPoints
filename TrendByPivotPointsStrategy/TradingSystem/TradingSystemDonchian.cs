@@ -23,13 +23,11 @@ namespace TradingSystems
         private IList<double> atr;
 
         private PositionSide positionSide;
-        private int barNumber;
         private Converter convertable;
 
         private string signalNameForOpenPosition = "";
         private string signalNameForClosePosition = "";
 
-        private string tradingSystemDescription;
         private string name = "TradingSystemDonchian";
         private string parametersCombination;
         private double fixedAtr;
@@ -41,7 +39,6 @@ namespace TradingSystems
         private int fastDonchian;
         private int atrPeriod;
         private double kAtrForStopLoss;
-        private int limitOpenedPositions = 10;
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
 
@@ -53,28 +50,7 @@ namespace TradingSystems
             this.security = security;
             secCompressed = sec.CompressTo(Interval.D1);
             this.positionSide = positionSide;
-        }
-
-        public void Update(int barNumber)
-        {
-            try
-            {                
-                this.barNumber = barNumber;
-                security.BarNumber = barNumber;
-
-                if (security.IsRealTimeActualBar(barNumber))
-                    Logger.SwitchOn();
-                else
-                    Logger.SwitchOff();
-
-                CheckPositionOpenLongCase();
-            }
-
-            catch (Exception e)
-            {
-                Log("Исключение в методе Update(): " + e.ToString());
-            }
-        }
+        }        
 
         private bool IsPositionOpen(string notes = "")
         {
@@ -86,18 +62,7 @@ namespace TradingSystems
         {
             var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
             return position;
-        }
-
-        private void Log(string text)
-        {
-            Logger.Log("{0}: {1}", tradingSystemDescription, text);
-        }
-
-        private void Log(string text, params object[] args)
-        {
-            text = string.Format(text, args);
-            Log(text);
-        }
+        }        
 
         private void BuyIfGreater(double price, int contracts, string notes)
         {
@@ -119,13 +84,7 @@ namespace TradingSystems
                 stopPriceAtr = convertable.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
             var stopPriceDonchian = lowest[barNumber];
             return convertable.Maximum(stopPriceAtr, stopPriceDonchian);
-        }
-
-        public void CheckPositionOpenLongCase()
-        {
-            for (var i = 0; i < limitOpenedPositions; i++)           
-                CheckPositionOpenLongCase(i);
-        }
+        }        
 
         private void CheckPositionOpenLongCase(int positionNumber)
         {
