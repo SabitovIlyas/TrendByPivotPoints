@@ -5,13 +5,12 @@ using SystemColor = System.Drawing.Color;
 using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
-using System.IO;
 using System.Linq;
 
 namespace TradingSystems
 {
-    public class TradingSystemDonchian : TradingSystem
-    {
+    public class TradingSystemDonchian : TradingSystem //остановился здесь
+    {        
         public IContext Ctx { get; set; }
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }
@@ -50,13 +49,7 @@ namespace TradingSystems
             this.security = security;
             secCompressed = sec.CompressTo(Interval.D1);
             this.positionSide = positionSide;
-        }        
-
-        private bool IsPositionOpen(string notes = "")
-        {
-            var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
-            return position != null;
-        }
+        }               
 
         private IPosition GetOpenedPosition(string notes)
         {
@@ -86,7 +79,7 @@ namespace TradingSystems
             return convertable.Maximum(stopPriceAtr, stopPriceDonchian);
         }        
 
-        private void CheckPositionOpenLongCase(int positionNumber)
+        protected override void CheckPositionOpenLongCase(int positionNumber)
         {
             Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
             double stopPrice;
@@ -142,19 +135,6 @@ namespace TradingSystems
             }
         }
 
-        private void UpdateFileWithExchangeData()
-        {
-            Log("Попробую записать информацию в текстовый файл.");
-
-            var folder = @"C:\Users\Ильяс\Documents\Трейдинг\Обмен между скриптами\";            
-            var path = Path.Combine(folder, name);
-            StreamWriter sw = new StreamWriter(path, true);
-
-            var units = GetQtyUnits();
-            sw.WriteLine("{0};{1};{2};{3}", tradingSystemDescription, security.Name, positionSide, units);
-            sw.Close();
-        }
-
         private int GetQtyUnits()
         {
             var units = 0;
@@ -177,13 +157,12 @@ namespace TradingSystems
             kAtrForStopLoss = systemParameters.GetDouble("kAtr");
             atrPeriod = systemParameters.GetInt("atrPeriod");
             limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");
-            //kAtrForOpenPosition = kAtrForStopLoss;
 
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
 
-        public void CalculateIndicators()
+        public override void CalculateIndicators()
         {
             switch (positionSide)
             {
@@ -254,36 +233,11 @@ namespace TradingSystems
                 throw new ArgumentOutOfRangeException("bars.Count == 0");
 
             return sec.Bars;
-        }
-
-        public void CheckPositionOpenLongCase(double lastPrice, int barNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CheckPositionOpenShortCase(double lastPrice, int barNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool CheckShortPositionCloseCase(IPosition se, int barNumber)
-        {
-            throw new NotImplementedException();
-        }
+        }        
 
         public void Initialize(IContext ctx)
         {
             Ctx = ctx;
-        }
-
-        public void CheckPositionCloseCase(int barNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetParameters(double leftLocalSide, double rightLocalSide, double pivotPointBreakDownSide, double EmaPeriodSide)
-        {
-            throw new NotImplementedException();
-        }
+        }        
     }
 }

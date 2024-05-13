@@ -30,5 +30,6 @@ namespace TradingSystems
         String Name { get; }
         int RealTimeActualBarNumber { get; }
         Bar GetBar(int barNumer);
+        Position GetLastActiveForSignal(string signalName, int barNumber);        
     }
 }
