@@ -9,6 +9,9 @@ namespace TradingSystems
 {
     public class SecurityNull : ISecurity
     {
+        public DateTime SessionBegin { get; set; }
+        public DateTime SessionEnd { get; set; }
+
         IReadOnlyList<IDataBar> bars = new ReadAndAddList<DataBar>();
         public string Symbol => throw new NotImplementedException();
 

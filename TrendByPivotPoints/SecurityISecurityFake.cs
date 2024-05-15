@@ -74,6 +74,10 @@ namespace TradingSystems.Tests
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
 
+        public DateTime SessionBegin => throw new NotImplementedException();
+
+        public DateTime SessionEnd => throw new NotImplementedException();
+
         public void Attach()
         {
             throw new NotImplementedException();

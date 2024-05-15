@@ -12,6 +12,8 @@ namespace TradingSystems
     {
         FinInfo finInfo;
         IReadOnlyList<IDataBar> bars;
+        public DateTime SessionBegin { get; set; }
+        public DateTime SessionEnd { get; set; }
 
         public static CustomSecurity Create(IReadOnlyList<IDataBar> bars)
         {
