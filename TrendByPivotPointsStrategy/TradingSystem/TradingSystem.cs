@@ -20,6 +20,7 @@ namespace TradingSystems
         protected int barNumber;
         protected string tradingSystemDescription;
         protected int limitOpenedPositions = 1;
+        protected Converter converter;
 
         public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Logger logger)
         {
@@ -31,7 +32,7 @@ namespace TradingSystems
             lastBarNumber = security.GetBarsCountReal() - 1;            
             this.contractsManager = contractsManager;
             this.indicators = indicators;
-            this.logger = logger;
+            this.logger = logger;            
         }
 
         public abstract void CalculateIndicators();

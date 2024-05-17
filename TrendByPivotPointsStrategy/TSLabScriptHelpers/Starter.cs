@@ -40,7 +40,7 @@ namespace TradingSystems
                 return;
 
             foreach (var tradingSystem in tradingSystems)
-                tradingSystem.CalculateIndicators(lastBarNumber);
+                tradingSystem.CalculateIndicators();
 
             for (var barNumber = 0; barNumber <= lastBarNumber; barNumber++)
             {

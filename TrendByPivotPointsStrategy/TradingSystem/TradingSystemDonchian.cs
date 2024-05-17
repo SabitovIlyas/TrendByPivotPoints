@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace TradingSystems
 {
-    public class TradingSystemDonchian : TradingSystem //остановился здесь
+    public class TradingSystemDonchian : TradingSystem
     {        
         public IContext Ctx { get; set; }
         public Logger Logger { get; set; } = new NullLogger();
@@ -41,14 +41,12 @@ namespace TradingSystems
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
 
-        public TradingSystemDonchian(ContractsManager localMoneyManager, Account account, Security security, PositionSide positionSide)
-        {
-            this.localMoneyManager = localMoneyManager;
+        public TradingSystemDonchian(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger) :
+            base(securities, contractsManager, indicators, logger)
+        {   
             var securityTSLab = security as TSLabSecurity;
-            sec = securityTSLab.security;
-            this.security = security;
-            secCompressed = sec.CompressTo(Interval.D1);
-            this.positionSide = positionSide;
+            sec = securityTSLab.security;            
+            secCompressed = sec.CompressTo(Interval.D1);            
         }               
 
         private IPosition GetOpenedPosition(string notes)
@@ -238,6 +236,31 @@ namespace TradingSystems
         public void Initialize(IContext ctx)
         {
             Ctx = ctx;
-        }        
+        }
+
+        public override void CheckPositionCloseCase(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void CheckPositionOpenShortCase(int positionNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool CheckShortPositionCloseCase(IPosition se, int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Paint(Context context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Initialize(IContext ctx)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
