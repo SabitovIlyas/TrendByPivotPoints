@@ -9,7 +9,6 @@ using TSLab.Script.Helpers;
 
 namespace TrendByPivotPointsStarter
 {
-
     public class TradingSystemSMA : TradingSystem
     {
         public PositionSide PositionSide { get; set; }
@@ -17,10 +16,11 @@ namespace TrendByPivotPointsStarter
 
         private List<double> sma;
 
-        public TradingSystemSMA(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger):
+        public TradingSystemSMA(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger) :
             base(securities, contractsManager, indicators, logger)
-        {            
-        }               
+        {
+            name = "TradingSystemSMA";
+        }    
 
         public override void CalculateIndicators()
         {            
@@ -125,6 +125,12 @@ namespace TrendByPivotPointsStarter
         protected override void CheckPositionOpenLongCase(int positionNumber)
         {
             throw new System.NotImplementedException();
+        }
+
+        public override void Initialize()
+        {
+            parametersCombination = string.Format("SMA: {0}", sma);
+            base.Initialize();
         }
     }
 }

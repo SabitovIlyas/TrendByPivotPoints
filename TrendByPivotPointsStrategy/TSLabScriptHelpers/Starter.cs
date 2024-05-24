@@ -56,23 +56,21 @@ namespace TradingSystems
             this.systemParameters = systemParameters;
             try
             {
-                var positionSide = (int)systemParameters.GetValue("positionSide");
+                var posSide = (int)systemParameters.GetValue("positionSide");
                 var isUSD = (int)systemParameters.GetValue("isUSD");
-                var rateUSD = (double)systemParameters.GetValue("rateUSD");
-                var shares = (int)systemParameters.GetValue("shares");
-
-                this.positionSide = PositionSide.Null;
-                if (positionSide == 0)
-                    this.positionSide = PositionSide.Long;
-                else if (positionSide == 1)
-                    this.positionSide = PositionSide.Short;
+                rateUSD = (double)systemParameters.GetValue("rateUSD");
+                shares = (int)systemParameters.GetValue("shares");
+                                
+                if (posSide == 0)
+                    positionSide = PositionSide.Long;
+                else if (posSide == 1)
+                    positionSide = PositionSide.Short;
+                else
+                    positionSide = PositionSide.Null;
 
                 if (isUSD == 1)
                     currency = Currency.USD;
                 currency = Currency.Ruble;
-
-                this.rateUSD = rateUSD;
-                this.shares = shares;
             }
             catch (KeyNotFoundException e)
             {

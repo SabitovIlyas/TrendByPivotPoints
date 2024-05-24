@@ -14,6 +14,18 @@ namespace TrendByPivotPointsStarter
             Initialize();
         }
 
+        public void SetParameters()
+        {
+            systemParameters = new SystemParameters();
+            systemParameters.Add("positionSide", PositionSide.Long);
+            systemParameters.Add("isUSD", true);
+            systemParameters.Add("rateUSD", 90);
+            systemParameters.Add("shares", 10);
+
+            base.SetParameters(systemParameters);
+            sma = 9;
+        }
+
         public override void Initialize()
         {
             var security = new SecurityLab(currency, shares);
@@ -28,26 +40,15 @@ namespace TrendByPivotPointsStarter
 
             tradingSystems = new List<TradingSystem>();
             var tradingSystem = new TradingSystemSMA(securities, contractsManager, indicators, logger);
-            tradingSystem.PositionSide = positionSide; //Остановился здесь. positionSide нужен для Converter'а. Подумать, где его передать.
+            tradingSystem.PositionSide = positionSide;
             tradingSystem.SMAperiod = sma;
-            tradingSystems.Add(tradingSystem);
+            tradingSystem.Initialize();//Остановился здесь. positionSide нужен для Converter'а. Подумать, где его передать.
+            tradingSystems.Add(tradingSystem);            
         }
 
         public override void Paint()
         {
             throw new NotImplementedException();
-        }      
-
-        public void SetParameters()
-        {
-            systemParameters = new SystemParameters();
-            systemParameters.Add("positionSide", PositionSide.Long);
-            systemParameters.Add("isUSD", true);
-            systemParameters.Add("rateUSD", 90);
-            systemParameters.Add("shares", 10);            
-
-            base.SetParameters(systemParameters);
-            sma = 9;
-        }
+        }        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -21,6 +22,8 @@ namespace TradingSystems
         protected string tradingSystemDescription;
         protected int limitOpenedPositions = 1;
         protected Converter converter;
+        protected string parametersCombination = string.Empty;
+        protected string name = string.Empty;
 
         public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Logger logger)
         {
@@ -84,6 +87,11 @@ namespace TradingSystems
         {
             var position = security.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
             return position != null;
+        }
+
+        public virtual void Initialize()
+        {            
+            tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
     }
 }
