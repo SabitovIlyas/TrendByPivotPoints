@@ -11,8 +11,7 @@ namespace TrendByPivotPointsStarter
 
             try
             {
-                var system = new LabStarterSMATradingSystem(logger);
-                system.Initialize();
+                var system = new LabStarterSMATradingSystem(logger);                
                 system.Run();
                 system.Paint();
             }

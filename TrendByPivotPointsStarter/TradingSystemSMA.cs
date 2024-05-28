@@ -38,43 +38,24 @@ namespace TrendByPivotPointsStarter
 
         protected override void CheckPositionOpenLongCase(int positionNumber)
         {
-            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
+            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, converter.Long);
             double stopPrice;
 
             var notes = " Вход №" + (positionNumber + 1);
 
             if (!IsPositionOpen(notes))
             {
-                Log("{0} позиция не открыта.", convertable.Long);
-
-                if (positionNumber == 0)
-                    fixedAtr = atr[barNumber];
-
-                Log("Фиксированный ATR = {0}", fixedAtr);
+                Log("{0} позиция не открыта.", converter.Long);
 
                 Log("Вычисляем стоп-цену...");
                 stopPrice = GetStopPrice(notes);
 
+                entryPricePlanned = sma[barNumber];
+
                 Log("Определяем количество контрактов...");
-                var contracts = localMoneyManager.GetQntContracts(highest[barNumber], stopPrice, positionSide);
+                var contracts = contractsManager.GetQntContracts(entryPricePlanned, stopPrice, positionSide);
 
-                Log("Торгуем в лаборатории или в режиме реального времени?");
-                if (security.IsRealTimeTrading)
-                {
-                    Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
-                }
-                else
-                {
-                    Log("Торгуем в лаборатории.");
-                }
-
-                if (positionNumber == 0)
-                    openPositionPrice = highest[barNumber];
-
-                var price = convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
-                Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, convertable.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
-
-                BuyIfGreater(price, contracts, notes);
+                BuyIfGreater(price, contracts, notes);  //остановился здесь
 
                 Log("Отправляем ордер.", convertable.Long);
             }
@@ -92,10 +73,10 @@ namespace TrendByPivotPointsStarter
             }
         }
 
-        public override void CheckPositionOpenShortCase(double lastPrice, int barNumber)
+        protected override double GetStopPrice(string notes = "")
         {
             throw new System.NotImplementedException();
-        }
+        }        
 
         public override bool CheckShortPositionCloseCase(IPosition se, int barNumber)
         {
@@ -117,20 +98,10 @@ namespace TrendByPivotPointsStarter
             throw new System.NotImplementedException();
         }        
 
-        protected override void CheckPositionOpenShortCase(int positionNumber)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void CheckPositionOpenLongCase(int positionNumber)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public override void Initialize()
         {
             parametersCombination = string.Format("SMA: {0}", sma);
             base.Initialize();
-        }
+        }            
     }
 }

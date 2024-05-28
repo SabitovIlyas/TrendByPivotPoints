@@ -20,10 +20,13 @@ namespace TradingSystems
         protected Indicators indicators;
         protected int barNumber;
         protected string tradingSystemDescription;
+        protected string signalNameForOpenPosition;
+        protected string signalNameForClosePosition;
         protected int limitOpenedPositions = 1;
         protected Converter converter;
         protected string parametersCombination = string.Empty;
         protected string name = string.Empty;
+        protected double entryPricePlanned;
 
         public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Logger logger)
         {
@@ -40,7 +43,6 @@ namespace TradingSystems
 
         public abstract void CalculateIndicators();
         public abstract void CheckPositionCloseCase(int barNumber);
-        protected abstract void CheckPositionOpenShortCase(int positionNumber);
         public abstract bool CheckShortPositionCloseCase(IPosition se, int barNumber);
         public abstract void Paint(Context context);               
         public virtual void Update(int barNumber)
@@ -92,6 +94,26 @@ namespace TradingSystems
         public virtual void Initialize()
         {            
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
+
+            switch (positionSide)
+            {
+                case PositionSide.Long:
+                    {
+                        signalNameForOpenPosition = "LE";
+                        signalNameForClosePosition = "LXS";
+                        converter = new Converter(isConverted: false);
+                        break;
+                    }
+                case PositionSide.Short:
+                    {
+                        signalNameForOpenPosition = "SE";
+                        signalNameForClosePosition = "SXS";
+                        converter = new Converter(isConverted: true);
+                        break;
+                    }
+            }
         }
+
+        protected abstract double GetStopPrice(string notes = "");         
     }
 }

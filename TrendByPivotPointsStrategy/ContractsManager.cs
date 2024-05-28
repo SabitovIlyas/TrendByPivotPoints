@@ -37,11 +37,11 @@ namespace TradingSystems
             this.shares = shares;
         }
 
-        public virtual int GetQntContracts(double enterPrice, double stopPrice, PositionSide position)
+        public virtual int GetQntContracts(double entryPrice, double stopPrice, PositionSide position)
         {            
             logger.Log("Получаем количество контрактов для открываемой позиции...");
             var message = string.Format("Направление открываемой позиции: {0}; предполагаемая цена входа: {1}; расчётная цена выхода: {2}.",
-                position, enterPrice, stopPrice);
+                position, entryPrice, stopPrice);
             logger.Log(message);
 
             var go = 0.0;
@@ -49,7 +49,7 @@ namespace TradingSystems
             {
                 case PositionSide.Long:
                     {
-                        if (stopPrice >= enterPrice)
+                        if (stopPrice >= entryPrice)
                         {
                             logger.Log("Расчётная цена выхода больше либо равна цене входа. Сделку открывать не будем. Количество контрактов равно 0.");
                             return 0;
@@ -60,7 +60,7 @@ namespace TradingSystems
                     break;
                 case PositionSide.Short:
                     {
-                        if (stopPrice <= enterPrice)
+                        if (stopPrice <= entryPrice)
                         {
                             logger.Log("Расчётная цена выхода меньше либо равна цене входа. Сделку открывать не будем. Количество контрактов равно 0.");
                             return 0; 
@@ -71,7 +71,7 @@ namespace TradingSystems
             }
 
                      
-            var riskMoney = Math.Abs(enterPrice - stopPrice);
+            var riskMoney = Math.Abs(entryPrice - stopPrice);
             logger.Log("Рискуем в одном контракте следующей суммой: " + riskMoney);
                         
             var money = globalMoneyManager.GetMoneyForDeal();

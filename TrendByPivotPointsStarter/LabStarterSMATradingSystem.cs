@@ -42,7 +42,7 @@ namespace TrendByPivotPointsStarter
             var tradingSystem = new TradingSystemSMA(securities, contractsManager, indicators, logger);
             tradingSystem.PositionSide = positionSide;
             tradingSystem.SMAperiod = sma;
-            tradingSystem.Initialize();//Остановился здесь. positionSide нужен для Converter'а. Подумать, где его передать.
+            tradingSystem.Initialize();
             tradingSystems.Add(tradingSystem);            
         }
 

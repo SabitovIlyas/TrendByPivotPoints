@@ -63,7 +63,7 @@ namespace TradingSystems
                 sec.Positions.SellIfLess(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
         }
 
-        private double GetStopPrice(string notes = "")
+        protected override double GetStopPrice(string notes = "")
         {
             double stopPriceAtr;
             if (IsPositionOpen(notes))
@@ -162,24 +162,6 @@ namespace TradingSystems
 
         public override void CalculateIndicators()
         {
-            switch (positionSide)
-            {
-                case PositionSide.Long:
-                    {
-                        signalNameForOpenPosition = "LE";
-                        signalNameForClosePosition = "LXS";
-                        convertable = new Converter(isConverted: false);
-                        break;
-                    }
-                case PositionSide.Short:
-                    {
-                        signalNameForOpenPosition = "SE";
-                        signalNameForClosePosition = "SXS";
-                        convertable = new Converter(isConverted: true);
-                        break;
-                    }
-            }
-
             highest = convertable.GetHighest(convertable.GetHighPrices(secCompressed), slowDonchian);
             lowest = convertable.GetLowest(convertable.GetLowPrices(secCompressed), fastDonchian);
             atr = Series.AverageTrueRange(secCompressed.Bars, atrPeriod);
@@ -258,9 +240,9 @@ namespace TradingSystems
             throw new NotImplementedException();
         }
 
-        public override void Initialize(IContext ctx)
+        public override void Initialize()
         {
-            throw new NotImplementedException();
+            base.Initialize();
         }
     }
 }
