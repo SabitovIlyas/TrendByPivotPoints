@@ -43,7 +43,6 @@ namespace TradingSystems
 
         public abstract void CalculateIndicators();
         public abstract void CheckPositionCloseCase(int barNumber);
-        public abstract bool CheckShortPositionCloseCase(IPosition se, int barNumber);
         public abstract void Paint(Context context);               
         public virtual void Update(int barNumber)
         {

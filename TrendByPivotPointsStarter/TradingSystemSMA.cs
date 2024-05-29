@@ -55,13 +55,13 @@ namespace TrendByPivotPointsStarter
                 Log("Определяем количество контрактов...");
                 var contracts = contractsManager.GetQntContracts(entryPricePlanned, stopPrice, positionSide);
 
-                BuyIfGreater(price, contracts, notes);  //остановился здесь
+                BuyIfGreater(contracts, notes);  //остановился здесь
 
-                Log("Отправляем ордер.", convertable.Long);
+                Log("Отправляем ордер.", converter.Long);
             }
 
-            else
-            {
+            else //остановился здесь
+            { 
                 if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
                     Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
 
@@ -73,20 +73,16 @@ namespace TrendByPivotPointsStarter
             }
         }
 
+        private void BuyIfGreater(int contracts, string notes)
+        {            
+            security.BuyIfGreater(barNumber + 1, contracts, entryPricePlanned, signalNameForOpenPosition + notes, 
+                converter.IsConverted);            
+        }
+
         protected override double GetStopPrice(string notes = "")
         {
             throw new System.NotImplementedException();
-        }        
-
-        public override bool CheckShortPositionCloseCase(IPosition se, int barNumber)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override bool HasOpenPosition()
-        {
-            throw new System.NotImplementedException();
-        }        
+        }                       
 
         public override void Initialize(IContext ctx)
         {

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using TSLab.Script.Handlers;
+using TSLab.Script;
 
 namespace TradingSystems
 {
@@ -30,6 +33,8 @@ namespace TradingSystems
         String Name { get; }
         int RealTimeActualBarNumber { get; }
         Bar GetBar(int barNumer);
-        Position GetLastActiveForSignal(string signalName, int barNumber);        
+        Position GetLastActiveForSignal(string signalName, int barNumber);
+        void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned,
+            string signalNameForOpenPosition, bool isConverted = false);
     }
 }

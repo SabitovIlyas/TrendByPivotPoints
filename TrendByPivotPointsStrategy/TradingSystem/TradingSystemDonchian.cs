@@ -189,17 +189,7 @@ namespace TradingSystems
             pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
             pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
-        }
-
-        public bool HasOpenPosition()
-        {
-            IPosition position = null;
-            if (positionSide == PositionSide.Long)
-                position = sec.Positions.GetLastActiveForSignal("LE");
-            else if (positionSide == PositionSide.Short)
-                position = sec.Positions.GetLastActiveForSignal("SE");
-            return position != null;
-        }
+        }        
 
         private IReadOnlyList<IDataBar> GetBars()
         {
@@ -223,22 +213,7 @@ namespace TradingSystems
         public override void CheckPositionCloseCase(int barNumber)
         {
             throw new NotImplementedException();
-        }
-
-        protected override void CheckPositionOpenShortCase(int positionNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool CheckShortPositionCloseCase(IPosition se, int barNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Paint(Context context)
-        {
-            throw new NotImplementedException();
-        }
+        }                
 
         public override void Initialize()
         {

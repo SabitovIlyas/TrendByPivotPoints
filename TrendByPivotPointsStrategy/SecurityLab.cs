@@ -104,5 +104,15 @@ namespace TradingSystems
         public void ResetBarNumberToLastBarNumber()
         {
         }
+
+        public Position GetLastActiveForSignal(string signalName, int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned, string signalNameForOpenPosition, bool isConverted = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
