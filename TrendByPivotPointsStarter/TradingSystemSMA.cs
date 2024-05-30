@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TradingSystems;
-using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.Script.Helpers;
 
 namespace TrendByPivotPointsStarter
 {
@@ -46,27 +42,25 @@ namespace TrendByPivotPointsStarter
             if (!IsPositionOpen(notes))
             {
                 Log("{0} позиция не открыта.", converter.Long);
-
                 Log("Вычисляем стоп-цену...");
                 stopPrice = GetStopPrice(notes);
-
                 entryPricePlanned = sma[barNumber];
 
                 Log("Определяем количество контрактов...");
                 var contracts = contractsManager.GetQntContracts(entryPricePlanned, stopPrice, positionSide);
-
-                BuyIfGreater(contracts, notes);  //остановился здесь
-
+                BuyIfGreater(contracts, notes);
                 Log("Отправляем ордер.", converter.Long);
             }
 
-            else //остановился здесь
-            { 
+            else
+            {
+                //Остановился здесь. Не могу понять, как быть с этим. Скорее всего, мне придётся всё-таки
+                //реализовывать класс IContext.
                 if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
                     Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
 
                 var position = GetOpenedPosition(notes);
-                Log("{0} позиция открыта.", convertable.Long);
+                Log("{0} позиция открыта.", converter.Long);
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);

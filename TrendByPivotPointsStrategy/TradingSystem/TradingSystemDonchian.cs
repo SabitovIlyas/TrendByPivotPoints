@@ -44,16 +44,10 @@ namespace TradingSystems
         public TradingSystemDonchian(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger) :
             base(securities, contractsManager, indicators, logger)
         {   
-            var securityTSLab = security as TSLabSecurity;
+            var securityTSLab = security as SecurityTSLab;
             sec = securityTSLab.security;            
             secCompressed = sec.CompressTo(Interval.D1);            
-        }               
-
-        private IPosition GetOpenedPosition(string notes)
-        {
-            var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
-            return position;
-        }        
+        }                               
 
         private void BuyIfGreater(double price, int contracts, string notes)
         {

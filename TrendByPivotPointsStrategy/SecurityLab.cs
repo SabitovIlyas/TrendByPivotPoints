@@ -86,12 +86,12 @@ namespace TradingSystems
             throw new System.NotImplementedException();
         }
 
-        public Position GetLastClosedLongPosition(int barNumber)
+        public PositionTSLab GetLastClosedLongPosition(int barNumber)
         {
             throw new NotImplementedException();
         }
 
-        public Position GetLastClosedShortPosition(int barNumber)
+        public PositionTSLab GetLastClosedShortPosition(int barNumber)
         {
             throw new NotImplementedException();
         }
@@ -105,7 +105,7 @@ namespace TradingSystems
         {
         }
 
-        public Position GetLastActiveForSignal(string signalName, int barNumber)
+        public PositionTSLab GetLastActiveForSignal(string signalName, int barNumber)
         {
             throw new NotImplementedException();
         }

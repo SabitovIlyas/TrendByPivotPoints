@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
-using TSLab.Script;
 using TSLab.Script.Handlers;
 
 namespace TradingSystems
@@ -113,6 +111,12 @@ namespace TradingSystems
             }
         }
 
-        protected abstract double GetStopPrice(string notes = "");         
+        protected abstract double GetStopPrice(string notes = "");
+
+        protected PositionTSLab GetOpenedPosition(string notes)
+        {            
+            var position = security.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
+            return position;
+        }
     }
 }

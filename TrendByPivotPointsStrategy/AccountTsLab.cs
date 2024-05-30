@@ -75,18 +75,18 @@ namespace TradingSystems
         {
             this.securities = securities;
             var securityFirst = securities[0];
-            var security = securityFirst as TSLabSecurity;
+            var security = securityFirst as SecurityTSLab;
             sec = security.security;
             equity = sec.InitDeposit;
-            lastLongPositionsClosed = new Dictionary<Security, Position>();
-            lastShortPositionsClosed = new Dictionary<Security,Position>();
+            lastLongPositionsClosed = new Dictionary<Security, PositionTSLab>();
+            lastShortPositionsClosed = new Dictionary<Security,PositionTSLab>();
         }
 
         public void Update(int barNumber)
         {
             foreach(var security in securities)
             {
-                if (lastLongPositionsClosed.TryGetValue(security, out Position lastLongPositionClosedPrevious))
+                if (lastLongPositionsClosed.TryGetValue(security, out PositionTSLab lastLongPositionClosedPrevious))
                 {
                     var lastLongPositionClosed = security.GetLastClosedLongPosition(barNumber);
                     if (lastLongPositionClosed != lastLongPositionClosedPrevious)
@@ -113,7 +113,7 @@ namespace TradingSystems
                     }
                 }
 
-                if (lastShortPositionsClosed.TryGetValue(security, out Position lastShortPositionClosedPrevious))
+                if (lastShortPositionsClosed.TryGetValue(security, out PositionTSLab lastShortPositionClosedPrevious))
                 {
                     var lastShortPositionClosed = security.GetLastClosedShortPosition(barNumber);
                     if (lastShortPositionClosed != lastShortPositionClosedPrevious)
@@ -143,7 +143,7 @@ namespace TradingSystems
         }
         
         private List<Security> securities;
-        private Dictionary<Security, Position> lastLongPositionsClosed;
-        private Dictionary<Security, Position> lastShortPositionsClosed;
+        private Dictionary<Security, PositionTSLab> lastLongPositionsClosed;
+        private Dictionary<Security, PositionTSLab> lastShortPositionsClosed;
     }
 }

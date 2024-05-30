@@ -75,6 +75,7 @@
     <Compile Include="Indicators\Indicators.cs" />
     <Compile Include="Indicators\IndicatorsLab.cs" />
     <Compile Include="Indicators\IndicatorsTsLab.cs" />
+    <Compile Include="IPosition.cs" />
     <Compile Include="RiskManager.cs" />
     <Compile Include="RiskManagerReal.cs" />
     <Compile Include="Indicator.cs" />
@@ -87,7 +88,7 @@
     <Compile Include="Pane.cs" />
     <Compile Include="PaneTSLab.cs" />
     <Compile Include="PivotPointsIndicator.cs" />
-    <Compile Include="Position.cs" />
+    <Compile Include="PositionTSLab.cs" />
     <Compile Include="PositionSide.cs" />
     <Compile Include="PositionOpenCasePatternPivotPoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="ReadAndAddList.cs" />
     <Compile Include="RealTimeTrading.cs" />
     <Compile Include="SecurityNull.cs" />
-    <Compile Include="TSLabSecurity.cs" />
+    <Compile Include="SecurityTSLab.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SecurityLab.cs" />
     <Compile Include="StopLoss\IStopLoss.cs" />

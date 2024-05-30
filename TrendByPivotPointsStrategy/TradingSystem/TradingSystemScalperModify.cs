@@ -60,7 +60,7 @@ namespace TradingSystems
         private int minuteStopTrading = 45;
         public TradingSystemScalperModify(Security security, PositionSide positionSide)
         {
-            var securityTSLab = security as TSLabSecurity;
+            var securityTSLab = security as SecurityTSLab;
             sec = securityTSLab.security;
 
             this.security = security;
@@ -294,12 +294,12 @@ namespace TradingSystems
             return position != null;
         }
 
-        private Position GetPosition(string notes)
+        private PositionTSLab GetPosition(string notes)
         {               
             var position = sec.Positions.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
             if (position == null)
                 return null;
-            return Position.Create(position);
+            return PositionTSLab.Create(position);
         }
 
         private int GetPositionCount()
@@ -399,25 +399,25 @@ namespace TradingSystems
                 sec.Positions.SellAtMarket(barNumber + 1, contracts, signalNameForOpenPosition + notes);
         }
 
-        private void SetLimitOrdersForClosePosition(int positionNumber, Position position, string notes)
+        private void SetLimitOrdersForClosePosition(int positionNumber, PositionTSLab position, string notes)
         {            
             var price = convertable.Plus(position.EntryPrice, positionTakeLevelsAtr[positionNumber] * fixedAtr);
-            var iPosition = position.iPosition;
+            var iPosition = position.position;
             iPosition.CloseAtPrice(barNumber + 1, price, signalNameForClosePositionByTakeProfit + notes);
         }
         
-        private void SetStopLoss(Position position, string notes)
+        private void SetStopLoss(PositionTSLab position, string notes)
         {
             var count = GetPositionCount();
 
             var price = convertable.Plus(position.EntryPrice, positionStopLevelsAtr[limitOpenedPositions-count] * fixedAtr);
-            var iPosition = position.iPosition;
+            var iPosition = position.position;
             iPosition.CloseAtStop(barNumber + 1, price, signalNameForClosePositionByStopLoss + notes);            
         }
 
-        private void ClosePositionsByTime(Position position, string notes)
+        private void ClosePositionsByTime(PositionTSLab position, string notes)
         {
-            var iPosition = position.iPosition;
+            var iPosition = position.position;
             iPosition.CloseAtMarket(barNumber + 1, signalNameForClosePositionByTime + notes);
         }
 

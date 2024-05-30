@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace TradingSystems
 {
-    public class TSLabSecurity : Security
+    public class SecurityTSLab : Security
     {
         public int BarNumber
         {
@@ -73,13 +73,13 @@ namespace TradingSystems
         private ISecurity baseSecurity = new SecurityNull();
         private IContext context;
 
-        public TSLabSecurity(ISecurity security)
+        public SecurityTSLab(ISecurity security)
         {
             finInfo = security.FinInfo;
             InitializeSecurity(security);
         }
 
-        public TSLabSecurity(ISecurity compressedSecurity, ISecurity baseSecurity)
+        public SecurityTSLab(ISecurity compressedSecurity, ISecurity baseSecurity)
         {
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;
@@ -87,14 +87,14 @@ namespace TradingSystems
             CompareBarsBaseSecurityWithCompressedSecurity();
         }
 
-        public TSLabSecurity(ISecurity security, IContext context)
+        public SecurityTSLab(ISecurity security, IContext context)
         {
             finInfo = baseSecurity.FinInfo;
             InitializeSecurity(security);
             this.context = context;
         }
 
-        public TSLabSecurity(ISecurity baseSecurity, List<Bar> bars)
+        public SecurityTSLab(ISecurity baseSecurity, List<Bar> bars)
         {
             this.baseSecurity = baseSecurity;
             finInfo = baseSecurity.FinInfo;          
@@ -282,39 +282,39 @@ namespace TradingSystems
             var realTimeSecurity = security as ISecurityRt;
             isLaboratory = realTimeSecurity == null;
         }
-        public Position GetLastClosedLongPosition(int barNumber)
+        public PositionTSLab GetLastClosedLongPosition(int barNumber)
         {
             var positions = security.Positions;
             var position = positions.GetLastLongPositionClosed(barNumber);
             if (position == null)
                 return null;
             if (lastLongPositionClosed == null)
-                lastLongPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
+                lastLongPositionClosed = new PositionTSLab { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
 
             if (position.EntryPrice == lastLongPositionClosed.EntryPrice && position.EntryBarNum == lastLongPositionClosed.BarNumber && position.Profit() == lastLongPositionClosed.Profit)
                 return lastLongPositionClosed;
 
-            lastLongPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
+            lastLongPositionClosed = new PositionTSLab { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
             return lastLongPositionClosed;
         }
-        public Position GetLastClosedShortPosition(int barNumber)
+        public PositionTSLab GetLastClosedShortPosition(int barNumber)
         {
             var positions = security.Positions;
             var position = positions.GetLastShortPositionClosed(barNumber);
             if (position == null)
                 return null;
             if (lastShortPositionClosed == null)
-                lastShortPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
+                lastShortPositionClosed = new PositionTSLab { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
 
             if (position.EntryPrice == lastShortPositionClosed.EntryPrice && position.EntryBarNum == lastShortPositionClosed.BarNumber && position.Profit() == lastShortPositionClosed.Profit)
                 return lastShortPositionClosed;
 
-            lastShortPositionClosed = new Position { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
+            lastShortPositionClosed = new PositionTSLab { EntryPrice = position.EntryPrice, BarNumber = position.EntryBarNum, Security = this, Profit = position.Profit() };
             return lastShortPositionClosed;
         }
 
-        private Position lastLongPositionClosed;
-        private Position lastShortPositionClosed;
+        private PositionTSLab lastLongPositionClosed;
+        private PositionTSLab lastShortPositionClosed;
         public string Name => security.ToString();
 
         public Currency Currency { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -371,7 +371,7 @@ namespace TradingSystems
             volume = bar.Volume;            
         }
 
-        public Position GetLastActiveForSignal(string signalName, int barNumber)
+        public PositionTSLab GetLastActiveForSignal(string signalName, int barNumber)
         {
             throw new NotImplementedException();
         }

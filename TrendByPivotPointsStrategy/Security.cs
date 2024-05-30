@@ -25,15 +25,15 @@ namespace TradingSystems
         bool IsLaboratory { get; }
         bool IsRealTimeTrading { get; }
         int GetBarCompressedNumberFromBarBaseNumber(int barNumber);
-        Position GetLastClosedLongPosition(int barNumber);
-        Position GetLastClosedShortPosition(int barNumber);
+        PositionTSLab GetLastClosedLongPosition(int barNumber);
+        PositionTSLab GetLastClosedShortPosition(int barNumber);
         bool IsRealTimeActualBar(int barNumber);
         void ResetBarNumberToLastBarNumber();
 
         String Name { get; }
         int RealTimeActualBarNumber { get; }
         Bar GetBar(int barNumer);
-        Position GetLastActiveForSignal(string signalName, int barNumber);
+        PositionTSLab GetLastActiveForSignal(string signalName, int barNumber);
         void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned,
             string signalNameForOpenPosition, bool isConverted = false);
     }

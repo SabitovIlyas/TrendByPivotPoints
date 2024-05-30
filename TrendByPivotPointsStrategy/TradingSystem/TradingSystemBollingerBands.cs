@@ -49,11 +49,11 @@ namespace TradingSystems
         private IOrder lastExecutedOrderForOpenOrChangePosition;
         private int constParam = 400;
         private int multiplyCoef = 2;
-        private Position currentPosition;
+        private PositionTSLab currentPosition;
 
         public TradingSystemBollingerBands(Security security, PositionSide positionSide)
         {
-            var securityTSLab = security as TSLabSecurity;
+            var securityTSLab = security as SecurityTSLab;
             sec = securityTSLab.security;
             this.security = security;
             this.positionSide = positionSide;
@@ -206,8 +206,8 @@ namespace TradingSystems
                 //    return;
                 //}
 
-                var priceTakeProfit = convertedLong.Plus(currentPosition.iPosition.AverageEntryPrice,
-                    Math.Abs(GetAdaptiveTakeProfitPercent() / 100 * currentPosition.iPosition.AverageEntryPrice));
+                var priceTakeProfit = convertedLong.Plus(currentPosition.position.AverageEntryPrice,
+                    Math.Abs(GetAdaptiveTakeProfitPercent() / 100 * currentPosition.position.AverageEntryPrice));
                 var priceChangePosition = bollingerBand[barNumber];
 
                 var isTakeProfitPriceNearestThanChangePositionPriceForCurrentPrice =
@@ -251,7 +251,7 @@ namespace TradingSystems
                 isPriceCrossedEmaAfterOpenOrChangePosition);
         }
 
-        private void UpdateParametersOfCurrentPosition(Position currentPosition)
+        private void UpdateParametersOfCurrentPosition(PositionTSLab currentPosition)
         {
             var methodName = nameof(UpdateParametersOfCurrentPosition);
             Log("{0}: Обновляю значение \"Текущее количество открытых лотов\".", methodName);
@@ -281,12 +281,12 @@ namespace TradingSystems
                 }
             }
 
-            Log("{0}: Значение, хранящееся в позиции: {1}", methodName, currentPosition.iPosition.Shares);
+            Log("{0}: Значение, хранящееся в позиции: {1}", methodName, currentPosition.position.Shares);
 
-            if (currentPosition.iPosition.Shares != currentOpenedShares)
+            if (currentPosition.position.Shares != currentOpenedShares)
             {
                 Log("{0}: Обновляем значение, сбрасываем флаг, наращиваем счётчик", methodName);
-                currentOpenedShares = (int)currentPosition.iPosition.Shares;
+                currentOpenedShares = (int)currentPosition.position.Shares;
                 isPriceCrossedEmaAfterOpenOrChangePosition = false;
                 changePositionLastDealPrice = lastUsedPrice;
 
@@ -575,7 +575,7 @@ namespace TradingSystems
             return result;
         }
 
-        private Position GetPosition(string notes)
+        private PositionTSLab GetPosition(string notes)
         {
             var methodName = nameof(GetPosition);
             var fullSignalName = signalNameForOpenPosition + notes;
@@ -614,7 +614,7 @@ namespace TradingSystems
                         nameof(lastExecutedOrderForOpenOrChangePosition.Commission), lastExecutedOrderForOpenOrChangePosition.Commission, nameof(lastExecutedOrderForOpenOrChangePosition.Slippage), lastExecutedOrderForOpenOrChangePosition.Slippage);
                 }
             }
-            return Position.Create(position);
+            return PositionTSLab.Create(position);
         }
 
         private int GetLots()
@@ -738,7 +738,7 @@ namespace TradingSystems
                 lots = -lots;
         }
 
-        private void SetLimitOrdersForChangePosition(Position position, string notes)
+        private void SetLimitOrdersForChangePosition(PositionTSLab position, string notes)
         {
             var methodName = nameof(SetLimitOrdersForChangePosition);
             try
@@ -751,7 +751,7 @@ namespace TradingSystems
                 //    return;
                 //}
 
-                var iPosition = position.iPosition;
+                var iPosition = position.position;
                 var signalName = signalNameForOpenPosition + notes;
                 var price = 0d;
                 var lots = 0d;
@@ -774,7 +774,7 @@ namespace TradingSystems
             }
         }
 
-        private void GetPriceAndLotsForChangePosition(Position position, out double price, out double lots)
+        private void GetPriceAndLotsForChangePosition(PositionTSLab position, out double price, out double lots)
         {
             var methodName = nameof(GetPriceAndLotsForChangePosition);
 
@@ -785,10 +785,10 @@ namespace TradingSystems
             }
             else
             {
-                var iPosition = position.iPosition;
+                var iPosition = position.position;
                 var lotsResult = GetLotsForChangePositionBasedOnOpenedLots(iPosition);
                 var changePositionIntervalPercent = GetAdaptiveTakeProfitPercent();
-                var priceTakeProfit = convertedLong.Plus(currentPosition.iPosition.AverageEntryPrice, Math.Abs(changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice));
+                var priceTakeProfit = convertedLong.Plus(currentPosition.position.AverageEntryPrice, Math.Abs(changePositionIntervalPercent / 100 * iPosition.AverageEntryPrice));
                 var priceLevel = convertedLong.Minus(changePositionLastDealPrice, Math.Abs(priceTakeProfit - changePositionLastDealPrice));
                 if (convertedLong.IsGreater(bollingerBand[barNumber], priceLevel))
                 {
@@ -857,13 +857,13 @@ namespace TradingSystems
             return constParam * longAtr[barNumber] / Math.Abs(longEma[barNumber]);
         }
 
-        private void SetLimitOrdersForClosePosition(Position position, string notes)
+        private void SetLimitOrdersForClosePosition(PositionTSLab position, string notes)
         {
             var methodName = nameof(SetLimitOrdersForClosePosition);
             Log("{0}: Устанавливаем лимитный ордер для закрытия позиции", methodName);
 
-            var price = convertedLong.Plus(position.iPosition.AverageEntryPrice, Math.Abs(GetAdaptiveTakeProfitPercent() / 100 * position.iPosition.AverageEntryPrice));
-            var iPosition = position.iPosition;
+            var price = convertedLong.Plus(position.position.AverageEntryPrice, Math.Abs(GetAdaptiveTakeProfitPercent() / 100 * position.position.AverageEntryPrice));
+            var iPosition = position.position;
 
             if (price == 0)
             {
@@ -936,10 +936,10 @@ namespace TradingSystems
             if (currentPosition == null)
                 return 0;
 
-            if (currentPosition.iPosition == null)
+            if (currentPosition.position == null)
                 return 0;
 
-            return (int)currentPosition.iPosition.Shares;
+            return (int)currentPosition.position.Shares;
         }
     }
 }

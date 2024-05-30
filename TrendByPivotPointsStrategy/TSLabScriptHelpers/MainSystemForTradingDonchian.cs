@@ -22,7 +22,7 @@ namespace TradingSystems
 
             var securityList = new List<Security>();
 
-            this.securityFirst = new TSLabSecurity(securityFirst);
+            this.securityFirst = new SecurityTSLab(securityFirst);
             securityList.Add(this.securityFirst);
 
             var riskValuePrcntCalc = kAtr * limitOpenedPositions;
