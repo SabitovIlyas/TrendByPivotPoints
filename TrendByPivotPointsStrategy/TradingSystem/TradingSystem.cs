@@ -80,7 +80,6 @@ namespace TradingSystems
             text = string.Format(text, args);
             Log(text);
         }
-        public abstract void Initialize(IContext ctx);
 
         protected bool IsPositionOpen(string notes = "")
         {
@@ -110,8 +109,6 @@ namespace TradingSystems
                     }
             }
         }
-
-        protected abstract double GetStopPrice(string notes = "");
 
         protected PositionTSLab GetOpenedPosition(string notes)
         {            

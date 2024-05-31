@@ -114,5 +114,10 @@ namespace TradingSystems
         {
             throw new NotImplementedException();
         }
+
+        public void SellIfLess(int barNumber, int contracts, double entryPricePlanned, string signalNameForOpenPosition, bool isConverted = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

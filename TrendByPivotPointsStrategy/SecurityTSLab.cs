@@ -5,8 +5,6 @@ using TSLab.Script.Realtime;
 using System;
 using TSLab.Script.Handlers;
 using System.Linq;
-using System.Diagnostics;
-
 
 namespace TradingSystems
 {
@@ -316,7 +314,6 @@ namespace TradingSystems
         private PositionTSLab lastLongPositionClosed;
         private PositionTSLab lastShortPositionClosed;
         public string Name => security.ToString();
-
         public Currency Currency { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -381,9 +378,19 @@ namespace TradingSystems
             var positions = security.Positions;
 
             if (!isConverted)
-                positions.BuyIfGreater(barNumber + 1, contracts, price, signalNameForOpenPosition);
+                positions.BuyIfGreater(barNumber, contracts, price, signalNameForOpenPosition);
             else
-                positions.SellIfLess(barNumber + 1, contracts, price, signalNameForOpenPosition);
+                positions.SellIfLess(barNumber, contracts, price, signalNameForOpenPosition);
+        }
+
+        public void SellIfLess(int barNumber, int contracts, double price, string signalNameForOpenPosition, bool isConverted = false)
+        {
+            var positions = security.Positions;
+
+            if (!isConverted)
+                positions.SellIfLess(barNumber, contracts, price, signalNameForOpenPosition);
+            else
+                positions.BuyIfGreater(barNumber, contracts, price, signalNameForOpenPosition);
         }
     }
 }

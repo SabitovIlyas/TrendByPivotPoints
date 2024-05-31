@@ -34,7 +34,9 @@ namespace TradingSystems
         int RealTimeActualBarNumber { get; }
         Bar GetBar(int barNumer);
         PositionTSLab GetLastActiveForSignal(string signalName, int barNumber);
-        void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned,
-            string signalNameForOpenPosition, bool isConverted = false);
+        void BuyIfGreater(int barNumber, int contracts, double price,
+            string signalName, bool isConverted = false);
+        void SellIfLess(int barNumber, int contracts, double price,
+            string signalName, bool isConverted = false);
     }
 }

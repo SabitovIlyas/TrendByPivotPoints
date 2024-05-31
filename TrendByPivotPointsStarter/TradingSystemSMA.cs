@@ -36,7 +36,6 @@ namespace TrendByPivotPointsStarter
         {
             Log("бар № {0}. Открыта ли {1} позиция?", barNumber, converter.Long);
             double stopPrice;
-
             var notes = " Вход №" + (positionNumber + 1);
 
             if (!IsPositionOpen(notes))
@@ -54,11 +53,7 @@ namespace TrendByPivotPointsStarter
 
             else
             {
-                //Остановился здесь. Не могу понять, как быть с этим. Скорее всего, мне придётся всё-таки
-                //реализовывать класс IContext.
-                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
-                    Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
-
+                //Остановился здесь
                 var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", converter.Long);
                 stopPrice = GetStopPrice(notes);
@@ -73,19 +68,14 @@ namespace TrendByPivotPointsStarter
                 converter.IsConverted);            
         }
 
-        protected override double GetStopPrice(string notes = "")
+        private void SellIfLess(int contracts, string notes)
         {
-            throw new System.NotImplementedException();
-        }                       
-
-        public override void Initialize(IContext ctx)
-        {
-            throw new System.NotImplementedException();
-        }
+            security.SellIfLess(barNumber + 1, contracts, entryPricePlanned, signalNameForClosePosition + notes,
+                converter.IsConverted);
+        }         
 
         public override void Paint(Context context)
-        {
-            throw new System.NotImplementedException();
+        {            
         }        
 
         public override void Initialize()
