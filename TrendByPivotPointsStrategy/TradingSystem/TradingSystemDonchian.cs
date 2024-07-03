@@ -44,6 +44,7 @@ namespace TradingSystems
         private int limitOpenedPositions = 10;
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
+        private double averageEntryPrice;
 
         public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
@@ -160,7 +161,15 @@ namespace TradingSystems
                 }
 
                 if (positionNumber == 0)
+                {
                     openPositionPrice = highest[barNumber];
+                    averageEntryPrice = 0;
+                }
+                else
+                {
+                    if (averageEntryPrice != 0)
+                        openPositionPrice = averageEntryPrice;
+                }
 
                 var price = convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
                 Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, convertable.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
@@ -180,6 +189,7 @@ namespace TradingSystems
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
+                averageEntryPrice = position.AverageEntryPrice;
             }
         }
 
