@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TradingSystems;
 using TSLab.Script.Handlers;
@@ -52,13 +53,13 @@ namespace TrendByPivotPointsStarter
             }
 
             else
-            {
-                //Остановился здесь
+            {                
                 var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", converter.Long);
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
+                //Остановился здесь
             }
         }
 
@@ -82,6 +83,20 @@ namespace TrendByPivotPointsStarter
         {
             parametersCombination = string.Format("SMA: {0}", sma);
             base.Initialize();
-        }            
+        }
+
+        protected override double GetStopPrice(string notes = "")
+        {
+            double stopPrice;
+            double risk = 0.01;
+            if (IsPositionOpen(notes))
+            {
+                var position = GetOpenedPosition(notes);
+                stopPrice = converter.Minus(position.EntryPrice, position.EntryPrice * risk);
+            }
+            else
+                stopPrice = converter.Minus(entryPricePlanned, entryPricePlanned * risk);
+            return stopPrice;
+        }
     }
 }

@@ -115,5 +115,10 @@ namespace TradingSystems
             var position = security.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
             return position;
         }
+
+        protected virtual double GetStopPrice(string notes = "")
+        {
+            throw new NotImplementedException();
+        }
     }
 }
