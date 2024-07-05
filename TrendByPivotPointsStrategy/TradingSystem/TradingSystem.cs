@@ -25,6 +25,7 @@ namespace TradingSystems
         protected string parametersCombination = string.Empty;
         protected string name = string.Empty;
         protected double entryPricePlanned;
+        protected double currentPrice;
 
         public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Logger logger)
         {
@@ -40,7 +41,7 @@ namespace TradingSystems
         }
 
         public abstract void CalculateIndicators();
-        public abstract void CheckPositionCloseCase(int barNumber);
+        public abstract void CheckPositionCloseCase();
         public abstract void Paint(Context context);               
         public virtual void Update(int barNumber)
         {

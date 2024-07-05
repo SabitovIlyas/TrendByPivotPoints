@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using TradingSystems;
 using TSLab.Script.Handlers;
@@ -28,9 +29,10 @@ namespace TrendByPivotPointsStarter
             sma = indicators.SMA(closes, SMAperiod);
         }        
 
-        public override void CheckPositionCloseCase(int barNumber)
+        public override void CheckPositionCloseCase(PositionTSLab position) //Реализовать класс Position
         {
-            throw new System.NotImplementedException();
+            if (converter.IsLessOrEqual(currentPrice, sma[barNumber])
+                position.Close();
         }
 
         protected override void CheckPositionOpenLongCase(int positionNumber)
@@ -53,13 +55,16 @@ namespace TrendByPivotPointsStarter
             }
 
             else
-            {                
+            {
+                //Остановился здесь
+
                 var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", converter.Long);
+                if (CheckPositionCloseCase(position)) //идея. Вместо того, чтобы проверять, буду работать, как с null-объектом
+                    return;
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
-                //Остановился здесь
             }
         }
 
