@@ -29,10 +29,15 @@ namespace TrendByPivotPointsStarter
             sma = indicators.SMA(closes, SMAperiod);
         }        
 
-        public override void CheckPositionCloseCase(PositionTSLab position) //Реализовать класс Position
+        public override void CheckPositionCloseCase(PositionTSLab position, out bool isPositionClosing) //Реализовать класс Position
         {
-            if (converter.IsLessOrEqual(currentPrice, sma[barNumber])
+            if (converter.IsLessOrEqual(currentPrice, sma[barNumber]))
+            {
                 position.Close();
+                isPositionClosing = true;
+            }
+            else
+                isPositionClosing = false;
         }
 
         protected override void CheckPositionOpenLongCase(int positionNumber)
@@ -56,15 +61,18 @@ namespace TrendByPivotPointsStarter
 
             else
             {
-                //Остановился здесь
 
                 var position = GetOpenedPosition(notes);
-                Log("{0} позиция открыта.", converter.Long);
-                if (CheckPositionCloseCase(position)) //идея. Вместо того, чтобы проверять, буду работать, как с null-объектом
+                Log("{0} позиция открыта.", converter.Long);                
+                CheckPositionCloseCase(position, out bool isPositionClosing);
+                    
+                if (isPositionClosing)
                     return;
+                
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
+                //Остановился здесь
             }
         }
 
