@@ -41,8 +41,7 @@ namespace TradingSystems
         }
 
         public abstract void CalculateIndicators();
-        public abstract void CheckPositionCloseCase();
-        public abstract void Paint(Context context);               
+        public abstract void CheckPositionCloseCase();                       
         public virtual void Update(int barNumber)
         {
             try
@@ -120,6 +119,12 @@ namespace TradingSystems
         protected virtual double GetStopPrice(string notes = "")
         {
             throw new NotImplementedException();
+        }
+
+        public virtual void Paint(Context context)
+        {
+            throw new NotImplementedException();
+
         }
     }
 }

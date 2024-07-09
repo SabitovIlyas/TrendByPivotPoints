@@ -27,9 +27,15 @@ namespace TrendByPivotPointsStarter
                          select bar.Close).ToList();
 
             sma = indicators.SMA(closes, SMAperiod);
-        }        
+        }
 
-        public override void CheckPositionCloseCase(PositionTSLab position, out bool isPositionClosing) //Реализовать класс Position
+        public override void CheckPositionCloseCase()
+        {
+            //остановился здесь
+            throw new NotImplementedException();
+        }
+
+        public override void CheckPositionCloseCase(Position position, out bool isPositionClosing) //Реализовать класс Position
         {
             if (converter.IsLessOrEqual(currentPrice, sma[barNumber]))
             {
@@ -72,7 +78,6 @@ namespace TrendByPivotPointsStarter
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
-                //Остановился здесь
             }
         }
 
@@ -80,17 +85,7 @@ namespace TrendByPivotPointsStarter
         {            
             security.BuyIfGreater(barNumber + 1, contracts, entryPricePlanned, signalNameForOpenPosition + notes, 
                 converter.IsConverted);            
-        }
-
-        private void SellIfLess(int contracts, string notes)
-        {
-            security.SellIfLess(barNumber + 1, contracts, entryPricePlanned, signalNameForClosePosition + notes,
-                converter.IsConverted);
-        }         
-
-        public override void Paint(Context context)
-        {            
-        }        
+        }                                 
 
         public override void Initialize()
         {
@@ -110,6 +105,6 @@ namespace TrendByPivotPointsStarter
             else
                 stopPrice = converter.Minus(entryPricePlanned, entryPricePlanned * risk);
             return stopPrice;
-        }
+        }       
     }
 }
