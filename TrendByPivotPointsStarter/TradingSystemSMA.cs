@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using TradingSystems;
+using TSLab.Script;
 using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStarter
@@ -27,19 +28,14 @@ namespace TrendByPivotPointsStarter
                          select bar.Close).ToList();
 
             sma = indicators.SMA(closes, SMAperiod);
-        }
+        }        
 
-        public override void CheckPositionCloseCase()
-        {
-            //остановился здесь
-            throw new NotImplementedException();
-        }
-
-        public override void CheckPositionCloseCase(Position position, out bool isPositionClosing) //Реализовать класс Position
+        public override void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing) //Реализовать класс Position
         {
             if (converter.IsLessOrEqual(currentPrice, sma[barNumber]))
             {
-                position.Close();
+                //Остановился здесь
+                position.CloseAtMarket(barNumber + 1, signalNameForClosePosition);
                 isPositionClosing = true;
             }
             else

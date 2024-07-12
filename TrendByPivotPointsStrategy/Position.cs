@@ -6,6 +6,8 @@
         double EntryPrice { get; set; }
         double Profit { get; set; }
         Security Security { get; set; }
+        string OpenPositionSignalName { get; set; }
+        string ClosePositionSignalName { get; set; }
 
         void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition);
     }

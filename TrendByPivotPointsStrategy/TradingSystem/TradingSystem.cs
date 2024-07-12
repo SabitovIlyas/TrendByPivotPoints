@@ -41,7 +41,7 @@ namespace TradingSystems
         }
 
         public abstract void CalculateIndicators();
-        public abstract void CheckPositionCloseCase();                       
+        public abstract void CheckPositionCloseCase(Position position, out bool isPositionClosing);                       
         public virtual void Update(int barNumber)
         {
             try

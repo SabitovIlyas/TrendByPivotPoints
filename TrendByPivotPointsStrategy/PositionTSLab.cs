@@ -1,4 +1,4 @@
-﻿using IPositionTSLab = TSLab.Script.IPosition;
+﻿using TSLab.Script;
 
 namespace TradingSystems
 {
@@ -9,8 +9,12 @@ namespace TradingSystems
         public double EntryPrice { get; set; }
         public double Profit { get; set; }
         public int BarNumber { get; set; }
-        public Security Security { get; set; }        
-        private IPosition position;        
+        public Security Security { get; set; }
+
+        string SignalNameForOpenPosition { get; set; }
+        string SignalNameForClosePosition { get ; set ; }
+
+        private IPosition position;
 
         public PositionTSLab(IPosition position)
         {
@@ -21,19 +25,13 @@ namespace TradingSystems
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
         {
             position.CloseAtStop(barNumber, stopPrice, signalNameForClosePosition);
+            SignalNameForClosePosition = signalNameForClosePosition;
         }
-    }
 
-    public class PositionLab : Position
-    {
-        public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-        public double EntryPrice { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-        public double Profit { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-        public Security Security { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
+        public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
-            throw new System.NotImplementedException();
+            position.CloseAtMarket(barNumber, signalNameForClosePosition);
+            SignalNameForClosePosition = signalNameForClosePosition;
         }
     }
 }
