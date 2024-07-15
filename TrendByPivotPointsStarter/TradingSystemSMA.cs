@@ -34,8 +34,8 @@ namespace TrendByPivotPointsStarter
         {
             if (converter.IsLessOrEqual(currentPrice, sma[barNumber]))
             {
-                //Остановился здесь
-                position.CloseAtMarket(barNumber + 1, signalNameForClosePosition);
+                //Остановился здесь. Сделать проверку: закрыта ли текущая свеча?
+                position.CloseAtMarket(barNumber, signalNameForClosePosition);
                 isPositionClosing = true;
             }
             else

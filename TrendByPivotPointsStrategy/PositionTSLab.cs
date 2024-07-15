@@ -13,6 +13,8 @@ namespace TradingSystems
 
         string SignalNameForOpenPosition { get; set; }
         string SignalNameForClosePosition { get ; set ; }
+        public string OpenPositionSignalName { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public string ClosePositionSignalName { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         private IPosition position;
 
@@ -32,6 +34,12 @@ namespace TradingSystems
         {
             position.CloseAtMarket(barNumber, signalNameForClosePosition);
             SignalNameForClosePosition = signalNameForClosePosition;
+        }
+
+        public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
+        {
+
+            position.CloseAtMarket(barNumber, signalNameForClosePosition);
         }
     }
 }

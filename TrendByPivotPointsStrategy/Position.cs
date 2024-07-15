@@ -10,5 +10,6 @@
         string ClosePositionSignalName { get; set; }
 
         void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition);
+        void CloseAtMarket(int barNumber, string signalNameForClosePosition);
     }
 }
