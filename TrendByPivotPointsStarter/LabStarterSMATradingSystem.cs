@@ -30,6 +30,7 @@ namespace TrendByPivotPointsStarter
         {
             var security = new SecurityLab(currency, shares);
             var securities = new List<Security> { security };
+            var context = new LabContext();
 
             base.Initialize();
 
@@ -39,7 +40,7 @@ namespace TrendByPivotPointsStarter
             var indicators = new IndicatorsTsLab();
 
             tradingSystems = new List<TradingSystem>();
-            var tradingSystem = new TradingSystemSMA(securities, contractsManager, indicators, logger);
+            var tradingSystem = new TradingSystemSMA(securities, contractsManager, indicators, context, logger);
             tradingSystem.PositionSide = positionSide;
             tradingSystem.SMAperiod = sma;
             tradingSystem.Initialize();

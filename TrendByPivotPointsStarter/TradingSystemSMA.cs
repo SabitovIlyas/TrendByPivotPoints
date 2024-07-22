@@ -15,8 +15,8 @@ namespace TrendByPivotPointsStarter
 
         private List<double> sma;
 
-        public TradingSystemSMA(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger) :
-            base(securities, contractsManager, indicators, logger)
+        public TradingSystemSMA(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Context context, Logger logger) :
+            base(securities, contractsManager, indicators, context, logger)
         {
             name = "TradingSystemSMA";
         }    
@@ -30,12 +30,15 @@ namespace TrendByPivotPointsStarter
             sma = indicators.SMA(closes, SMAperiod);
         }        
 
-        public override void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing) //Реализовать класс Position
+        public override void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing)
         {
             if (converter.IsLessOrEqual(currentPrice, sma[barNumber]))
             {
-                //Остановился здесь. Сделать проверку: закрыта ли текущая свеча?
-                position.CloseAtMarket(barNumber, signalNameForClosePosition);
+                if (context.IsLastBarClosed)                
+                    position.CloseAtMarket(barNumber++, signalNameForClosePosition);                
+                else
+                    position.CloseAtMarket(barNumber, signalNameForClosePosition);
+
                 isPositionClosing = true;
             }
             else
@@ -62,11 +65,11 @@ namespace TrendByPivotPointsStarter
             }
 
             else
-            {
-
+            {                
                 var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", converter.Long);                
-                CheckPositionCloseCase(position, out bool isPositionClosing);
+
+                CheckPositionCloseCase(position, signalNameForClosePosition + notes, out bool isPositionClosing);
                     
                 if (isPositionClosing)
                     return;

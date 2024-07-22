@@ -11,8 +11,8 @@ namespace TradingSystems
         public int BarNumber { get; set; }
         public Security Security { get; set; }
 
-        string SignalNameForOpenPosition { get; set; }
-        string SignalNameForClosePosition { get ; set ; }
+        string SignalNameForOpenPosition { get { return position.EntrySignalName; }}
+        string SignalNameForClosePosition { get { return position.ExitSignalName; }}
         public string OpenPositionSignalName { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
         public string ClosePositionSignalName { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
@@ -27,6 +27,7 @@ namespace TradingSystems
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
         {
             position.CloseAtStop(barNumber, stopPrice, signalNameForClosePosition);
+            //Остановился здесь
             SignalNameForClosePosition = signalNameForClosePosition;
         }
 
@@ -38,7 +39,6 @@ namespace TradingSystems
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
-
             position.CloseAtMarket(barNumber, signalNameForClosePosition);
         }
     }

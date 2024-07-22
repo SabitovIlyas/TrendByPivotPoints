@@ -75,6 +75,7 @@
     <Compile Include="Indicators\Indicators.cs" />
     <Compile Include="Indicators\IndicatorsLab.cs" />
     <Compile Include="Indicators\IndicatorsTsLab.cs" />
+    <Compile Include="LabContext.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="PositionLab.cs" />
     <Compile Include="RiskManager.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="TradingSystem\TradingSystemBollingerBands.cs" />
     <Compile Include="TradingSystem\TradingSystemScalperModify.cs" />
     <Compile Include="TradingSystem\TradingSystemScalper.cs" />
+    <Compile Include="TsLabContext.cs" />
     <Compile Include="TSLabScriptHelpers\Starter.cs" />
     <Compile Include="TSLabScriptHelpers\BollingerBandsStarter.cs" />
     <Compile Include="TSLabScriptHelpers\ScalperStarter.cs" />

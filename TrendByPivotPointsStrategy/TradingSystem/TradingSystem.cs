@@ -26,8 +26,9 @@ namespace TradingSystems
         protected string name = string.Empty;
         protected double entryPricePlanned;
         protected double currentPrice;
+        protected Context context;
 
-        public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Logger logger)
+        public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Context context, Logger logger)
         {
             if (securities.Count == 0)            
                 throw new ArgumentOutOfRangeException(nameof(securities));
@@ -37,11 +38,12 @@ namespace TradingSystems
             lastBarNumber = security.GetBarsCountReal() - 1;            
             this.contractsManager = contractsManager;
             this.indicators = indicators;
+            this.context = context;
             this.logger = logger;            
         }
 
         public abstract void CalculateIndicators();
-        public abstract void CheckPositionCloseCase(Position position, out bool isPositionClosing);                       
+        public abstract void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing);                       
         public virtual void Update(int barNumber)
         {
             try
