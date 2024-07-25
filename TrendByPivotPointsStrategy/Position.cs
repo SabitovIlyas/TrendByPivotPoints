@@ -2,12 +2,12 @@
 {
     public interface Position
     {
-        int BarNumber { get; set; }
-        double EntryPrice { get; set; }
-        double Profit { get; set; }
-        Security Security { get; set; }
-        string OpenPositionSignalName { get; set; }
-        string ClosePositionSignalName { get; set; }
+        int BarNumber { get; }
+        double EntryPrice { get; }
+        double Profit { get; }
+        Security Security { get; }
+        string SignalNameForOpenPosition { get; }
+        string SignalNameForClosePosition { get; }
 
         void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition);
         void CloseAtMarket(int barNumber, string signalNameForClosePosition);

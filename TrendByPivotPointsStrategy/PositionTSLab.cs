@@ -4,17 +4,13 @@ namespace TradingSystems
 {
     public class PositionTSLab : Position
     {
-        //TODO: Позакрывать свойства от изменения
+        public double EntryPrice { get; }
+        public double Profit { get; }
+        public int BarNumber { get; }
+        public Security Security { get; }
 
-        public double EntryPrice { get; set; }
-        public double Profit { get; set; }
-        public int BarNumber { get; set; }
-        public Security Security { get; set; }
-
-        string SignalNameForOpenPosition { get { return position.EntrySignalName; }}
-        string SignalNameForClosePosition { get { return position.ExitSignalName; }}
-        public string OpenPositionSignalName { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-        public string ClosePositionSignalName { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public string SignalNameForOpenPosition { get { return position.EntrySignalName; }}
+        public string SignalNameForClosePosition { get { return position.ExitSignalName; }}        
 
         private IPosition position;
 
@@ -27,14 +23,6 @@ namespace TradingSystems
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
         {
             position.CloseAtStop(barNumber, stopPrice, signalNameForClosePosition);
-            //Остановился здесь
-            SignalNameForClosePosition = signalNameForClosePosition;
-        }
-
-        public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
-        {
-            position.CloseAtMarket(barNumber, signalNameForClosePosition);
-            SignalNameForClosePosition = signalNameForClosePosition;
         }
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)

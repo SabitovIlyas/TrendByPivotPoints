@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TrendByPivotPointsStarter
+namespace TradingSystems
 {
     public class IndicatorsLab : Indicators
     {
