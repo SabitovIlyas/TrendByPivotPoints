@@ -64,7 +64,7 @@ namespace TradingSystems
             Ctx = ctx;
         }
 
-        public void CalculateIndicators()
+        public override void CalculateIndicators()
         {
             var methodName = nameof(CalculateIndicators);
             Log("{0}: Рассчитываем индикаторы и осуществляем первоначальные настройки", methodName);
@@ -940,6 +940,16 @@ namespace TradingSystems
                 return 0;
 
             return (int)currentPosition.position.Shares;
+        }
+
+        public override void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void CheckPositionOpenLongCase(int positionNumber)
+        {
+            throw new NotImplementedException();
         }
     }
 }

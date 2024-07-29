@@ -1,26 +1,12 @@
 ﻿namespace TradingSystems
 {
     public class NullLogger : Logger
-    {
-        public void LockCurrentStatus()
+    {     
+        public override void Log(string text)
         {
         }
 
-        public void Log(string text) { }
-
-        public void Log(string text, params object[] args)
-        {            
-        }
-
-        public void SwitchOff()
-        {
-        }
-
-        public void SwitchOn()
-        {
-        }
-
-        public void UnlockCurrentStatus()
+        public override void Log(string text, params object[] args)
         {
         }
     }

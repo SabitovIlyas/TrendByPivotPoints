@@ -10,24 +10,9 @@
             locked = true;
         }
 
-        public abstract void Log(string text);
-
-        //public void Log(string text) //убрать реализацию
-        //{
-        //    if (switchOn)
-        //        context.Log(text);
-        //}
+        public abstract void Log(string text);        
 
         public abstract void Log(string text, params object[] args);
-
-        //public void Log(string text, params object[] args) //убрать реализацию
-        //{
-        //    if (switchOn)
-        //    {
-        //        var log = string.Format(text, args);
-        //        context.Log(log);
-        //    }
-        //}
 
         public void SwitchOff()
         {
