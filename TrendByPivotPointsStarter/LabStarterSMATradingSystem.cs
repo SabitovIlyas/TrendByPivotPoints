@@ -35,7 +35,7 @@ namespace TrendByPivotPointsStarter
             base.Initialize();
 
             var account = new AccountLab(initDeposit: 1000000, logger);
-            var riskManager = new RiskManagerReal(account);
+            var riskManager = new RiskManagerReal(account, logger);
             var contractsManager = new ContractsManager(riskManager, account, securities);
             var indicators = new IndicatorsTsLab();
 

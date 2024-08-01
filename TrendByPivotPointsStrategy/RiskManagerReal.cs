@@ -11,8 +11,9 @@ namespace TradingSystems
         private Logger logger = new NullLogger();
         public Logger Logger { get { return logger; } set { logger = value; } }
 
-        public RiskManagerReal(Account account, double riskValuePrcnt=100)
+        public RiskManagerReal(Account account, Logger logger, double riskValuePrcnt = 100)
         {
+            Logger = logger;
             this.account = account;
             this.riskValuePrcnt = riskValuePrcnt;
             riskValue = riskValuePrcnt / 100.0;

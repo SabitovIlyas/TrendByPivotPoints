@@ -134,7 +134,7 @@
     <None Include="TSLabScriptHelpers\MainSystemForOptimizationDonchian.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForRealTimeTesting.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForTrading.cs_old" />
-    <Compile Include="TSLabScriptHelpers\MainSystemForTradingDonchian.cs" />
+    <Compile Include="TSLabScriptHelpers\StarterDonchianTradingSystem.cs" />
     <Compile Include="TSLabScripts\BollingerBandsArbitrageStrategyScript.cs" />
     <Compile Include="TSLabScripts\GlobalCacheManager.cs" />
     <Compile Include="TSLabScripts\GlobalCacheManagerTest.cs" />

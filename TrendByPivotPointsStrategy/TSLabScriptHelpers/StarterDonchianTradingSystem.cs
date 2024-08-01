@@ -2,26 +2,33 @@
 using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
+using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public class MainSystemForTradingDonchian : Starter
+    public class StarterDonchianTradingSystem : Starter
     {
         private IContext ctx;
         private double kAtr;
         private double limitOpenedPositions;
 
-        public MainSystemForTradingDonchian(Logger logger)
+        public StarterDonchianTradingSystem(Logger logger)
         {
-            this.logger = logger;
-            //Остановился здесь
+            this.logger = logger;            
             SetParameters(systemParameters);
             Initialize();
         }
 
+        public override void SetParameters(SystemParameters systemParameters)
+        {
+            kAtr = (double)systemParameters.GetValue("kAtr");
+            limitOpenedPositions = (double)systemParameters.GetValue("limitOpenedPositions");
+            base.SetParameters(systemParameters);
+        }
+
         public override void Initialize()
-        {            
-            var securityFirst = securities.First();
+        {
+            var securityFirst = securities.First() as ISecurity;            
             if (IsLaboratory(securityFirst))
                 account = new AccountTsLab(securityFirst);
             else
@@ -37,17 +44,11 @@ namespace TradingSystems
                 throw new System.Exception("Превышен уровень риска");
 
             riskValuePrcnt = kAtr;
-            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
-            globalMoneyManager.Logger = logger;
+            var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
 
-            Currency currency;
-            if (isUSD == 0)
-                currency = Currency.Ruble;
-            else
-                currency = Currency.USD;
-
+            //Остановился здесь
             account.Rate = rateUSD;
-            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, currency, shares);
+            var localMoneyManagerRuble = new ContractsManager(riskManager, account, currency, shares);
 
             tradingSystems = new List<TradingSystem>();
 
@@ -72,6 +73,12 @@ namespace TradingSystems
             context = ContextTSLab.Create(ctx);
             account.Initialize(securityList);
             logger.SwitchOff();
+        }
+
+        protected bool IsLaboratory(ISecurity security)
+        {
+            var realTimeSecurity = security as ISecurityRt;
+            return realTimeSecurity == null;
         }
 
         private double CalculateCommission(IPosition pos, double price, double shares, bool isEntry, bool isPart)
@@ -116,14 +123,7 @@ namespace TradingSystems
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
-        }
-
-        public override void SetParameters(SystemParameters systemParameters)
-        {
-            kAtr = systemParameters.GetDouble("kAtr");
-            limitOpenedPositions = systemParameters.GetDouble("limitOpenedPositions");
-            base.SetParameters(systemParameters);
-        }
+        }        
 
         public override void Paint()
         {

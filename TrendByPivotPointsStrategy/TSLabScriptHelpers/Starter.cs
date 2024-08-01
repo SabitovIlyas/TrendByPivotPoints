@@ -77,12 +77,6 @@ namespace TradingSystems
                 logger.Log("Прекращаем работу, так как не установлен параметр: ", e.Message);
                 throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
             }
-        }
-
-        protected bool IsLaboratory(ISecurity security)
-        {
-            var realTimeSecurity = security as ISecurityRt;
-            return realTimeSecurity == null;
-        }
+        }        
     }
 }
