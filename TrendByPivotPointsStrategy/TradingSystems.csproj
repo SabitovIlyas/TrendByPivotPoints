@@ -127,7 +127,7 @@
     <Compile Include="TsLabContext.cs" />
     <Compile Include="TSLabScriptHelpers\Starter.cs" />
     <None Include="TSLabScriptHelpers\BollingerBandsStarter.cs_old" />
-    <Compile Include="TSLabScriptHelpers\ScalperStarter.cs" />
+    <None Include="TSLabScriptHelpers\ScalperStarter.cs_old" />
     <Compile Include="TSLabScriptHelpers\PivotPointsStarter.cs" />
     <None Include="TSLabScriptHelpers\MainSystemForOptimization.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForOptimization2.cs_old" />

@@ -5,15 +5,22 @@ using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
-    public class MainSystemForTradingDonchian : PivotPointsStarter
+    public class MainSystemForTradingDonchian : Starter
     {
         private IContext ctx;
         private double kAtr;
         private double limitOpenedPositions;
 
-        public override void Initialize(ISecurity[] securities, IContext ctx)
+        public MainSystemForTradingDonchian(Logger logger)
         {
-            var logger = Logger;
+            this.logger = logger;
+            //Остановился здесь
+            SetParameters(systemParameters);
+            Initialize();
+        }
+
+        public override void Initialize()
+        {            
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
                 account = new AccountTsLab(securityFirst);
@@ -116,6 +123,11 @@ namespace TradingSystems
             kAtr = systemParameters.GetDouble("kAtr");
             limitOpenedPositions = systemParameters.GetDouble("limitOpenedPositions");
             base.SetParameters(systemParameters);
+        }
+
+        public override void Paint()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

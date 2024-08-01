@@ -10,7 +10,7 @@ namespace TrendByPivotPointsStarter
         public LabStarterSMATradingSystem(Logger logger)
         {            
             this.logger = logger;            
-            SetParameters(systemParameters);
+            SetParameters();
             Initialize();
         }
 
