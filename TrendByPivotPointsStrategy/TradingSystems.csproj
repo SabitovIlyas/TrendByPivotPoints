@@ -71,6 +71,7 @@
     <Compile Include="ContextTSLab.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Currency.cs" />
+    <Compile Include="CurrencyConverter.cs" />
     <Compile Include="CustomSecurity.cs" />
     <Compile Include="Indicators\Indicators.cs" />
     <Compile Include="Indicators\IndicatorsLab.cs" />

@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using TSLab.Script;
+using TSLab.Script.Handlers;
+using TSLab.Script.Optimization;
 
 namespace TradingSystems
 {
     public interface Account
     {
-        double InitDeposit { get;}
-        double Equity { get;}
+        double InitDeposit { get; }
+        double Equity { get; }
 
         double GObying { get; }
 
