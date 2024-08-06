@@ -12,29 +12,32 @@ namespace TradingSystems
         int shares = 1;
         public Logger Logger { get { return logger; } set { logger = value; } }
         private Logger logger = new NullLogger();
+        private CurrencyConverter currencyConverter;
 
-        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency)
+        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency, CurrencyConverter currencyConverter)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
             this.currency = currency;
+            this.currencyConverter = currencyConverter;
         }
 
-        public ContractsManager(RiskManager globalMoneyManager, Account account, List<Security> securities)
+        public ContractsManager(RiskManager globalMoneyManager, Account account, List<Security> securities, CurrencyConverter currencyConverter)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
             var security = securities.First();
             this.currency = security.Currency;
-
+            this.currencyConverter = currencyConverter;
         }
 
-        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency, int shares)
+        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency, CurrencyConverter currencyConverter, int shares)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
             this.currency = currency;
             this.shares = shares;
+            this.currencyConverter = currencyConverter;
         }
 
         public virtual int GetQntContracts(double entryPrice, double stopPrice, PositionSide position)
@@ -75,15 +78,13 @@ namespace TradingSystems
             logger.Log("Рискуем в одном контракте следующей суммой: " + riskMoney);
                         
             var money = globalMoneyManager.GetMoneyForDeal();
+            var rate = currencyConverter.GetCurrencyRate(currency);            
 
-            if (currency == Currency.USD)
-            {
-                var moneyRuble = money;
-                money = money / account.Rate;
-                message = string.Format("Так как в инструменте используются USD, вместо рублей, то полученную на сделку сумму в размере {0} нужно скорректировать " +
-                    "с учётом курса рубля к USD ({1}). Полученная сумма на сделку в USD равна {2}", moneyRuble, account.Rate, money);
-                logger.Log(message);
-            }
+            var logedMoney = money;
+            money = money / rate;
+            message = string.Format("В инструменте используется валюта {0}. Полученную на сделку сумму в размере {1} нужно скорректировать " +
+                    "с учётом курса: {2}. Полученная сумма на сделку в валюте равна {3}.", currency, logedMoney, rate, money);
+            logger.Log(message);
 
             var contractsByRiskMoney = (int)(money / riskMoney);            
             contractsByRiskMoney = contractsByRiskMoney / shares;

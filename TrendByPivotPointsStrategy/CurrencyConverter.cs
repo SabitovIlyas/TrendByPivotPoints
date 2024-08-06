@@ -11,6 +11,7 @@ namespace TradingSystems
         public CurrencyConverter(Currency baseCurrency)
         {
             BaseCurrency = baseCurrency;
+            currencyRates.Add(baseCurrency, 1);
         }
 
         public void AddCurrencyRate(Currency currency, double rate)
