@@ -28,11 +28,12 @@ namespace TradingSystems
 
         public override void Initialize()
         {
-            var securityFirst = securities.First() as ISecurity;            
+            var securityFirst = securities.First() as ISecurity;
+            var baseCurrency = Currency.Ruble;
             if (IsLaboratory(securityFirst))
-                account = new AccountTsLab(securityFirst);
+                account = new AccountTsLab(securityFirst, baseCurrency);
             else
-                account = new AccountTsLabRt(securityFirst);
+                account = new AccountTsLabRt(securityFirst, baseCurrency);
 
             var securityList = new List<Security>();
 
@@ -46,8 +47,10 @@ namespace TradingSystems
             riskValuePrcnt = kAtr;
             var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
 
-            //Остановился здесь
-            account.Rate = rateUSD;
+            
+            var currencyConverter = new CurrencyConverter(baseCurrency);
+            currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
+            //Остановился здесь. Надо связать CurrenceConverter, наверное, с Security.
             var localMoneyManagerRuble = new ContractsManager(riskManager, account, currency, shares);
 
             tradingSystems = new List<TradingSystem>();

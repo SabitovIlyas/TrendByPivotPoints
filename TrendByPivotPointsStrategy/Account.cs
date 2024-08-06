@@ -9,17 +9,10 @@ namespace TradingSystems
     {
         double InitDeposit { get; }
         double Equity { get; }
-
-        double GObying { get; }
-
-        double GOselling { get; }
-
-        double Rate { get; set; }
-
-        ISecurity Security { get; }
+        Currency Currency { get; }
+        //double Rate { get; set; }
         void Update(int barNumber);
         void Initialize(List<Security> securities);
-
         Logger Logger { get; set; }
         double FreeBalance { get; }
     }

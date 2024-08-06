@@ -9,6 +9,8 @@ namespace TradingSystems
     public interface Security
     {
         Currency Currency { get; set; }
+        double GObying { get; }
+        double GOselling { get; }
         int Shares { get; set; }
         double? SellDeposit { get; }
         double? StepPrice { get; }
