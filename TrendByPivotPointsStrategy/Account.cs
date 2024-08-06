@@ -10,7 +10,6 @@ namespace TradingSystems
         double InitDeposit { get; }
         double Equity { get; }
         Currency Currency { get; }
-        //double Rate { get; set; }
         void Update(int barNumber);
         void Initialize(List<Security> securities);
         Logger Logger { get; set; }

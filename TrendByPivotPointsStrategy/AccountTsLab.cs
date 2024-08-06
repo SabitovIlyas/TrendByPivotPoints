@@ -46,10 +46,7 @@ namespace TradingSystems
 
         public double GObying => 0.45;
 
-        public double GOselling => 0.40;
-
-        public double Rate { get { return rate; } set { rate = value; } }
-        private double rate;
+        public double GOselling => 0.40;        
 
         public ISecurity Security
         {
@@ -65,10 +62,17 @@ namespace TradingSystems
 
         public double FreeBalance => Equity;
 
-        public AccountTsLab(ISecurity sec)
+        public Currency Currency => currency;
+        private List<Security> securities;
+        private Dictionary<Security, PositionTSLab> lastLongPositionsClosed;
+        private Dictionary<Security, PositionTSLab> lastShortPositionsClosed;
+        private Currency currency;
+
+        public AccountTsLab(ISecurity sec, Currency currency)
         {
             this.sec = sec;
             equity = sec.InitDeposit;            
+            this.currency = currency;
         }
 
         public void Initialize(List<Security> securities)
@@ -141,9 +145,5 @@ namespace TradingSystems
                 }
             }
         }
-        
-        private List<Security> securities;
-        private Dictionary<Security, PositionTSLab> lastLongPositionsClosed;
-        private Dictionary<Security, PositionTSLab> lastShortPositionsClosed;
     }
 }

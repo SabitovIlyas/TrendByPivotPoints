@@ -45,14 +45,13 @@ namespace TradingSystems
                 throw new System.Exception("Превышен уровень риска");
 
             riskValuePrcnt = kAtr;
-            var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
-
-            
+            var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);            
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
-            //Остановился здесь. Надо связать CurrenceConverter, наверное, с Security.
-            var localMoneyManagerRuble = new ContractsManager(riskManager, account, currency, shares);
-
+            
+            var localMoneyManagerRuble = new ContractsManager(riskManager, account, currency, 
+                currencyConverter, shares);
+            //Остановился здесь.
             tradingSystems = new List<TradingSystem>();
 
             double totalComission;

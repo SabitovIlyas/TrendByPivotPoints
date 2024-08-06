@@ -7,7 +7,16 @@ namespace TradingSystems
     public class AccountTsLabRt : Account
     {
         public ISecurity Security { get => sec;}
+        public Currency Currency => currency;
+        public double GObying => sec.FinInfo.BuyDeposit ?? double.MaxValue;
+
+        public double GOselling => sec.FinInfo.SellDeposit ?? double.MaxValue;
+
+        Logger logger = new NullLogger();
+
+
         ISecurity sec;
+        Currency currency;
 
         public double InitDeposit => sec.InitDeposit;
 
@@ -26,15 +35,6 @@ namespace TradingSystems
                 return 0;
             } 
         }
-
-        public double GObying => sec.FinInfo.BuyDeposit ?? double.MaxValue;
-
-        public double GOselling => sec.FinInfo.SellDeposit ?? double.MaxValue;
-
-        public double Rate { get { return rate; } set { rate = value; } }
-        private double rate;
-
-        Logger logger = new NullLogger();
 
         public Logger Logger
         {
@@ -59,10 +59,10 @@ namespace TradingSystems
                 return 0;
             }
         }
-
-        public AccountTsLabRt(ISecurity sec)
+        public AccountTsLabRt(ISecurity sec, Currency currency)
         {
             this.sec = sec;
+            this.currency = currency;
         }
 
         public void Update(int barNumber)
