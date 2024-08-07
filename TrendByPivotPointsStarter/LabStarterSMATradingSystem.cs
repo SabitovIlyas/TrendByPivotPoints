@@ -36,11 +36,17 @@ namespace TrendByPivotPointsStarter
 
             var account = new AccountLab(initDeposit: 1000000, logger);
             var riskManager = new RiskManagerReal(account, logger);
-            var contractsManager = new ContractsManager(riskManager, account, securities);
+
+            var baseCurrency = Currency.Ruble;
+            var currencyConverter = new CurrencyConverter(baseCurrency);
+            currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
+            var contractsManager = new ContractsManager(riskManager, account, securities,
+                currencyConverter);
             var indicators = new IndicatorsTsLab();
 
             tradingSystems = new List<TradingSystem>();
-            var tradingSystem = new TradingSystemSMA(securities, contractsManager, indicators, context, logger);
+            var tradingSystem = new TradingSystemSMA(securities, contractsManager,
+                indicators, context, logger);
             tradingSystem.PositionSide = positionSide;
             tradingSystem.SMAperiod = sma;
             tradingSystem.Initialize();

@@ -8,7 +8,6 @@ namespace TradingSystems
 {
     public abstract class Starter
     {
-        protected Context context;
         protected List<TradingSystem> tradingSystems;
         protected int securityNumber;
 

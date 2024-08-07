@@ -29,6 +29,7 @@ namespace TradingSystems
         public override void Initialize()
         {
             var securityFirst = securities.First() as ISecurity;
+            //context
             var baseCurrency = Currency.Ruble;
             if (IsLaboratory(securityFirst))
                 account = new AccountTsLab(securityFirst, baseCurrency);
@@ -58,7 +59,8 @@ namespace TradingSystems
             AbsolutCommission absoluteComission;
             TradingSystem ts;
 
-            ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
+            ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst,
+                (PositionSide)((int)positionSide));
             localMoneyManagerRuble.Logger = logger;
             ts.Logger = logger;
             tradingSystems.Add(ts);

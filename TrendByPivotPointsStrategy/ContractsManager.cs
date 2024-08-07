@@ -22,9 +22,9 @@ namespace TradingSystems
             this.currencyConverter = currencyConverter;
         }
 
-        public ContractsManager(RiskManager globalMoneyManager, Account account, List<Security> securities, CurrencyConverter currencyConverter)
+        public ContractsManager(RiskManager riskManager, Account account, List<Security> securities, CurrencyConverter currencyConverter)
         {
-            this.globalMoneyManager = globalMoneyManager;
+            this.globalMoneyManager = riskManager;
             this.account = account;
             var security = securities.First();
             this.currency = security.Currency;

@@ -202,12 +202,7 @@ namespace TradingSystems
         public void Initialize(IContext ctx)
         {
             Ctx = ctx;
-        }
-
-        public override void CheckPositionCloseCase(int barNumber)
-        {
-            throw new NotImplementedException();
-        }                
+        }                        
 
         public override void Initialize()
         {
