@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public class StarterDonchianTradingSystem : Starter
+    public class StarterDonchianTradingSystemTsLab : Starter
     {
         private IContext ctx;
         private double kAtr;
         private double limitOpenedPositions;
 
-        public StarterDonchianTradingSystem(Logger logger)
+        public StarterDonchianTradingSystemTsLab(Logger logger)
         {
             this.logger = logger;            
             SetParameters(systemParameters);
@@ -29,7 +30,7 @@ namespace TradingSystems
         public override void Initialize()
         {
             var securityFirst = securities.First() as ISecurity;
-            //context
+            var context = new ContextTSLab(ctx);            
             var baseCurrency = Currency.Ruble;
             if (IsLaboratory(securityFirst))
                 account = new AccountTsLab(securityFirst, baseCurrency);
@@ -37,7 +38,6 @@ namespace TradingSystems
                 account = new AccountTsLabRt(securityFirst, baseCurrency);
 
             var securityList = new List<Security>();
-
             this.securityFirst = new SecurityTSLab(securityFirst);
             securityList.Add(this.securityFirst);
 
@@ -49,19 +49,22 @@ namespace TradingSystems
             var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);            
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
-            
-            var localMoneyManagerRuble = new ContractsManager(riskManager, account, currency, 
-                currencyConverter, shares);
-            //Остановился здесь.
-            tradingSystems = new List<TradingSystem>();
 
+            //Остановился здесь.
+            //logger в contractsManager
+            var contractsManager = new ContractsManager(riskManager, account, currency, 
+                currencyConverter, shares);
+            
+            tradingSystems = new List<TradingSystem>();
             double totalComission;
             AbsolutCommission absoluteComission;
             TradingSystem ts;
 
+            //И остановился здесь.
+            ts = new TradingSystemDonchian(securities, contractsManager, 
             ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst,
                 (PositionSide)((int)positionSide));
-            localMoneyManagerRuble.Logger = logger;
+            //localMoneyManagerRuble.Logger = logger;
             ts.Logger = logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
@@ -73,8 +76,6 @@ namespace TradingSystems
             securities[0].Commission = CalculateCommission;
 
             account.Logger = logger;
-            this.ctx = ctx;
-            context = ContextTSLab.Create(ctx);
             account.Initialize(securityList);
             logger.SwitchOff();
         }

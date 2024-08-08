@@ -76,7 +76,7 @@
     <Compile Include="Indicators\Indicators.cs" />
     <Compile Include="Indicators\IndicatorsLab.cs" />
     <Compile Include="Indicators\IndicatorsTsLab.cs" />
-    <Compile Include="LabContext.cs" />
+    <Compile Include="ContextLab.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="PositionLab.cs" />
     <Compile Include="RiskManager.cs" />
@@ -125,7 +125,6 @@
     <None Include="TradingSystem\TradingSystemBollingerBands.cs_old" />
     <None Include="TradingSystem\TradingSystemScalperModify.cs_old" />
     <None Include="TradingSystem\TradingSystemScalper.cs_old" />
-    <Compile Include="TsLabContext.cs" />
     <Compile Include="TSLabScriptHelpers\Starter.cs" />
     <None Include="TSLabScriptHelpers\BollingerBandsStarter.cs_old" />
     <None Include="TSLabScriptHelpers\ScalperStarter.cs_old" />
@@ -135,7 +134,7 @@
     <None Include="TSLabScriptHelpers\MainSystemForOptimizationDonchian.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForRealTimeTesting.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForTrading.cs_old" />
-    <Compile Include="TSLabScriptHelpers\StarterDonchianTradingSystem.cs" />
+    <Compile Include="TSLabScriptHelpers\StarterDonchianTradingSystemTsLab.cs" />
     <Compile Include="TSLabScripts\BollingerBandsArbitrageStrategyScript.cs" />
     <Compile Include="TSLabScripts\GlobalCacheManager.cs" />
     <Compile Include="TSLabScripts\GlobalCacheManagerTest.cs" />

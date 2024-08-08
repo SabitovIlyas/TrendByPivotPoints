@@ -30,7 +30,7 @@ namespace TrendByPivotPointsStarter
         {
             var security = new SecurityLab(currency, shares);
             var securities = new List<Security> { security };
-            var context = new LabContext();
+            var context = new ContextLab();
 
             base.Initialize();
 

@@ -1,6 +1,6 @@
 ﻿namespace TradingSystems
 {
-    public class LabContext : Context
+    public class ContextLab : Context
     {
         public bool IsLastBarClosed => throw new System.NotImplementedException();
 

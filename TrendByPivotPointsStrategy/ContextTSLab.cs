@@ -6,14 +6,9 @@ namespace TradingSystems
     {
         private IContext context;
 
-        public bool IsLastBarClosed { get { return context.IsLastBarClosed; } }
+        public bool IsLastBarClosed { get { return context.IsLastBarClosed; } }     
 
-        public static ContextTSLab Create(IContext context)
-        {
-            return new ContextTSLab(context);
-        }      
-
-        private ContextTSLab(IContext context)
+        public ContextTSLab(IContext context)
         {
             this.context = context;
         }
