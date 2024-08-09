@@ -10,19 +10,22 @@ namespace TradingSystems
         Account account;
         RiskManager globalMoneyManager;
         int shares = 1;
-        public Logger Logger { get { return logger; } set { logger = value; } }
-        private Logger logger = new NullLogger();
+        //public Logger Logger { get { return logger; } set { logger = value; } }
+        //private Logger logger = new NullLogger();
+
+        private Logger logger;
         private CurrencyConverter currencyConverter;
 
-        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency, CurrencyConverter currencyConverter)
+        public ContractsManager(RiskManager riskManager, Account account, Currency currency, CurrencyConverter currencyConverter, Logger logger)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
             this.currency = currency;
             this.currencyConverter = currencyConverter;
+            this.logger = logger;
         }
 
-        public ContractsManager(RiskManager riskManager, Account account, List<Security> securities, CurrencyConverter currencyConverter)
+        public ContractsManager(RiskManager riskManager, Account account, List<Security> securities, CurrencyConverter currencyConverter, Logger logger)
         {
             this.globalMoneyManager = riskManager;
             this.account = account;
@@ -31,7 +34,7 @@ namespace TradingSystems
             this.currencyConverter = currencyConverter;
         }
 
-        public ContractsManager(RiskManager globalMoneyManager, Account account, Currency currency, CurrencyConverter currencyConverter, int shares)
+        public ContractsManager(RiskManager riskManager, Account account, Currency currency, CurrencyConverter currencyConverter, int shares, Logger logger)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;

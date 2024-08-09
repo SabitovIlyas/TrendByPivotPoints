@@ -50,17 +50,15 @@ namespace TradingSystems
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
 
-            //Остановился здесь.
-            //logger в contractsManager
             var contractsManager = new ContractsManager(riskManager, account, currency, 
-                currencyConverter, shares);
+                currencyConverter, shares, logger);
             
             tradingSystems = new List<TradingSystem>();
             double totalComission;
             AbsolutCommission absoluteComission;
             TradingSystem ts;
 
-            //И остановился здесь.
+            //Остановился здесь.
             ts = new TradingSystemDonchian(securities, contractsManager, 
             ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst,
                 (PositionSide)((int)positionSide));
