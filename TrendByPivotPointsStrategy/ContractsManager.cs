@@ -18,7 +18,7 @@ namespace TradingSystems
 
         public ContractsManager(RiskManager riskManager, Account account, Currency currency, CurrencyConverter currencyConverter, Logger logger)
         {
-            this.globalMoneyManager = globalMoneyManager;
+            this.globalMoneyManager = riskManager;
             this.account = account;
             this.currency = currency;
             this.currencyConverter = currencyConverter;

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TradingSystems;
-using TSLab.Script;
-using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStarter
 {
@@ -15,7 +11,9 @@ namespace TrendByPivotPointsStarter
 
         private List<double> sma;
 
-        public TradingSystemSMA(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Context context, Logger logger) :
+        public TradingSystemSMA(List<Security> securities, 
+            ContractsManager contractsManager, Indicators indicators, Context context, 
+            Logger logger) :
             base(securities, contractsManager, indicators, context, logger)
         {
             name = "TradingSystemSMA";

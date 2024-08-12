@@ -41,8 +41,10 @@ namespace TradingSystems
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
 
-        public TradingSystemDonchian(List<Security> securities, ContractsManager contractsManager, TradingSystems.Indicators indicators, Logger logger) :
-            base(securities, contractsManager, indicators, logger)
+        public TradingSystemDonchian(List<Security> securities, 
+            ContractsManager contractsManager, Indicators indicators, Context context,
+            Logger logger) :
+            base(securities, contractsManager, indicators, context, logger)
         {   
             var securityTSLab = security as SecurityTSLab;
             sec = securityTSLab.security;            

@@ -51,23 +51,20 @@ namespace TradingSystems
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
 
             var contractsManager = new ContractsManager(riskManager, account, currency, 
-                currencyConverter, shares, logger);
-            
+                currencyConverter, shares, logger);            
+            var indicators = new IndicatorsTsLab();
+
             tradingSystems = new List<TradingSystem>();
-            double totalComission;
-            AbsolutCommission absoluteComission;
-            TradingSystem ts;
+            var tradingSystem = new TradingSystemDonchian(securities, contractsManager, indicators, context,
+                logger);
 
             //Остановился здесь.
-            ts = new TradingSystemDonchian(securities, contractsManager, 
-            ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst,
-                (PositionSide)((int)positionSide));
-            //localMoneyManagerRuble.Logger = logger;
-            ts.Logger = logger;
-            tradingSystems.Add(ts);
-            ts.Initialize(ctx);
-            ts.SetParameters();
+            tradingSystem.Initialize(ctx);
+            tradingSystem.SetParameters();
+            tradingSystems.Add(tradingSystem);
 
+            double totalComission;
+            AbsolutCommission absoluteComission;
             totalComission = comission * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securities[0]);
