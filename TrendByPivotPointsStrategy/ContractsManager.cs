@@ -8,35 +8,37 @@ namespace TradingSystems
     {
         Currency currency;
         Account account;
-        RiskManager globalMoneyManager;
+        RiskManager riskManager;
         int shares = 1;
-        //public Logger Logger { get { return logger; } set { logger = value; } }
-        //private Logger logger = new NullLogger();
 
         private Logger logger;
         private CurrencyConverter currencyConverter;
 
-        public ContractsManager(RiskManager riskManager, Account account, Currency currency, CurrencyConverter currencyConverter, Logger logger)
+        public ContractsManager(RiskManager riskManager, Account account, 
+            Currency currency, CurrencyConverter currencyConverter, Logger logger)
         {
-            this.globalMoneyManager = riskManager;
+            this.riskManager = riskManager;
             this.account = account;
             this.currency = currency;
             this.currencyConverter = currencyConverter;
             this.logger = logger;
         }
 
-        public ContractsManager(RiskManager riskManager, Account account, List<Security> securities, CurrencyConverter currencyConverter, Logger logger)
+        public ContractsManager(RiskManager riskManager, Account account, 
+            List<Security> securities, CurrencyConverter currencyConverter, Logger logger)
         {
-            this.globalMoneyManager = riskManager;
+            this.riskManager = riskManager;
             this.account = account;
             var security = securities.First();
             this.currency = security.Currency;
             this.currencyConverter = currencyConverter;
         }
 
-        public ContractsManager(RiskManager riskManager, Account account, Currency currency, CurrencyConverter currencyConverter, int shares, Logger logger)
+        public ContractsManager(RiskManager riskManager, Account account, 
+            Currency currency, CurrencyConverter currencyConverter, int shares, 
+            Logger logger)
         {
-            this.globalMoneyManager = globalMoneyManager;
+            this.riskManager = riskManager;
             this.account = account;
             this.currency = currency;
             this.shares = shares;
@@ -80,7 +82,7 @@ namespace TradingSystems
             var riskMoney = Math.Abs(entryPrice - stopPrice);
             logger.Log("Рискуем в одном контракте следующей суммой: " + riskMoney);
                         
-            var money = globalMoneyManager.GetMoneyForDeal();
+            var money = riskManager.GetMoneyForDeal();
             var rate = currencyConverter.GetCurrencyRate(currency);            
 
             var logedMoney = money;
@@ -99,7 +101,7 @@ namespace TradingSystems
             
 
             logger.Log("Гарантийное обеспечение равно " + go);
-            var contractsByGO = (int)(globalMoneyManager.FreeBalance / go);
+            var contractsByGO = (int)(riskManager.FreeBalance / go);
             logger.Log("Вариант №2. Количество контрактов открываемой позиции, исходя из ГО и свободных средств (Free Balance) равно " + contractsByGO);
 
             var min = Math.Min(contractsByRiskMoney, contractsByGO);

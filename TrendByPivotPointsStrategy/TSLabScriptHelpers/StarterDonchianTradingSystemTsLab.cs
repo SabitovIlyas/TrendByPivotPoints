@@ -55,11 +55,12 @@ namespace TradingSystems
             var indicators = new IndicatorsTsLab();
 
             tradingSystems = new List<TradingSystem>();
-            var tradingSystem = new TradingSystemDonchian(securities, contractsManager, indicators, context,
-                logger);
+            var tradingSystem = new TradingSystemDonchian(securities, contractsManager,
+                indicators, context, logger);
+
+            tradingSystem.Initialize();
 
             //Остановился здесь.
-            tradingSystem.Initialize(ctx);
             tradingSystem.SetParameters();
             tradingSystems.Add(tradingSystem);
 

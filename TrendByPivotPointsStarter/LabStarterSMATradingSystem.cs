@@ -40,8 +40,8 @@ namespace TrendByPivotPointsStarter
             var baseCurrency = Currency.Ruble;
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
-            var contractsManager = new ContractsManager(riskManager, account, securities,
-                currencyConverter);
+            var contractsManager = new ContractsManager(riskManager, account, currency,
+                currencyConverter, logger);
             var indicators = new IndicatorsTsLab();
 
             tradingSystems = new List<TradingSystem>();
