@@ -33,9 +33,9 @@ namespace TradingSystems
             var context = new ContextTSLab(ctx);            
             var baseCurrency = Currency.Ruble;
             if (IsLaboratory(securityFirst))
-                account = new AccountTsLab(securityFirst, baseCurrency);
+                account = new AccountTsLab(securityFirst, baseCurrency, logger);
             else
-                account = new AccountTsLabRt(securityFirst, baseCurrency);
+                account = new AccountTsLabRt(securityFirst, baseCurrency, logger);
 
             var securityList = new List<Security>();
             this.securityFirst = new SecurityTSLab(securityFirst);
@@ -58,12 +58,10 @@ namespace TradingSystems
             var tradingSystem = new TradingSystemDonchian(securities, contractsManager,
                 indicators, context, logger);
 
-            tradingSystem.Initialize();
-
-            //Остановился здесь.
-            tradingSystem.SetParameters();
+            tradingSystem.Initialize();            
             tradingSystems.Add(tradingSystem);
 
+            //Остановился здесь.
             double totalComission;
             AbsolutCommission absoluteComission;
             totalComission = comission * 2;
@@ -71,7 +69,6 @@ namespace TradingSystems
             absoluteComission.Execute(securities[0]);
             securities[0].Commission = CalculateCommission;
 
-            account.Logger = logger;
             account.Initialize(securityList);
             logger.SwitchOff();
         }

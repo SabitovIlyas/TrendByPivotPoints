@@ -5,11 +5,13 @@ namespace TradingSystems
 {
     public class AccountLab : Account
     {
+        //TODO: Реализовать этот класс. Пока он пустой.
         private double equity;
         Logger logger;
         private double initDeposit;
 
-        public AccountLab(double initDeposit, Logger logger) 
+        public AccountLab(double initDeposit, Security security, Currency baseCurrency,
+            Logger logger) 
         {
             this.initDeposit = initDeposit;
             equity = initDeposit;
@@ -30,6 +32,8 @@ namespace TradingSystems
         public Logger Logger { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public double FreeBalance => throw new System.NotImplementedException();
+
+        public Currency Currency => throw new System.NotImplementedException();
 
         public void Initialize(List<Security> securities)
         {

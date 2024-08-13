@@ -68,11 +68,12 @@ namespace TradingSystems
         private Dictionary<Security, PositionTSLab> lastShortPositionsClosed;
         private Currency currency;
 
-        public AccountTsLab(ISecurity sec, Currency currency)
+        public AccountTsLab(ISecurity sec, Currency currency, Logger logger)
         {
             this.sec = sec;
             equity = sec.InitDeposit;            
             this.currency = currency;
+            this.logger = logger;
         }
 
         public void Initialize(List<Security> securities)

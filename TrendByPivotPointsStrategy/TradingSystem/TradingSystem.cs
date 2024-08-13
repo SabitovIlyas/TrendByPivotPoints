@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
@@ -11,7 +10,6 @@ namespace TradingSystems
 
         protected Logger logger;
         protected PositionSide positionSide;
-        protected SystemParameters systemParameters;
         protected int lastBarNumber;
         protected Security security;
         protected ContractsManager contractsManager;

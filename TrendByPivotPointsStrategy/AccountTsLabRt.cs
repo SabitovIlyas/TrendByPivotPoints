@@ -59,10 +59,11 @@ namespace TradingSystems
                 return 0;
             }
         }
-        public AccountTsLabRt(ISecurity sec, Currency currency)
+        public AccountTsLabRt(ISecurity sec, Currency currency, Logger logger)
         {
             this.sec = sec;
             this.currency = currency;
+            this.logger = logger;
         }
 
         public void Update(int barNumber)
