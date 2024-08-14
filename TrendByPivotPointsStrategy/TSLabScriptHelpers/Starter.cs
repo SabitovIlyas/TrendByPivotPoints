@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TSLab.Script;
-using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {

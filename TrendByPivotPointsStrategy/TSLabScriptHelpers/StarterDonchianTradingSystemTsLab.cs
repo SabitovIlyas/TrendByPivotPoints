@@ -30,12 +30,12 @@ namespace TradingSystems
         public override void Initialize()
         {
             var securityFirst = securities.First() as ISecurity;
-            var context = new ContextTSLab(ctx);            
+            var context = new ContextTSLab(ctx, securityFirst);            
             var baseCurrency = Currency.Ruble;
-            if (IsLaboratory(securityFirst))
-                account = new AccountTsLab(securityFirst, baseCurrency, logger);
-            else
+            if (context.IsRealTimeTrading)
                 account = new AccountTsLabRt(securityFirst, baseCurrency, logger);
+            else
+                account = new AccountTsLab(securityFirst, baseCurrency, logger);
 
             var securityList = new List<Security>();
             this.securityFirst = new SecurityTSLab(securityFirst);
@@ -71,13 +71,7 @@ namespace TradingSystems
 
             account.Initialize(securityList);
             logger.SwitchOff();
-        }
-
-        protected bool IsLaboratory(ISecurity security)
-        {
-            var realTimeSecurity = security as ISecurityRt;
-            return realTimeSecurity == null;
-        }
+        }        
 
         private double CalculateCommission(IPosition pos, double price, double shares, bool isEntry, bool isPart)
         {
@@ -87,37 +81,14 @@ namespace TradingSystems
             var reserve = 0.25 * totalCommission;
 
             return totalCommission + reserve;
-        }
-
-        public override void Run()
-        {
-            foreach (var tradingSystem in tradingSystems)
-                tradingSystem.CalculateIndicators();
-
-            var lastBarNumber = securityFirst.GetBarsCountReal() - 1;
-            if (lastBarNumber < 1)
-                return;
-
-            for (var i = 0; i <= lastBarNumber; i++)
-            {
-                foreach (var tradingSystem in tradingSystems)
-                {
-                    tradingSystem.Update(i);
-                    account.Update(i);
-                }
-            }
-        }
+        }      
 
         public void Paint(IContext ctx, ISecurity sec)
         {
             var firstTradingSystem = tradingSystems.First();
             firstTradingSystem.Paint(context);
         }        
-
-        private bool IsLastBarClosed()
-        {
-            return ctx.IsLastBarClosed;
-        }
+        
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
