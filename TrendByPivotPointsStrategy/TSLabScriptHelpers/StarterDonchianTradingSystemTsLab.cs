@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
     public class StarterDonchianTradingSystemTsLab : Starter
     {
+        //Остановился здесь.
         private IContext ctx;
         private double kAtr;
         private double limitOpenedPositions;
@@ -61,7 +60,6 @@ namespace TradingSystems
             tradingSystem.Initialize();            
             tradingSystems.Add(tradingSystem);
 
-            //Остановился здесь.
             double totalComission;
             AbsolutCommission absoluteComission;
             totalComission = comission * 2;
@@ -84,7 +82,7 @@ namespace TradingSystems
         }      
 
         public void Paint(IContext ctx, ISecurity sec)
-        {
+        {            
             var firstTradingSystem = tradingSystems.First();
             firstTradingSystem.Paint(context);
         }        
