@@ -29,7 +29,7 @@ namespace TrendByPivotPointsStarter
         public override void Initialize()
         {
             var security = new SecurityLab(currency, shares);
-            var securities = new List<Security> { security };
+            securities = new List<Security> { security };
             var context = new ContextLab();
 
             base.Initialize();

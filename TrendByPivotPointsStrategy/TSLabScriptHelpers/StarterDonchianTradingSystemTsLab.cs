@@ -7,29 +7,31 @@ namespace TradingSystems
 {
     public class StarterDonchianTradingSystemTsLab : Starter
     {
-        //Остановился здесь.
-        private IContext ctx;
         private double kAtr;
         private double limitOpenedPositions;
+        Context context;
+        IContext ctx;        
 
-        public StarterDonchianTradingSystemTsLab(Logger logger)
+        public StarterDonchianTradingSystemTsLab(IContext ctx, ISecurity[] securities,
+            Logger logger)
         {
-            this.logger = logger;            
-            SetParameters(systemParameters);
-            Initialize();
+            this.ctx = ctx;
+            this.securities = new List<Security>();
+            foreach (ISecurity security in securities)            
+                this.securities.Add(new SecurityTSLab(security));
+                        
+            this.logger = logger;                   
         }
 
         public override void SetParameters(SystemParameters systemParameters)
-        {
-            kAtr = (double)systemParameters.GetValue("kAtr");
-            limitOpenedPositions = (double)systemParameters.GetValue("limitOpenedPositions");
+        {            
             base.SetParameters(systemParameters);
         }
 
         public override void Initialize()
         {
             var securityFirst = securities.First() as ISecurity;
-            var context = new ContextTSLab(ctx, securityFirst);            
+            context = new ContextTSLab(ctx, securityFirst);            
             var baseCurrency = Currency.Ruble;
             if (context.IsRealTimeTrading)
                 account = new AccountTsLabRt(securityFirst, baseCurrency, logger);
@@ -60,6 +62,7 @@ namespace TradingSystems
             tradingSystem.Initialize();            
             tradingSystems.Add(tradingSystem);
 
+            //Остановился здесь
             double totalComission;
             AbsolutCommission absoluteComission;
             totalComission = comission * 2;
