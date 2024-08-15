@@ -9,9 +9,7 @@ namespace TrendByPivotPointsStarter
         private int sma;
         public LabStarterSMATradingSystem(Logger logger)
         {            
-            this.logger = logger;            
-            SetParameters();
-            Initialize();
+            this.logger = logger;                        
         }
 
         public void SetParameters()

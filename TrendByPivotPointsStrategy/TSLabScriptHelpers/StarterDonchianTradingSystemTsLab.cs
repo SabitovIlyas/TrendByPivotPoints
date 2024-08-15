@@ -62,14 +62,14 @@ namespace TradingSystems
             tradingSystem.Initialize();            
             tradingSystems.Add(tradingSystem);
 
-            //Остановился здесь
             double totalComission;
             AbsolutCommission absoluteComission;
             totalComission = comission * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[0]);
-            securities[0].Commission = CalculateCommission;
+            absoluteComission.Execute(securityFirst);
+            securityFirst.Commission = CalculateCommission;
 
+            //Остановился здесь
             account.Initialize(securityList);
             logger.SwitchOff();
         }        
@@ -84,20 +84,10 @@ namespace TradingSystems
             return totalCommission + reserve;
         }      
 
-        public void Paint(IContext ctx, ISecurity sec)
+        public override void Paint()
         {            
             var firstTradingSystem = tradingSystems.First();
             firstTradingSystem.Paint(context);
-        }        
-        
-        private bool IsRealTimeTrading()
-        {
-            return securityFirst.IsRealTimeTrading;
-        }        
-
-        public override void Paint()
-        {
-            throw new System.NotImplementedException();
-        }
+        }              
     }
 }
