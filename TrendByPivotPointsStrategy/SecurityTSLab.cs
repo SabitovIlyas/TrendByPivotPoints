@@ -317,6 +317,10 @@ namespace TradingSystems
         public Currency Currency { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public double GObying => throw new NotImplementedException();
+
+        public double GOselling => throw new NotImplementedException();
+
         public Bar GetBar(int barNumber)
         {
             if (IsBarNumberCorrect(barNumber))

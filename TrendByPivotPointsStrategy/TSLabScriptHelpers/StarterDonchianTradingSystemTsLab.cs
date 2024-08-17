@@ -68,10 +68,6 @@ namespace TradingSystems
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
             absoluteComission.Execute(securityFirst);
             securityFirst.Commission = CalculateCommission;
-
-            //Остановился здесь
-            account.Initialize(securityList);
-            logger.SwitchOff();
         }        
 
         private double CalculateCommission(IPosition pos, double price, double shares, bool isEntry, bool isPart)

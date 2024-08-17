@@ -35,7 +35,11 @@ namespace TradingSystems
         public string Name => throw new NotImplementedException();
 
         public int RealTimeActualBarNumber => throw new NotImplementedException();
- 
+
+        public double GObying => throw new NotImplementedException();
+
+        public double GOselling => throw new NotImplementedException();
+
         public Bar GetBar(int barNumer)
         {
             throw new NotImplementedException();
