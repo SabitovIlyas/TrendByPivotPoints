@@ -7,8 +7,6 @@ namespace TradingSystems
         public double EntryPrice { get; }
         public double Profit { get; }
         public int BarNumber { get; }
-        public Security Security { get; }
-
         public string SignalNameForOpenPosition { get { return position.EntrySignalName; }}
         public string SignalNameForClosePosition { get { return position.ExitSignalName; }}        
 
@@ -16,8 +14,11 @@ namespace TradingSystems
 
         public PositionTSLab(IPosition position)
         {
-            EntryPrice = position.EntryPrice;
             this.position = position;
+            EntryPrice = position.EntryPrice;
+            BarNumber = position.EntryBarNum;
+            Profit = position.Profit();
+            
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)

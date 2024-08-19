@@ -5,7 +5,6 @@
         int BarNumber { get; }
         double EntryPrice { get; }
         double Profit { get; }
-        Security Security { get; }
         string SignalNameForOpenPosition { get; }
         string SignalNameForClosePosition { get; }
 

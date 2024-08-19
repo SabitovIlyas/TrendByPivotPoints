@@ -210,5 +210,10 @@ namespace TradingSystems
         {
             base.Initialize();
         }
+
+        public override void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
