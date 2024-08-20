@@ -147,7 +147,7 @@ namespace TrendByPivotPointsStarter
                 stopPrice = GetStopPrice(notes);
 
                 Log("Определяем количество контрактов...");
-                var contracts = localMoneyManager.GetQntContracts(highest[barNumber], stopPrice, positionSide);
+                var contracts = localMoneyManager.GetQntContracts(security, highest[barNumber], stopPrice, positionSide);
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)

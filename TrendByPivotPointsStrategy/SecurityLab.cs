@@ -18,6 +18,15 @@ namespace TradingSystems
             this.shares = shares;
         }
 
+        public SecurityLab(Currency currency, int shares, 
+            double GObuying, double GOselling)
+        {
+            this.currency = currency;
+            this.shares = shares;
+            this.GObuying = GObuying;
+            this.GOselling= GOselling;
+        }
+
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public double? SellDeposit => 4500;
@@ -36,9 +45,9 @@ namespace TradingSystems
 
         public int RealTimeActualBarNumber => throw new NotImplementedException();
 
-        public double GObying => throw new NotImplementedException();
+        public double GObuying { get; private set; }
 
-        public double GOselling => throw new NotImplementedException();
+        public double GOselling { get; private set; }
 
         public Bar GetBar(int barNumer)
         {

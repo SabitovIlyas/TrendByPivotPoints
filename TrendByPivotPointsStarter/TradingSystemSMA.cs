@@ -57,7 +57,7 @@ namespace TrendByPivotPointsStarter
                 entryPricePlanned = sma[barNumber];
 
                 Log("Определяем количество контрактов...");
-                var contracts = contractsManager.GetQntContracts(entryPricePlanned, stopPrice, positionSide);
+                var contracts = contractsManager.GetQntContracts(security, entryPricePlanned, stopPrice, positionSide);
                 BuyIfGreater(contracts, notes);
                 Log("Отправляем ордер.", converter.Long);
             }

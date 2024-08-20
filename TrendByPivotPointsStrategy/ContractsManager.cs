@@ -45,15 +45,15 @@ namespace TradingSystems
             this.currencyConverter = currencyConverter;
         }
 
-        public virtual int GetQntContracts(double entryPrice, double stopPrice, PositionSide position)
+        public virtual int GetQntContracts(Security security, double entryPrice, double stopPrice, PositionSide positionSide)
         {            
             logger.Log("Получаем количество контрактов для открываемой позиции...");
             var message = string.Format("Направление открываемой позиции: {0}; предполагаемая цена входа: {1}; расчётная цена выхода: {2}.",
-                position, entryPrice, stopPrice);
+                positionSide, entryPrice, stopPrice);
             logger.Log(message);
 
             var go = 0.0;
-            switch (position)
+            switch (positionSide)
             {
                 case PositionSide.Long:
                     {
@@ -61,10 +61,8 @@ namespace TradingSystems
                         {
                             logger.Log("Расчётная цена выхода больше либо равна цене входа. Сделку открывать не будем. Количество контрактов равно 0.");
                             return 0;
-                        }
-                        //Остановился здесь
-                        go = account.GObying;
-                        
+                        }                        
+                        go = security.GObuying;                        
                     }
                     break;
                 case PositionSide.Short:
@@ -74,7 +72,7 @@ namespace TradingSystems
                             logger.Log("Расчётная цена выхода меньше либо равна цене входа. Сделку открывать не будем. Количество контрактов равно 0.");
                             return 0; 
                         }
-                        go = account.GOselling;
+                        go = security.GOselling;
                     }
                     break;                
             }

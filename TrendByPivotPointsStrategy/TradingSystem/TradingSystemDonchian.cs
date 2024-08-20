@@ -93,7 +93,7 @@ namespace TradingSystems
                 stopPrice = GetStopPrice(notes);
 
                 Log("Определяем количество контрактов...");
-                var contracts = localMoneyManager.GetQntContracts(highest[barNumber], stopPrice, positionSide);
+                var contracts = localMoneyManager.GetQntContracts(security, highest[barNumber], stopPrice, positionSide);
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)
@@ -146,11 +146,11 @@ namespace TradingSystems
 
         public void SetParameters(SystemParameters systemParameters)
         {
-            slowDonchian = systemParameters.GetInt("slowDonchian");
-            fastDonchian = systemParameters.GetInt("fastDonchian");
-            kAtrForStopLoss = systemParameters.GetDouble("kAtr");
-            atrPeriod = systemParameters.GetInt("atrPeriod");
-            limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");
+            slowDonchian = (int)systemParameters.GetValue("slowDonchian");
+            fastDonchian = (int)systemParameters.GetValue("fastDonchian");
+            kAtrForStopLoss = (double)systemParameters.GetValue("kAtr");
+            atrPeriod = (int)systemParameters.GetValue("atrPeriod");
+            limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
 
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);

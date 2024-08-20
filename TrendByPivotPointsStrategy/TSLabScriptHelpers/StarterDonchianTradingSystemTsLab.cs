@@ -34,9 +34,9 @@ namespace TradingSystems
             context = new ContextTSLab(ctx, securityFirst);            
             var baseCurrency = Currency.Ruble;
             if (context.IsRealTimeTrading)
-                account = new AccountTsLabRt(securityFirst, baseCurrency, logger);
+                account = new AccountTsLabRt(securities, baseCurrency, logger);
             else
-                account = new AccountTsLab(securityFirst, baseCurrency, logger);
+                account = new AccountTsLab(securities, baseCurrency, logger);
 
             var securityList = new List<Security>();
             this.securityFirst = new SecurityTSLab(securityFirst);

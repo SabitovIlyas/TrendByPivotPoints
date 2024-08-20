@@ -9,7 +9,7 @@ namespace TradingSystems
     public interface Security
     {
         Currency Currency { get; set; }
-        double GObying { get; }
+        double GObuying { get; }
         double GOselling { get; }
         int Shares { get; set; }
         double? SellDeposit { get; }

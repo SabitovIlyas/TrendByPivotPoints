@@ -19,7 +19,8 @@ namespace TrendByPivotPoints.Tests
         {
             account = new AccountFake();
             account.Equity = 1000.0;
-            globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 5.00); ;
+            var logger = new NullLogger();
+            globalMoneyManager = new RiskManagerReal(account, logger, riskValuePrcnt: 5.00); ;
         }
 
         [TestMethod()]

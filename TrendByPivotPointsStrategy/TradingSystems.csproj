@@ -105,9 +105,9 @@
     <Compile Include="StopLoss\IStopLoss.cs" />
     <Compile Include="StopLoss\StopLoss.cs" />
     <Compile Include="StopLoss\StopLossExtremums.cs" />
-    <Compile Include="StopLoss\StopLossTrail.cs" />
-    <Compile Include="StopLoss\StopLossTrailPivotPoints.cs" />
-    <Compile Include="StopLoss\StopLossTrailPivotPointsEMA.cs" />
+    <None Include="StopLoss\StopLossTrail.cs_old" />
+    <None Include="StopLoss\StopLossTrailPivotPoints.cs_old" />
+    <None Include="StopLoss\StopLossTrailPivotPointsEMA.cs_old" />
     <Compile Include="SystemParameters.cs" />
     <Compile Include="TradingPatterns\PatternPivotPoints.cs" />
     <Compile Include="TradingPatterns\PatternPivotPoints_1g2.cs" />
@@ -128,7 +128,7 @@
     <Compile Include="TSLabScriptHelpers\Starter.cs" />
     <None Include="TSLabScriptHelpers\BollingerBandsStarter.cs_old" />
     <None Include="TSLabScriptHelpers\ScalperStarter.cs_old" />
-    <Compile Include="TSLabScriptHelpers\PivotPointsStarter.cs" />
+    <None Include="TSLabScriptHelpers\PivotPointsStarter.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForOptimization.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForOptimization2.cs_old" />
     <None Include="TSLabScriptHelpers\MainSystemForOptimizationDonchian.cs_old" />
@@ -138,11 +138,11 @@
     <None Include="TSLabScripts\BollingerBandsArbitrageStrategyScript.cs_old" />
     <Compile Include="TSLabScripts\GlobalCacheManager.cs" />
     <Compile Include="TSLabScripts\GlobalCacheManagerTest.cs" />
-    <Compile Include="TSLabScripts\ScriptScalperStrategy.cs" />
+    <None Include="TSLabScripts\ScriptScalperStrategy.cs_old" />
     <Compile Include="TSLabScripts\ScriptTrendByDonchian.cs" />
-    <Compile Include="TSLabScripts\ScriptTrendByPivotPoints.cs" />
-    <Compile Include="TSLabScripts\ScriptTrendByPivotPoints1.cs" />
-    <Compile Include="TSLabScripts\ScriptTrendByPivotPoints2.cs" />
+    <None Include="TSLabScripts\ScriptTrendByPivotPoints.cs_old" />
+    <None Include="TSLabScripts\ScriptTrendByPivotPoints1.cs_old" />
+    <None Include="TSLabScripts\ScriptTrendByPivotPoints2.cs_old" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -29,13 +29,14 @@ namespace TrendByPivotPointsStarter
             var security = new SecurityLab(currency, shares);
             securities = new List<Security> { security };
             var context = new ContextLab();
+            var baseCurrency = Currency.Ruble;
 
             base.Initialize();
 
-            var account = new AccountLab(initDeposit: 1000000, logger);
+            var account = new AccountLab(initDeposit: 1000000, security, baseCurrency,
+                logger);
             var riskManager = new RiskManagerReal(account, logger);
 
-            var baseCurrency = Currency.Ruble;
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
             var contractsManager = new ContractsManager(riskManager, account, currency,

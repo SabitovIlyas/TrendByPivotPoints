@@ -5,17 +5,17 @@ namespace TradingSystems
     public abstract class Account
     {
         double InitDeposit { get; }
-        double Equity { get; }
+        public double Equity { get; }
         Currency Currency { get; }
         Logger Logger { get; set; }
-        double FreeBalance { get; }
+        public double FreeBalance { get; }
         protected Logger logger;
         protected double equity;
         protected List<Security> securities;
         protected Dictionary<Security, PositionTSLab> lastLongPositionsClosed = new Dictionary<Security, PositionTSLab>();
         protected Dictionary<Security, PositionTSLab> lastShortPositionsClosed = new Dictionary<Security, PositionTSLab>();        
 
-        void Update(int barNumber)
+        public void Update(int barNumber)
         {
             foreach (var security in securities)
             {

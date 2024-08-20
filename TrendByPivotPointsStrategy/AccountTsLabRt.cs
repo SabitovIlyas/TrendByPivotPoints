@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Realtime;
 
@@ -59,9 +60,12 @@ namespace TradingSystems
                 return 0;
             }
         }
-        public AccountTsLabRt(ISecurity sec, Currency currency, Logger logger)
+        public AccountTsLabRt(List<Security> securities, Currency currency, Logger logger)
         {
-            this.sec = sec;
+            this.securities = securities;
+            var securityFirst = securities.First();
+            var security = securityFirst as SecurityTSLab;
+            sec = security.security;
             this.currency = currency;
             this.logger = logger;
         }

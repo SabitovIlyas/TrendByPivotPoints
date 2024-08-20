@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
 namespace TrendByPivotPoints.Tests
 {
@@ -12,13 +13,17 @@ namespace TrendByPivotPoints.Tests
     public class LocalMoneyManagerTests
     {
         AccountFake account;
-        ContractsManager localMoneyManager;
-        RiskManagerReal globalMoneyManager;
+        ContractsManager contractsManager;
+        RiskManagerReal riskManager;
+        TradingSystems.Logger logger = new NullLogger();
         
         [TestInitialize]
         public void TestInitialize()
         {
-            account = new AccountFake();            
+            account = new AccountFake();
+
+            //Остановился здесь
+            var security = new SecurityLab();
             account.GObying = 4500;
             account.GOselling = 4000;
             account.Rate = 50;
@@ -26,8 +31,9 @@ namespace TrendByPivotPoints.Tests
             var estimatedBalance = 1000000;
             account.Equity = estimatedBalance;
             account.FreeBalance = currencyBalance;
-            //account.InitDeposit = estimatedBalance;                  
-            globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: 5);            
+            //account.InitDeposit = estimatedBalance;
+            
+            riskManager = new RiskManagerReal(account, logger, riskValuePrcnt: 5);
             //globalMoneyManager.Money = 50000;
         }
 
@@ -42,12 +48,13 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 69000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+            var currencyConverter = new CurrencyConverter(currency);
 
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             var expected = 11;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -60,12 +67,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 60000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 5;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -78,12 +87,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 71000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);            
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -96,12 +107,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 80000;
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -117,12 +130,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 69000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -135,12 +150,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 60000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -153,12 +170,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 71000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 12;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -171,12 +190,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 80000;
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 5;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -196,12 +217,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1090;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 11;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -214,12 +237,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1000;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 10;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -232,12 +257,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1110;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -250,12 +277,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1200;
             var position = PositionSide.Long;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -271,12 +300,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1090;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -289,12 +320,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1000;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -307,12 +340,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1110;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 12;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -325,12 +360,14 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 1200;
             var position = PositionSide.Short;
             var currency = Currency.USD;
-            localMoneyManager = new ContractsManager(globalMoneyManager, account, currency);
+
+            var currencyConverter = new CurrencyConverter(currency);
+            contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 10;
 
             //act
-            var actual = localMoneyManager.GetQntContracts(enterPrice, stopPrice, position);
+            var actual = contractsManager.GetQntContracts(security, enterPrice, stopPrice, position);
             //assert
             Assert.AreEqual(expected, actual);
         }
