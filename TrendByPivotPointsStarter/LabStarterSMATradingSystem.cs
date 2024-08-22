@@ -33,8 +33,7 @@ namespace TrendByPivotPointsStarter
 
             base.Initialize();
 
-            var account = new AccountLab(initDeposit: 1000000, security, baseCurrency,
-                logger);
+            var account = new AccountLab(initDeposit: 1000000, baseCurrency: baseCurrency, logger: logger);
             var riskManager = new RiskManagerReal(account, logger);
 
             var currencyConverter = new CurrencyConverter(baseCurrency);

@@ -11,16 +11,17 @@ namespace TrendByPivotPoints.Tests
     [TestClass()]
     public class GlobalMoneyManagerTests
     {
-        AccountFake account;
-        RiskManagerReal globalMoneyManager;
+        //AccountFake account;
+        Account account;
+        RiskManagerReal riskManagerReal;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            account = new AccountFake();
-            account.Equity = 1000.0;
-            var logger = new NullLogger();
-            globalMoneyManager = new RiskManagerReal(account, logger, riskValuePrcnt: 5.00); ;
+            var logger = new NullLogger();            
+            var security = new SecurityLab(currency: Currency.Ruble, shares: 1);
+            account = new AccountFake(initDeposit: 1000.0, baseCurrency: Currency.Ruble, logger: logger);            
+            riskManagerReal = new RiskManagerReal(account, logger, riskValuePrcnt: 5.00); ;
         }
 
         [TestMethod()]
@@ -28,10 +29,10 @@ namespace TrendByPivotPoints.Tests
         {
             //arrange            
             var expected = 50;
-            account.FreeBalance = 100;
+            ((AccountFake)account).FreeBalance = 100;
 
             //act
-            var actual = globalMoneyManager.GetMoneyForDeal();
+            var actual = riskManagerReal.GetMoneyForDeal();
             //assert
             Assert.AreEqual(expected, actual);
         }
@@ -41,61 +42,61 @@ namespace TrendByPivotPoints.Tests
         //{
         //    //arrange            
         //    var expected = 25;
-        //    account.FreeBalance = 25;
+        //    ((AccountFake)account).FreeBalance = 25;
 
         //    //act
-        //    var actual = globalMoneyManager.GetMoneyForDeal();
+        //    var actual = riskManagerReal.GetMoneyForDeal();
         //    //assert
         //    Assert.AreEqual(expected, actual);
         //}
 
-    //    [TestMethod()]
-    //    public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance25_returned25_1()
-    //    {
-    //        //arrange      
+        //    [TestMethod()]
+        //    public void GetMoneyTest_deposit1000_riskValuePrcnt5_freeBalance25_returned25_1()
+        //    {
+        //        //arrange      
 
-    //        var startDeposit = 1000d;
-    //        var stopDeposit = 1100d;
+        //        var startDeposit = 1000d;
+        //        var stopDeposit = 1100d;
 
-    //        var profit = stopDeposit - startDeposit;
+        //        var profit = stopDeposit - startDeposit;
 
-    //        if (profit >= 0)
-    //            startDeposit = startDeposit + 0.5 * profit;
-    //        else
-    //            startDeposit = stopDeposit;
+        //        if (profit >= 0)
+        //            startDeposit = startDeposit + 0.5 * profit;
+        //        else
+        //            startDeposit = stopDeposit;
 
 
-    //        var expected = 25;
-    //        account.FreeBalance = 25;
+        //        var expected = 25;
+        //        account.FreeBalance = 25;
 
-    //        //act
-    //        var actual = globalMoneyManager.GetMoneyForDeal();
-    //        //assert
-    //        Assert.AreEqual(expected, actual);
-    //    }
+        //        //act
+        //        var actual = globalMoneyManager.GetMoneyForDeal();
+        //        //assert
+        //        Assert.AreEqual(expected, actual);
+        //    }
 
-    //    public void UpdateDeposit(DateTime currentDate, double currentBalance)
-    //    {
-    //        var odlDate = deposit.dateTime;
-    //        if (currentDate.Month != odlDate.Month)
-    //        {
-    //            var profit = currentBalance - deposit.balance;
+        //    public void UpdateDeposit(DateTime currentDate, double currentBalance)
+        //    {
+        //        var odlDate = deposit.dateTime;
+        //        if (currentDate.Month != odlDate.Month)
+        //        {
+        //            var profit = currentBalance - deposit.balance;
 
-    //            if (profit >= 0)
-    //                deposit.balance = deposit.balance + 0.5 * profit;
-    //            else
-    //                deposit.balance = currentBalance;             
+        //            if (profit >= 0)
+        //                deposit.balance = deposit.balance + 0.5 * profit;
+        //            else
+        //                deposit.balance = currentBalance;             
 
-    //            deposit.dateTime = currentDate;
-    //        }
-    //    }
+        //            deposit.dateTime = currentDate;
+        //        }
+        //    }
 
-    //    public void InitializeDeposit()
-    //    {
-    //        deposit = new Deposit();
-    //    }
+        //    public void InitializeDeposit()
+        //    {
+        //        deposit = new Deposit();
+        //    }
 
-    //    Deposit deposit ;        
+        //    Deposit deposit ;        
     }
 
     //public class Deposit

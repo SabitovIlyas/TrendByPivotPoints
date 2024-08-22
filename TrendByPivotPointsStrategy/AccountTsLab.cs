@@ -6,10 +6,8 @@ namespace TradingSystems
 {
     public class AccountTsLab : Account
     {
-
         public Logger Logger { get; set; } = new NullLogger();
-
-        public double InitDeposit
+        public override double InitDeposit
         {
             get
             {
@@ -19,7 +17,7 @@ namespace TradingSystems
             }
         }
 
-        public double Equity
+        public override double Equity
         {
             get
             {
@@ -29,15 +27,8 @@ namespace TradingSystems
             }
         }        
 
-        public double GObying => 0.45;
-
-        public double GOselling => 0.40;
-
         public ISecurity Security { get; set; }
-
-        public double FreeBalance => Equity;
-
-        public Currency Currency => currency;
+        public override double FreeBalance => Equity;
         private Currency currency;
 
         public AccountTsLab(List<Security> securities, Currency currency, 

@@ -19,9 +19,9 @@ namespace TradingSystems
         ISecurity sec;
         Currency currency;
 
-        public double InitDeposit => sec.InitDeposit;
+        public override double InitDeposit => sec.InitDeposit;
 
-        public double Equity 
+        public override double Equity 
         {
             get
             {
@@ -50,7 +50,7 @@ namespace TradingSystems
             }
         }
 
-        public double FreeBalance
+        public override double FreeBalance
         {
             get
             {

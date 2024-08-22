@@ -6,10 +6,18 @@ using TSLab.Script;
 
 namespace TradingSystems
 {
-    public class AccountFake : Account
+    public class AccountFake : AccountLab
     {
-        public double InitDeposit { get; set; }
-        public double Equity { get; set; }
+     
+        public new double FreeBalance { get { return base.FreeBalance; } set { freeBalance = value; } }
+        public override double InitDeposit => base.InitDeposit;
+        public override double Equity => base.Equity;
+        public AccountFake(double initDeposit, Currency baseCurrency, Logger logger) : base(initDeposit, baseCurrency, logger)
+        {
+        }
+
+        
+
         public double GObying { get; set; }
         public double GOselling { get; set; }
         public double Rate { get; set; }
@@ -17,7 +25,7 @@ namespace TradingSystems
         public ISecurity Security { get; set; }
         public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public double FreeBalance { get; set; }
+
 
         public void Initialize(List<Security> securities)
         {

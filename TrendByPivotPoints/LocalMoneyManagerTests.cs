@@ -1,11 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TradingSystems;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
 namespace TrendByPivotPoints.Tests
 {
@@ -22,21 +16,18 @@ namespace TrendByPivotPoints.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            account = new AccountFake();
+            var currencyBalance = 50000;
+            var estimatedBalance = 1000000;
+            var security = new SecurityLab(currency: Currency.Ruble, shares: 1);
+            account = new AccountFake(initDeposit: estimatedBalance, baseCurrency: Currency.Ruble, logger: logger);
 
-            //Остановился здесь
             currencyConverter = new CurrencyConverter(baseCurrency);
             account.GObying = 4500;
             account.GOselling = 4000;
             currencyConverter.AddCurrencyRate(Currency.USD, rate: 50);
-            var currencyBalance = 50000;
-            var estimatedBalance = 1000000;
-            account.Equity = estimatedBalance;
-            account.FreeBalance = currencyBalance;
-            //account.InitDeposit = estimatedBalance;
-            
+           
+            account.FreeBalance = currencyBalance;            
             riskManager = new RiskManagerReal(account, logger, riskValuePrcnt: 5);
-            //globalMoneyManager.Money = 50000;
         }
 
         #region Testing Ruble

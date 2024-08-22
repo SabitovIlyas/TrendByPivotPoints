@@ -6,20 +6,19 @@ namespace TradingSystems
     public class AccountLab : Account
     {
         //TODO: Реализовать этот класс. Пока он пустой.
-        private double equity;
-        Logger logger;
-        private double initDeposit;
+        public override double InitDeposit => initDeposit;
+        public override double Equity => equity;
+        public override double FreeBalance => freeBalance;
 
-        public AccountLab(double initDeposit, Security security, Currency baseCurrency,
-            Logger logger) 
+        private double initDeposit;
+        protected double freeBalance;
+
+        public AccountLab(double initDeposit, Currency baseCurrency, Logger logger)
         {
             this.initDeposit = initDeposit;
             equity = initDeposit;
-        }
-
-        public double InitDeposit => throw new System.NotImplementedException();
-
-        public double Equity => throw new System.NotImplementedException();
+            freeBalance = initDeposit;
+        }        
 
         public double GObying => throw new System.NotImplementedException();
 
@@ -31,16 +30,9 @@ namespace TradingSystems
 
         public Logger Logger { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
-        public double FreeBalance => throw new System.NotImplementedException();
-
         public Currency Currency => throw new System.NotImplementedException();
 
         public void Initialize(List<Security> securities)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Update(int barNumber)
         {
             throw new System.NotImplementedException();
         }
