@@ -84,10 +84,10 @@ namespace TradingSystems
             var money = riskManager.GetMoneyForDeal();
             var rate = currencyConverter.GetCurrencyRate(currency);            
 
-            var logedMoney = money;
+            var loggedMoney = money;
             money = money / rate;
             message = string.Format("В инструменте используется валюта {0}. Полученную на сделку сумму в размере {1} нужно скорректировать " +
-                    "с учётом курса: {2}. Полученная сумма на сделку в валюте равна {3}.", currency, logedMoney, rate, money);
+                    "с учётом курса: {2}. Полученная сумма на сделку в валюте равна {3}.", currency, loggedMoney, rate, money);
             logger.Log(message);
 
             var contractsByRiskMoney = (int)(money / riskMoney);            

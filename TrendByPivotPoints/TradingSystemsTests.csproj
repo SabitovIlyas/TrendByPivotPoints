@@ -76,7 +76,7 @@
     <Compile Include="ConverterTests.cs" />
     <Compile Include="DataBarFake.cs" />
     <Compile Include="DataBarsForTesting.cs" />
-    <Compile Include="GlobalMoneyManagerTests.cs" />
+    <Compile Include="RiskManagerRealTests.cs" />
     <Compile Include="LocalMoneyManagerTests.cs" />
     <Compile Include="PatternPivotPoints_1g2Tests.cs" />
     <Compile Include="PatternPivotPoints_1l2g3Tests.cs" />
