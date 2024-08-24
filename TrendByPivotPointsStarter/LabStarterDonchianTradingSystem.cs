@@ -28,7 +28,7 @@ namespace TrendByPivotPointsStarter
                 var positionSide = (int)systemParameters.GetValue("positionSide");                
                 rateUSD = (double)systemParameters.GetValue("rateUSD");
                 kAtr = (double)systemParameters.GetValue("kAtr");
-                limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPosition");
+                limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
 
                 if (positionSide == 0)
                     base.positionSide = PositionSide.Long;

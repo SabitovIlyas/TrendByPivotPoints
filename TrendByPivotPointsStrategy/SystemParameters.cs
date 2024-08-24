@@ -10,7 +10,7 @@ namespace TradingSystems
         public void Add(string key, object value)
         {
             if (!parameters.ContainsKey(key))
-                parameters.Add(key, (OptimProperty)value);
+                parameters.Add(key, value);
         }
 
         public object GetValue(string key)

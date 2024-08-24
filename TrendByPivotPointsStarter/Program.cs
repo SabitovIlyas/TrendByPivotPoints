@@ -34,11 +34,11 @@ namespace TrendByPivotPointsStarter
 
             systemParameters.Add("slowDonchian", 50);
             systemParameters.Add("fastDonchian", 20);
-            systemParameters.Add("kAtr", 2);
+            systemParameters.Add("kAtr", 2d);
             systemParameters.Add("atrPeriod", 20);
 
             systemParameters.Add("limitOpenedPositions", 4);
-            systemParameters.Add("rateUSD", 100);
+            systemParameters.Add("rateUSD", 100d);
             systemParameters.Add("positionSide", 0);
 
             return systemParameters;
