@@ -21,6 +21,7 @@ namespace TradingSystems
         protected SystemParameters systemParameters;
         protected List<Security> securities;
         protected Security securityFirst;
+        protected Context context;
 
         public Logger Logger { get { return logger; } set { logger = value; } }
 
@@ -28,8 +29,8 @@ namespace TradingSystems
         {
             securityFirst = securities.First();
         }
-        
-        public abstract void Paint();
+
+        public virtual void Paint() { }
         public void Run()
         {
             var lastBarNumber = securityFirst.GetBarsCountReal() - 1;

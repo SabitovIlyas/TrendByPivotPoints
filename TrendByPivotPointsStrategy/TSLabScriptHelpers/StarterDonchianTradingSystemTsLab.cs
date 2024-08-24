@@ -9,7 +9,6 @@ namespace TradingSystems
     {
         private double kAtr;
         private double limitOpenedPositions;
-        Context context;
         IContext ctx;        
 
         public StarterDonchianTradingSystemTsLab(IContext ctx, ISecurity[] securities,
