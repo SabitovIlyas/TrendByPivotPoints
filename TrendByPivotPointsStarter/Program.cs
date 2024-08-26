@@ -26,6 +26,7 @@ namespace TrendByPivotPointsStarter
             {
                 logger.Log(e.ToString());
             }
+            Console.ReadLine();
         }
 
         private static SystemParameters GetSystemParameters()

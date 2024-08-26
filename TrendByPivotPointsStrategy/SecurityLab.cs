@@ -96,7 +96,8 @@ namespace TradingSystems
 
         public int GetBarsCountReal()
         {
-            //Нахожусь здесь
+            //Нахожусь здесь. Баров-то нет...
+            //Security
             throw new System.NotImplementedException();
         }
 
