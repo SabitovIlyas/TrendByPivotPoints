@@ -98,6 +98,8 @@ namespace TradingSystems
         {
             //Нахожусь здесь. Баров-то нет...
             //Security
+            //var converter = ConverterTextDataToBar.Create("");
+            //var barsBase = converter.ConvertFileWithBarsToListOfBars();
             throw new System.NotImplementedException();
         }
 
