@@ -96,10 +96,7 @@ namespace TradingSystems
 
         public int GetBarsCountReal()
         {
-            //Нахожусь здесь. Баров-то нет...
-            //Security
-            //var converter = ConverterTextDataToBar.Create("");
-            //var barsBase = converter.ConvertFileWithBarsToListOfBars();
+            //Баров-то нет...            
             throw new System.NotImplementedException();
         }
 

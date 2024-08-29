@@ -1,5 +1,7 @@
-﻿using System;
+﻿using PeparatorDataForSpreadTradingSystems;
+using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using TradingSystems;
 
 namespace TrendByPivotPointsStarter
@@ -7,7 +9,20 @@ namespace TrendByPivotPointsStarter
     class Program
     {
         static void Main(string[] args)
-        {            
+        {
+            Console.WriteLine("Старт!");
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();            
+            openFileDialog.Title = "Выберите файлы с историческими данными";
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            var fullFileName = openFileDialog.FileName;
+            var converter = ConverterTextDataToBar.Create(fullFileName);
+            var barsBase = converter.ConvertFileWithBarsToListOfBars();
+
+            //Нахожусь здесь
+
             var logger = new ConsoleLogger();            
 
             try
@@ -15,6 +30,7 @@ namespace TrendByPivotPointsStarter
                 var context = new ContextLab();
                 var security = new SecurityLab(Currency.USD, shares: 10,
                     5000, 4500);
+
                 var securities = new List<Security>() { security };
                 var system = new LabStarterDonchianTradingSystem(context, securities, logger);
                 var systemParameters = GetSystemParameters();
