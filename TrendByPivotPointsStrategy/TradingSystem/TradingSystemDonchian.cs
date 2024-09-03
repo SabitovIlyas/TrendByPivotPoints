@@ -44,10 +44,7 @@ namespace TradingSystems
             ContractsManager contractsManager, Indicators indicators, Context context,
             Logger logger) :
             base(securities, contractsManager, indicators, context, logger)
-        {   
-            //var securityTSLab = security as SecurityTSLab;            
-            //sec = securityTSLab.security;            
-            //secCompressed = sec.CompressTo(Interval.D1);            
+        {            
         }                               
 
         private void BuyIfGreater(double price, int contracts, string notes)

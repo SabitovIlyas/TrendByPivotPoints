@@ -13,6 +13,14 @@ namespace TradingSystems
         private double initDeposit;
         protected double freeBalance;
 
+        public AccountLab(double initDeposit, Currency currency, Logger logger)
+        {
+            this.initDeposit = initDeposit;
+            equity = initDeposit;
+            freeBalance = initDeposit;
+            this.currency = currency;            
+            this.logger = logger;
+        }
         public AccountLab(double initDeposit, Currency currency, List<Security> securities, Logger logger)
         {
             this.initDeposit = initDeposit;
