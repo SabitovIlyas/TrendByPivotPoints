@@ -321,6 +321,12 @@ namespace TradingSystems
 
         public double GOselling => throw new NotImplementedException();
 
+        public List<double> HighPrices => (List<double>)security.HighPrices;
+
+        public List<double> LowPrices => (List<double>)security.LowPrices;
+
+        public List<Bar> Bars => (List<Bar>)security.Bars;    
+
         public Bar GetBar(int barNumber)
         {
             if (IsBarNumberCorrect(barNumber))

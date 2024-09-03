@@ -14,6 +14,7 @@ namespace TradingSystems
         protected List<Security> securities;
         protected Dictionary<Security, PositionTSLab> lastLongPositionsClosed = new Dictionary<Security, PositionTSLab>();
         protected Dictionary<Security, PositionTSLab> lastShortPositionsClosed = new Dictionary<Security, PositionTSLab>();        
+        protected Currency currency;
 
         public void Update(int barNumber)
         {

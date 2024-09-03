@@ -11,6 +11,9 @@ namespace TradingSystems
                 
         private Currency currency;
         private int shares;
+        public List<Bar> Bars { get; private set; }
+
+        public string Name { get; private set; }
 
         public SecurityLab(Currency currency, int shares)
         {            
@@ -27,6 +30,29 @@ namespace TradingSystems
             this.GOselling= GOselling;
         }
 
+        public SecurityLab(string securityName, Currency currency, int shares,
+            double GObuying, double GOselling, List<Bar> bars)
+        {
+            Name = securityName;
+            this.currency = currency;
+            this.shares = shares;
+            this.GObuying = GObuying;
+            this.GOselling = GOselling;
+            Bars = bars;
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            HighPrices = new List<double>();
+            LowPrices = new List<double>();
+            foreach (Bar bar in Bars)
+            {
+                HighPrices.Add(bar.High);
+                LowPrices.Add(bar.Low);
+            }            
+        }
+
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public double? SellDeposit => 4500;
@@ -41,13 +67,15 @@ namespace TradingSystems
 
         public bool IsRealTimeTrading => throw new System.NotImplementedException();
 
-        public string Name => throw new NotImplementedException();
-
         public int RealTimeActualBarNumber => throw new NotImplementedException();
 
         public double GObuying { get; private set; }
 
         public double GOselling { get; private set; }
+
+        public List<double> HighPrices { get; private set; }
+
+        public List<double> LowPrices { get; private set; }
 
         public Bar GetBar(int barNumer)
         {
@@ -96,12 +124,12 @@ namespace TradingSystems
 
         public int GetBarsCountReal()
         {
-            //Баров-то нет...            
-            throw new System.NotImplementedException();
+            return Bars.Count;            
         }
 
         public PositionTSLab GetLastClosedLongPosition(int barNumber)
         {
+            //Остановился здесь
             throw new NotImplementedException();
         }
 

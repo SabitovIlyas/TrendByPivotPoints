@@ -40,5 +40,8 @@ namespace TradingSystems
             string signalName, bool isConverted = false);
         void SellIfLess(int barNumber, int contracts, double price,
             string signalName, bool isConverted = false);
+        List<double> HighPrices { get; }
+        List<double> LowPrices { get; }
+        List<Bar> Bars { get; }
     }
 }

@@ -235,7 +235,22 @@ namespace TradingSystems
             return security.LowPrices;
         }
 
+        public List<double> GetHighPrices(Security security)
+        {
+            if (!isConverted)                
+                return security.HighPrices;
+            return security.LowPrices;
+        }
+
         public IList<double> GetLowPrices(ISecurity security)
+        {
+            isConverted = !isConverted;
+            var result = GetHighPrices(security);
+            isConverted = !isConverted;
+            return result;
+        }
+
+        public List<double> GetLowPrices(Security security)
         {
             isConverted = !isConverted;
             var result = GetHighPrices(security);

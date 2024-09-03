@@ -13,11 +13,14 @@ namespace TradingSystems
         private double initDeposit;
         protected double freeBalance;
 
-        public AccountLab(double initDeposit, Currency baseCurrency, Logger logger)
+        public AccountLab(double initDeposit, Currency currency, List<Security> securities, Logger logger)
         {
             this.initDeposit = initDeposit;
             equity = initDeposit;
             freeBalance = initDeposit;
+            this.currency = currency;
+            this.securities = securities;
+            this.logger = logger;
         }        
 
         public double GObying => throw new System.NotImplementedException();
@@ -25,10 +28,6 @@ namespace TradingSystems
         public double GOselling => throw new System.NotImplementedException();
 
         public double Rate { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-        public ISecurity Security => throw new System.NotImplementedException();
-
-        public Logger Logger { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public Currency Currency => throw new System.NotImplementedException();
 

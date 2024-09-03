@@ -70,9 +70,6 @@ namespace TradingSystems
             this.logger = logger;
         }
 
-        public void Update(int barNumber)
-        {         
-        }
         public void Initialize(List<Security> securities)
         {            
         }

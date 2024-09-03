@@ -18,11 +18,10 @@ namespace TradingSystems
         private ContractsManager localMoneyManager;
         private ISecurity sec;
         private ISecurity secCompressed;
-        private Security security;
+        
         private IList<double> atr;
 
         private PositionSide positionSide;
-        private Converter convertable;
 
         private string signalNameForOpenPosition = "";
         private string signalNameForClosePosition = "";
@@ -46,9 +45,9 @@ namespace TradingSystems
             Logger logger) :
             base(securities, contractsManager, indicators, context, logger)
         {   
-            var securityTSLab = security as SecurityTSLab;
-            sec = securityTSLab.security;            
-            secCompressed = sec.CompressTo(Interval.D1);            
+            //var securityTSLab = security as SecurityTSLab;            
+            //sec = securityTSLab.security;            
+            //secCompressed = sec.CompressTo(Interval.D1);            
         }                               
 
         private void BuyIfGreater(double price, int contracts, string notes)
@@ -65,24 +64,24 @@ namespace TradingSystems
             if (IsPositionOpen(notes))
             {
                 var position = GetOpenedPosition(notes);
-                stopPriceAtr = convertable.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);
+                stopPriceAtr = converter.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);
             }
             else
-                stopPriceAtr = convertable.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
+                stopPriceAtr = converter.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
             var stopPriceDonchian = lowest[barNumber];
-            return convertable.Maximum(stopPriceAtr, stopPriceDonchian);
+            return converter.Maximum(stopPriceAtr, stopPriceDonchian);
         }        
 
         protected override void CheckPositionOpenLongCase(int positionNumber)
         {
-            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
+            Log("бар № {0}. Открыта ли {1} позиция?", barNumber, converter.Long);
             double stopPrice;
 
             var notes = " Вход №" + (positionNumber + 1);
 
             if (!IsPositionOpen(notes))
             {
-                Log("{0} позиция не открыта.", convertable.Long);
+                Log("{0} позиция не открыта.", converter.Long);
 
                 if (positionNumber == 0)
                     fixedAtr = atr[barNumber];
@@ -108,12 +107,12 @@ namespace TradingSystems
                 if (positionNumber == 0)
                     openPositionPrice = highest[barNumber];
 
-                var price = convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
-                Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, convertable.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
+                var price = converter.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
+                Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, converter.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
 
                 BuyIfGreater(price, contracts, notes);
 
-                Log("Отправляем ордер.", convertable.Long);
+                Log("Отправляем ордер.", converter.Long);
             }
 
             else
@@ -122,7 +121,7 @@ namespace TradingSystems
                     Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
 
                 var position = GetOpenedPosition(notes);
-                Log("{0} позиция открыта.", convertable.Long);
+                Log("{0} позиция открыта.", converter.Long);
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
@@ -158,13 +157,9 @@ namespace TradingSystems
 
         public override void CalculateIndicators()
         {
-            highest = convertable.GetHighest(convertable.GetHighPrices(secCompressed), slowDonchian);
-            lowest = convertable.GetLowest(convertable.GetLowPrices(secCompressed), fastDonchian);
-            atr = Series.AverageTrueRange(secCompressed.Bars, atrPeriod);
-
-            highest = secCompressed.Decompress(highest);
-            lowest = secCompressed.Decompress(lowest);
-            atr = secCompressed.Decompress(atr);           
+            highest = converter.GetHighest(converter.GetHighPrices(security), slowDonchian);
+            lowest = converter.GetLowest(converter.GetLowPrices(security), fastDonchian);
+            atr = Series.AverageTrueRange(security.Bars, atrPeriod);        
         }
 
         public void Paint(Context context)

@@ -6,7 +6,6 @@ namespace TradingSystems
 {
     public class AccountTsLab : Account
     {
-        public Logger Logger { get; set; } = new NullLogger();
         public override double InitDeposit
         {
             get
@@ -29,7 +28,6 @@ namespace TradingSystems
 
         public ISecurity Security { get; set; }
         public override double FreeBalance => Equity;
-        private Currency currency;
 
         public AccountTsLab(List<Security> securities, Currency currency, 
             Logger logger)
@@ -40,7 +38,7 @@ namespace TradingSystems
             Security = security.security;
             equity = Security.InitDeposit;           
             this.currency = currency;
-            Logger = logger;            
+            this.logger = logger;            
         }        
     }
 }

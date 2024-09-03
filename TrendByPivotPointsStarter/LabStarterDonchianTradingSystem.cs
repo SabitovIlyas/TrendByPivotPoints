@@ -47,7 +47,9 @@ namespace TrendByPivotPointsStarter
         public override void Initialize()
         {
             base.Initialize();
+            
             var baseCurrency = Currency.Ruble;
+            account = new AccountLab(initDeposit: 1000000, baseCurrency, securities, logger);
             var riskValuePrcntCalc = kAtr * limitOpenedPositions;           
 
             riskValuePrcnt = kAtr;
@@ -64,6 +66,7 @@ namespace TrendByPivotPointsStarter
             var tradingSystem = new TradingSystemDonchian(securities, contractsManager,
                 indicators, context, logger);
 
+            tradingSystem.SetParameters(systemParameters);
             tradingSystem.Initialize();
             tradingSystems.Add(tradingSystem);            
         }        
