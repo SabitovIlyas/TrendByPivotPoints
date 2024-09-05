@@ -77,6 +77,7 @@
     <Compile Include="Indicators\IndicatorsLab.cs" />
     <Compile Include="Indicators\IndicatorsTsLab.cs" />
     <Compile Include="ContextLab.cs" />
+    <Compile Include="Order.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="PositionLab.cs" />
     <Compile Include="RiskManager.cs" />

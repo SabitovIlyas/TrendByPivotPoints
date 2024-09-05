@@ -1,34 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using TSLab.Script;
+using System.Linq;
 
 namespace TradingSystems
 {
     public class SecurityLab : Security
     {
         public Currency Currency { get => currency; set { } }
-        public int Shares { get => shares; set { } }
-                
+        public int Shares { get => shares; set { } }        
+        public List<Bar> Bars { get; private set; }
+        public string Name { get; private set; }
+        public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public double? SellDeposit => 4500;
+        public double? StepPrice => 1;
+        public double? BuyDeposit => 4400;
+        public bool IsLaboratory => throw new System.NotImplementedException();
+        public bool IsRealTimeTrading => throw new System.NotImplementedException();
+        public int RealTimeActualBarNumber => throw new NotImplementedException();
+        public double GObuying { get; private set; }
+        public double GOselling { get; private set; }
+        public List<double> HighPrices { get; private set; }
+        public List<double> LowPrices { get; private set; }
+
         private Currency currency;
         private int shares;
-        public List<Bar> Bars { get; private set; }
-
-        public string Name { get; private set; }
+        private Converter converter;
+        private Order activeOrder;
+        private PositionLab activePosition;
 
         public SecurityLab(Currency currency, int shares)
-        {            
+        {
             this.currency = currency;
             this.shares = shares;
         }
 
-        public SecurityLab(Currency currency, int shares, 
+        public SecurityLab(Currency currency, int shares,
             double GObuying, double GOselling)
         {
             this.currency = currency;
             this.shares = shares;
             this.GObuying = GObuying;
-            this.GOselling= GOselling;
+            this.GOselling = GOselling;
         }
 
         public SecurityLab(string securityName, Currency currency, int shares,
@@ -51,32 +63,16 @@ namespace TradingSystems
             {
                 HighPrices.Add(bar.High);
                 LowPrices.Add(bar.Low);
-            }            
-        }
+            }
+        }       
 
-        public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-        public double? SellDeposit => 4500;
-
-        public double? StepPrice => 1;
-
-        public double? BuyDeposit => 4400;
-
-        public Bar LastBar => throw new System.NotImplementedException();
-
-        public bool IsLaboratory => throw new System.NotImplementedException();
-
-        public bool IsRealTimeTrading => throw new System.NotImplementedException();
-
-        public int RealTimeActualBarNumber => throw new NotImplementedException();
-
-        public double GObuying { get; private set; }
-
-        public double GOselling { get; private set; }
-
-        public List<double> HighPrices { get; private set; }
-
-        public List<double> LowPrices { get; private set; }
+        public Bar LastBar
+        {
+            get
+            {
+                return Bars?.Last();
+            }
+        }       
 
         public Bar GetBar(int barNumer)
         {
@@ -125,7 +121,7 @@ namespace TradingSystems
 
         public int GetBarsCountReal()
         {
-            return Bars.Count;            
+            return Bars.Count;
         }
 
         public PositionTSLab GetLastClosedLongPosition(int barNumber)
@@ -153,20 +149,31 @@ namespace TradingSystems
             throw new NotImplementedException();
         }
 
-        public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned, string signalNameForOpenPosition, bool isConverted = false)
+        public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned, 
+            string signalNameForOpenPosition, bool isConverted = false)
         {
-            throw new NotImplementedException();
+            converter = new Converter(isConverted);
+
+            if (converter.IsGreaterOrEqual(LastBar.Close, entryPricePlanned))
+            {
+                activePosition = new PositionLab();
+            }
+            else
+            {
+                activeOrder = new Order();
+            }            
         }
 
-        public void SellIfLess(int barNumber, int contracts, double entryPricePlanned, string signalNameForOpenPosition, bool isConverted = false)
+        public void SellIfLess(int barNumber, int contracts, double entryPricePlanned, 
+            string signalNameForOpenPosition, bool isConverted = false)
         {
-            //Нахожусь здесь
-            //throw new NotImplementedException();
+            BuyIfGreater(barNumber, contracts, entryPricePlanned, signalNameForOpenPosition,
+                isConverted: true);
         }
 
         public void Update(int barNumber)
         {
-
-        }
+            
+        }        
     }
 }
