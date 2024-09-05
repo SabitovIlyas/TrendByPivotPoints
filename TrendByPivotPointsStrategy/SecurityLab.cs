@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using TSLab.Script;
 
 namespace TradingSystems
@@ -159,7 +160,13 @@ namespace TradingSystems
 
         public void SellIfLess(int barNumber, int contracts, double entryPricePlanned, string signalNameForOpenPosition, bool isConverted = false)
         {
-            throw new NotImplementedException();
+            //Нахожусь здесь
+            //throw new NotImplementedException();
+        }
+
+        public void Update(int barNumber)
+        {
+
         }
     }
 }

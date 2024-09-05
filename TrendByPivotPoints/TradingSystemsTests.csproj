@@ -70,6 +70,7 @@
     <Compile Include="DateTimeTests.cs" />
     <Compile Include="HelperForClassForTestKeyWords.cs" />
     <Compile Include="MathTests.cs" />
+    <Compile Include="SecurityLabTests.cs" />
     <Compile Include="SomeCalcTests.cs" />
     <Compile Include="OtherTests.cs" />
     <Compile Include="ObjectDiagnosticExtensionsTests.cs" />
