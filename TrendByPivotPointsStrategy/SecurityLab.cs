@@ -153,6 +153,7 @@ namespace TradingSystems
             string signalNameForOpenPosition, bool isConverted = false)
         {
             converter = new Converter(isConverted);
+            var positionSide = isConverted ? PositionSide.Long : PositionSide.Short;
 
             if (converter.IsGreaterOrEqual(LastBar.Close, entryPricePlanned))
             {
@@ -160,7 +161,8 @@ namespace TradingSystems
             }
             else
             {
-                activeOrder = new Order();
+                activeOrder = new Order(barNumber, positionSide, entryPricePlanned, contracts,
+                    signalNameForOpenPosition);                
             }            
         }
 
