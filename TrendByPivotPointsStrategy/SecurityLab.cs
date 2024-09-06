@@ -157,7 +157,9 @@ namespace TradingSystems
 
             if (converter.IsGreaterOrEqual(LastBar.Close, entryPricePlanned))
             {
-                activePosition = new PositionLab();
+                var order = new Order(barNumber, positionSide, LastBar.Close, contracts,
+                    signalNameForOpenPosition);
+                activePosition = new PositionLab(BarNumber, order);
             }
             else
             {

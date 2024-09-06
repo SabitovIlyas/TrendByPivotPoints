@@ -1,9 +1,9 @@
 ﻿namespace TradingSystems
 {
-    class Order
+    public class Order
     {
         public int BarNumber {  get; private set; }
-        public PositionSide Side { get; private set; }
+        public PositionSide PositionSide { get; private set; }
         public double Price { get; private set; }
         public int Contracts { get; private set; }        
         public string SignalName { get; private set; }
@@ -13,7 +13,7 @@
             string signalName) 
         {            
             BarNumber = barNumber;
-            Side = positionSide;
+            PositionSide = positionSide;
             Price = price;
             Contracts = contracts;
             SignalName = signalName;
