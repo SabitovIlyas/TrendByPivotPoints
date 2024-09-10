@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Helpers;
-using TradingSystems;
 
 namespace TradingSystems
 {
