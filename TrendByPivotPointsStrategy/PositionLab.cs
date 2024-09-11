@@ -3,31 +3,36 @@
     public class PositionLab : Position
     {
         public int BarNumber { get; private set; }
-        public double EntryPrice => order.Price;
-        public PositionSide PositionSide => order.PositionSide;
-        public int Contracts => order.Contracts;
+        public double EntryPrice => openOrder.Price;
+        public PositionSide PositionSide => openOrder.PositionSide;
+        public int Contracts => openOrder.Contracts;
         public double Profit { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-        public string SignalNameForOpenPosition => order.SignalName;
-
+        public string SignalNameForOpenPosition => openOrder.SignalName;
         public string SignalNameForClosePosition => throw new System.NotImplementedException();
 
-        private Order order;
+        private Order openOrder;
+        private Order closeOrder;
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
-            throw new System.NotImplementedException();
+            closeOrder = new Order(barNumber, PositionSide, )
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
         {
-            throw new System.NotImplementedException();
+            closeOrder = new Order(barNumber, PositionSide, stopPrice, Contracts, 
+                signalNameForClosePosition);
         }
 
-        public PositionLab(int barNumber, Order order)
+        public PositionLab(int barNumber, Order openOrder)
         {
             BarNumber = barNumber;
-            this.order = order;
+            this.openOrder = openOrder;
+        }
+
+        public void Update(int barNumber)
+        {
+            
         }
     }
 }
