@@ -177,7 +177,13 @@ namespace TradingSystems
 
         public void Update(int barNumber)
         {
-            
+            var bar = Bars[barNumber];
+
+            if (activeOrder != null && activeOrder.IsActive)
+                activeOrder.Execute(bar);
+
+            else if (activePosition != null)         
+                activePosition.Update(barNumber, bar);
         }        
     }
 }

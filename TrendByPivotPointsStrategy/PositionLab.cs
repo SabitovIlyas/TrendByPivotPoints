@@ -12,10 +12,11 @@
 
         private Order openOrder;
         private Order closeOrder;
+        private Converter converter;
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
-            closeOrder = new Order(barNumber, PositionSide, )
+            closeOrder = new Order(barNumber, PositionSide, double.NaN, Contracts, signalNameForClosePosition);
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
@@ -28,11 +29,13 @@
         {
             BarNumber = barNumber;
             this.openOrder = openOrder;
+            converter = new Converter(isConverted: PositionSide == PositionSide.Long);
         }
 
-        public void Update(int barNumber)
+        public void Update(int barNumber, Bar bar)
         {
-            
+            closeOrder.Execute(bar);
+            Profit = converter.Difference(closeOrder.ExecutedPrice, openOrder.ExecutedPrice);
         }
     }
 }

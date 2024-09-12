@@ -28,7 +28,7 @@
         {
             if (PositionSide == PositionSide.Null) return;
 
-            if (converter.IsGreaterOrEqual(bar.Open, Price))
+            if (converter.IsGreaterOrEqual(bar.Open, Price) || Price == double.NaN)
             {
                 IsActive = false;
                 ExecutedPrice = bar.Open;

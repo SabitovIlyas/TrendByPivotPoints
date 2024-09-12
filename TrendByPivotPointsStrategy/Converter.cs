@@ -271,5 +271,12 @@ namespace TradingSystems
             isConverted = !isConverted;
             return result;
         }
+
+        public double Difference(double a, double b)
+        {
+            if (isConverted)
+                return b - a;
+            return a - b;
+        }
     }
 }
