@@ -280,7 +280,7 @@ namespace TradingSystems
             var realTimeSecurity = security as ISecurityRt;
             isLaboratory = realTimeSecurity == null;
         }
-        public PositionTSLab GetLastClosedLongPosition(int barNumber)
+        public Position GetLastClosedLongPosition(int barNumber)
         {
             var positions = security.Positions;
             var position = positions.GetLastLongPositionClosed(barNumber);
@@ -295,7 +295,7 @@ namespace TradingSystems
             lastLongPositionClosed = new PositionTSLab(position);
             return lastLongPositionClosed;
         }
-        public PositionTSLab GetLastClosedShortPosition(int barNumber)
+        public Position GetLastClosedShortPosition(int barNumber)
         {
             var positions = security.Positions;
             var position = positions.GetLastShortPositionClosed(barNumber);
@@ -378,7 +378,7 @@ namespace TradingSystems
             volume = bar.Volume;            
         }
 
-        public PositionTSLab GetLastActiveForSignal(string signalName, int barNumber)
+        public Position GetLastActiveForSignal(string signalName, int barNumber)
         {
             throw new NotImplementedException();
         }

@@ -12,15 +12,15 @@ namespace TradingSystems
         protected Logger logger;
         protected double equity;
         protected List<Security> securities;
-        protected Dictionary<Security, PositionTSLab> lastLongPositionsClosed = new Dictionary<Security, PositionTSLab>();
-        protected Dictionary<Security, PositionTSLab> lastShortPositionsClosed = new Dictionary<Security, PositionTSLab>();        
+        protected Dictionary<Security, Position> lastLongPositionsClosed = new Dictionary<Security, Position>();
+        protected Dictionary<Security, Position> lastShortPositionsClosed = new Dictionary<Security, Position>();        
         protected Currency currency;
 
         public void Update(int barNumber)
         {
             foreach (var security in securities)
             {
-                if (lastLongPositionsClosed.TryGetValue(security, out PositionTSLab lastLongPositionClosedPrevious))
+                if (lastLongPositionsClosed.TryGetValue(security, out Position lastLongPositionClosedPrevious))
                 {
                     var lastLongPositionClosed = security.GetLastClosedLongPosition(barNumber);
                     if (lastLongPositionClosed != lastLongPositionClosedPrevious)
@@ -47,7 +47,7 @@ namespace TradingSystems
                     }
                 }
 
-                if (lastShortPositionsClosed.TryGetValue(security, out PositionTSLab lastShortPositionClosedPrevious))
+                if (lastShortPositionsClosed.TryGetValue(security, out Position lastShortPositionClosedPrevious))
                 {
                     var lastShortPositionClosed = security.GetLastClosedShortPosition(barNumber);
                     if (lastShortPositionClosed != lastShortPositionClosedPrevious)

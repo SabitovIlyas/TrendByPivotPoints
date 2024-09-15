@@ -110,7 +110,7 @@ namespace TradingSystems
             }
         }
 
-        protected PositionTSLab GetOpenedPosition(string notes)
+        protected Position GetOpenedPosition(string notes)
         {            
             var position = security.GetLastActiveForSignal(signalNameForOpenPosition + notes, barNumber);
             return position;

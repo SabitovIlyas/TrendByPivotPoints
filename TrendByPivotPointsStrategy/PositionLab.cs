@@ -6,13 +6,15 @@
         public double EntryPrice => openOrder.Price;
         public PositionSide PositionSide => openOrder.PositionSide;
         public int Contracts => openOrder.Contracts;
-        public double Profit { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public double Profit { get; private set; }
         public string SignalNameForOpenPosition => openOrder.SignalName;
         public string SignalNameForClosePosition => throw new System.NotImplementedException();
+        public bool IsActive { get { return closeOrder == null || closeOrder.IsActive; } }
 
         private Order openOrder;
         private Order closeOrder;
         private Converter converter;
+
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
@@ -21,7 +23,7 @@
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
         {
-            closeOrder = new Order(barNumber, PositionSide, stopPrice, Contracts, 
+            closeOrder = new Order(barNumber, PositionSide, stopPrice, Contracts,
                 signalNameForClosePosition);
         }
 
@@ -34,8 +36,10 @@
 
         public void Update(int barNumber, Bar bar)
         {
-            closeOrder.Execute(bar);
-            Profit = converter.Difference(closeOrder.ExecutedPrice, openOrder.ExecutedPrice);
+            if (closeOrder == null || closeOrder.IsActive)            
+                Profit = converter.Difference(bar.Close, openOrder.ExecutedPrice);            
+            else            
+                Profit = converter.Difference(closeOrder.ExecutedPrice, openOrder.ExecutedPrice);            
         }
     }
 }

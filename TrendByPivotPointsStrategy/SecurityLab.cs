@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TSLab.DataSource;
 
 namespace TradingSystems
 {
@@ -20,13 +21,18 @@ namespace TradingSystems
         public double GObuying { get; private set; }
         public double GOselling { get; private set; }
         public List<double> HighPrices { get; private set; }
-        public List<double> LowPrices { get; private set; }
+        public List<double> LowPrices { get; private set; }       
 
         private Currency currency;
         private int shares;
         private Converter converter;
         private Order activeOrder;
         private PositionLab activePosition;
+        private List<PositionLab> positions = new List<PositionLab>();
+        private List<PositionLab> activePositions = new List<PositionLab>();
+        private List<Order> orders = new List<Order>();
+        private List<Order> activeOrders = new List<Order>();
+
 
         public SecurityLab(Currency currency, int shares)
         {
@@ -124,13 +130,13 @@ namespace TradingSystems
             return Bars.Count;
         }
 
-        public PositionTSLab GetLastClosedLongPosition(int barNumber)
+        public Position GetLastClosedLongPosition(int barNumber)
         {
             //Остановился здесь
             throw new NotImplementedException();
         }
 
-        public PositionTSLab GetLastClosedShortPosition(int barNumber)
+        public Position GetLastClosedShortPosition(int barNumber)
         {
             throw new NotImplementedException();
         }
@@ -144,10 +150,10 @@ namespace TradingSystems
         {
         }
 
-        public PositionTSLab GetLastActiveForSignal(string signalName, int barNumber)
+        public Position GetLastActiveForSignal(string signalName, int barNumber)
         {
-            throw new NotImplementedException();
-        }
+            return activePositions.Find(p => p.SignalNameForOpenPosition == signalName);
+        }        
 
         public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned, 
             string signalNameForOpenPosition, bool isConverted = false)
@@ -159,12 +165,16 @@ namespace TradingSystems
             {
                 var order = new Order(barNumber, positionSide, LastBar.Close, contracts,
                     signalNameForOpenPosition);
-                activePosition = new PositionLab(BarNumber, order);
+                var activePosition = new PositionLab(barNumber, order);
+                activePositions.Add(activePosition);
+                orders.Add(order);
             }
             else
             {
                 activeOrder = new Order(barNumber, positionSide, entryPricePlanned, contracts,
-                    signalNameForOpenPosition);                
+                    signalNameForOpenPosition);
+                orders.Add(activeOrder);
+                activeOrders.Add(activeOrder);
             }            
         }
 
@@ -179,11 +189,36 @@ namespace TradingSystems
         {
             var bar = Bars[barNumber];
 
-            if (activeOrder != null && activeOrder.IsActive)
-                activeOrder.Execute(bar);
+            foreach(var order in activeOrders)
+                order.Execute(bar);
 
-            else if (activePosition != null)         
-                activePosition.Update(barNumber, bar);
-        }        
+            foreach (var position in activePositions)            
+                position.Update(barNumber, bar);
+
+            var ordersToExcludeFromActiveOrders = new List<Order>();
+            foreach (var order in activeOrders)
+                if (!order.IsActive)
+                    ordersToExcludeFromActiveOrders.Add(order);
+
+            foreach(var order in ordersToExcludeFromActiveOrders)            
+                activeOrders.Remove(order);
+
+            var positionToExcludeFromActivePositions = new List<PositionLab>();
+            foreach (var position in activePositions)
+                if (!position.IsActive)
+                    positionToExcludeFromActivePositions.Add(position);
+
+            foreach (var position in positionToExcludeFromActivePositions)
+                activePositions.Remove(position);
+        }
+        
+        public List<Order> GetActiveOrders(int barNumber)
+        {
+            var activeOrders = (from order in orders
+                               where order.BarNumber <= barNumber
+                               select order).ToList();
+
+            return activeOrders;
+        }
     }
 }
