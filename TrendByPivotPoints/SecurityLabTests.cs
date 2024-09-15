@@ -41,8 +41,8 @@ namespace TradingSystems.Tests
 
             security.Update(barNumber: 1);
             var position = security.GetLastActiveForSignal("SE", barNumber: 1);
-            //Нахожусь здесь. Надо поотлаживать. Хотя тест проходит.
             Assert.IsNotNull(position);
+            Assert.AreEqual(expected: 89900, actual: position.EntryPrice);
         }
 
         [TestMethod()]
@@ -60,9 +60,7 @@ namespace TradingSystems.Tests
             security.Update(barNumber: 3);
             security.SellIfLess(barNumber: 4, contracts: 1, entryPricePlanned: 85000,
                 "SE", isConverted: false);
-            security.Update(barNumber: 4);
-            security.SellIfLess(barNumber: 5, contracts: 1, entryPricePlanned: 84000,
-                "SE", isConverted: false);
+            security.Update(barNumber: 4);            
 
             var orders = security.GetActiveOrders(barNumber: 3);
                         

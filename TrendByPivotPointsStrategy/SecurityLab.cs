@@ -159,13 +159,14 @@ namespace TradingSystems
             string signalNameForOpenPosition, bool isConverted = false)
         {
             converter = new Converter(isConverted);
-            var positionSide = isConverted ? PositionSide.Long : PositionSide.Short;
+            var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
 
-            if (converter.IsGreaterOrEqual(LastBar.Close, entryPricePlanned))
+            if (converter.IsGreaterOrEqual(Bars[barNumber].Open, entryPricePlanned))
             {
-                var order = new Order(barNumber, positionSide, LastBar.Close, contracts,
+                var order = new Order(barNumber, positionSide, Bars[barNumber].Open, contracts,
                     signalNameForOpenPosition);
                 var activePosition = new PositionLab(barNumber, order);
+                positions.Add(activePosition);
                 activePositions.Add(activePosition);
                 orders.Add(order);
             }
@@ -189,8 +190,16 @@ namespace TradingSystems
         {
             var bar = Bars[barNumber];
 
-            foreach(var order in activeOrders)
+            foreach (var order in activeOrders)
+            {
                 order.Execute(bar);
+                if (order.IsExecuted)
+                {
+                    var position = new PositionLab(barNumber, order);
+                    positions.Add(position);
+                    activePositions.Add(position);
+                }                        
+            }
 
             foreach (var position in activePositions)            
                 position.Update(barNumber, bar);
