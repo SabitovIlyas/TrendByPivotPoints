@@ -1,5 +1,10 @@
 ﻿namespace TradingSystems
 {
+    public enum OrderType
+    {
+        Market, Limit
+    }
+
     public class Order
     {
         public int BarNumber {  get; private set; }
@@ -11,15 +16,18 @@
         private Converter converter;
         public double ExecutedPrice { get; private set; } = double.NaN;
         public bool IsExecuted { get; private set; } = false;
+        public OrderType OrderType { get; private set; }
+
         
         public Order(int barNumber, PositionSide positionSide, double price, int contracts, 
-            string signalName) 
+            string signalName, OrderType orderType = OrderType.Limit) 
         {            
             BarNumber = barNumber;
             PositionSide = positionSide;
             Price = price;
             Contracts = contracts;
-            SignalName = signalName;            
+            SignalName = signalName;                        
+            OrderType = orderType;
             converter = new Converter(isConverted: positionSide == PositionSide.Short);
         }
 
@@ -27,7 +35,7 @@
         {
             if (PositionSide == PositionSide.Null) return;
 
-            if (converter.IsGreaterOrEqual(bar.Open, Price) || Price == double.NaN)
+            if (converter.IsGreaterOrEqual(bar.Open, Price) || OrderType == OrderType.Market)
             {
                 IsActive = false;
                 ExecutedPrice = bar.Open;

@@ -402,5 +402,15 @@ namespace TradingSystems
             else
                 positions.BuyIfGreater(barNumber, contracts, price, signalNameForOpenPosition);
         }
+
+        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, PositionLab positionLab, out Order closeOrder)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseAtMarket(int barNumber, string signalNameForClosePosition, PositionLab positionLab, out Order closeOrder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using TSLab.DataSource;
 
@@ -32,6 +33,8 @@ namespace TradingSystems
         private List<PositionLab> activePositions = new List<PositionLab>();
         private List<Order> orders = new List<Order>();
         private List<Order> activeOrders = new List<Order>();
+        private Position lastClosedLongPosition;
+        private Position lastClosedShortPosition;
 
 
         public SecurityLab(Currency currency, int shares)
@@ -132,13 +135,12 @@ namespace TradingSystems
 
         public Position GetLastClosedLongPosition(int barNumber)
         {
-            //Остановился здесь
-            throw new NotImplementedException();
+            return lastClosedLongPosition;
         }
 
         public Position GetLastClosedShortPosition(int barNumber)
         {
-            throw new NotImplementedException();
+            return lastClosedShortPosition;
         }
 
         public bool IsRealTimeActualBar(int barNumber)
@@ -165,7 +167,7 @@ namespace TradingSystems
             {
                 var order = new Order(barNumber, positionSide, Bars[barNumber].Open, contracts,
                     signalNameForOpenPosition);
-                var activePosition = new PositionLab(barNumber, order);
+                var activePosition = new PositionLab(barNumber, order, this);
                 positions.Add(activePosition);
                 activePositions.Add(activePosition);
                 orders.Add(order);
@@ -186,6 +188,24 @@ namespace TradingSystems
                 isConverted: true);
         }
 
+        public void CloseAtMarket(int barNumber, string signalNameForClosePosition, 
+            PositionLab position, out Order closeOrder)
+        {
+            closeOrder = new Order(barNumber, position.PositionSide, double.NaN, 
+                position.Contracts, signalNameForClosePosition, OrderType.Market);
+            orders.Add(closeOrder);
+            activeOrders.Add(closeOrder);
+        }
+
+        public void CloseAtStop(int barNumber, double stopPrice, 
+            string signalNameForClosePosition, PositionLab position, out Order closeOrder)
+        {
+            closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
+                position.Contracts, signalNameForClosePosition);
+            orders.Add(closeOrder);
+            activeOrders.Add(closeOrder);
+        }
+
         public void Update(int barNumber)
         {
             var bar = Bars[barNumber];
@@ -195,7 +215,7 @@ namespace TradingSystems
                 order.Execute(bar);
                 if (order.IsExecuted)
                 {
-                    var position = new PositionLab(barNumber, order);
+                    var position = new PositionLab(barNumber, order, this);
                     positions.Add(position);
                     activePositions.Add(position);
                 }                        
@@ -216,9 +236,30 @@ namespace TradingSystems
             foreach (var position in activePositions)
                 if (!position.IsActive)
                     positionToExcludeFromActivePositions.Add(position);
-
+                        
             foreach (var position in positionToExcludeFromActivePositions)
                 activePositions.Remove(position);
+
+            if (positionToExcludeFromActivePositions.Count == 0)
+                return;
+
+            var lastPosition = positionToExcludeFromActivePositions.Last();
+            if (lastPosition == null)
+                return;
+
+            switch (lastPosition.PositionSide)
+            {
+                case PositionSide.Long:
+                    {
+                        lastClosedLongPosition = lastPosition;
+                        break;
+                    }
+                case PositionSide.Short:
+                    {
+                        lastClosedShortPosition = lastPosition;
+                        break;
+                    }
+            }
         }
         
         public List<Order> GetActiveOrders(int barNumber)

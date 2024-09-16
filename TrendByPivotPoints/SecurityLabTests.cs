@@ -33,7 +33,7 @@ namespace TradingSystems.Tests
         }
 
         [TestMethod()]
-        public void UpdateTest()
+        public void GetLastActiveForSignal_Test()
         {
             security.Update(barNumber: 0);
             security.SellIfLess(barNumber: 1, contracts: 1, entryPricePlanned: 89900,
@@ -68,6 +68,25 @@ namespace TradingSystems.Tests
             Assert.AreEqual(expected: 88000, actual: orders[0].Price);
             Assert.AreEqual(expected: 87000, actual: orders[1].Price);
             Assert.AreEqual(expected: 86000, actual: orders[2].Price);
+        }
+
+        [TestMethod()]
+        public void GetLastClosedShortPosition_Test()
+        {
+            security.Update(barNumber: 0);
+            security.SellIfLess(barNumber: 1, contracts: 1, entryPricePlanned: 89900,
+                "SE", isConverted: false);
+
+            security.Update(barNumber: 1);
+            var position = security.GetLastActiveForSignal("SE", barNumber: 1);
+            Assert.IsNotNull(position);
+
+            position.CloseAtMarket(barNumber: 2, "SXS");
+            security.Update(barNumber: 2);
+            var closedPosition = security.GetLastClosedShortPosition(barNumber: 2);
+            Assert.IsNotNull(closedPosition);
+
+            Assert.AreEqual(expected:position, actual:closedPosition);
         }
     }
 }

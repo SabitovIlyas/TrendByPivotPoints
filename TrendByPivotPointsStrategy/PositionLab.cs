@@ -1,4 +1,8 @@
-﻿namespace TradingSystems
+﻿using System;
+using TSLab.DataSource;
+using TSLab.Script.Handlers;
+
+namespace TradingSystems
 {
     public class PositionLab : Position
     {
@@ -10,6 +14,7 @@
         public string SignalNameForOpenPosition => openOrder.SignalName;
         public string SignalNameForClosePosition => throw new System.NotImplementedException();
         public bool IsActive { get { return closeOrder == null || closeOrder.IsActive; } }
+        public Security Security { get; private set; }
 
         private Order openOrder;
         private Order closeOrder;
@@ -18,19 +23,19 @@
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
-            closeOrder = new Order(barNumber, PositionSide, double.NaN, Contracts, signalNameForClosePosition);
+            Security.CloseAtMarket(barNumber, signalNameForClosePosition, this, out closeOrder);
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
-        {
-            closeOrder = new Order(barNumber, PositionSide, stopPrice, Contracts,
-                signalNameForClosePosition);
+        {            
+            Security.CloseAtStop(barNumber, stopPrice, signalNameForClosePosition, this, out closeOrder);            
         }
 
-        public PositionLab(int barNumber, Order openOrder)
+        public PositionLab(int barNumber, Order openOrder, Security security)
         {
             BarNumber = barNumber;
             this.openOrder = openOrder;
+            Security = security;
             converter = new Converter(isConverted: PositionSide == PositionSide.Long);
         }
 
