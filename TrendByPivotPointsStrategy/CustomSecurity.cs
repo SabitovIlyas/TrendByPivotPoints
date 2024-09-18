@@ -117,6 +117,9 @@ namespace TradingSystems
         public bool IsDisposed => throw new NotImplementedException();
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
+        public DateTime SessionBegin => throw new NotImplementedException();
+
+        public DateTime SessionEnd => throw new NotImplementedException();
 
         public void Attach()
         {
