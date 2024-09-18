@@ -29,7 +29,8 @@ namespace TradingSystems
 
         public override void Initialize()
         {
-            var securityFirst = securities.First() as ISecurity;
+            var securityTSLabFirst = securities.First() as SecurityTSLab;
+            var securityFirst = securityTSLabFirst.security;
             context = new ContextTSLab(ctx, securityFirst);            
             var baseCurrency = Currency.Ruble;
             if (context.IsRealTimeTrading)

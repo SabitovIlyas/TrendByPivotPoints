@@ -320,10 +320,8 @@ namespace TradingSystems
         public double GObuying => throw new NotImplementedException();
 
         public double GOselling => throw new NotImplementedException();
-
-        public List<double> HighPrices => (List<double>)security.HighPrices;
-
-        public List<double> LowPrices => (List<double>)security.LowPrices;
+        public List<double> HighPrices => security.HighPrices.ToList();
+        public List<double> LowPrices => security.LowPrices.ToList();
 
         public List<Bar> Bars => (List<Bar>)security.Bars;    
 

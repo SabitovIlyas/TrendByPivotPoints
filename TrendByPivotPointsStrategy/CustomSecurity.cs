@@ -74,9 +74,9 @@ namespace TradingSystems
 
         public IList<double> ClosePrices => throw new NotImplementedException();
 
-        public IList<double> HighPrices => throw new NotImplementedException();
+        public IList<double> HighPrices { get; } = new List<double>();
 
-        public IList<double> LowPrices => throw new NotImplementedException();
+        public IList<double> LowPrices { get; } = new List<double>();
 
         public IList<double> Volumes => throw new NotImplementedException();
 

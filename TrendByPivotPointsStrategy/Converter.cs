@@ -215,7 +215,7 @@ namespace TradingSystems
         public IList<double> GetHighest(IList<double> values, int period)
         {
             if (!isConverted)
-                return Series.Highest(values, period);
+                return Series.Highest(values, period);//Нахожусь здесь. В логах написано, что выбран некорректный период
             return Series.Lowest(values, period);
         }
 
