@@ -15,7 +15,6 @@ namespace TradingSystems
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }
 
-        private ContractsManager localMoneyManager;
         private ISecurity sec;
         private ISecurity secCompressed;
         
@@ -89,7 +88,7 @@ namespace TradingSystems
                 stopPrice = GetStopPrice(notes);
 
                 Log("Определяем количество контрактов...");
-                var contracts = localMoneyManager.GetQntContracts(security, highest[barNumber], stopPrice, positionSide);
+                var contracts = contractsManager.GetQntContracts(security, highest[barNumber], stopPrice, positionSide);
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)

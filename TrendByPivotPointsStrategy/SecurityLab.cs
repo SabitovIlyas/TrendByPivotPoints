@@ -145,7 +145,7 @@ namespace TradingSystems
 
         public bool IsRealTimeActualBar(int barNumber)
         {
-            throw new NotImplementedException();
+            return true;            
         }
 
         public void ResetBarNumberToLastBarNumber()

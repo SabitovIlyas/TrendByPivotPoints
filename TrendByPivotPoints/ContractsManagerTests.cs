@@ -4,12 +4,12 @@ using TradingSystems;
 namespace TrendByPivotPoints.Tests
 {
     [TestClass()]
-    public class LocalMoneyManagerTests
+    public class ContractsManagerTests
     {
         AccountFake account;
         ContractsManager contractsManager;
         RiskManagerReal riskManager;
-        TradingSystems.Logger logger = new NullLogger();
+        Logger logger = new NullLogger();
         Currency baseCurrency = Currency.Ruble;
         CurrencyConverter currencyConverter;
 

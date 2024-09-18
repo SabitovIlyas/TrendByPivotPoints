@@ -17,32 +17,34 @@ namespace TradingSystems
         public ContractsManager(RiskManager riskManager, Account account, 
             Currency currency, CurrencyConverter currencyConverter, Logger logger)
         {
-            this.riskManager = riskManager;
-            this.account = account;
+            Initialize(riskManager, account, currencyConverter, logger);
             this.currency = currency;
-            this.currencyConverter = currencyConverter;
-            this.logger = logger;
         }
 
         public ContractsManager(RiskManager riskManager, Account account, 
             List<Security> securities, CurrencyConverter currencyConverter, Logger logger)
         {
-            this.riskManager = riskManager;
-            this.account = account;
+            Initialize(riskManager, account, currencyConverter, logger);
             var security = securities.First();
-            this.currency = security.Currency;
-            this.currencyConverter = currencyConverter;
+            currency = security.Currency;            
         }
 
         public ContractsManager(RiskManager riskManager, Account account, 
             Currency currency, CurrencyConverter currencyConverter, int shares, 
             Logger logger)
         {
-            this.riskManager = riskManager;
-            this.account = account;
+            Initialize(riskManager, account, currencyConverter, logger);            
             this.currency = currency;
             this.shares = shares;
+        }
+
+        private void Initialize(RiskManager riskManager, Account account, 
+            CurrencyConverter currencyConverter, Logger logger)
+        {
+            this.riskManager = riskManager;
+            this.account = account;
             this.currencyConverter = currencyConverter;
+            this.logger = logger;
         }
 
         public virtual int GetQntContracts(Security security, double entryPrice, double stopPrice, PositionSide positionSide)
