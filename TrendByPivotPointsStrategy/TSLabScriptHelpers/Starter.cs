@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TSLab.Script.Optimization;
 
 namespace TradingSystems
 {
@@ -54,10 +55,14 @@ namespace TradingSystems
             this.systemParameters = systemParameters;
             try
             {
-                var positionSide = (int)systemParameters.GetValue("positionSide");
-                var isUSD = (int)systemParameters.GetValue("isUSD");
-                rateUSD = (double)systemParameters.GetValue("rateUSD");
-                shares = (int)systemParameters.GetValue("shares");
+                var positionSideOp = (OptimProperty)systemParameters.GetValue("positionSide");
+                var positionSide = (int)positionSideOp.Value;
+                var isUSDop = (OptimProperty)systemParameters.GetValue("isUSD");
+                var isUSD = (int)isUSDop.Value;
+                var rateUSDop = (OptimProperty)systemParameters.GetValue("rateUSD");
+                rateUSD = rateUSDop.Value;
+                var sharesOp = (OptimProperty)systemParameters.GetValue("shares");
+                shares = (int)sharesOp.Value;
                                 
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;
