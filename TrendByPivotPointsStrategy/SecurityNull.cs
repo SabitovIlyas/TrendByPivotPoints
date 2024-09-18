@@ -68,6 +68,10 @@ namespace TradingSystems
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
 
+        public DateTime SessionBegin { get; set; }
+
+        public DateTime SessionEnd { get; set; }
+
         public void Attach()
         {
             throw new NotImplementedException();
