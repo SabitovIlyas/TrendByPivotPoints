@@ -10,6 +10,18 @@ namespace TradingSystems
 {
     public class SecurityTSLab : Security
     {
+        public string Name => security.ToString();
+        public Currency Currency { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public double GObuying => throw new NotImplementedException();
+        public double GOselling => throw new NotImplementedException();
+        public List<double> HighPrices => security.HighPrices.ToList();
+        public List<double> LowPrices => security.LowPrices.ToList();
+        public List<Bar> Bars => bars;
+        public double? StepPrice => finInfo.StepPrice;
+        public double? SellDeposit => finInfo.SellDeposit;
+        public double? BuyDeposit => finInfo.BuyDeposit;
+        public ISecurity security;
         public int BarNumber
         {
             get
@@ -35,10 +47,8 @@ namespace TradingSystems
                     }
                 }
             }
-        }
-        public double? StepPrice => finInfo.StepPrice; 
-        public double? SellDeposit => finInfo.SellDeposit;
-        public double? BuyDeposit => finInfo.BuyDeposit;
+        }       
+        
         public Bar LastBar
         {
             get
@@ -61,15 +71,16 @@ namespace TradingSystems
                 }
                 return barNumber;
             }
-        }
+        }      
         
-        public ISecurity security;
-
+        private PositionTSLab lastLongPositionClosed;
+        private PositionTSLab lastShortPositionClosed;
         private int barNumber;
         private IDataBar nullDataBar = new NullDataBar();
         private FinInfo finInfo;
         private ISecurity baseSecurity = new SecurityNull();
         private IContext context;
+        private List<Bar> bars = new List<Bar>();
 
         public SecurityTSLab(ISecurity security)
         {
@@ -130,6 +141,17 @@ namespace TradingSystems
             var bars = security.Bars;
             barNumber = bars.Count - 1;
             DefineIsLaboratory();
+            ConvertBars();
+        }
+
+        private void ConvertBars()
+        {
+            var bars = new List<Bar>();
+            foreach (var bar in security.Bars)
+            {
+                var newBar = Bar.Create(bar.Date, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume);
+                bars.Add(newBar);
+            }
         }
 
         private List<List<int>> barsBaseSecurityInBarsCompressedSecurity = new List<List<int>>();
@@ -309,21 +331,7 @@ namespace TradingSystems
 
             lastShortPositionClosed = new PositionTSLab(position);
             return lastShortPositionClosed;
-        }
-
-        private PositionTSLab lastLongPositionClosed;
-        private PositionTSLab lastShortPositionClosed;
-        public string Name => security.ToString();
-        public Currency Currency { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public double GObuying => throw new NotImplementedException();
-
-        public double GOselling => throw new NotImplementedException();
-        public List<double> HighPrices => security.HighPrices.ToList();
-        public List<double> LowPrices => security.LowPrices.ToList();
-
-        public List<Bar> Bars => (List<Bar>)security.Bars;    
+        }         
 
         public Bar GetBar(int barNumber)
         {

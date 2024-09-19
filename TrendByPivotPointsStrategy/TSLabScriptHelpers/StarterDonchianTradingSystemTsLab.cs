@@ -59,6 +59,7 @@ namespace TradingSystems
             var tradingSystem = new TradingSystemDonchian(securities, contractsManager,
                 indicators, context, logger);
 
+            tradingSystem.SetParameters(systemParameters);
             tradingSystem.Initialize();            
             tradingSystems.Add(tradingSystem);
 

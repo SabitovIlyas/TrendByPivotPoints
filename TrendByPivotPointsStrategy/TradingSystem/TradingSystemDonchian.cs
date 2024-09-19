@@ -6,6 +6,7 @@ using TSLab.Script.Helpers;
 using TSLab.Script.Handlers;
 using TSLab.DataSource;
 using System.Linq;
+using TSLab.Script.Optimization;
 
 namespace TradingSystems
 {
@@ -141,11 +142,18 @@ namespace TradingSystems
 
         public void SetParameters(SystemParameters systemParameters)
         {
-            slowDonchian = (int)systemParameters.GetValue("slowDonchian");
-            fastDonchian = (int)systemParameters.GetValue("fastDonchian");
-            kAtrForStopLoss = (double)systemParameters.GetValue("kAtr");
-            atrPeriod = (int)systemParameters.GetValue("atrPeriod");
-            limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
+            var slowDonchianOp = (OptimProperty)systemParameters.GetValue("slowDonchian");
+            slowDonchian = (int)slowDonchianOp.Value;
+            var fastDonchianOp = (OptimProperty)systemParameters.GetValue("fastDonchian");
+            fastDonchian = (int)fastDonchianOp.Value;
+
+            var kAtrForStopLossOp = (OptimProperty)systemParameters.GetValue("kAtr");
+            kAtrForStopLoss = kAtrForStopLossOp.Value;
+            var atrPeriodOp = (OptimProperty)systemParameters.GetValue("atrPeriod");
+            atrPeriod = (int)atrPeriodOp.Value;
+
+            var limitOpenedPositionsOp = (OptimProperty)systemParameters.GetValue("limitOpenedPositions");
+            limitOpenedPositions = (int)limitOpenedPositionsOp.Value;
 
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
@@ -155,7 +163,16 @@ namespace TradingSystems
         {
             highest = converter.GetHighest(converter.GetHighPrices(security), slowDonchian);
             lowest = converter.GetLowest(converter.GetLowPrices(security), fastDonchian);
-            atr = Series.AverageTrueRange(security.Bars, atrPeriod);        
+            var candles = ConvertBarsForUsingInTsLabIndicators();
+            atr = Series.AverageTrueRange(candles, atrPeriod);        
+        }
+
+        private IReadOnlyList<IDataBar> ConvertBarsForUsingInTsLabIndicators()
+        {
+            var candles = new ReadAndAddList<IDataBar>();
+            foreach (var bar in security.Bars)            
+                candles.Add(bar);
+            return candles;
         }
 
         public void Paint(Context context)
