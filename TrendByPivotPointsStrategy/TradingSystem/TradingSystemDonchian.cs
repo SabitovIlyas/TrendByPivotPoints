@@ -142,19 +142,12 @@ namespace TradingSystems
 
         public void SetParameters(SystemParameters systemParameters)
         {
-            var slowDonchianOp = (OptimProperty)systemParameters.GetValue("slowDonchian");
-            slowDonchian = (int)slowDonchianOp.Value;
-            var fastDonchianOp = (OptimProperty)systemParameters.GetValue("fastDonchian");
-            fastDonchian = (int)fastDonchianOp.Value;
-
-            var kAtrForStopLossOp = (OptimProperty)systemParameters.GetValue("kAtr");
-            kAtrForStopLoss = kAtrForStopLossOp.Value;
-            var atrPeriodOp = (OptimProperty)systemParameters.GetValue("atrPeriod");
-            atrPeriod = (int)atrPeriodOp.Value;
-
-            var limitOpenedPositionsOp = (OptimProperty)systemParameters.GetValue("limitOpenedPositions");
-            limitOpenedPositions = (int)limitOpenedPositionsOp.Value;
-
+            slowDonchian = (int)systemParameters.GetValue("slowDonchian");            
+            fastDonchian = (int)systemParameters.GetValue("fastDonchian");
+            kAtrForStopLoss = (double)systemParameters.GetValue("kAtr");            
+            atrPeriod = (int)systemParameters.GetValue("atrPeriod");           
+            limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
+            
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }

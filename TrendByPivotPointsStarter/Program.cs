@@ -9,7 +9,7 @@ namespace TrendByPivotPointsStarter
 {
     class Program
     {
-        [STAThreadAttribute]
+        [STAThread]
         static void Main(string[] args)
         {
             Console.WriteLine("Старт!");

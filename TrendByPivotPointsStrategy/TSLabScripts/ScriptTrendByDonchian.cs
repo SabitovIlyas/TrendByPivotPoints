@@ -64,22 +64,22 @@ namespace TradingSystems
             system = new StarterDonchianTradingSystemTsLab(context, securities, logger);
             var systemParameters = new SystemParameters();       
             
-            systemParameters.Add("slowDonchian", slowDonchian);
-            systemParameters.Add("fastDonchian", fastDonchian);
-            systemParameters.Add("kAtr", kAtr);
-            systemParameters.Add("atrPeriod", atrPeriod);
+            systemParameters.Add("slowDonchian", (int)slowDonchian);
+            systemParameters.Add("fastDonchian", (int)fastDonchian);
+            systemParameters.Add("kAtr", (double)kAtr);
+            systemParameters.Add("atrPeriod", (int)atrPeriod);
 
-            systemParameters.Add("limitOpenedPositions", limitOpenedPositions);
-            systemParameters.Add("rateUSD", rateUSD);
-            systemParameters.Add("positionSide", positionSide);
-            systemParameters.Add("comission", comission);
+            systemParameters.Add("limitOpenedPositions", (int)limitOpenedPositions);
+            systemParameters.Add("rateUSD", (double)rateUSD);
+            systemParameters.Add("positionSide", (int)positionSide);
+            systemParameters.Add("comission", (double)comission);
 
-            systemParameters.Add("riskValuePrcnt", riskValuePrcnt);
-            systemParameters.Add("securityNumber", securityNumber);
-            systemParameters.Add("instrumentsGroup", instrumentsGroup);
-            systemParameters.Add("shares", shares);
+            systemParameters.Add("riskValuePrcnt", (double)riskValuePrcnt);
+            systemParameters.Add("securityNumber", (int)securityNumber);
+            systemParameters.Add("instrumentsGroup", (int)instrumentsGroup);
+            systemParameters.Add("shares", (int)shares);
 
-            systemParameters.Add("isUSD", isUSD);
+            systemParameters.Add("isUSD", (int)isUSD);
 
             try
             {

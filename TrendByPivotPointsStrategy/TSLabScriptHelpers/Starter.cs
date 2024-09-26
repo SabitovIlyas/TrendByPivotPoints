@@ -55,14 +55,10 @@ namespace TradingSystems
             this.systemParameters = systemParameters;
             try
             {
-                var positionSideOp = (OptimProperty)systemParameters.GetValue("positionSide");
-                var positionSide = (int)positionSideOp.Value;
-                var isUSDop = (OptimProperty)systemParameters.GetValue("isUSD");
-                var isUSD = (int)isUSDop.Value;
-                var rateUSDop = (OptimProperty)systemParameters.GetValue("rateUSD");
-                rateUSD = rateUSDop.Value;
-                var sharesOp = (OptimProperty)systemParameters.GetValue("shares");
-                shares = (int)sharesOp.Value;
+                var positionSide = (int)systemParameters.GetValue("positionSide");                
+                var isUSD = (int)systemParameters.GetValue("isUSD");                
+                var rateUSD = (double)systemParameters.GetValue("rateUSD");                
+                var shares = (int)systemParameters.GetValue("shares");                
                                 
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;
