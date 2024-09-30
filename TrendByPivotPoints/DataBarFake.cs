@@ -10,9 +10,10 @@ namespace TradingSystems.Tests
         double open;
         double low;
         double high;
-        double close;        
+        double close;
+        double volume;
 
-        public double Volume => throw new NotImplementedException();
+        public double Volume { get => volume; set => volume = value; }
 
         public double Interest => throw new NotImplementedException();
 
