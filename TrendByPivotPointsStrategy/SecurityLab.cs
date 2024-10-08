@@ -17,7 +17,7 @@ namespace TradingSystems
         public double? StepPrice => 1;
         public double? BuyDeposit => 4400;
         public bool IsLaboratory => throw new System.NotImplementedException();
-        public bool IsRealTimeTrading => throw new System.NotImplementedException();
+        public bool IsRealTimeTrading => false;
         public int RealTimeActualBarNumber => throw new NotImplementedException();
         public double GObuying { get; private set; }
         public double GOselling { get; private set; }

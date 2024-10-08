@@ -57,8 +57,10 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("atrPeriod", 20);
 
             systemParameters.Add("limitOpenedPositions", 4);
+            systemParameters.Add("isUSD", 1);
             systemParameters.Add("rateUSD", 100d);
             systemParameters.Add("positionSide", 0);
+            systemParameters.Add("shares", 10);
 
             return systemParameters;
         }

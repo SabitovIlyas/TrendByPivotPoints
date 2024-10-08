@@ -21,10 +21,7 @@ namespace TradingSystems
         
         private IList<double> atr;
 
-        private PositionSide positionSide;
-
-        private string signalNameForOpenPosition = "";
-        private string signalNameForClosePosition = "";
+        private PositionSide positionSide;        
 
         private string name = "TradingSystemDonchian";
         private string parametersCombination;
@@ -50,9 +47,9 @@ namespace TradingSystems
         private void BuyIfGreater(double price, int contracts, string notes)
         {
             if (positionSide == PositionSide.Long)
-                sec.Positions.BuyIfGreater(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
+                security.BuyIfGreater(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
             if (positionSide == PositionSide.Short)
-                sec.Positions.SellIfLess(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
+                security.SellIfLess(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
         }
 
         protected override double GetStopPrice(string notes = "")
@@ -114,7 +111,8 @@ namespace TradingSystems
 
             else
             {
-                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))                
+                var reasons = context.LastRecalcReasons();
+                if (reasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))                
                     Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
 
                 var position = GetOpenedPosition(notes);

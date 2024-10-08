@@ -57,8 +57,8 @@ namespace TradingSystems
             {
                 var positionSide = (int)systemParameters.GetValue("positionSide");                
                 var isUSD = (int)systemParameters.GetValue("isUSD");                
-                var rateUSD = (double)systemParameters.GetValue("rateUSD");                
-                var shares = (int)systemParameters.GetValue("shares");                
+                rateUSD = (double)systemParameters.GetValue("rateUSD");                
+                shares = (int)systemParameters.GetValue("shares");                
                                 
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;

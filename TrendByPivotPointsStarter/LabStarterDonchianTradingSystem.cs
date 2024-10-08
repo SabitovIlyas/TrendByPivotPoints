@@ -25,17 +25,9 @@ namespace TrendByPivotPointsStarter
             this.systemParameters = systemParameters;
             try
             {
-                var positionSide = (int)systemParameters.GetValue("positionSide");                
-                rateUSD = (double)systemParameters.GetValue("rateUSD");
+                base.SetParameters(systemParameters);
                 kAtr = (double)systemParameters.GetValue("kAtr");
-                limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
-
-                if (positionSide == 0)
-                    base.positionSide = PositionSide.Long;
-                else if (positionSide == 1)
-                    base.positionSide = PositionSide.Short;
-                else
-                    base.positionSide = PositionSide.Null;                
+                limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");                
             }
             catch (KeyNotFoundException e)
             {

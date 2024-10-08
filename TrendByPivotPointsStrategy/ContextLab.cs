@@ -1,4 +1,7 @@
-﻿namespace TradingSystems
+﻿using System.Collections.Generic;
+using TSLab.Script;
+
+namespace TradingSystems
 {
     public class ContextLab : Context
     {
@@ -9,6 +12,11 @@
         public Pane CreateGraphPane(string name, string title)
         {
             throw new System.NotImplementedException();
+        }
+
+        public IReadOnlyList<RecalcReason> LastRecalcReasons()
+        {
+            return new ReadAndAddList<RecalcReason>();
         }
     }
 }

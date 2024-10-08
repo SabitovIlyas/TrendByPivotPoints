@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
@@ -27,6 +28,11 @@ namespace TradingSystems
         {
             var pane = context.CreateGraphPane(name, title);
             return new PaneTSLab(pane);
+        }
+
+        public IReadOnlyList<RecalcReason> LastRecalcReasons()
+        {
+            return context.Runtime.LastRecalcReasons;
         }
     }
 }
