@@ -19,7 +19,7 @@ namespace TradingSystems
             if (switchOn)
             {
                 var log = string.Format(text, args);
-                Console.WriteLine(text);
+                Console.WriteLine(log);
             }
         }
     }
