@@ -13,8 +13,8 @@ namespace TradingSystems
         public string Name => security.ToString();
         public Currency Currency { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public double GObuying => throw new NotImplementedException();
-        public double GOselling => throw new NotImplementedException();
+        public double GObuying => goBuying;
+        public double GOselling => goSelling;
         public List<double> HighPrices => security.HighPrices.ToList();
         public List<double> LowPrices => security.LowPrices.ToList();
         public List<Bar> Bars => bars;
@@ -47,8 +47,8 @@ namespace TradingSystems
                     }
                 }
             }
-        }       
-        
+        }
+
         public Bar LastBar
         {
             get
@@ -71,8 +71,8 @@ namespace TradingSystems
                 }
                 return barNumber;
             }
-        }      
-        
+        }
+
         private PositionTSLab lastLongPositionClosed;
         private PositionTSLab lastShortPositionClosed;
         private int barNumber;
@@ -81,6 +81,8 @@ namespace TradingSystems
         private ISecurity baseSecurity = new SecurityNull();
         private IContext context;
         private List<Bar> bars = new List<Bar>();
+        private double goBuying;
+        private double goSelling;
 
         public SecurityTSLab(ISecurity security)
         {
@@ -106,7 +108,7 @@ namespace TradingSystems
         public SecurityTSLab(ISecurity baseSecurity, List<Bar> bars)
         {
             this.baseSecurity = baseSecurity;
-            finInfo = baseSecurity.FinInfo;          
+            finInfo = baseSecurity.FinInfo;
             InitializeSecurity(baseSecurity);
             CompareBarsBaseSecurityWithCompressedSecurity();
         }
@@ -142,11 +144,14 @@ namespace TradingSystems
             barNumber = bars.Count - 1;
             DefineIsLaboratory();
             ConvertBars();
-        }
+            //остановился здесь
+            goBuying = security.FinInfo.BuyDeposit ?? double.MaxValue;
+            goSelling = security.FinInfo.SellDeposit ?? double.MaxValue;
+        }        
 
         private void ConvertBars()
         {
-            var bars = new List<Bar>();
+            bars = new List<Bar>();
             foreach (var bar in security.Bars)
             {
                 var newBar = Bar.Create(bar.Date, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume);
@@ -288,7 +293,7 @@ namespace TradingSystems
             for (var i = 0; i <= barNumber; i++)
             {
                 var bar = GetBarIDataBar(i);
-                bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date, Volume = bar.Volume }); 
+                bars.Add(new Bar() { Open = bar.Open, High = bar.High, Low = bar.Low, Close = bar.Close, Date = bar.Date, Volume = bar.Volume });
             }
 
             return bars;
@@ -331,7 +336,7 @@ namespace TradingSystems
 
             lastShortPositionClosed = new PositionTSLab(position);
             return lastShortPositionClosed;
-        }         
+        }
 
         public Bar GetBar(int barNumber)
         {
@@ -352,7 +357,7 @@ namespace TradingSystems
 
             for (int i = 1; i < security.Bars.Count; i++)
             {
-                IDataBar baseBar = security.Bars[i];                
+                IDataBar baseBar = security.Bars[i];
 
                 if (date.Date != baseBar.Date.Date)
                 {
@@ -369,7 +374,7 @@ namespace TradingSystems
             }
 
             bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume, Ticker = security.Symbol, Period = "1D" });
-            
+
             var result = CustomSecurity.Create(bars);
             return result;
         }
@@ -381,12 +386,21 @@ namespace TradingSystems
             high = bar.High;
             low = bar.Low;
             close = bar.Close;
-            volume = bar.Volume;            
+            volume = bar.Volume;
         }
 
         public Position GetLastActiveForSignal(string signalName, int barNumber)
         {
-            throw new NotImplementedException();
+            var positions = security.Positions;
+            IPosition position = null;
+            if (positions == null || positions.Count() == 0)
+                return null;
+
+            position = positions.GetLastActiveForSignal(signalName, barNumber);
+            if  (position == null)
+                return null;
+
+            return new PositionTSLab(position);
         }
 
         public void BuyIfGreater(int barNumber, int contracts, double price, string signalNameForOpenPosition, bool isConverted = false)
