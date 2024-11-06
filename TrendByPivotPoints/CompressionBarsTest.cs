@@ -32,7 +32,8 @@ namespace TradingSystems.Tests
             bar = new Bar() { Date = new DateTime(2021, 6, 19, 14, 40, 0), Open = 16, High = 18, Low = 15, Close = 15 };
             sourceBars.Add(bar);
 
-            ISecurity securityBase = CustomSecurity.Create(sourceBars);
+            var finInfo = new FinInfo();
+            ISecurity securityBase = CustomSecurity.Create(initDeposit: 1000000, finInfo, sourceBars);
 
             IReadOnlyList<Bar> exptectedBars = new ReadAndAddList<Bar>();
             var barsCompressed = (ReadAndAddList<Bar>)exptectedBars;

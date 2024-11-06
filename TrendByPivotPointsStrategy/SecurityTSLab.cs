@@ -144,9 +144,8 @@ namespace TradingSystems
             barNumber = bars.Count - 1;
             DefineIsLaboratory();
             ConvertBars();
-            //остановился здесь
-            goBuying = security.FinInfo.BuyDeposit ?? double.MaxValue;
-            goSelling = security.FinInfo.SellDeposit ?? double.MaxValue;
+            goBuying = security.FinInfo.BuyDeposit ?? (1 / double.MaxValue);
+            goSelling = security.FinInfo.SellDeposit ?? (1 / double.MaxValue);
         }        
 
         private void ConvertBars()
