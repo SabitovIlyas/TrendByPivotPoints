@@ -25,7 +25,6 @@ namespace TradingSystems
 
         private CustomSecurity(IReadOnlyList<IDataBar> bars)
         {
-            //остановился здесь
             this.bars = bars;
 
             if (bars is List<Bar> && bars.Count > 0)

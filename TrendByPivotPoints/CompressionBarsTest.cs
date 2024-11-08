@@ -33,7 +33,7 @@ namespace TradingSystems.Tests
             sourceBars.Add(bar);
 
             var finInfo = new FinInfo();
-            ISecurity securityBase = CustomSecurity.Create(initDeposit: 1000000, finInfo, sourceBars);
+            ISecurity securityBase = CustomSecurity.Create(initDeposit: 1000000, finInfo, sourceBars);            
 
             IReadOnlyList<Bar> exptectedBars = new ReadAndAddList<Bar>();
             var barsCompressed = (ReadAndAddList<Bar>)exptectedBars;
