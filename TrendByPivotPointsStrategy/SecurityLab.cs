@@ -52,6 +52,16 @@ namespace TradingSystems
             this.GOselling = GOselling;
         }
 
+        public SecurityLab(Currency currency, int shares, List<Bar> bars)
+        {
+            if (bars != null || bars.Count > 0)
+                Name = bars.First().Ticker;
+            this.currency = currency;
+            this.shares = shares;
+            Bars = bars;
+            Initialize();
+        }
+
         public SecurityLab(string securityName, Currency currency, int shares,
             double GObuying, double GOselling, List<Bar> bars)
         {

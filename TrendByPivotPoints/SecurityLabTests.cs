@@ -1,26 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TradingSystems;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TSLab.Script.Handlers;
-using TSLab.DataSource;
-using TSLab.Script;
 
 namespace TradingSystems.Tests
 {
     [TestClass()]
     public class SecurityLabTests
     {
-        List<Bar> bars;
         SecurityLab security;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            bars = new List<Bar>() {
+            var bars = new List<Bar>() {
                 Bar.Create(new DateTime(2023, 11, 17), 90090, 91400, 89926, 91012),
                 Bar.Create(new DateTime(2023, 11, 20), 91036, 91233, 88744, 89003),
                 Bar.Create(new DateTime(2023, 11, 22), 90082, 90657, 88787, 89233),
@@ -87,6 +79,25 @@ namespace TradingSystems.Tests
             Assert.IsNotNull(closedPosition);
 
             Assert.AreEqual(expected:position, actual:closedPosition);
+        }
+
+        [TestMethod()]
+        public void OpenAndClosePosition_Test()
+        {
+            security.Update(barNumber: 0);
+            security.SellIfLess(barNumber: 1, contracts: 1, entryPricePlanned: 89900,
+                "SE", isConverted: false);
+
+            security.Update(barNumber: 1);
+            var position = security.GetLastActiveForSignal("SE", barNumber: 1);
+            Assert.IsNotNull(position);
+
+            position.CloseAtMarket(barNumber: 2, "SXS");
+            security.Update(barNumber: 2);
+            var closedPosition = security.GetLastClosedShortPosition(barNumber: 2);
+            Assert.IsNotNull(closedPosition);
+
+            Assert.AreEqual(expected: position, actual: closedPosition);
         }
     }
 }
