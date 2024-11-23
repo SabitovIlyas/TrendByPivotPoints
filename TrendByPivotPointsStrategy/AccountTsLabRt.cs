@@ -13,7 +13,7 @@ namespace TradingSystems
 
         public double GOselling => sec.FinInfo.SellDeposit ?? double.MaxValue;
 
-        Logger logger = new NullLogger();
+        Logger logger = new LoggerNull();
 
 
         ISecurity sec;

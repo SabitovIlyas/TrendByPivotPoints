@@ -1,6 +1,6 @@
 ﻿namespace TradingSystems
 {
-    public class NullLogger : Logger
+    public class LoggerNull : Logger
     {     
         public override void Log(string text)
         {

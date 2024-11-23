@@ -89,7 +89,7 @@
     <Compile Include="ContractsManager.cs" />
     <Compile Include="Loggers\ConsoleLogger.cs" />
     <Compile Include="NullDataBar.cs" />
-    <Compile Include="Loggers\NullLogger.cs" />
+    <Compile Include="Loggers\LoggerNull.cs" />
     <Compile Include="ObjectDiagnosticExtensions.cs" />
     <Compile Include="Pane.cs" />
     <Compile Include="PaneTSLab.cs" />

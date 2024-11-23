@@ -8,7 +8,7 @@ namespace TradingSystems
         private double riskValuePrcnt;
         private double riskValue;
         private Account account;
-        private Logger logger = new NullLogger();
+        private Logger logger = new LoggerNull();
         public Logger Logger { get { return logger; } set { logger = value; } }
 
         public RiskManagerReal(Account account, Logger logger, double riskValuePrcnt = 100)

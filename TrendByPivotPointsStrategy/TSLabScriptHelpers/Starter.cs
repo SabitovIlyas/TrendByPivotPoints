@@ -17,7 +17,7 @@ namespace TradingSystems
         protected Currency currency;
 
         protected int shares;
-        protected Logger logger = new NullLogger();
+        protected Logger logger = new LoggerNull();
         protected Account account;
         protected SystemParameters systemParameters;
         protected List<Security> securities;

@@ -11,7 +11,7 @@ namespace TradingSystems
         {
             return new StopLossExtremums(parametersCombination, security, positionSide, atr, pivotPointBreakDownSide, realTimeTrading);
         }
-        public Logger Logger { get; set; } = new NullLogger();
+        public Logger Logger { get; set; } = new LoggerNull();
 
         public IContext ctx { get; set; }
         public bool IsStopLossUpdateWhenBarIsClosedOnly { get; set; } = true;

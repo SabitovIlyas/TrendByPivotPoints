@@ -7,12 +7,12 @@ using TSLab.Script;
 
 namespace TrendByPivotPointsStarter
 {
-    public class LabStarterDonchianTradingSystem : Starter
+    public class StarterDonchianTradingSystemLab : Starter
     {
         private double kAtr;
         private int limitOpenedPositions;
 
-        public LabStarterDonchianTradingSystem(Context context, List<Security> securities,
+        public StarterDonchianTradingSystemLab(Context context, List<Security> securities,
             Logger logger)
         {
             this.context = context;

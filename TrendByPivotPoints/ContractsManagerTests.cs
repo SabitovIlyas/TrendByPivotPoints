@@ -9,7 +9,7 @@ namespace TrendByPivotPoints.Tests
         AccountFake account;
         ContractsManager contractsManager;
         RiskManagerReal riskManager;
-        Logger logger = new NullLogger();
+        Logger logger = new LoggerNull();
         Currency baseCurrency = Currency.Ruble;
         CurrencyConverter currencyConverter;
 

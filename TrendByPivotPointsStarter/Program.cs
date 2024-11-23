@@ -34,7 +34,7 @@ namespace TrendByPivotPointsStarter
                     5000, 4500, bars);
 
                 var securities = new List<Security>() { security };
-                var system = new LabStarterDonchianTradingSystem(context, securities, logger);
+                var system = new StarterDonchianTradingSystemLab(context, securities, logger);
                 var systemParameters = GetSystemParameters();
                 system.SetParameters(systemParameters);
                 system.Initialize();

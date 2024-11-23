@@ -12,7 +12,7 @@ namespace TrendByPivotPoints.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            var logger = new NullLogger();
+            var logger = new LoggerNull();
             var security = new SecurityLab(currency: Currency.Ruble, shares: 1);
             account = new AccountFake(initDeposit: 1000.0, baseCurrency: Currency.Ruble, logger: logger);
             riskManagerReal = new RiskManagerReal(account, logger, riskValuePrcnt: 5.00); ;

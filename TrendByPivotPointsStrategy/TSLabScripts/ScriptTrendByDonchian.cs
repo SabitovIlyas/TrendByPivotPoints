@@ -40,7 +40,7 @@ namespace TradingSystems
             if ((int)isLoggerOn == 1)
                 logger = new TsLabLogger(context);
             else
-                logger = new NullLogger();
+                logger = new LoggerNull();
 
             switch ((int)mode)
             {

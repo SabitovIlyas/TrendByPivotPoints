@@ -1,13 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using TrendByPivotPointsStarter;
 
 namespace TradingSystems.Tests
 {
-    public class TradeingSecurityLabTests
+    public class TradingSecurityLabTests
     {
         List<Bar> bars;
-        SecurityLab security;
+        Security security;
 
         [TestInitialize]
         public void TestInitialize()
@@ -42,6 +43,21 @@ namespace TradingSystems.Tests
             };
 
             security = new SecurityLab(Currency.Ruble, shares: 1, bars);
+        }
+
+        [TestMethod()]
+        public void GetLastActiveForSignal_Test()
+        {
+            var context = new ContextLab();
+            var securities = new List<Security>() { security };
+            var logger = new LoggerNull();
+            var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
+            var systemParameters = new SystemParameters();
+            systemParameters.Add("slowDonchian", 10);
+            systemParameters.Add("fastDonchian", 5);
+            starter.SetParameters(systemParameters);
+            starter.Initialize();
+            starter.Run();
         }
     }
 }

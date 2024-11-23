@@ -15,7 +15,7 @@ namespace TradingSystems
 
         public IContext ctx { get; set; }
         public bool IsStopLossUpdateWhenBarIsClosedOnly { get; set; } = false;
-        public Logger Logger { get; set; } = new NullLogger();
+        public Logger Logger { get; set; } = new LoggerNull();
 
         private string name = "TrailingStopLoss";
         private Security security;

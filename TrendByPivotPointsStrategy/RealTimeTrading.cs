@@ -10,7 +10,7 @@ namespace TradingSystems
         {
             return new RealTimeTrading(positionSide, tradingSystemDescription, ctx);
         }
-        public Logger Logger { get; set; } = new NullLogger();
+        public Logger Logger { get; set; } = new LoggerNull();
         
         private PositionSide positionSide;
         private string tradingSystemDescription;
