@@ -45,6 +45,9 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.2.1.1\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -95,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj">
-      <Project>{A9C7C965-F0F0-48ED-986A-21D98A8221FC}</Project>
+      <Project>{a9c7c965-f0f0-48ed-986a-21d98a8221fc}</Project>
       <Name>TrendByPivotPointsStarter</Name>
     </ProjectReference>
     <ProjectReference Include="..\TrendByPivotPointsStrategy\TradingSystems.csproj">

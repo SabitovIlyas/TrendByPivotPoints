@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using TradingSystems;
-using TSLab.Script.Handlers;
-using TSLab.Script;
 
 namespace TrendByPivotPointsStarter
 {

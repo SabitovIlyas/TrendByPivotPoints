@@ -44,6 +44,9 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.2.2.7\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -67,6 +70,10 @@
     <ProjectReference Include="..\TrendByPivotPointsOptimizator\TrendByPivotPointsOptimizator.csproj">
       <Project>{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}</Project>
       <Name>TrendByPivotPointsOptimizator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj">
+      <Project>{a9c7c965-f0f0-48ed-986a-21d98a8221fc}</Project>
+      <Name>TrendByPivotPointsStarter</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

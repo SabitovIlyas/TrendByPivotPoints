@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using TradingSystems;
 using TrendByPivotPointsStarter;
 
 namespace TradingSystems.Tests
@@ -51,6 +52,7 @@ namespace TradingSystems.Tests
             var context = new ContextLab();
             var securities = new List<Security>() { security };
             var logger = new LoggerNull();
+            
             var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
             systemParameters.Add("slowDonchian", 10);
