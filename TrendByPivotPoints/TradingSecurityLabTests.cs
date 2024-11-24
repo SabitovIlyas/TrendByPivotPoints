@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 using TradingSystems;
 using TrendByPivotPointsStarter;
 
@@ -10,10 +12,9 @@ namespace TradingSystems.Tests
     {
         List<Bar> bars;
         Security security;
-
         [TestInitialize]
         public void TestInitialize()
-        {
+        {   
             bars = new List<Bar>()
             {
                 Bar.Create(new DateTime(2025,11,27,10,00,00),90000,90000,90000,90000,1, "SPFB.TEST", "1",0),
@@ -52,8 +53,8 @@ namespace TradingSystems.Tests
             var context = new ContextLab();
             var securities = new List<Security>() { security };
             var logger = new LoggerNull();
-            
-            var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
+            var starter = new TrendByPivotPointsStarter.StarterDonchianTradingSystemLab(context, securities, logger);
+            //var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
