@@ -1,13 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
-using TradingSystems;
 using TrendByPivotPointsStarter;
 
 namespace TradingSystems.Tests
 {
+    [TestClass()]
     public class TradingSecurityLabTests
     {
         List<Bar> bars;
@@ -52,15 +50,25 @@ namespace TradingSystems.Tests
         {
             var context = new ContextLab();
             var securities = new List<Security>() { security };
-            var logger = new LoggerNull();
-            var starter = new TrendByPivotPointsStarter.StarterDonchianTradingSystemLab(context, securities, logger);
-            //var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
+            var logger = new LoggerNull();            
+            var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
+            
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
+            systemParameters.Add("kAtr", 0d);   //тут будет неправильный стоп-лосс. Сделать проверку на kAtr = 0
+            systemParameters.Add("atrPeriod", 20);
+            systemParameters.Add("limitOpenedPositions", 1);
+            systemParameters.Add("isUSD", 0);
+            systemParameters.Add("rateUSD", 0d);
+            systemParameters.Add("positionSide", 0);
+            systemParameters.Add("shares", 1);
+
             starter.SetParameters(systemParameters);
             starter.Initialize();
             starter.Run();
+            var position = security.GetLastActiveForSignal("LE", barNumber: 15);
+            Assert.IsNotNull(position);            
         }
     }
 }

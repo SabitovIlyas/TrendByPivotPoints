@@ -59,11 +59,14 @@ namespace TradingSystems
             {
                 var position = GetOpenedPosition(notes);
                 stopPriceAtr = converter.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);
+                
             }
             else
                 stopPriceAtr = converter.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
             var stopPriceDonchian = lowest[barNumber];
-            return converter.Maximum(stopPriceAtr, stopPriceDonchian);
+            if (kAtrForStopLoss > 0)
+                return converter.Maximum(stopPriceAtr, stopPriceDonchian);
+            return stopPriceDonchian;
         }        
 
         protected override void CheckPositionOpenLongCase(int positionNumber)
