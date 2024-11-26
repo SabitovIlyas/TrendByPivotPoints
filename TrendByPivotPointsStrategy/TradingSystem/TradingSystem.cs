@@ -25,6 +25,7 @@ namespace TradingSystems
         protected double entryPricePlanned;
         protected double currentPrice;
         protected Context context;
+        //Я здесь. Хочу ввести претрейд.
 
         public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Context context, Logger logger)
         {

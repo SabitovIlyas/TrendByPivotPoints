@@ -46,6 +46,9 @@ namespace TradingSystems
 
         private void BuyIfGreater(double price, int contracts, string notes)
         {
+            if (contracts <= 0)
+                return;
+
             if (positionSide == PositionSide.Long)
                 security.BuyIfGreater(barNumber + 1, contracts, price, signalNameForOpenPosition + notes);
             if (positionSide == PositionSide.Short)
@@ -58,8 +61,7 @@ namespace TradingSystems
             if (IsPositionOpen(notes))
             {
                 var position = GetOpenedPosition(notes);
-                stopPriceAtr = converter.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);
-                
+                stopPriceAtr = converter.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);                
             }
             else
                 stopPriceAtr = converter.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);

@@ -67,7 +67,7 @@ namespace TradingSystems.Tests
             starter.SetParameters(systemParameters);
             starter.Initialize();
             starter.Run();
-            var position = security.GetLastActiveForSignal("LE", barNumber: 15);
+            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: bars.Count-1);
             Assert.IsNotNull(position);            
         }
     }
