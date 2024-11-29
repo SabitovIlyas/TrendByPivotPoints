@@ -35,7 +35,7 @@ namespace TradingSystems
         private int atrPeriod;
         private double kAtrForStopLoss;
         private double kAtrForOpenPosition = 0.5;
-        private double openPositionPrice;
+        private double openPositionPrice;        
 
         public TradingSystemDonchian(List<Security> securities, 
             ContractsManager contractsManager, Indicators indicators, Context context,
@@ -154,9 +154,10 @@ namespace TradingSystems
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
-
+        
         public override void CalculateIndicators()
         {
+            nonTradingPeriod = Math.Max(slowDonchian, atrPeriod);
             highest = converter.GetHighest(converter.GetHighPrices(security), slowDonchian);
             lowest = converter.GetLowest(converter.GetLowPrices(security), fastDonchian);
             var candles = ConvertBarsForUsingInTsLabIndicators();

@@ -57,12 +57,16 @@ namespace TradingSystems.Tests
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
             systemParameters.Add("kAtr", 0d);   //тут будет неправильный стоп-лосс. Сделать проверку на kAtr = 0
-            systemParameters.Add("atrPeriod", 20);
+            systemParameters.Add("atrPeriod", 10);
             systemParameters.Add("limitOpenedPositions", 1);
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
             systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", 1);
+
+            systemParameters.Add("Equity", 100000); //реализовать 
+            systemParameters.Add("riskValue", 1); //реализовать
+            systemParameters.Add("contracts", 1); //реализовать
 
             starter.SetParameters(systemParameters);
             starter.Initialize();

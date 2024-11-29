@@ -25,7 +25,7 @@ namespace TradingSystems
         protected double entryPricePlanned;
         protected double currentPrice;
         protected Context context;
-        //Я здесь. Хочу ввести претрейд.
+        protected int nonTradingPeriod;        
 
         public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Context context, Logger logger)
         {
@@ -45,6 +45,9 @@ namespace TradingSystems
         public abstract void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing);                       
         public virtual void Update(int barNumber)
         {
+            if (barNumber < nonTradingPeriod)
+                return;
+
             try
             {
                 this.barNumber = barNumber;
