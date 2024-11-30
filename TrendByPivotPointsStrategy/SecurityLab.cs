@@ -9,7 +9,7 @@ namespace TradingSystems
     public class SecurityLab : Security
     {
         public Currency Currency { get => currency; set { } }
-        public int Shares { get => shares; set { } }        
+        public int Shares { get => shares; set { } }
         public List<Bar> Bars { get; private set; }
         public string Name { get; private set; }
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
@@ -22,7 +22,7 @@ namespace TradingSystems
         public double GObuying { get; private set; }
         public double GOselling { get; private set; }
         public List<double> HighPrices { get; private set; }
-        public List<double> LowPrices { get; private set; }       
+        public List<double> LowPrices { get; private set; }
 
         private Currency currency;
         private int shares;
@@ -83,7 +83,7 @@ namespace TradingSystems
                 HighPrices.Add(bar.High);
                 LowPrices.Add(bar.Low);
             }
-        }       
+        }
 
         public Bar LastBar
         {
@@ -91,7 +91,7 @@ namespace TradingSystems
             {
                 return Bars?.Last();
             }
-        }       
+        }
 
         public Bar GetBar(int barNumer)
         {
@@ -155,7 +155,7 @@ namespace TradingSystems
 
         public bool IsRealTimeActualBar(int barNumber)
         {
-            return true;            
+            return true;
         }
 
         public void ResetBarNumberToLastBarNumber()
@@ -165,9 +165,9 @@ namespace TradingSystems
         public Position GetLastActiveForSignal(string signalName, int barNumber)
         {
             return activePositions.Find(p => p.SignalNameForOpenPosition == signalName);
-        }        
+        }
 
-        public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned, 
+        public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned,
             string signalNameForOpenPosition, bool isConverted = false)
         {
             converter = new Converter(isConverted);
@@ -188,32 +188,43 @@ namespace TradingSystems
                     signalNameForOpenPosition);
                 orders.Add(activeOrder);
                 activeOrders.Add(activeOrder);
-            }            
+            }
         }
 
-        public void SellIfLess(int barNumber, int contracts, double entryPricePlanned, 
+        public void SellIfLess(int barNumber, int contracts, double entryPricePlanned,
             string signalNameForOpenPosition, bool isConverted = false)
         {
             BuyIfGreater(barNumber, contracts, entryPricePlanned, signalNameForOpenPosition,
                 isConverted: true);
         }
 
-        public void CloseAtMarket(int barNumber, string signalNameForClosePosition, 
+        public void CloseAtMarket(int barNumber, string signalNameForClosePosition,
             PositionLab position, out Order closeOrder)
         {
-            closeOrder = new Order(barNumber, position.PositionSide, double.NaN, 
+            closeOrder = new Order(barNumber, position.PositionSide, double.NaN,
                 position.Contracts, signalNameForClosePosition, OrderType.Market);
             orders.Add(closeOrder);
             activeOrders.Add(closeOrder);
         }
 
-        public void CloseAtStop(int barNumber, double stopPrice, 
+        public void CloseAtStop(int barNumber, double stopPrice,
             string signalNameForClosePosition, PositionLab position, out Order closeOrder)
         {
+            var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition);
+
+            if (order != null && order.Price == stopPrice)
+            {
+                closeOrder = null;
+                return;
+            }
+
             closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
-                position.Contracts, signalNameForClosePosition);
+         position.Contracts, signalNameForClosePosition);
             orders.Add(closeOrder);
             activeOrders.Add(closeOrder);
+
+            if (order != null && order.Price != stopPrice)
+                activeOrders.Remove(order);                                   
         }
 
         public void Update(int barNumber)

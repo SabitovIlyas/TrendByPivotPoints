@@ -64,15 +64,15 @@ namespace TradingSystems.Tests
             systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", 1);
 
-            systemParameters.Add("Equity", 100000); //реализовать 
-            systemParameters.Add("riskValue", 1); //реализовать
-            systemParameters.Add("contracts", 1); //реализовать
+            systemParameters.Add("Equity", 100000); //реализовать и оттестировать в другом тесте
+            systemParameters.Add("riskValue", 1); //реализовать и оттестировать в другом тесте
+            systemParameters.Add("contracts", 1);
 
             starter.SetParameters(systemParameters);
             starter.Initialize();
             starter.Run();
-            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: 17);
-            //var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: bars.Count-1);
+            //var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: 17);
+            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: bars.Count - 1);//нахожусь здесь
             Assert.IsNotNull(position);            
         }
     }

@@ -13,6 +13,7 @@ namespace TradingSystems
 
         private Logger logger;
         private CurrencyConverter currencyConverter;
+        private int contracts;
 
         public ContractsManager(RiskManager riskManager, Account account, 
             Currency currency, CurrencyConverter currencyConverter, Logger logger)
@@ -38,6 +39,16 @@ namespace TradingSystems
             this.shares = shares;
         }
 
+        public ContractsManager(int contracts, Account account,
+            Currency currency, CurrencyConverter currencyConverter, int shares,
+            Logger logger)
+        {
+            Initialize(riskManager, account, currencyConverter, logger);
+            this.currency = currency;
+            this.shares = shares;
+            this.contracts = contracts;
+        }
+
         private void Initialize(RiskManager riskManager, Account account, 
             CurrencyConverter currencyConverter, Logger logger)
         {
@@ -48,7 +59,10 @@ namespace TradingSystems
         }
 
         public virtual int GetQntContracts(Security security, double entryPrice, double stopPrice, PositionSide positionSide)
-        {            
+        {
+            if (contracts > 0)
+                return contracts;
+            
             logger.Log("Получаем количество контрактов для открываемой позиции...");
             var message = string.Format("Направление открываемой позиции: {0}; предполагаемая цена входа: {1}; расчётная цена выхода: {2}.",
                 positionSide, entryPrice, stopPrice);

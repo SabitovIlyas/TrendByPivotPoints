@@ -38,17 +38,26 @@ namespace TrendByPivotPointsStarter
             base.Initialize();
             
             var baseCurrency = Currency.Ruble;
-            account = new AccountLab(initDeposit: 1000000, baseCurrency, securities, logger);
-            var riskValuePrcntCalc = kAtr * limitOpenedPositions;           
-
-            riskValuePrcnt = kAtr;
-            var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
+            account = new AccountLab(initDeposit: 1000000, baseCurrency, securities, logger);            
+            
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
 
             currency = securityFirst.Currency;
-            var contractsManager = new ContractsManager(riskManager, account, currency,
+            ContractsManager contractsManager;
+            if (contracts <= 0)
+            {
+                riskValuePrcnt = kAtr;
+                var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
+                contractsManager = new ContractsManager(riskManager, account, currency,
                 currencyConverter, shares, logger);
+            }
+            else
+            {
+                contractsManager = new ContractsManager(contracts, account, currency,
+                currencyConverter, shares, logger);
+            }
+
             var indicators = new IndicatorsTsLab();
 
             tradingSystems = new List<TradingSystem>();

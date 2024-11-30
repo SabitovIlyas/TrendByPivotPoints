@@ -23,6 +23,7 @@ namespace TradingSystems
         protected List<Security> securities;
         protected Security securityFirst;
         protected Context context;
+        protected int contracts;
 
         public Logger Logger { get { return logger; } set { logger = value; } }
 
@@ -58,8 +59,9 @@ namespace TradingSystems
                 var positionSide = (int)systemParameters.GetValue("positionSide");                
                 var isUSD = (int)systemParameters.GetValue("isUSD");                
                 rateUSD = (double)systemParameters.GetValue("rateUSD");                
-                shares = (int)systemParameters.GetValue("shares");                
-                                
+                shares = (int)systemParameters.GetValue("shares");
+                contracts = (int)systemParameters.GetValue("contracts");
+
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;
                 else if (positionSide == 1)
