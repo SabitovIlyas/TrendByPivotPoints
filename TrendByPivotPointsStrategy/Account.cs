@@ -16,10 +16,10 @@ namespace TradingSystems
         protected Dictionary<Security, Position> lastShortPositionsClosed = new Dictionary<Security, Position>();        
         protected Currency currency;
 
-        public void Update(int barNumber)
+        public virtual void Update(int barNumber)
         {
             foreach (var security in securities)
-            {
+            {                
                 if (lastLongPositionsClosed.TryGetValue(security, out Position lastLongPositionClosedPrevious))
                 {
                     var lastLongPositionClosed = security.GetLastClosedLongPosition(barNumber);

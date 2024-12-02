@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using TSLab.Script;
 
 namespace TradingSystems
@@ -42,6 +43,13 @@ namespace TradingSystems
         public void Initialize(List<Security> securities)
         {
             throw new System.NotImplementedException();
+        }
+        public override void Update(int barNumber)
+        {
+            foreach (var security in securities)            
+                ((SecurityLab)security).Update(barNumber);
+            
+            base.Update(barNumber);
         }
     }
 }

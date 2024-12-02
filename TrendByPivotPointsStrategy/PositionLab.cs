@@ -1,8 +1,4 @@
-﻿using System;
-using TSLab.DataSource;
-using TSLab.Script.Handlers;
-
-namespace TradingSystems
+﻿namespace TradingSystems
 {
     public class PositionLab : Position
     {
