@@ -43,17 +43,13 @@ namespace TradingSystems.Tests
             };
 
             security = new SecurityLab(Currency.Ruble, shares: 1, bars);
-        }
 
-        [TestMethod()]
-        public void GetLastActiveForSignal_Test()
-        {
             var context = new ContextLab();
             var securities = new List<Security>() { security };
-            var logger = new LoggerNull();            
+            var logger = new LoggerNull();
             var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
-            
+
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
             systemParameters.Add("kAtr", 0d);   //тут будет неправильный стоп-лосс. Сделать проверку на kAtr = 0
@@ -71,9 +67,29 @@ namespace TradingSystems.Tests
             starter.SetParameters(systemParameters);
             starter.Initialize();
             starter.Run();
+        }
+
+        [TestMethod()]
+        public void GetLastActiveForSignal_Test()
+        {
+            //нахожусь здесь
             //var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: 17);
-            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: bars.Count - 1);//нахожусь здесь
+            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: bars.Count - 1);
             Assert.IsNotNull(position);            
+        }
+
+        [TestMethod()]
+        public void GetLastActiveForSignal_Test1()
+        {
+            var sec = security as SecurityLab;
+            var orders = sec.GetOrders(barNumber: 10);
+            var activeOrders = sec.GetActiveOrders1(barNumber: 10);
+
+            var orders1 = sec.GetOrders(barNumber: bars.Count - 1);
+            var activeOrders1 = sec.GetActiveOrders1(barNumber: bars.Count - 1);
+
+            //Assert.IsTrue(true);
+            Assert.Fail();
         }
     }
 }

@@ -34,7 +34,6 @@ namespace TradingSystems
         private Position lastClosedLongPosition;
         private Position lastClosedShortPosition;
 
-
         public SecurityLab(Currency currency, int shares)
         {
             this.currency = currency;
@@ -288,6 +287,23 @@ namespace TradingSystems
                                select order).ToList();
 
             return activeOrders;
+        }
+
+        public List<Order> GetActiveOrders1(int barNumber)
+        {
+            var aO = (from order in activeOrders
+                      where order.BarNumber <= barNumber
+                      select order).ToList();
+
+            return aO;
+        }
+        public List<Order> GetOrders(int barNumber)
+        {
+            var o = (from order in orders
+                                where order.BarNumber <= barNumber
+                                select order).ToList();
+
+            return o;
         }
     }
 }

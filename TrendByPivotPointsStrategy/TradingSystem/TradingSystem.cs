@@ -45,7 +45,7 @@ namespace TradingSystems
         public abstract void CheckPositionCloseCase(Position position, string signalNameForClosePosition, out bool isPositionClosing);                       
         public virtual void Update(int barNumber)
         {
-            if (barNumber < nonTradingPeriod)
+            if (barNumber < nonTradingPeriod - 1)
                 return;
 
             try
