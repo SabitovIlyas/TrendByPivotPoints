@@ -82,11 +82,18 @@ namespace TradingSystems.Tests
         public void GetLastActiveForSignal_Test1()
         {
             var sec = security as SecurityLab;
-            var orders = sec.GetOrders(barNumber: 10);
-            var activeOrders = sec.GetActiveOrders1(barNumber: 10);
 
-            var orders1 = sec.GetOrders(barNumber: bars.Count - 1);
-            var activeOrders1 = sec.GetActiveOrders1(barNumber: bars.Count - 1);
+            var orders = sec.GetOrders(barNumber: 8);//ок
+            var activeOrders = sec.GetActiveOrders1(barNumber: 8);//ок
+
+            var orders1 = sec.GetOrders(barNumber: 9);//ок
+            var activeOrders1 = sec.GetActiveOrders1(barNumber: 9);//ок
+
+            var orders2 = sec.GetOrders(barNumber: 10);//ошибка
+            var activeOrders2 = sec.GetActiveOrders1(barNumber: 10);
+
+            var orders3 = sec.GetOrders(barNumber: 11);
+            var activeOrders3 = sec.GetActiveOrders1(barNumber: 11);
 
             //Assert.IsTrue(true);
             Assert.Fail();
