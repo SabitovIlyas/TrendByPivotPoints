@@ -169,23 +169,25 @@ namespace TradingSystems
         {
             converter = new Converter(isConverted);
             var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
-
-            if (converter.IsGreaterOrEqual(Bars[barNumber].Open, entryPricePlanned))
-            {
-                var order = new Order(barNumber, positionSide, Bars[barNumber].Open, contracts,
-                    signalNameForOpenPosition);
-                var activePosition = new PositionLab(barNumber, order, this);
-                positions.Add(activePosition);
-                activePositions.Add(activePosition);
-                orders.Add(order);
-            }
-            else
-            {
+            
+            //нахожусь здесь
+            //ордер ставится на следующий бар. Цена открытия его ещё не должна быть известна. Код некорректный. Исправить.
+            //if (converter.IsGreaterOrEqual(Bars[barNumber].Open, entryPricePlanned))
+            //{
+            //    var order = new Order(barNumber, positionSide, Bars[barNumber].Open, contracts,
+            //        signalNameForOpenPosition);
+            //    var activePosition = new PositionLab(barNumber, order, this);
+            //    positions.Add(activePosition);
+            //    activePositions.Add(activePosition);
+            //    orders.Add(order);
+            //}
+            //else
+            //{
                 activeOrder = new Order(barNumber, positionSide, entryPricePlanned, contracts,
                     signalNameForOpenPosition);
                 orders.Add(activeOrder);
                 activeOrders.Add(activeOrder);
-            }
+            //}
         }
 
         public void SellIfLess(int barNumber, int contracts, double entryPricePlanned,
