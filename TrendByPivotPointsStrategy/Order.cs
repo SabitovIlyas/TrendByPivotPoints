@@ -17,8 +17,9 @@
         public double ExecutedPrice { get; private set; } = double.NaN;
         public bool IsExecuted { get; private set; } = false;
         public OrderType OrderType { get; private set; }
+        public int BarNumberSinceOrderIsNotActive { get; private set; } //реализовал только для отмены
 
-        
+
         public Order(int barNumber, PositionSide positionSide, double price, int contracts, 
             string signalName, OrderType orderType = OrderType.Limit) 
         {            
@@ -47,6 +48,12 @@
                 ExecutedPrice = Price;
                 IsExecuted = true;
             }            
+        }
+
+        public void Cancel(int barNumber)
+        {
+            IsActive = false;
+            BarNumberSinceOrderIsNotActive = barNumber;
         }
     }
 }

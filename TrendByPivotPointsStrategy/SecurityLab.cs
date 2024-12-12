@@ -169,7 +169,7 @@ namespace TradingSystems
         {
             converter = new Converter(isConverted);
             var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
-            
+
             //нахожусь здесь
             //ордер ставится на следующий бар. Цена открытия его ещё не должна быть известна. Код некорректный. Исправить.
             //if (converter.IsGreaterOrEqual(Bars[barNumber].Open, entryPricePlanned))
@@ -183,11 +183,18 @@ namespace TradingSystems
             //}
             //else
             //{
-                activeOrder = new Order(barNumber, positionSide, entryPricePlanned, contracts,
+            
+            var order = orders.Find(p => p.SignalName == signalNameForOpenPosition);
+            if (order != null)
+            {
+                order.Cancel(barNumber);
+                activeOrders.Remove(order);
+            }
+
+            activeOrder = new Order(barNumber, positionSide, entryPricePlanned, contracts,
                     signalNameForOpenPosition);
-                orders.Add(activeOrder);
-                activeOrders.Add(activeOrder);
-            //}
+            orders.Add(activeOrder);            
+            activeOrders.Add(activeOrder);            
         }
 
         public void SellIfLess(int barNumber, int contracts, double entryPricePlanned,
