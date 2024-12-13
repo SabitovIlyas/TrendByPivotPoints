@@ -130,6 +130,12 @@ namespace TradingSystems
 
         private void CheckPositionOpenLongCase(int positionNumber)
         {
+            if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.OrderCanceled.ToString()))
+                Log("Внеочередной пересчёт из-за отмены ордера!");
+
+            if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.OrderRejected.ToString()))
+                Log("Внеочередной пересчёт из-за отклонения ордера!");
+
             Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
             double stopPrice;
 
@@ -175,8 +181,13 @@ namespace TradingSystems
                 Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, convertable.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
 
                 BuyIfGreater(price, contracts, notes);
-
                 Log("Отправляем ордер.", convertable.Long);
+                
+                if (security.IsRealTimeActualBar(barNumber))
+                {
+                    Log("Ждём секунду.");
+                    System.Threading.Thread.Sleep(1000);
+                }                
             }
 
             else
