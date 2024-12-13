@@ -239,7 +239,7 @@ namespace TradingSystems
 
             foreach (var order in activeOrders)
             {
-                order.Execute(bar);
+                order.Execute(bar);//нахожусь здесь. Здесь ошибка. Позиция не может открыться, так как отрытие бара произошло раньше, чем мы выставили ордер
                 if (order.IsExecuted)
                 {
                     var position = new PositionLab(barNumber, order, this);
