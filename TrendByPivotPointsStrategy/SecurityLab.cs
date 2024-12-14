@@ -236,8 +236,8 @@ namespace TradingSystems
         public void Update(int barNumber)
         {
             var bar = Bars[barNumber];
-
-            foreach (var order in activeOrders)
+            var aO = orders.FindAll(p => p.IsActive);
+            foreach (var order in aO)
             {
                 order.Execute(bar);//нахожусь здесь. Здесь ошибка. Позиция не может открыться, так как отрытие бара произошло раньше, чем мы выставили ордер
                 if (order.IsExecuted)
@@ -306,7 +306,7 @@ namespace TradingSystems
 
             return aO;
         }
-        public List<Order> GetOrders(int barNumber)
+        public List<Order> GetOrdersBeforeBarOpened(int barNumber)
         {
             var o = (from order in orders
                                 where order.BarNumber <= barNumber

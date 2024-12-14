@@ -46,8 +46,8 @@ namespace TradingSystems
             {
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    tradingSystem.Update(barNumber);
-                    account.Update(barNumber);
+                    account.Update(barNumber);  //поменял местами обновление аккаунта и обновление торговой системы
+                    tradingSystem.Update(barNumber);                    
                 }
             }
         }

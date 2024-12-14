@@ -71,32 +71,54 @@ namespace TradingSystems.Tests
 
         [TestMethod()]
         public void GetLastActiveForSignal_Test()
-        {
-            //нахожусь здесь
-            //var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: 17);
+        {            
             var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: bars.Count - 1);
             Assert.IsNotNull(position);            
         }
 
         [TestMethod()]
-        public void GetLastActiveForSignal_Test1()
+        public void GetOrdersByBarsTest_1()
         {
             var sec = security as SecurityLab;
 
-            var orders = sec.GetOrders(barNumber: 8);//ок
-            var activeOrders = sec.GetActiveOrders1(barNumber: 8);//ок
+            var orders = sec.GetOrdersBeforeBarOpened(barNumber: 9);
+            Assert.IsTrue(orders.Count == 0);
 
-            var orders1 = sec.GetOrders(barNumber: 9);//ок
-            var activeOrders1 = sec.GetActiveOrders1(barNumber: 9);//ок
+            orders = sec.GetOrdersBeforeBarOpened(barNumber: 10);
+            Assert.IsTrue(orders.Count == 1);
+            Assert.IsTrue(orders[0].Price == 90000);
 
-            var orders2 = sec.GetOrders(barNumber: 10);//ошибка
-            var activeOrders2 = sec.GetActiveOrders1(barNumber: 10);
+            orders = sec.GetOrdersBeforeBarOpened(barNumber: 11);
+            Assert.IsTrue(orders.Count == 2);
+            Assert.IsTrue(orders[0].Price == 90000);
+            Assert.IsTrue(orders[1].Price == 89000);
 
-            var orders3 = sec.GetOrders(barNumber: 11);
-            var activeOrders3 = sec.GetActiveOrders1(barNumber: 11);
+            orders = sec.GetOrdersBeforeBarOpened(barNumber: 12);
+            Assert.IsTrue(orders.Count == 3);
+            Assert.IsTrue(orders[0].Price == 90000);
+            Assert.IsTrue(orders[1].Price == 89000);
+            Assert.IsTrue(orders[2].Price == 86000);
 
-            //Assert.IsTrue(true);
-            Assert.Fail();
+            orders = sec.GetOrdersBeforeBarOpened(barNumber: 13);
+            Assert.IsTrue(orders.Count == 4);
+            Assert.IsTrue(orders[0].Price == 90000);
+            Assert.IsTrue(orders[1].Price == 89000);
+            Assert.IsTrue(orders[2].Price == 86000);
+            Assert.IsTrue(orders[3].Price == 87000);            
+
+            /*
+            orders = sec.GetOrdersBeforeBarOpened(barNumber: 18);
+            Assert.IsTrue(orders.Count == 9);
+            Assert.IsTrue(orders[0].Price == 90000);
+            Assert.IsTrue(orders[1].Price == 89000);
+            Assert.IsTrue(orders[2].Price == 86000);
+            Assert.IsTrue(orders[3].Price == 87000);
+            Assert.IsTrue(orders[4].Price == 88000);
+            Assert.IsTrue(orders[5].Price == 89000);
+            Assert.IsTrue(orders[6].Price == 90000);
+            Assert.IsTrue(orders[7].Price == 91000);
+            Assert.IsTrue(orders[8].Price == 92000);
+            */
         }
     }
 }
