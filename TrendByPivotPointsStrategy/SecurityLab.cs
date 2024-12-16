@@ -225,7 +225,7 @@ namespace TradingSystems
             }
 
             closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
-         position.Contracts, signalNameForClosePosition);
+         position.Contracts, signalNameForClosePosition); //нахожусь здесь. Нужно завезти новый тип ордеров для стоп-лосса. В этом ошибка. Позиция закрывается по стопу сразу.
             orders.Add(closeOrder);
             activeOrders.Add(closeOrder);
 
@@ -239,7 +239,7 @@ namespace TradingSystems
             var aO = orders.FindAll(p => p.IsActive);
             foreach (var order in aO)
             {
-                order.Execute(bar);//нахожусь здесь. Здесь ошибка. Позиция не может открыться, так как отрытие бара произошло раньше, чем мы выставили ордер
+                order.Execute(bar);
                 if (order.IsExecuted)
                 {
                     var position = new PositionLab(barNumber, order, this);

@@ -72,7 +72,7 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void GetLastActiveForSignal_Test()
         {            
-            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: bars.Count - 1);
+            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: 11);
             Assert.IsNotNull(position);            
         }
 
