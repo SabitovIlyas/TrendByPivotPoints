@@ -2,7 +2,7 @@
 {
     public class PositionLab : Position
     {
-        public int BarNumber { get; private set; }
+        public int BarNumberOpenPosition { get; private set; }
         public double EntryPrice => openOrder.Price;
         public PositionSide PositionSide => openOrder.PositionSide;
         public int Contracts => openOrder.Contracts;
@@ -11,6 +11,8 @@
         public string SignalNameForClosePosition => throw new System.NotImplementedException();
         public bool IsActive { get { return closeOrder == null || closeOrder.IsActive; } }
         public Security Security { get; private set; }
+        public int BarNumberClosePosition { get; set; }
+
 
         private Order openOrder;
         private Order closeOrder;
@@ -29,7 +31,7 @@
 
         public PositionLab(int barNumber, Order openOrder, Security security)
         {
-            BarNumber = barNumber;
+            BarNumberOpenPosition = barNumber;
             this.openOrder = openOrder;
             Security = security;
             converter = new Converter(isConverted: PositionSide == PositionSide.Long);

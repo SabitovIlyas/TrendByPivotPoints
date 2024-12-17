@@ -30,7 +30,7 @@ namespace TradingSystems
 
                         equity += lastLongPositionClosed.Profit;
                         var message = string.Format("Активная длинная позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastLongPositionClosed.BarNumber, lastLongPositionClosed.EntryPrice, lastLongPositionClosed.Profit, equity);
+                            lastLongPositionClosed.BarNumberOpenPosition, lastLongPositionClosed.EntryPrice, lastLongPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }
@@ -42,7 +42,7 @@ namespace TradingSystems
                         lastLongPositionsClosed.Add(security, lastLongPositionClosed);
                         equity += lastLongPositionClosed.Profit;
                         var message = string.Format("Активная длинная позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastLongPositionClosed.BarNumber, lastLongPositionClosed.EntryPrice, lastLongPositionClosed.Profit, equity);
+                            lastLongPositionClosed.BarNumberOpenPosition, lastLongPositionClosed.EntryPrice, lastLongPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }
@@ -57,7 +57,7 @@ namespace TradingSystems
 
                         equity += lastShortPositionClosed.Profit;
                         var message = string.Format("Активная короткая позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastShortPositionClosed.BarNumber, lastShortPositionClosed.EntryPrice, lastShortPositionClosed.Profit, equity);
+                            lastShortPositionClosed.BarNumberOpenPosition, lastShortPositionClosed.EntryPrice, lastShortPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }
@@ -69,7 +69,7 @@ namespace TradingSystems
                         lastShortPositionsClosed.Add(security, lastShortPositionClosed);
                         equity += lastShortPositionClosed.Profit;
                         var message = string.Format("Активная короткая позиция закрылась: Номер бара = {0}; Цена открытия = {1}; Прибыль = {2}; Equity = {3}",
-                            lastShortPositionClosed.BarNumber, lastShortPositionClosed.EntryPrice, lastShortPositionClosed.Profit, equity);
+                            lastShortPositionClosed.BarNumberOpenPosition, lastShortPositionClosed.EntryPrice, lastShortPositionClosed.Profit, equity);
                         logger.Log(message);
                     }
                 }

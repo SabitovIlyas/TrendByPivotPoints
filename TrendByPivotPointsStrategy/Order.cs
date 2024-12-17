@@ -2,7 +2,7 @@
 {
     public enum OrderType
     {
-        Market, Limit
+        Market, Limit, StopLoss
     }
 
     public class Order
@@ -36,18 +36,26 @@
         {
             if (PositionSide == PositionSide.Null) return;
 
-            if (converter.IsGreaterOrEqual(bar.Open, Price) || OrderType == OrderType.Market)
+            if ((converter.IsGreaterOrEqual(bar.Open, Price) && OrderType != OrderType.StopLoss)
+                || OrderType == OrderType.Market)
             {
                 IsActive = false;
                 ExecutedPrice = bar.Open;
                 IsExecuted = true;
             }
-            else if(converter.IsGreaterOrEqual(converter.GetBarHigh(bar), Price))
+            else if (converter.IsGreaterOrEqual(converter.GetBarHigh(bar), Price))
             {
                 IsActive = false;
                 ExecutedPrice = Price;
                 IsExecuted = true;
-            }            
+            }
+            else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) 
+                && OrderType == OrderType.StopLoss)
+            {
+                IsActive = false;
+                ExecutedPrice = Price;
+                IsExecuted = true;
+            }
         }
 
         public void Cancel(int barNumber)

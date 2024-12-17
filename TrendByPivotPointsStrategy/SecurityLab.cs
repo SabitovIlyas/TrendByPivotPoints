@@ -161,6 +161,13 @@ namespace TradingSystems
 
         public Position GetLastActiveForSignal(string signalName, int barNumber)
         {
+            var position = positions.FindLast(p => p.SignalNameForOpenPosition == signalName);
+            if (position == null)
+                return null;
+            if (position.BarNumberOpenPosition > barNumber)
+                return null;
+
+
             return activePositions.Find(p => p.SignalNameForOpenPosition == signalName);
         }
 
@@ -225,7 +232,7 @@ namespace TradingSystems
             }
 
             closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
-         position.Contracts, signalNameForClosePosition); //нахожусь здесь. Нужно завезти новый тип ордеров для стоп-лосса. В этом ошибка. Позиция закрывается по стопу сразу.
+         position.Contracts, signalNameForClosePosition, OrderType.StopLoss); //нахожусь здесь. Нужно завезти новый тип ордеров для стоп-лосса. В этом ошибка. Позиция закрывается по стопу сразу.
             orders.Add(closeOrder);
             activeOrders.Add(closeOrder);
 

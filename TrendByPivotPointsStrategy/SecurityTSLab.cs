@@ -315,7 +315,7 @@ namespace TradingSystems
             if (lastLongPositionClosed == null)
                 lastLongPositionClosed = new PositionTSLab(position);
 
-            if (position.EntryPrice == lastLongPositionClosed.EntryPrice && position.EntryBarNum == lastLongPositionClosed.BarNumber && position.Profit() == lastLongPositionClosed.Profit)
+            if (position.EntryPrice == lastLongPositionClosed.EntryPrice && position.EntryBarNum == lastLongPositionClosed.BarNumberOpenPosition && position.Profit() == lastLongPositionClosed.Profit)
                 return lastLongPositionClosed;
 
             lastLongPositionClosed = new PositionTSLab(position);
@@ -330,7 +330,7 @@ namespace TradingSystems
             if (lastShortPositionClosed == null)
                 lastShortPositionClosed = new PositionTSLab(position);
 
-            if (position.EntryPrice == lastShortPositionClosed.EntryPrice && position.EntryBarNum == lastShortPositionClosed.BarNumber && position.Profit() == lastShortPositionClosed.Profit)
+            if (position.EntryPrice == lastShortPositionClosed.EntryPrice && position.EntryBarNum == lastShortPositionClosed.BarNumberOpenPosition && position.Profit() == lastShortPositionClosed.Profit)
                 return lastShortPositionClosed;
 
             lastShortPositionClosed = new PositionTSLab(position);

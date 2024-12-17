@@ -6,7 +6,8 @@ namespace TradingSystems
     {
         public double EntryPrice { get; }
         public double Profit { get; }
-        public int BarNumber { get; }
+        public int BarNumberOpenPosition { get; }
+        public int BarNumberClosePosition { get; }
         public string SignalNameForOpenPosition { get { return position.EntrySignalName; }}
         public string SignalNameForClosePosition { get { return position.ExitSignalName; }}        
 
@@ -16,7 +17,7 @@ namespace TradingSystems
         {
             this.position = position;
             EntryPrice = position.EntryPrice;
-            BarNumber = position.EntryBarNum;
+            BarNumberOpenPosition = position.EntryBarNum;
             Profit = position.Profit();
             
         }
