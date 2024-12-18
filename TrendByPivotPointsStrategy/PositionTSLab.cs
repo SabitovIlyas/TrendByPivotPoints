@@ -18,8 +18,7 @@ namespace TradingSystems
             this.position = position;
             EntryPrice = position.EntryPrice;
             BarNumberOpenPosition = position.EntryBarNum;
-            Profit = position.Profit();
-            
+            Profit = position.Profit();            
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)

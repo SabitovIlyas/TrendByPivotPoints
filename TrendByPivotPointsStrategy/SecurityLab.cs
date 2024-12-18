@@ -249,9 +249,17 @@ namespace TradingSystems
                 order.Execute(bar);
                 if (order.IsExecuted)
                 {
-                    var position = new PositionLab(barNumber, order, this);
-                    positions.Add(position);
-                    activePositions.Add(position);
+                    if (order.OrderType != OrderType.StopLoss)
+                    {
+                        var position = new PositionLab(barNumber, order, this);
+                        positions.Add(position);
+                        activePositions.Add(position);
+                    }
+                    else
+                    {
+                        //Нахожусь здесь
+                        //order.SignalName
+                    }                    
                 }                        
             }
 

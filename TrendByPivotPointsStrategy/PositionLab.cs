@@ -13,11 +13,9 @@
         public Security Security { get; private set; }
         public int BarNumberClosePosition { get; set; }
 
-
         private Order openOrder;
         private Order closeOrder;
         private Converter converter;
-
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
