@@ -232,7 +232,7 @@ namespace TradingSystems
             }
 
             closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
-         position.Contracts, signalNameForClosePosition, OrderType.StopLoss); //нахожусь здесь. Нужно завезти новый тип ордеров для стоп-лосса. В этом ошибка. Позиция закрывается по стопу сразу.
+         position.Contracts, signalNameForClosePosition, position, OrderType.StopLoss);
             orders.Add(closeOrder);
             activeOrders.Add(closeOrder);
 
@@ -257,6 +257,7 @@ namespace TradingSystems
                     }
                     else
                     {
+                        //var pos = (PositionLab)order;
                         //Нахожусь здесь
                         //order.SignalName
                     }                    

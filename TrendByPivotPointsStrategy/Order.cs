@@ -18,7 +18,7 @@
         public bool IsExecuted { get; private set; } = false;
         public OrderType OrderType { get; private set; }
         public int BarNumberSinceOrderIsNotActive { get; private set; } //реализовал только для отмены
-
+        private Position position;
 
         public Order(int barNumber, PositionSide positionSide, double price, int contracts, 
             string signalName, OrderType orderType = OrderType.Limit) 
@@ -30,6 +30,20 @@
             SignalName = signalName;                        
             OrderType = orderType;
             converter = new Converter(isConverted: positionSide == PositionSide.Short);
+        }
+
+        public Order(int barNumber, PositionSide positionSide, double price, int contracts,
+            string signalName, Position position, OrderType orderType = OrderType.Limit)
+        {
+            BarNumber = barNumber;
+            PositionSide = positionSide;
+            Price = price;
+            Contracts = contracts;
+            SignalName = signalName;
+            OrderType = orderType;            
+            converter = new Converter(isConverted: positionSide == PositionSide.Short);
+
+            this.position = position;
         }
 
         public void Execute(Bar bar)
