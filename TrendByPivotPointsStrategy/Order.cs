@@ -17,7 +17,7 @@
         public double ExecutedPrice { get; private set; } = double.NaN;
         public bool IsExecuted { get; private set; } = false;
         public OrderType OrderType { get; private set; }
-        public int BarNumberSinceOrderIsNotActive { get; private set; } //реализовал только для отмены
+        public int BarNumberSinceOrderIsNotActive { get; private set; } = int.MaxValue;
         private Position position;
 
         public Order(int barNumber, PositionSide positionSide, double price, int contracts, 

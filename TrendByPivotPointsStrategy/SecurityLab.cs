@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TSLab.Script.Handlers;
+using TSLab.ScriptEngine;
 
 namespace TradingSystems
 {
@@ -30,6 +32,7 @@ namespace TradingSystems
         private List<PositionLab> positions = new List<PositionLab>();
         private List<PositionLab> activePositions = new List<PositionLab>();
         private List<Order> orders = new List<Order>();
+        private Dictionary<Order, Position> ordersPositions = new Dictionary<Order, Position>();
         private List<Order> activeOrders = new List<Order>();
         private Position lastClosedLongPosition;
         private Position lastClosedShortPosition;
@@ -200,7 +203,8 @@ namespace TradingSystems
 
             activeOrder = new Order(barNumber, positionSide, entryPricePlanned, contracts,
                     signalNameForOpenPosition);
-            orders.Add(activeOrder);            
+            orders.Add(activeOrder);
+            ordersPositions.Add(activeOrder, null);
             activeOrders.Add(activeOrder);            
         }
 
@@ -212,16 +216,17 @@ namespace TradingSystems
         }
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition,
-            PositionLab position, out Order closeOrder)
+            PositionLab position, out Order closeOrder)//r
         {
             closeOrder = new Order(barNumber, position.PositionSide, double.NaN,
                 position.Contracts, signalNameForClosePosition, OrderType.Market);
             orders.Add(closeOrder);
+            ordersPositions.Add(closeOrder, position);
             activeOrders.Add(closeOrder);
         }
 
         public void CloseAtStop(int barNumber, double stopPrice,
-            string signalNameForClosePosition, PositionLab position, out Order closeOrder)
+            string signalNameForClosePosition, PositionLab position, out Order closeOrder)//x
         {
             var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition);
 
@@ -234,10 +239,29 @@ namespace TradingSystems
             closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
          position.Contracts, signalNameForClosePosition, position, OrderType.StopLoss);
             orders.Add(closeOrder);
+            ordersPositions.Add(closeOrder, position);
             activeOrders.Add(closeOrder);
 
             if (order != null && order.Price != stopPrice)
                 activeOrders.Remove(order);                                   
+        }
+
+        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, string notes, Position position)
+        {
+            var activeOrders = GetActiveOrders(barNumber);
+            var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition);
+
+            if (order != null && order.Price == stopPrice)
+                return;            
+
+            var closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
+         position.Contracts, signalNameForClosePosition, position, OrderType.StopLoss);
+            orders.Add(closeOrder);
+            ordersPositions.Add(closeOrder, position);
+            activeOrders.Add(closeOrder);
+
+            if (order != null && order.Price != stopPrice)
+                activeOrders.Remove(order);
         }
 
         public void Update(int barNumber)
@@ -253,14 +277,19 @@ namespace TradingSystems
                     {
                         var position = new PositionLab(barNumber, order, this);
                         positions.Add(position);
+                        ordersPositions.Add(order, position);
+
                         activePositions.Add(position);
                     }
                     else
                     {
-                        //var pos = (PositionLab)order;
                         //Нахожусь здесь
+
+                        //ordersPositions.TryGetValue(order);
+                        //var pos = (PositionLab)order;
+                        
                         //order.SignalName
-                    }                    
+                    }
                 }                        
             }
 
@@ -308,13 +337,13 @@ namespace TradingSystems
         public List<Order> GetActiveOrders(int barNumber)
         {
             var activeOrders = (from order in orders
-                               where order.BarNumber <= barNumber
-                               select order).ToList();
+                                where order.BarNumber <= barNumber && barNumber < order.BarNumberSinceOrderIsNotActive
+                                select order).ToList();
 
             return activeOrders;
         }
 
-        public List<Order> GetActiveOrders1(int barNumber)
+        public List<Order> GetActiveOrders1(int barNumber)//x
         {
             var aO = (from order in activeOrders
                       where order.BarNumber <= barNumber
@@ -329,6 +358,6 @@ namespace TradingSystems
                                 select order).ToList();
 
             return o;
-        }
+        }        
     }
 }

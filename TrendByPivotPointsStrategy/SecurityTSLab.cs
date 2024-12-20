@@ -431,5 +431,10 @@ namespace TradingSystems
         {
             throw new NotImplementedException();
         }
+
+        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, string notes, Position position)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

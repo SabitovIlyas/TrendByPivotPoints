@@ -9,7 +9,10 @@ namespace TradingSystems
         public int BarNumberOpenPosition { get; }
         public int BarNumberClosePosition { get; }
         public string SignalNameForOpenPosition { get { return position.EntrySignalName; }}
-        public string SignalNameForClosePosition { get { return position.ExitSignalName; }}        
+        public string SignalNameForClosePosition { get { return position.ExitSignalName; }}
+        public PositionSide PositionSide { get; }
+
+        public int Contracts => throw new System.NotImplementedException();
 
         private IPosition position;
 
