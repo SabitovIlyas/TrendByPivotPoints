@@ -36,6 +36,7 @@ namespace TradingSystems
         private List<Order> activeOrders = new List<Order>();
         private Position lastClosedLongPosition;
         private Position lastClosedShortPosition;
+        private OrderToPositionMapping mapping = new OrderToPositionMapping();
 
         public SecurityLab(Currency currency, int shares)
         {
@@ -177,22 +178,11 @@ namespace TradingSystems
         public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned,
             string signalNameForOpenPosition, bool isConverted = false)
         {
+            mapping.CreateOpenOrder(barNumber, contracts, entryPricePlanned, signalNameForOpenPosition, isConverted);
+
+            /*
             converter = new Converter(isConverted);
             var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
-
-            //нахожусь здесь
-            //ордер ставится на следующий бар. Цена открытия его ещё не должна быть известна. Код некорректный. Исправить.
-            //if (converter.IsGreaterOrEqual(Bars[barNumber].Open, entryPricePlanned))
-            //{
-            //    var order = new Order(barNumber, positionSide, Bars[barNumber].Open, contracts,
-            //        signalNameForOpenPosition);
-            //    var activePosition = new PositionLab(barNumber, order, this);
-            //    positions.Add(activePosition);
-            //    activePositions.Add(activePosition);
-            //    orders.Add(order);
-            //}
-            //else
-            //{
             
             var order = orders.Find(p => p.SignalName == signalNameForOpenPosition);
             if (order != null)
@@ -205,7 +195,8 @@ namespace TradingSystems
                     signalNameForOpenPosition);
             orders.Add(activeOrder);
             ordersPositions.Add(activeOrder, null);
-            activeOrders.Add(activeOrder);            
+            activeOrders.Add(activeOrder);         
+            */
         }
 
         public void SellIfLess(int barNumber, int contracts, double entryPricePlanned,
@@ -358,6 +349,6 @@ namespace TradingSystems
                                 select order).ToList();
 
             return o;
-        }        
+        }
     }
 }
