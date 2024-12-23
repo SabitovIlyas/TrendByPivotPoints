@@ -6,6 +6,15 @@ namespace TradingSystems
     {
         public Order Order { get; private set; }
         public Position Position { get; set; }
+        public OrderType OrderType
+        {
+            get
+            {
+                if (Order == null)
+                    throw new NullReferenceException("Order == null");
+                return Order.OrderType;
+            }
+        }
         public string SignalName
         {
             get
@@ -24,6 +33,17 @@ namespace TradingSystems
                 return Order.Price;
             }
         }
+
+        public double  ExecutedPrice
+        {
+            get
+            {
+                if (Order == null)
+                    throw new NullReferenceException("Order == null");
+                return Order.ExecutedPrice;
+            }
+        }
+
         public int BarNumber
         {
             get
@@ -55,9 +75,9 @@ namespace TradingSystems
             Position = position;
         }
 
-        public void Execute(Bar bar)
+        public bool Execute(Bar bar, int barNumber)
         {
-            Order.Execute(bar);
+            return Order.Execute(bar, barNumber);
         }
     }
 }

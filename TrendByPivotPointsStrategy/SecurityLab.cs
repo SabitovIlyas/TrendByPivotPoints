@@ -82,7 +82,7 @@ namespace TradingSystems
                 HighPrices.Add(bar.High);
                 LowPrices.Add(bar.Low);
             }
-            mapping = new OrderToPositionMapping(Bars);
+            mapping = new OrderToPositionMapping(Bars, this);
         }
 
         public Bar LastBar
@@ -207,74 +207,7 @@ namespace TradingSystems
 
         public void Update(int barNumber)
         {            
-            mapping.Update(barNumber);
-
-            var bar = Bars[barNumber];
-            var aO = orders.FindAll(p => p.IsActive);
-            foreach (var order in aO)
-            {
-                order.Execute(bar);
-                if (order.IsExecuted)
-                {
-                    if (order.OrderType != OrderType.StopLoss)
-                    {
-                        var position = new PositionLab(barNumber, order, this);
-                        positions.Add(position);
-                        ordersPositions.Add(order, position);
-
-                        activePositions.Add(position);
-                    }
-                    else
-                    {
-                        //Нахожусь здесь
-
-                        //ordersPositions.TryGetValue(order);
-                        //var pos = (PositionLab)order;
-                        
-                        //order.SignalName
-                    }
-                }                        
-            }
-
-            foreach (var position in activePositions)            
-                position.Update(barNumber, bar);
-
-            var ordersToExcludeFromActiveOrders = new List<Order>();
-            foreach (var order in activeOrders)
-                if (!order.IsActive)
-                    ordersToExcludeFromActiveOrders.Add(order);
-
-            foreach(var order in ordersToExcludeFromActiveOrders)            
-                activeOrders.Remove(order);
-
-            var positionToExcludeFromActivePositions = new List<PositionLab>();
-            foreach (var position in activePositions)
-                if (!position.IsActive)
-                    positionToExcludeFromActivePositions.Add(position);
-                        
-            foreach (var position in positionToExcludeFromActivePositions)
-                activePositions.Remove(position);
-
-            if (positionToExcludeFromActivePositions.Count == 0)
-                return;
-
-            var lastPosition = positionToExcludeFromActivePositions.Last();
-            if (lastPosition == null)
-                return;
-
-            switch (lastPosition.PositionSide)
-            {
-                case PositionSide.Long:
-                    {
-                        lastClosedLongPosition = lastPosition;
-                        break;
-                    }
-                case PositionSide.Short:
-                    {
-                        lastClosedShortPosition = lastPosition;
-                        break;
-                    }
-            }
+            mapping.Update(barNumber);            
         }
         
         public List<Order> GetActiveOrders(int barNumber)

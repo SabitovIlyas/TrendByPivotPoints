@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
@@ -8,10 +7,12 @@ namespace TradingSystems
     {
         private List<OrderToPositionMap> orders = new List<OrderToPositionMap>();
         private List<Bar> bars;
+        public Security security;
 
-        public OrderToPositionMapping(List<Bar> bars)
+        public OrderToPositionMapping(List<Bar> bars, Security security)
         {
             this.bars = bars;
+            this.security = security;
         }
 
         public void CreateOpenLimitOrder(int barNumber, int contracts, double entryPricePlanned,
@@ -38,8 +39,8 @@ namespace TradingSystems
             if (order != null && order.Price == stopPrice)
                 return;
 
-            var closeOrder = new Order(barNumber, stopPrice, signalNameForClosePosition,
-         position, OrderType.StopLoss);
+            var closeOrder = new Order(barNumber, position.PositionSide, stopPrice, position.Contracts,
+                signalNameForClosePosition, order.OrderType);
             orders.Add(new OrderToPositionMap(closeOrder, position));            
         }
 
@@ -61,26 +62,20 @@ namespace TradingSystems
 
             foreach (var order in activeOrders)
             {
-                order.Execute(bar);
-                /*
-                if (order.IsExecuted)
+                if (order.Execute(bar, barNumber))
                 {
                     if (order.OrderType != OrderType.StopLoss)
                     {
-                        var position = new PositionLab(barNumber, order, this);
-                        
+                        var position = new PositionLab(barNumber, order.Order, security);
+                        order.Position = position;
                     }
                     else
                     {
-                        //Нахожусь здесь
-
-                        //ordersPositions.TryGetValue(order);
-                        //var pos = (PositionLab)order;
-
-                        //order.SignalName
+                        var position = order.Position;
+                        //нахожусь здесь
+                        position.CloseAtStop(barNumber, order.ExecutedPrice, order.SignalName);
                     }
                 }
-                */
             }
         }
 

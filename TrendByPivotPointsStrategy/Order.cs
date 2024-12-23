@@ -1,4 +1,7 @@
-﻿namespace TradingSystems
+﻿using System;
+using TSLab.Script.Handlers;
+
+namespace TradingSystems
 {
     public enum OrderType
     {
@@ -46,30 +49,41 @@
             this.position = position;
         }
 
-        public void Execute(Bar bar)
+        public bool Execute(Bar bar, int barNumber)
         {
-            if (PositionSide == PositionSide.Null) return;
+            if (PositionSide == PositionSide.Null) return false;
 
-            if ((converter.IsGreaterOrEqual(bar.Open, Price) && OrderType != OrderType.StopLoss)
-                || OrderType == OrderType.Market)
+            if (OrderType == OrderType.Market) throw new NotImplementedException("Рыночный ордер " +
+                "пока не реализован");
+
+            if (converter.IsGreaterOrEqual(bar.Open, Price) && OrderType != OrderType.StopLoss)
             {
-                IsActive = false;
                 ExecutedPrice = bar.Open;
-                IsExecuted = true;
+                BarNumberSinceOrderIsNotActive = barNumber;
+                return true;
             }
-            else if (converter.IsGreaterOrEqual(converter.GetBarHigh(bar), Price))
+            else if (converter.IsGreaterOrEqual(converter.GetBarHigh(bar), Price) && 
+                OrderType != OrderType.StopLoss)
             {
-                IsActive = false;
                 ExecutedPrice = Price;
-                IsExecuted = true;
+                BarNumberSinceOrderIsNotActive = barNumber;
+                return true;
             }
-            else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) 
-                && OrderType == OrderType.StopLoss)
+            else if (converter.IsLessOrEqual(bar.Open, Price) && OrderType != OrderType.StopLoss)
             {
-                IsActive = false;
-                ExecutedPrice = Price;
-                IsExecuted = true;
+                ExecutedPrice = bar.Open;
+                BarNumberSinceOrderIsNotActive = barNumber;
+                return true;
             }
+            else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) &&
+                OrderType == OrderType.StopLoss)
+            {
+                ExecutedPrice = Price;
+                BarNumberSinceOrderIsNotActive = barNumber;
+                return true;
+            }
+
+            return false;
         }
 
         public void Cancel(int barNumber)
