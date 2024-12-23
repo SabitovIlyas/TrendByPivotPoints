@@ -32,16 +32,16 @@
             converter = new Converter(isConverted: positionSide == PositionSide.Short);
         }
 
-        public Order(int barNumber, PositionSide positionSide, double price, int contracts,
-            string signalName, Position position, OrderType orderType = OrderType.Limit)
+        public Order(int barNumber, double price, string signalName, Position position,
+            OrderType orderType = OrderType.Limit)
         {
             BarNumber = barNumber;
-            PositionSide = positionSide;
+            PositionSide = position.PositionSide;
             Price = price;
-            Contracts = contracts;
+            Contracts = position.Contracts;
             SignalName = signalName;
             OrderType = orderType;            
-            converter = new Converter(isConverted: positionSide == PositionSide.Short);
+            converter = new Converter(isConverted: PositionSide == PositionSide.Short);
 
             this.position = position;
         }

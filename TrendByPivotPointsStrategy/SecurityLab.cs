@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TSLab.Script.Handlers;
-using TSLab.ScriptEngine;
 
 namespace TradingSystems
 {
@@ -36,7 +34,7 @@ namespace TradingSystems
         private List<Order> activeOrders = new List<Order>();
         private Position lastClosedLongPosition;
         private Position lastClosedShortPosition;
-        private OrderToPositionMapping mapping = new OrderToPositionMapping();
+        private OrderToPositionMapping mapping;
 
         public SecurityLab(Currency currency, int shares)
         {
@@ -84,6 +82,7 @@ namespace TradingSystems
                 HighPrices.Add(bar.High);
                 LowPrices.Add(bar.Low);
             }
+            mapping = new OrderToPositionMapping(Bars);
         }
 
         public Bar LastBar
@@ -178,25 +177,8 @@ namespace TradingSystems
         public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned,
             string signalNameForOpenPosition, bool isConverted = false)
         {
-            mapping.CreateOpenOrder(barNumber, contracts, entryPricePlanned, signalNameForOpenPosition, isConverted);
-
-            /*
-            converter = new Converter(isConverted);
-            var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
-            
-            var order = orders.Find(p => p.SignalName == signalNameForOpenPosition);
-            if (order != null)
-            {
-                order.Cancel(barNumber);
-                activeOrders.Remove(order);
-            }
-
-            activeOrder = new Order(barNumber, positionSide, entryPricePlanned, contracts,
-                    signalNameForOpenPosition);
-            orders.Add(activeOrder);
-            ordersPositions.Add(activeOrder, null);
-            activeOrders.Add(activeOrder);         
-            */
+            mapping.CreateOpenLimitOrder(barNumber, contracts, entryPricePlanned, 
+                signalNameForOpenPosition, isConverted);
         }
 
         public void SellIfLess(int barNumber, int contracts, double entryPricePlanned,
@@ -215,48 +197,18 @@ namespace TradingSystems
             ordersPositions.Add(closeOrder, position);
             activeOrders.Add(closeOrder);
         }
-
-        public void CloseAtStop(int barNumber, double stopPrice,
-            string signalNameForClosePosition, PositionLab position, out Order closeOrder)//x
+       
+        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, 
+            string notes, Position position)
         {
-            var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition);
-
-            if (order != null && order.Price == stopPrice)
-            {
-                closeOrder = null;
-                return;
-            }
-
-            closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
-         position.Contracts, signalNameForClosePosition, position, OrderType.StopLoss);
-            orders.Add(closeOrder);
-            ordersPositions.Add(closeOrder, position);
-            activeOrders.Add(closeOrder);
-
-            if (order != null && order.Price != stopPrice)
-                activeOrders.Remove(order);                                   
-        }
-
-        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, string notes, Position position)
-        {
-            var activeOrders = GetActiveOrders(barNumber);
-            var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition);
-
-            if (order != null && order.Price == stopPrice)
-                return;            
-
-            var closeOrder = new Order(barNumber, position.PositionSide, stopPrice,
-         position.Contracts, signalNameForClosePosition, position, OrderType.StopLoss);
-            orders.Add(closeOrder);
-            ordersPositions.Add(closeOrder, position);
-            activeOrders.Add(closeOrder);
-
-            if (order != null && order.Price != stopPrice)
-                activeOrders.Remove(order);
+            mapping.CreateCloseLimitOrder(barNumber, stopPrice, signalNameForClosePosition, notes, 
+                position);
         }
 
         public void Update(int barNumber)
-        {
+        {            
+            mapping.Update(barNumber);
+
             var bar = Bars[barNumber];
             var aO = orders.FindAll(p => p.IsActive);
             foreach (var order in aO)
@@ -327,21 +279,12 @@ namespace TradingSystems
         
         public List<Order> GetActiveOrders(int barNumber)
         {
-            var activeOrders = (from order in orders
-                                where order.BarNumber <= barNumber && barNumber < order.BarNumberSinceOrderIsNotActive
-                                select order).ToList();
-
-            return activeOrders;
+            var activeOrders = mapping.GetActiveOrders(barNumber).ToList();
+            var result = (from order in activeOrders
+                          select order.Order).ToList();
+            return result;
         }
 
-        public List<Order> GetActiveOrders1(int barNumber)//x
-        {
-            var aO = (from order in activeOrders
-                      where order.BarNumber <= barNumber
-                      select order).ToList();
-
-            return aO;
-        }
         public List<Order> GetOrdersBeforeBarOpened(int barNumber)
         {
             var o = (from order in orders
