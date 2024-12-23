@@ -185,8 +185,9 @@ namespace TradingSystems
                 
                 if (security.IsRealTimeActualBar(barNumber))
                 {
-                    Log("Ждём секунду.");
-                    System.Threading.Thread.Sleep(1000);
+                    var sleepTimeInSec = 3;
+                    Log("Ждём {0} сек.", sleepTimeInSec);
+                    System.Threading.Thread.Sleep(sleepTimeInSec * 1000);
                 }                
             }
 
