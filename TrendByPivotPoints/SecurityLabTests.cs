@@ -42,16 +42,16 @@ namespace TradingSystems.Tests
         {
             security.Update(barNumber: 0);
             security.SellIfLess(barNumber: 1, contracts: 1, entryPricePlanned: 88000,
-                "SE", isConverted: false);
+                "SE_1", isConverted: false);
             security.Update(barNumber: 1);
             security.SellIfLess(barNumber: 2, contracts: 1, entryPricePlanned: 87000,
-                "SE", isConverted: false);
+                "SE_2", isConverted: false);
             security.Update(barNumber: 2);
             security.SellIfLess(barNumber: 3, contracts: 1, entryPricePlanned: 86000,
-                "SE", isConverted: false);
+                "SE_3", isConverted: false);
             security.Update(barNumber: 3);
             security.SellIfLess(barNumber: 4, contracts: 1, entryPricePlanned: 85000,
-                "SE", isConverted: false);
+                "SE_4", isConverted: false);
             security.Update(barNumber: 4);            
 
             var orders = security.GetActiveOrders(barNumber: 3);
