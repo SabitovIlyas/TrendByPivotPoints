@@ -124,7 +124,6 @@ namespace TradingSystems
                 Log("{0} позиция открыта.", converter.Long);
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
-                //position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
                 security.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition, notes, position);
             }
         }

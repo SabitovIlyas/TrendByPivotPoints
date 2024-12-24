@@ -24,11 +24,6 @@ namespace TradingSystems
 
         private Currency currency;
         private int shares;
-        private Converter converter;
-        private Order activeOrder;
-        private PositionLab activePosition;
-        private List<PositionLab> positions = new List<PositionLab>();
-        private List<PositionLab> activePositions = new List<PositionLab>();
         private List<Order> orders = new List<Order>();
         private Dictionary<Order, Position> ordersPositions = new Dictionary<Order, Position>();
         private List<Order> activeOrders = new List<Order>();
@@ -93,9 +88,11 @@ namespace TradingSystems
             }
         }
 
-        public Bar GetBar(int barNumer)
+        public Bar GetBar(int barNumber)
         {
-            throw new NotImplementedException();
+            if (barNumber >= Bars.Count)
+                return null;
+            return Bars[barNumber];
         }
 
         public double GetBarClose(int barNumber)
@@ -150,7 +147,12 @@ namespace TradingSystems
 
         public Position GetLastClosedShortPosition(int barNumber)
         {
-            return lastClosedShortPosition;
+            var allPositions = mapping.GetPositions(barNumber);
+            var result = (from position in allPositions
+                                      where position.BarNumberClosePosition <= barNumber
+                                      && position.PositionSide == PositionSide.Short
+                                      select position.Position).Last();
+            return result;
         }
 
         public bool IsRealTimeActualBar(int barNumber)
@@ -217,9 +219,11 @@ namespace TradingSystems
 
         public List<Order> GetOrdersBeforeBarOpened(int barNumber)
         {
+            var orders = mapping.GetOrders(barNumber);
+
             var o = (from order in orders
-                                where order.BarNumber <= barNumber
-                                select order).ToList();
+                     where order.BarNumber <= barNumber
+                     select order.Order).ToList();
 
             return o;
         }

@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+﻿using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
@@ -18,8 +18,7 @@ namespace TradingSystems
 
         private Order openOrder;
         private Order closeOrder;
-        private Converter converter;
-       
+        private Converter converter;       
 
         public PositionLab(int barNumber, Order openOrder, Security security)
         {
@@ -46,7 +45,15 @@ namespace TradingSystems
 
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
-            throw new System.NotImplementedException();
+            var bar = Security.GetBar(barNumber);
+            CloseAtMarket(barNumber, bar.Open, signalNameForClosePosition);
+        }
+
+        public void CloseAtMarket(int barNumber, double price, string signalNameForClosePosition)
+        {
+            BarNumberClosePosition = barNumber;
+            ExitPrice = price;
+            SignalNameForClosePosition = signalNameForClosePosition;
         }
     }
 }

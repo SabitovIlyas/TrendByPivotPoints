@@ -5,15 +5,15 @@ namespace TradingSystems
 {
     public enum OrderType
     {
-        Market, Limit, StopLoss
+        Market, Limit, StopLossLimit, StopLossMarket
     }
 
     public class Order
     {
-        public int BarNumber {  get; private set; }
+        public int BarNumber { get; private set; }
         public PositionSide PositionSide { get; private set; }
         public double Price { get; private set; }
-        public int Contracts { get; private set; }        
+        public int Contracts { get; private set; }
         public string SignalName { get; private set; }
         public bool IsActive { get; private set; } = true;
         private Converter converter;
@@ -23,14 +23,14 @@ namespace TradingSystems
         public int BarNumberSinceOrderIsNotActive { get; private set; } = int.MaxValue;
         private Position position;
 
-        public Order(int barNumber, PositionSide positionSide, double price, int contracts, 
-            string signalName, OrderType orderType = OrderType.Limit) 
-        {            
+        public Order(int barNumber, PositionSide positionSide, double price, int contracts,
+            string signalName, OrderType orderType = OrderType.Limit)
+        {
             BarNumber = barNumber;
             PositionSide = positionSide;
             Price = price;
             Contracts = contracts;
-            SignalName = signalName;                        
+            SignalName = signalName;
             OrderType = orderType;
             converter = new Converter(isConverted: positionSide == PositionSide.Short);
         }
@@ -43,7 +43,7 @@ namespace TradingSystems
             Price = price;
             Contracts = position.Contracts;
             SignalName = signalName;
-            OrderType = orderType;            
+            OrderType = orderType;
             converter = new Converter(isConverted: PositionSide == PositionSide.Short);
 
             this.position = position;
@@ -53,32 +53,35 @@ namespace TradingSystems
         {
             if (PositionSide == PositionSide.Null) return false;
 
-            if (OrderType == OrderType.Market) throw new NotImplementedException("Рыночный ордер " +
-                "пока не реализован");
-
-            if (converter.IsGreaterOrEqual(bar.Open, Price) && OrderType != OrderType.StopLoss)
+            if (converter.IsGreaterOrEqual(bar.Open, Price) && OrderType != OrderType.StopLossLimit)
             {
                 ExecutedPrice = bar.Open;
                 BarNumberSinceOrderIsNotActive = barNumber;
                 return true;
             }
             else if (converter.IsGreaterOrEqual(converter.GetBarHigh(bar), Price) &&
-                OrderType != OrderType.StopLoss)
+                OrderType != OrderType.StopLossLimit)
             {
                 ExecutedPrice = Price;
                 BarNumberSinceOrderIsNotActive = barNumber;
                 return true;
             }
-            else if (converter.IsLessOrEqual(bar.Open, Price) && (OrderType == OrderType.StopLoss))
+            else if (converter.IsLessOrEqual(bar.Open, Price) && (OrderType == OrderType.StopLossLimit))
             {
                 ExecutedPrice = bar.Open;
                 BarNumberSinceOrderIsNotActive = barNumber;
                 return true;
             }
-            else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) && 
-                (OrderType == OrderType.StopLoss))
+            else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) &&
+                (OrderType == OrderType.StopLossLimit))
             {
                 ExecutedPrice = Price;
+                BarNumberSinceOrderIsNotActive = barNumber;
+                return true;
+            }
+            else if (OrderType == OrderType.Market || OrderType == OrderType.StopLossMarket)
+            {
+                ExecutedPrice = bar.Open;
                 BarNumberSinceOrderIsNotActive = barNumber;
                 return true;
             }

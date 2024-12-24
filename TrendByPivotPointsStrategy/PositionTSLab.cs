@@ -14,6 +14,8 @@ namespace TradingSystems
 
         public int Contracts => throw new System.NotImplementedException();
 
+        public double ExitPrice => throw new System.NotImplementedException();
+
         private IPosition position;
 
         public PositionTSLab(IPosition position)
@@ -32,6 +34,11 @@ namespace TradingSystems
         public void CloseAtMarket(int barNumber, string signalNameForClosePosition)
         {
             position.CloseAtMarket(barNumber, signalNameForClosePosition);
+        }
+
+        public void CloseAtMarket(int barNumber, double price, string signalNameForClosePosition)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

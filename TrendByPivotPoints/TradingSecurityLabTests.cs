@@ -52,7 +52,7 @@ namespace TradingSystems.Tests
 
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
-            systemParameters.Add("kAtr", 0d);   //тут будет неправильный стоп-лосс. Сделать проверку на kAtr = 0
+            systemParameters.Add("kAtr", 0d);
             systemParameters.Add("atrPeriod", 10);
             systemParameters.Add("limitOpenedPositions", 1);
             systemParameters.Add("isUSD", 0);
@@ -105,8 +105,7 @@ namespace TradingSystems.Tests
             Assert.IsTrue(orders[1].Price == 89000);
             Assert.IsTrue(orders[2].Price == 86000);
             Assert.IsTrue(orders[3].Price == 87000);            
-
-            /*
+                        
             orders = sec.GetOrdersBeforeBarOpened(barNumber: 18);
             Assert.IsTrue(orders.Count == 9);
             Assert.IsTrue(orders[0].Price == 90000);
@@ -117,8 +116,7 @@ namespace TradingSystems.Tests
             Assert.IsTrue(orders[5].Price == 89000);
             Assert.IsTrue(orders[6].Price == 90000);
             Assert.IsTrue(orders[7].Price == 91000);
-            Assert.IsTrue(orders[8].Price == 92000);
-            */
+            Assert.IsTrue(orders[8].Price == 92000);            
         }
     }
 }

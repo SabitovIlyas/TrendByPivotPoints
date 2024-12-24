@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
@@ -40,7 +41,7 @@ namespace TradingSystems
                 return;
 
             var closeOrder = new Order(barNumber, position.PositionSide, stopPrice, position.Contracts,
-                signalNameForClosePosition, order.OrderType);
+                signalNameForClosePosition, OrderType.StopLossLimit);
             orders.Add(new OrderToPositionMap(closeOrder, position));            
         }
 
@@ -64,16 +65,24 @@ namespace TradingSystems
             {
                 if (order.Execute(bar, barNumber))
                 {
-                    if (order.OrderType != OrderType.StopLoss)
+                    if (order.OrderType == OrderType.Limit)
                     {
                         var position = new PositionLab(barNumber, order.Order, security);
                         order.Position = position;
                     }
-                    else
+                    else if (order.OrderType == OrderType.StopLossLimit)
                     {
                         var position = order.Position;
-                        //нахожусь здесь
                         position.CloseAtStop(barNumber, order.ExecutedPrice, order.SignalName);
+                    }
+                    else if (order.OrderType == OrderType.Market)
+                    {
+
+                    }
+                    else if (order.OrderType == OrderType.StopLossMarket)
+                    {
+                        var position = order.Position;
+                        position.CloseAtMarket(barNumber, order.ExecutedPrice, order.SignalName);
                     }
                 }
             }
@@ -95,6 +104,24 @@ namespace TradingSystems
                                 where order.BarNumberOpenPosition <= barNumber
                                 && barNumber < order.BarNumberClosePosition
                                 select order).ToList();
+
+            return activePositions;
+        }
+
+        public List<OrderToPositionMap> GetOrders(int barNumber)
+        {
+            var activeOrders = (from order in orders
+                                where order.BarNumber <= barNumber                                
+                                select order).ToList();
+
+            return activeOrders;
+        }
+
+        public List<OrderToPositionMap> GetPositions(int barNumber)
+        {
+            var activePositions = (from order in orders
+                                   where order.BarNumberOpenPosition <= barNumber                                   
+                                   select order).ToList();
 
             return activePositions;
         }

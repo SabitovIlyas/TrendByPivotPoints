@@ -103,6 +103,16 @@ namespace TradingSystems
             }
         }
 
+        public PositionSide PositionSide
+        {
+            get
+            {
+                if (Position == null)
+                    return PositionSide.Null;
+                return Position.PositionSide;
+            }
+        }
+
         public OrderToPositionMap(Order order)
         {
             Order = order;
