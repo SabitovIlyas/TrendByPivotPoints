@@ -88,5 +88,15 @@ namespace TradingSystems
 
             return activeOrders;
         }
+
+        public List<OrderToPositionMap> GetActivePositions(int barNumber)
+        {
+            var activePositions = (from order in orders
+                                where order.BarNumberOpenPosition <= barNumber
+                                && barNumber < order.BarNumberClosePosition
+                                select order).ToList();
+
+            return activePositions;
+        }
     }
 }

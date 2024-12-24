@@ -64,6 +64,45 @@ namespace TradingSystems
             }
         }
 
+        public int BarNumberOpenPosition
+        {
+            get
+            {
+                if (Position == null)
+                    return int.MaxValue;
+                return Position.BarNumberOpenPosition;
+            }
+        }
+
+        public int BarNumberClosePosition
+        {
+            get
+            {
+                if (Position == null)
+                    return int.MaxValue;
+                return Position.BarNumberClosePosition;
+            }
+        }
+
+        public string PositionOpenSignalName
+        {
+            get
+            {
+                if (Position == null)
+                    return string.Empty;
+                return Position.SignalNameForOpenPosition;
+            }
+        }
+        public string PositionCloseSignalName
+        {
+            get
+            {
+                if (Position == null)
+                    return string.Empty;
+                return Position.SignalNameForClosePosition;
+            }
+        }
+
         public OrderToPositionMap(Order order)
         {
             Order = order;

@@ -4,7 +4,7 @@ namespace TradingSystems
 {
     public class PositionLab : Position
     {
-        public int BarNumberOpenPosition { get; private set; }
+        public int BarNumberOpenPosition { get; private set; } = int.MaxValue;
         public double EntryPrice => openOrder.Price;
         public double ExitPrice { get; private set; }
         public PositionSide PositionSide => openOrder.PositionSide;
@@ -14,7 +14,7 @@ namespace TradingSystems
         public string SignalNameForClosePosition { get; private set; }
         public bool IsActive { get { return closeOrder == null || closeOrder.IsActive; } }
         public Security Security { get; private set; }
-        public int BarNumberClosePosition { get; set; }
+        public int BarNumberClosePosition { get; set; } = int.MaxValue;
 
         private Order openOrder;
         private Order closeOrder;

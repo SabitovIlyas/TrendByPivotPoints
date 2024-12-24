@@ -164,14 +164,11 @@ namespace TradingSystems
 
         public Position GetLastActiveForSignal(string signalName, int barNumber)
         {
-            var position = positions.FindLast(p => p.SignalNameForOpenPosition == signalName);
+            var positions = mapping.GetActivePositions(barNumber);             
+            var position = positions.FindLast(p => p.PositionOpenSignalName == signalName);
             if (position == null)
                 return null;
-            if (position.BarNumberOpenPosition > barNumber)
-                return null;
-
-
-            return activePositions.Find(p => p.SignalNameForOpenPosition == signalName);
+            return position.Position;
         }
 
         public void BuyIfGreater(int barNumber, int contracts, double entryPricePlanned,
