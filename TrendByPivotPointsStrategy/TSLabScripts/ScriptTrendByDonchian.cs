@@ -29,6 +29,8 @@ namespace TradingSystems
         public OptimProperty shares = new OptimProperty(1, 0, 1, 1);
         public OptimProperty isUSD = new OptimProperty(0, 0, 1, 1);
 
+        public OptimProperty contracts = new OptimProperty(1, 0, 1000, 1);
+
         public void Execute(IContext context, ISecurity[] securities)        
         {
             if ((int)fastDonchian > (int)slowDonchian)
@@ -80,6 +82,7 @@ namespace TradingSystems
             systemParameters.Add("shares", (int)shares);
 
             systemParameters.Add("isUSD", (int)isUSD);
+            systemParameters.Add("contracts", (int)contracts);
 
             try
             {
