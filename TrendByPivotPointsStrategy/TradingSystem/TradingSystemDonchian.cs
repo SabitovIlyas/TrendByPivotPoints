@@ -183,7 +183,7 @@ namespace TradingSystems
                 BuyIfGreater(price, contracts, notes);
                 Log("Отправляем ордер.", convertable.Long);
                 
-                if (security.IsRealTimeActualBar(barNumber))
+                if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
                 {
                     var sleepTimeInSec = 3;
                     Log("Ждём {0} сек.", sleepTimeInSec);
