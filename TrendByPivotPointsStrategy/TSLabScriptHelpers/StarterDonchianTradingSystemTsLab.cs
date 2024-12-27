@@ -41,18 +41,27 @@ namespace TradingSystems
             var securityList = new List<Security>();
             this.securityFirst = new SecurityTSLab(securityFirst);
             securityList.Add(this.securityFirst);
-
+            
             var riskValuePrcntCalc = kAtr * limitOpenedPositions;
             if (riskValuePrcntCalc > riskValuePrcnt)
                 throw new System.Exception("Превышен уровень риска");
-
-            riskValuePrcnt = kAtr;
-            var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);            
+                        
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
 
-            var contractsManager = new ContractsManager(riskManager, account, currency, 
-                currencyConverter, shares, logger);            
+            ContractsManager contractsManager;
+            if (contracts <= 0)
+            {
+                riskValuePrcnt = kAtr;
+                var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
+                contractsManager = new ContractsManager(riskManager, account, currency,
+                currencyConverter, shares, logger);
+            }
+            else
+            {
+                contractsManager = new ContractsManager(contracts, account, currency,
+                currencyConverter, shares, logger);
+            }         
             var indicators = new IndicatorsTsLab();
 
             tradingSystems = new List<TradingSystem>();

@@ -147,12 +147,16 @@ namespace TradingSystems
 
         public Position GetLastClosedShortPosition(int barNumber)
         {
-            var allPositions = mapping.GetPositions(barNumber);
-            var result = (from position in allPositions
+            var allPositions = mapping.GetPositions(barNumber);            
+
+            var positions = (from position in allPositions
                                       where position.BarNumberClosePosition <= barNumber
                                       && position.PositionSide == PositionSide.Short
-                                      select position.Position).Last();
-            return result;
+                                      select position.Position).ToList();
+            if (positions.Count == 0)
+                return null;
+
+            return positions.Last();
         }
 
         public bool IsRealTimeActualBar(int barNumber)
