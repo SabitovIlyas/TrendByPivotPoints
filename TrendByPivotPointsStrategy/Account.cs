@@ -7,7 +7,6 @@ namespace TradingSystems
         public abstract double InitDeposit { get; }
         public abstract double Equity { get; }
         public abstract double FreeBalance { get; }
-        Currency Currency { get; }
         Logger Logger { get; set; }        
         protected Logger logger;
         protected double equity;

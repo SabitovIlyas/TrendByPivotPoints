@@ -55,5 +55,10 @@ namespace TradingSystems
             ExitPrice = price;
             SignalNameForClosePosition = signalNameForClosePosition;
         }
+
+        public double GetProfit()
+        {
+            return 0;
+        }
     }
 }
