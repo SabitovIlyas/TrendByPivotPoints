@@ -10,9 +10,11 @@ namespace TradingSystems.Tests
     {
         List<Bar> bars;
         Security security;
+        SecurityLab sec;
+
         [TestInitialize]
         public void TestInitialize()
-        {   
+        {
             bars = new List<Bar>()
             {
                 Bar.Create(new DateTime(2025,11,27,10,00,00),90000,90000,90000,90000,1, "SPFB.TEST", "1",0),
@@ -67,46 +69,46 @@ namespace TradingSystems.Tests
             starter.SetParameters(systemParameters);
             starter.Initialize();
             starter.Run();
+
+            var sec = security as SecurityLab;
         }
 
         [TestMethod()]
         public void GetLastActiveForSignal_Test()
-        {            
+        {
             var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: 11);
-            Assert.IsNotNull(position);            
+            Assert.IsNotNull(position);
         }
 
         [TestMethod()]
-        public void GetOrdersByBarsTest_1()
+        public void GetOrdersByBarsTest()
         {
-            var sec = security as SecurityLab;
-
-            var orders = sec.GetOrdersBeforeBarOpened(barNumber: 9);
+            var orders = sec.GetOrders(barNumber: 9);
             Assert.IsTrue(orders.Count == 0);
 
-            orders = sec.GetOrdersBeforeBarOpened(barNumber: 10);
+            orders = sec.GetOrders(barNumber: 10);
             Assert.IsTrue(orders.Count == 1);
             Assert.IsTrue(orders[0].Price == 90000);
 
-            orders = sec.GetOrdersBeforeBarOpened(barNumber: 11);
+            orders = sec.GetOrders(barNumber: 11);
             Assert.IsTrue(orders.Count == 2);
             Assert.IsTrue(orders[0].Price == 90000);
             Assert.IsTrue(orders[1].Price == 89000);
 
-            orders = sec.GetOrdersBeforeBarOpened(barNumber: 12);
+            orders = sec.GetOrders(barNumber: 12);
             Assert.IsTrue(orders.Count == 3);
             Assert.IsTrue(orders[0].Price == 90000);
             Assert.IsTrue(orders[1].Price == 89000);
             Assert.IsTrue(orders[2].Price == 86000);
 
-            orders = sec.GetOrdersBeforeBarOpened(barNumber: 13);
+            orders = sec.GetOrders(barNumber: 13);
             Assert.IsTrue(orders.Count == 4);
             Assert.IsTrue(orders[0].Price == 90000);
             Assert.IsTrue(orders[1].Price == 89000);
             Assert.IsTrue(orders[2].Price == 86000);
-            Assert.IsTrue(orders[3].Price == 87000);            
-                        
-            orders = sec.GetOrdersBeforeBarOpened(barNumber: 18);
+            Assert.IsTrue(orders[3].Price == 87000);
+
+            orders = sec.GetOrders(barNumber: 18);
             Assert.IsTrue(orders.Count == 9);
             Assert.IsTrue(orders[0].Price == 90000);
             Assert.IsTrue(orders[1].Price == 89000);
@@ -116,7 +118,16 @@ namespace TradingSystems.Tests
             Assert.IsTrue(orders[5].Price == 89000);
             Assert.IsTrue(orders[6].Price == 90000);
             Assert.IsTrue(orders[7].Price == 91000);
-            Assert.IsTrue(orders[8].Price == 92000);            
+            Assert.IsTrue(orders[8].Price == 92000);
+        }
+
+        [TestMethod()]
+        public void GetProfit()
+        {
+            //Нахожусь здесь
+            var expected = 0;
+            var actual = sec.GetProfit(barNumber: 13);
+            Assert.AreEqual(expected, actual);
         }
     }
 }

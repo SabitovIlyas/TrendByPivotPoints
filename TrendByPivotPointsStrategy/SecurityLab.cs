@@ -27,8 +27,6 @@ namespace TradingSystems
         private List<Order> orders = new List<Order>();
         private Dictionary<Order, Position> ordersPositions = new Dictionary<Order, Position>();
         private List<Order> activeOrders = new List<Order>();
-        private Position lastClosedLongPosition;
-        private Position lastClosedShortPosition;
         private OrderToPositionMapping mapping;
 
         public SecurityLab(Currency currency, int shares)
@@ -93,12 +91,7 @@ namespace TradingSystems
             if (barNumber >= Bars.Count)
                 return null;
             return Bars[barNumber];
-        }
-
-        public double GetBarClose(int barNumber)
-        {
-            throw new System.NotImplementedException();
-        }
+        }        
 
         public int GetBarCompressedNumberFromBarBaseNumber(int barNumber)
         {
@@ -107,22 +100,37 @@ namespace TradingSystems
 
         public DateTime GetBarDateTime(int barNumber)
         {
-            throw new NotImplementedException();
+            if (barNumber < Bars.Count)
+                return Bars[barNumber].Date;
+            return DateTime.MinValue;
+        }
+
+        public double GetBarClose(int barNumber)
+        {
+            if (barNumber < Bars.Count)
+                return Bars[barNumber].Close;
+            return double.NaN;
         }
 
         public double GetBarHigh(int barNumber)
         {
-            throw new System.NotImplementedException();
+            if (barNumber < Bars.Count)
+                return Bars[barNumber].High;
+            return double.NaN;
         }
 
         public double GetBarLow(int barNumber)
         {
-            throw new System.NotImplementedException();
+            if (barNumber < Bars.Count)
+                return Bars[barNumber].Low;
+            return double.NaN;
         }
 
         public double GetBarOpen(int barNumber)
         {
-            throw new System.NotImplementedException();
+            if (barNumber < Bars.Count)
+                return Bars[barNumber].Open;
+            return double.NaN;
         }
 
         public List<Bar> GetBars(int barNumber)
@@ -142,17 +150,22 @@ namespace TradingSystems
 
         public Position GetLastClosedLongPosition(int barNumber)
         {
-            return lastClosedLongPosition;
+            return GetLastClosedPosition(barNumber, PositionSide.Long);
         }
 
         public Position GetLastClosedShortPosition(int barNumber)
         {
-            var allPositions = mapping.GetPositions(barNumber);            
+            return GetLastClosedPosition(barNumber, PositionSide.Short);
+        }
+
+        public Position GetLastClosedPosition(int barNumber, PositionSide positionSide)
+        {
+            var allPositions = mapping.GetPositions(barNumber);
 
             var positions = (from position in allPositions
-                                      where position.BarNumberClosePosition <= barNumber
-                                      && position.PositionSide == PositionSide.Short
-                                      select position.Position).ToList();
+                             where position.BarNumberClosePosition <= barNumber
+                             && position.PositionSide == positionSide
+                             select position.Position).ToList();
             if (positions.Count == 0)
                 return null;
 
@@ -166,6 +179,7 @@ namespace TradingSystems
 
         public void ResetBarNumberToLastBarNumber()
         {
+            BarNumber = Bars.Count - 1;
         }
 
         public Position GetLastActiveForSignal(string signalName, int barNumber)
@@ -221,7 +235,7 @@ namespace TradingSystems
             return result;
         }
 
-        public List<Order> GetOrdersBeforeBarOpened(int barNumber)
+        public List<Order> GetOrders(int barNumber)
         {
             var orders = mapping.GetOrders(barNumber);
 
@@ -230,6 +244,11 @@ namespace TradingSystems
                      select order.Order).ToList();
 
             return o;
+        }
+
+        public double GetProfit(int barNumber)
+        {
+            return 0;
         }
     }
 }
