@@ -91,8 +91,8 @@ namespace TradingSystems
         }      
 
         public override void Paint()
-        {            
-            var firstTradingSystem = tradingSystems.First();
+        {
+            var firstTradingSystem = tradingSystems.First() as TradingSystemDonchian;
             firstTradingSystem.Paint(context);
         }              
     }

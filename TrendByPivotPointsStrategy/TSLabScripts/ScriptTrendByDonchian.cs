@@ -37,7 +37,7 @@ namespace TradingSystems
                 return;
 
             Logger logger = new TsLabLogger(context);
-            Starter system;
+            //Starter system;
 
             if ((int)isLoggerOn == 1)
                 logger = new TsLabLogger(context);
@@ -63,7 +63,7 @@ namespace TradingSystems
                     }
             }
 
-            system = new StarterDonchianTradingSystemTsLab(context, securities, logger);
+            var system = new StarterDonchianTradingSystemTsLab(context, securities, logger);
             var systemParameters = new SystemParameters();       
             
             systemParameters.Add("slowDonchian", (int)slowDonchian);

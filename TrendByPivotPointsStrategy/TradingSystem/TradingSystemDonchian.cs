@@ -174,20 +174,20 @@ namespace TradingSystems
 
         public void Paint(Context context)
         {
-            if (Ctx.IsOptimization)
+            if (context.IsOptimization)
                 return;           
             
-            var pane = Ctx.CreatePane("Первая панель", 50, true);
+            var pane = context.CreatePane("Первая панель", 50, true);
             var colorTSlab1 = new Color(SystemColor.Blue.ToArgb());
             var colorTSlab2 = new Color(SystemColor.Green.ToArgb());
             var colorTSlab3 = new Color(SystemColor.Red.ToArgb());
 
-            pane.AddList(secCompressed.ToString(), secCompressed, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
+            pane.AddList(security.ToString(), security, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
             pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
 
-            pane = Ctx.CreatePane("Вторая панель", 50, true);            
-            pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
+            pane = context.CreatePane("Вторая панель", 50, true);            
+            pane.AddList(security.ToString(), security, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
             pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
         }        

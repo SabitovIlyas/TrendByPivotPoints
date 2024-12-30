@@ -9,7 +9,14 @@ namespace TradingSystems
 
         public bool IsRealTimeTrading { get { return false; } }
 
+        public bool IsOptimization => throw new System.NotImplementedException();
+
         public Pane CreateGraphPane(string name, string title)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IGraphPane CreatePane(string title, double sizePct, bool hideLegend, bool addToTop = false)
         {
             throw new System.NotImplementedException();
         }
@@ -17,6 +24,11 @@ namespace TradingSystems
         public IReadOnlyList<RecalcReason> LastRecalcReasons()
         {
             return new ReadAndAddList<RecalcReason>();
+        }
+
+        GraphPane Context.CreatePane(string title, double sizePct, bool hideLegend, bool addToTop)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

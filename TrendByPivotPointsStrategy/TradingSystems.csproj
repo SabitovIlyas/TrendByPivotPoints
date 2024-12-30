@@ -79,6 +79,8 @@
     <Compile Include="Currency.cs" />
     <Compile Include="CurrencyConverter.cs" />
     <Compile Include="CustomSecurity.cs" />
+    <Compile Include="GraphPane.cs" />
+    <Compile Include="GraphPaneTsLab.cs" />
     <Compile Include="Indicators\Indicators.cs" />
     <Compile Include="Indicators\IndicatorsLab.cs" />
     <Compile Include="Indicators\IndicatorsTsLab.cs" />
