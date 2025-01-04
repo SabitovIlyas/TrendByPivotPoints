@@ -18,12 +18,13 @@ namespace TradingSystems
 
         private IPosition position;
 
-        public PositionTSLab(IPosition position)
+        public PositionTSLab(IPosition position, int barNumber)
         {
             this.position = position;
             EntryPrice = position.EntryPrice;
             BarNumberOpenPosition = position.EntryBarNum;
-            Profit = position.Profit();            
+            if (!position.IsActiveForBar(barNumber))
+                Profit = position.Profit();      
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)

@@ -70,7 +70,7 @@ namespace TradingSystems.Tests
             starter.Initialize();
             starter.Run();
 
-            var sec = security as SecurityLab;
+            sec = security as SecurityLab;
         }
 
         [TestMethod()]

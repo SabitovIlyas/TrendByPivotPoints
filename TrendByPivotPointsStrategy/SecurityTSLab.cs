@@ -313,12 +313,12 @@ namespace TradingSystems
             if (position == null)
                 return null;
             if (lastLongPositionClosed == null)
-                lastLongPositionClosed = new PositionTSLab(position);
+                lastLongPositionClosed = new PositionTSLab(position, barNumber);
 
             if (position.EntryPrice == lastLongPositionClosed.EntryPrice && position.EntryBarNum == lastLongPositionClosed.BarNumberOpenPosition && position.Profit() == lastLongPositionClosed.Profit)
                 return lastLongPositionClosed;
 
-            lastLongPositionClosed = new PositionTSLab(position);
+            lastLongPositionClosed = new PositionTSLab(position, barNumber);
             return lastLongPositionClosed;
         }
         public Position GetLastClosedShortPosition(int barNumber)
@@ -328,12 +328,12 @@ namespace TradingSystems
             if (position == null)
                 return null;
             if (lastShortPositionClosed == null)
-                lastShortPositionClosed = new PositionTSLab(position);
+                lastShortPositionClosed = new PositionTSLab(position, barNumber);
 
             if (position.EntryPrice == lastShortPositionClosed.EntryPrice && position.EntryBarNum == lastShortPositionClosed.BarNumberOpenPosition && position.Profit() == lastShortPositionClosed.Profit)
                 return lastShortPositionClosed;
 
-            lastShortPositionClosed = new PositionTSLab(position);
+            lastShortPositionClosed = new PositionTSLab(position, barNumber );
             return lastShortPositionClosed;
         }
 
@@ -399,7 +399,7 @@ namespace TradingSystems
             if  (position == null)
                 return null;
 
-            return new PositionTSLab(position);
+            return new PositionTSLab(position, barNumber);
         }
 
         public void BuyIfGreater(int barNumber, int contracts, double price, string signalNameForOpenPosition, bool isConverted = false)
@@ -434,7 +434,7 @@ namespace TradingSystems
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, string notes, Position position)
         {
-            throw new NotImplementedException();
+            position.CloseAtStop(barNumber, stopPrice, signalNameForClosePosition);
         }
     }
 }
