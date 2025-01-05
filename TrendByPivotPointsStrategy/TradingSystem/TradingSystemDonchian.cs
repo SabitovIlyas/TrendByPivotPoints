@@ -35,7 +35,8 @@ namespace TradingSystems
         private int atrPeriod;
         private double kAtrForStopLoss;
         private double kAtrForOpenPosition = 0.5;
-        private double openPositionPrice;        
+        private double openPositionPrice;
+        private double firstPositionEntryPrice;
 
         public TradingSystemDonchian(List<Security> securities, 
             ContractsManager contractsManager, Indicators indicators, Context context,
@@ -104,7 +105,15 @@ namespace TradingSystems
                 }
 
                 if (positionNumber == 0)
+                {
                     openPositionPrice = highest[barNumber];
+                    firstPositionEntryPrice = 0;
+                }
+                else
+                {
+                    if (firstPositionEntryPrice != 0)
+                        openPositionPrice = firstPositionEntryPrice;
+                }
 
                 var price = converter.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
                 Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, converter.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
@@ -125,6 +134,9 @@ namespace TradingSystems
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 security.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition, notes, position);
+                
+                if (positionNumber == 0)
+                    firstPositionEntryPrice = position.EntryPrice;
             }
         }
 
