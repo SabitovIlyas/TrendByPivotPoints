@@ -44,7 +44,7 @@ namespace TradingSystems
         private int limitOpenedPositions = 10;
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
-        private double averageEntryPrice;
+        private double firstPositionEntryPrice;
 
         public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
@@ -158,23 +158,23 @@ namespace TradingSystems
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)
-                {                    
+                {
                     Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
                 }
                 else
-                {                 
+                {
                     Log("Торгуем в лаборатории.");
                 }
 
                 if (positionNumber == 0)
                 {
                     openPositionPrice = highest[barNumber];
-                    averageEntryPrice = 0;
+                    firstPositionEntryPrice = 0;
                 }
                 else
                 {
-                    if (averageEntryPrice != 0)
-                        openPositionPrice = averageEntryPrice;
+                    if (firstPositionEntryPrice != 0)
+                        openPositionPrice = firstPositionEntryPrice;
                 }
 
                 var price = convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
@@ -182,18 +182,18 @@ namespace TradingSystems
 
                 BuyIfGreater(price, contracts, notes);
                 Log("Отправляем ордер.", convertable.Long);
-                
+
                 if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
                 {
                     var sleepTimeInSec = 3;
                     Log("Ждём {0} сек.", sleepTimeInSec);
                     System.Threading.Thread.Sleep(sleepTimeInSec * 1000);
-                }                
+                }
             }
 
             else
             {
-                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))                
+                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
                     Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
 
                 var position = GetOpenedPosition(notes);
@@ -201,7 +201,8 @@ namespace TradingSystems
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
-                averageEntryPrice = position.AverageEntryPrice;
+                if (positionNumber == 0)
+                    firstPositionEntryPrice = position.EntryPrice;
             }
         }
 
