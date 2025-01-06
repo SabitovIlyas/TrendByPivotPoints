@@ -15,5 +15,7 @@
         void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition);
         void CloseAtMarket(int barNumber, double price, string signalNameForClosePosition);
         void CloseAtMarket(int barNumber, string signalNameForClosePosition);
+        double GetFixedProfit();
+        double GetUnfixedProfit(double barClose);        
     }
 }

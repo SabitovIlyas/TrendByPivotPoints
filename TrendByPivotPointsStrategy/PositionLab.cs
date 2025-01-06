@@ -1,6 +1,4 @@
-﻿using TSLab.Script.Handlers;
-
-namespace TradingSystems
+﻿namespace TradingSystems
 {
     public class PositionLab : Position
     {
@@ -9,10 +7,9 @@ namespace TradingSystems
         public double ExitPrice { get; private set; }
         public PositionSide PositionSide => openOrder.PositionSide;
         public int Contracts => openOrder.Contracts;
-        public double Profit { get; private set; }
+        public double Profit { get { return GetFixedProfit(); } }
         public string SignalNameForOpenPosition => openOrder.SignalName;
         public string SignalNameForClosePosition { get; private set; }
-        public bool IsActive { get { return closeOrder == null || closeOrder.IsActive; } }
         public Security Security { get; private set; }
         public int BarNumberClosePosition { get; set; } = int.MaxValue;
 
@@ -25,15 +22,7 @@ namespace TradingSystems
             BarNumberOpenPosition = barNumber;
             this.openOrder = openOrder;
             Security = security;
-            converter = new Converter(isConverted: PositionSide == PositionSide.Long);
-        }
-
-        public void Update(int barNumber, Bar bar)
-        {
-            if (closeOrder == null || closeOrder.IsActive)            
-                Profit = converter.Difference(bar.Close, openOrder.ExecutedPrice);            
-            else            
-                Profit = converter.Difference(closeOrder.ExecutedPrice, openOrder.ExecutedPrice);            
+            converter = new Converter(isConverted: PositionSide != PositionSide.Long);
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
@@ -56,9 +45,14 @@ namespace TradingSystems
             SignalNameForClosePosition = signalNameForClosePosition;
         }
 
-        public double GetProfit()
+        public double GetFixedProfit()
+        {            
+            return converter.Difference(ExitPrice, EntryPrice);            
+        }
+
+        public double GetUnfixedProfit(double barClose)
         {
-            return 0;
+            return converter.Difference(barClose, EntryPrice);            
         }
     }
 }

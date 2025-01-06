@@ -41,5 +41,15 @@ namespace TradingSystems
         {
             throw new System.NotImplementedException();
         }
+
+        public double GetFixedProfit()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public double GetUnfixedProfit(double barClose)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

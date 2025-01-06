@@ -239,8 +239,7 @@ namespace TradingSystems
         {
             var orders = mapping.GetOrders(barNumber);
 
-            var o = (from order in orders
-                     where order.BarNumber <= barNumber
+            var o = (from order in orders                     
                      select order.Order).ToList();
 
             return o;
@@ -248,7 +247,33 @@ namespace TradingSystems
 
         public double GetProfit(int barNumber)
         {
-            return 0;
+            var profit = 0d;
+
+            var closedPositionsMap = mapping.GetClosedPositions(barNumber);
+            var closedPositions = (from position in closedPositionsMap
+                             select position.Position).ToList();
+
+            var uniqueClosedPositions = new List<Position>();
+            foreach (var position in closedPositions)            
+                if (!uniqueClosedPositions.Contains(position))
+                    uniqueClosedPositions.Add(position);            
+            
+            foreach (var position in uniqueClosedPositions)            
+                profit += position.Profit;
+
+            var activePositionsMap = mapping.GetActivePositions(barNumber);
+            var activePositions = (from position in activePositionsMap
+                                   select position.Position).ToList();
+
+            var uniqueActivePositions = new List<Position>();
+            foreach (var position in activePositions)
+                if (!uniqueActivePositions.Contains(position))
+                    uniqueActivePositions.Add(position);
+
+            foreach (var position in uniqueActivePositions)
+                profit += position.GetUnfixedProfit(GetBarClose(barNumber));
+
+            return profit;
         }
     }
 }

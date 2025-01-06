@@ -119,11 +119,20 @@ namespace TradingSystems
 
         public List<OrderToPositionMap> GetPositions(int barNumber)
         {
-            var activePositions = (from order in orders
+            var positions = (from order in orders
                                    where order.BarNumberOpenPosition <= barNumber                                   
                                    select order).ToList();
 
-            return activePositions;
+            return positions;
+        }
+
+        public List<OrderToPositionMap> GetClosedPositions(int barNumber)
+        {
+            var closedPositions = (from order in orders
+                                   where order.BarNumberClosePosition <= barNumber
+                                   select order).ToList();
+
+            return closedPositions;
         }
     }
 }
