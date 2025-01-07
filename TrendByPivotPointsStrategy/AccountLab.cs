@@ -9,6 +9,7 @@ namespace TradingSystems
         //TODO: Реализовать этот класс. Пока он пустой.
         public override double InitDeposit => initDeposit;
         public override double Equity => equity;
+
         public override double FreeBalance => freeBalance;
 
         private double initDeposit;
@@ -50,6 +51,15 @@ namespace TradingSystems
                 ((SecurityLab)security).Update(barNumber);
             
             base.Update(barNumber);
+        }
+
+        private double GetEquity(int barNumber)
+        {
+            var equity = initDeposit;
+            foreach (var security in securities)
+                equity += ((SecurityLab)security).GetProfit(barNumber);
+
+            return equity;
         }
     }
 }

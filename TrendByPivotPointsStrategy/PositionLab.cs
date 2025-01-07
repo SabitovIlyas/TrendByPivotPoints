@@ -46,13 +46,13 @@
         }
 
         public double GetFixedProfit()
-        {            
-            return converter.Difference(ExitPrice, EntryPrice);            
+        {
+            return converter.Difference(ExitPrice, EntryPrice) * Contracts;
         }
 
         public double GetUnfixedProfit(double barClose)
         {
-            return converter.Difference(barClose, EntryPrice);            
+            return converter.Difference(barClose, EntryPrice) * Contracts;
         }
     }
 }

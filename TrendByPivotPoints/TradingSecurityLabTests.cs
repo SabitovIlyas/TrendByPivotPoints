@@ -124,7 +124,7 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void GetProfit()
         {
-            //Нахожусь здесь. Пока реализовал расчёт прибыли без объёма.
+            //Нахожусь здесь. Оттестировать расчёт прибыли, а также Equity в другом тесте.
             var expected = 3000;// 92000-89000 = 3000
             var actual = sec.GetProfit(barNumber: 13);
             Assert.AreEqual(expected, actual);
