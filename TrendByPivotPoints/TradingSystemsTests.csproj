@@ -91,7 +91,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityISecurityFake.cs" />
     <Compile Include="RealAndCompressedBarsTest.cs" />
-    <Compile Include="TradingSecurityLabTests.cs" />
+    <Compile Include="TradingSecurityLabTests1.cs" />
+    <Compile Include="TradingSecurityLabTests2.cs" />
     <Compile Include="XMLExchangeDataTest.cs" />
   </ItemGroup>
   <ItemGroup>
