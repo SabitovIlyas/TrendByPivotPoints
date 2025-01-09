@@ -11,6 +11,7 @@ namespace TradingSystems.Tests
         List<Bar> bars;
         Security security;
         SecurityLab sec;
+        Starter starter;
 
         [TestInitialize]
         public void TestInitialize()
@@ -49,7 +50,7 @@ namespace TradingSystems.Tests
             var context = new ContextLab();
             var securities = new List<Security>() { security };
             var logger = new LoggerNull();
-            var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
+            starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
 
             systemParameters.Add("slowDonchian", 10);
@@ -76,9 +77,17 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void GetProfit()
         {
-            //Нахожусь здесь. Оттестировать расчёт прибыли, а также Equity в другом тесте.
-            var expected = 6000;// 92000-89000 = 3000
+            var expected = 2 * (92000 - 89000);
             var actual = sec.GetProfit(barNumber: 13);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetEquity()
+        {
+            var expected = 100000 + 2 * (92000 - 89000);
+            var account = starter.Account;
+            var actual =  ((AccountLab)account).GetEquity(barNumber: 13);
             Assert.AreEqual(expected, actual);
         }
     }

@@ -123,8 +123,8 @@ namespace TradingSystems.Tests
 
         [TestMethod()]
         public void GetProfit()
-        {            
-            var expected = 3000;// 92000-89000 = 3000
+        {
+            var expected = 92000 - 89000;
             var actual = sec.GetProfit(barNumber: 13);
             Assert.AreEqual(expected, actual);
         }

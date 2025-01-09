@@ -38,7 +38,7 @@ namespace TrendByPivotPointsStarter
             base.Initialize();
             
             var baseCurrency = Currency.Ruble;
-            account = new AccountLab(initDeposit: 1000000, baseCurrency, securities, logger);            
+            Account = new AccountLab(initDeposit: 1000000, baseCurrency, securities, logger);            
             
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
@@ -48,13 +48,13 @@ namespace TrendByPivotPointsStarter
             if (contracts <= 0)
             {
                 riskValuePrcnt = kAtr;
-                var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
-                contractsManager = new ContractsManager(riskManager, account, currency,
+                var riskManager = new RiskManagerReal(Account, logger, riskValuePrcnt);
+                contractsManager = new ContractsManager(riskManager, Account, currency,
                 currencyConverter, shares, logger);
             }
             else
             {
-                contractsManager = new ContractsManager(contracts, account, currency,
+                contractsManager = new ContractsManager(contracts, Account, currency,
                 currencyConverter, shares, logger);
             }
 

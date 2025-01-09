@@ -7,25 +7,27 @@ namespace TradingSystems
 {
     public abstract class Starter
     {
+        public Account Account { get; protected set; }
+
         protected List<TradingSystem> tradingSystems;
         protected int securityNumber;
-
         protected double rateUSD;
         protected PositionSide positionSide;
+
         protected double comission;
         protected double riskValuePrcnt;
         protected Currency currency;
-
         protected int shares;
+
         protected Logger logger = new LoggerNull();
-        protected Account account;
         protected SystemParameters systemParameters;
         protected List<Security> securities;
         protected Security securityFirst;
+
         protected Context context;
         protected int contracts;
 
-        public Logger Logger { get { return logger; } set { logger = value; } }
+        public Logger Logger { get { return logger; } set { logger = value; } }        
 
         public virtual void Initialize()
         {
@@ -46,7 +48,7 @@ namespace TradingSystems
             {
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    account.Update(barNumber);  //поменял местами обновление аккаунта и обновление торговой системы
+                    Account.Update(barNumber);  //поменял местами обновление аккаунта и обновление торговой системы
                     tradingSystem.Update(barNumber);                    
                 }
             }

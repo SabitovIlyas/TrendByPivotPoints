@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Data;
-using TSLab.Script;
 
 namespace TradingSystems
 {
     public class AccountLab : Account
     {
-        //TODO: Реализовать этот класс. Пока он пустой.
         public override double InitDeposit => initDeposit;
         public override double Equity => equity;
 
@@ -53,7 +50,7 @@ namespace TradingSystems
             base.Update(barNumber);
         }
 
-        private double GetEquity(int barNumber)
+        public double GetEquity(int barNumber)
         {
             var equity = initDeposit;
             foreach (var security in securities)
