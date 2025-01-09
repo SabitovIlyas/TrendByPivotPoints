@@ -93,6 +93,7 @@
     <Compile Include="RealAndCompressedBarsTest.cs" />
     <Compile Include="TradingSecurityLabTests1.cs" />
     <Compile Include="TradingSecurityLabTests2.cs" />
+    <Compile Include="TradingSecurityLabTests3.cs" />
     <Compile Include="XMLExchangeDataTest.cs" />
   </ItemGroup>
   <ItemGroup>

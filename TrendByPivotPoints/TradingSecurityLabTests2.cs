@@ -63,7 +63,7 @@ namespace TradingSystems.Tests
             systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", 1);
 
-            systemParameters.Add("equity", 100000d); //реализовать и оттестировать в другом тесте
+            systemParameters.Add("equity", 100000d);
             systemParameters.Add("riskValue", 1); //реализовать и оттестировать в другом тесте
             systemParameters.Add("contracts", 2);
 

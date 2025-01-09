@@ -6,11 +6,12 @@ using TrendByPivotPointsStarter;
 namespace TradingSystems.Tests
 {
     [TestClass()]
-    public class TradingSecurityLabTests1
+    public class TradingSecurityLabTests3
     {
         List<Bar> bars;
         Security security;
         SecurityLab sec;
+        Starter starter;
 
         [TestInitialize]
         public void TestInitialize()
@@ -49,7 +50,7 @@ namespace TradingSystems.Tests
             var context = new ContextLab();
             var securities = new List<Security>() { security };
             var logger = new LoggerNull();
-            var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
+            starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
 
             systemParameters.Add("slowDonchian", 10);
@@ -63,8 +64,8 @@ namespace TradingSystems.Tests
             systemParameters.Add("shares", 1);
 
             systemParameters.Add("equity", 100000d);
-            systemParameters.Add("riskValue", 1); //реализовать и оттестировать в другом тесте
-            systemParameters.Add("contracts", 1);
+            systemParameters.Add("riskValue", 0.5); //реализовать и оттестировать в другом тесте
+            systemParameters.Add("contracts", 0);
 
             starter.SetParameters(systemParameters);
             starter.Initialize();
@@ -74,58 +75,19 @@ namespace TradingSystems.Tests
         }
 
         [TestMethod()]
-        public void GetLastActiveForSignal_Test()
-        {
-            var position = security.GetLastActiveForSignal("LE Вход №1", barNumber: 11);
-            Assert.IsNotNull(position);
-        }
-
-        [TestMethod()]
-        public void GetOrdersByBarsTest()
-        {
-            var orders = sec.GetOrders(barNumber: 9);
-            Assert.IsTrue(orders.Count == 0);
-
-            orders = sec.GetOrders(barNumber: 10);
-            Assert.IsTrue(orders.Count == 1);
-            Assert.IsTrue(orders[0].Price == 90000);
-
-            orders = sec.GetOrders(barNumber: 11);
-            Assert.IsTrue(orders.Count == 2);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
-
-            orders = sec.GetOrders(barNumber: 12);
-            Assert.IsTrue(orders.Count == 3);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
-            Assert.IsTrue(orders[2].Price == 86000);
-
-            orders = sec.GetOrders(barNumber: 13);
-            Assert.IsTrue(orders.Count == 4);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
-            Assert.IsTrue(orders[2].Price == 86000);
-            Assert.IsTrue(orders[3].Price == 87000);
-
-            orders = sec.GetOrders(barNumber: 18);
-            Assert.IsTrue(orders.Count == 9);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
-            Assert.IsTrue(orders[2].Price == 86000);
-            Assert.IsTrue(orders[3].Price == 87000);
-            Assert.IsTrue(orders[4].Price == 88000);
-            Assert.IsTrue(orders[5].Price == 89000);
-            Assert.IsTrue(orders[6].Price == 90000);
-            Assert.IsTrue(orders[7].Price == 91000);
-            Assert.IsTrue(orders[8].Price == 92000);
-        }
-
-        [TestMethod()]
         public void GetProfit()
         {
-            double expected = 92000 - 89000;
+            double expected = 2 * (92000 - 89000);
             double actual = sec.GetProfit(barNumber: 13);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void GetEquity()
+        {
+            double expected = 100000 + 2 * (92000 - 89000);
+            var account = starter.account;
+            double actual = ((AccountLab)account).GetEquity(barNumber: 13);
             Assert.AreEqual(expected, actual);
         }
     }
