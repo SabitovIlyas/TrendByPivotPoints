@@ -34,9 +34,9 @@ namespace TradingSystems
             context = new ContextTSLab(ctx, securityFirst);            
             var baseCurrency = Currency.Ruble;
             if (context.IsRealTimeTrading)
-                Account = new AccountTsLabRt(securities, baseCurrency, logger);
+                account = new AccountTsLabRt(securities, baseCurrency, logger);
             else
-                Account = new AccountTsLab(securities, baseCurrency, logger);
+                account = new AccountTsLab(securities, baseCurrency, logger);
 
             var securityList = new List<Security>();
             this.securityFirst = new SecurityTSLab(securityFirst);
@@ -53,13 +53,13 @@ namespace TradingSystems
             if (contracts <= 0)
             {
                 riskValuePrcnt = kAtr;
-                var riskManager = new RiskManagerReal(Account, logger, riskValuePrcnt);
-                contractsManager = new ContractsManager(riskManager, Account, currency,
+                var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
+                contractsManager = new ContractsManager(riskManager, account, currency,
                 currencyConverter, shares, logger);
             }
             else
             {
-                contractsManager = new ContractsManager(contracts, Account, currency,
+                contractsManager = new ContractsManager(contracts, account, currency,
                 currencyConverter, shares, logger);
             }         
             var indicators = new IndicatorsTsLab();

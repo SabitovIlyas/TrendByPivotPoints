@@ -7,7 +7,7 @@ namespace TradingSystems
 {
     public abstract class Starter
     {
-        public Account Account { get; protected set; }
+        public Account account { get; protected set; }
 
         protected List<TradingSystem> tradingSystems;
         protected int securityNumber;
@@ -26,6 +26,7 @@ namespace TradingSystems
 
         protected Context context;
         protected int contracts;
+        protected double equity;
 
         public Logger Logger { get { return logger; } set { logger = value; } }        
 
@@ -48,7 +49,7 @@ namespace TradingSystems
             {
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    Account.Update(barNumber);  //поменял местами обновление аккаунта и обновление торговой системы
+                    account.Update(barNumber);  //поменял местами обновление аккаунта и обновление торговой системы
                     tradingSystem.Update(barNumber);                    
                 }
             }
@@ -63,6 +64,7 @@ namespace TradingSystems
                 rateUSD = (double)systemParameters.GetValue("rateUSD");                
                 shares = (int)systemParameters.GetValue("shares");
                 contracts = (int)systemParameters.GetValue("contracts");
+                equity = (double)systemParameters.GetValue("equity");
 
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;
