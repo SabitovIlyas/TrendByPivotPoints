@@ -47,7 +47,7 @@ namespace TrendByPivotPointsStarter
             ContractsManager contractsManager;
             if (contracts <= 0)
             {
-                riskValuePrcnt = kAtr;
+                //riskValuePrcnt = kAtr;
                 var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
                 contractsManager = new ContractsManager(riskManager, account, currency,
                 currencyConverter, shares, logger);

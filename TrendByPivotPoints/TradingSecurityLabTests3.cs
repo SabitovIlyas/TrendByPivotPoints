@@ -63,8 +63,8 @@ namespace TradingSystems.Tests
             systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", 1);
 
-            systemParameters.Add("equity", 100000d);
-            systemParameters.Add("riskValue", 1); //реализовать и оттестировать в другом тесте
+            systemParameters.Add("equity", 1000000d);
+            systemParameters.Add("riskValuePrcnt", 2d);
             systemParameters.Add("contracts", 0);
 
             starter.SetParameters(systemParameters);
@@ -76,8 +76,9 @@ namespace TradingSystems.Tests
 
         [TestMethod()]
         public void GetProfit()
-        {
-            double expected = 2 * (92000 - 89000);
+        {            
+            var contracts = (0.02 * 1000000) / (89000 - 85000);
+            double expected = contracts * (92000 - 89000);
             double actual = sec.GetProfit(barNumber: 13);
             Assert.AreEqual(expected, actual);
         }
@@ -85,7 +86,8 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void GetEquity()
         {
-            double expected = 100000 + 2 * (92000 - 89000);
+            var contracts = (0.02 * 1000000) / (89000 - 85000);
+            double expected = 1000000 + contracts * (92000 - 89000);
             var account = starter.account;
             double actual = ((AccountLab)account).GetEquity(barNumber: 13);
             Assert.AreEqual(expected, actual);

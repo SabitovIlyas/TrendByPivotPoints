@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 
 namespace TradingSystems
@@ -112,11 +113,14 @@ namespace TradingSystems
 
             message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity (Estimated Balance) и рискуемой суммой в одном контракте, равно {0} " +
                 "(с учётом цены контракта и количества лотов при открытии позиции {1}).", contractsByRiskMoney, shares);
-            logger.Log(message);
-            
+            logger.Log(message);            
 
             logger.Log("Гарантийное обеспечение равно " + go);
+            
             var contractsByGO = (int)(riskManager.FreeBalance / go);
+            if (contractsByGO <= 0)
+                contractsByGO = contractsByRiskMoney;
+
             logger.Log("Вариант №2. Количество контрактов открываемой позиции, исходя из ГО и свободных средств (Free Balance) равно " + contractsByGO);
 
             var min = Math.Min(contractsByRiskMoney, contractsByGO);

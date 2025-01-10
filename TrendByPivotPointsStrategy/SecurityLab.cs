@@ -17,8 +17,8 @@ namespace TradingSystems
         public bool IsLaboratory => throw new System.NotImplementedException();
         public bool IsRealTimeTrading => false;
         public int RealTimeActualBarNumber => throw new NotImplementedException();
-        public double GObuying { get; private set; }
-        public double GOselling { get; private set; }
+        public double GObuying { get; private set; } = double.NaN;
+        public double GOselling { get; private set; } = double.NaN;
         public List<double> HighPrices { get; private set; }
         public List<double> LowPrices { get; private set; }
 
@@ -75,7 +75,7 @@ namespace TradingSystems
                 HighPrices.Add(bar.High);
                 LowPrices.Add(bar.Low);
             }
-            mapping = new OrderToPositionMapping(Bars, this);
+            mapping = new OrderToPositionMapping(Bars, this);            
         }
 
         public Bar LastBar
