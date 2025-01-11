@@ -72,6 +72,7 @@
     <Compile Include="ClassForTestReflection.cs" />
     <Compile Include="CompressionBarsTest.cs" />
     <Compile Include="DateTimeTests.cs" />
+    <Compile Include="DrawdownTests.cs" />
     <Compile Include="HelperForClassForTestKeyWords.cs" />
     <Compile Include="MathTests.cs" />
     <Compile Include="SecurityLabTests.cs" />

@@ -50,13 +50,18 @@ namespace TradingSystems
             base.Update(barNumber);
         }
 
-        public double GetEquity(int barNumber)
+        public virtual double GetEquity(int barNumber)
         {
             var equity = initDeposit;
             foreach (var security in securities)
                 equity += ((SecurityLab)security).GetProfit(barNumber);
 
             return equity;
+        }
+
+        public double GetDrawDown(int barNumber)
+        {
+            return 0;
         }
     }
 }

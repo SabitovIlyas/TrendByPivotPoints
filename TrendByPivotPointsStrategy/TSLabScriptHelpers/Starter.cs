@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TSLab.Script.Optimization;
 
 namespace TradingSystems
 {
@@ -28,7 +27,7 @@ namespace TradingSystems
         protected int contracts;
         protected double equity;
 
-        public Logger Logger { get { return logger; } set { logger = value; } }        
+        public Logger Logger { get { return logger; } set { logger = value; } }
 
         public virtual void Initialize()
         {
@@ -49,8 +48,8 @@ namespace TradingSystems
             {
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    account.Update(barNumber);  //поменял местами обновление аккаунта и обновление торговой системы
-                    tradingSystem.Update(barNumber);                    
+                    account.Update(barNumber);
+                    tradingSystem.Update(barNumber);
                 }
             }
         }
@@ -59,9 +58,9 @@ namespace TradingSystems
             this.systemParameters = systemParameters;
             try
             {
-                var positionSide = (int)systemParameters.GetValue("positionSide");                
-                var isUSD = (int)systemParameters.GetValue("isUSD");                
-                rateUSD = (double)systemParameters.GetValue("rateUSD");                
+                var positionSide = (int)systemParameters.GetValue("positionSide");
+                var isUSD = (int)systemParameters.GetValue("isUSD");
+                rateUSD = (double)systemParameters.GetValue("rateUSD");
                 shares = (int)systemParameters.GetValue("shares");
                 contracts = (int)systemParameters.GetValue("contracts");
                 equity = (double)systemParameters.GetValue("equity");
@@ -83,6 +82,6 @@ namespace TradingSystems
                 logger.Log("Прекращаем работу, так как не установлен параметр: ", e.Message);
                 throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
             }
-        }        
-    }
+        }
+    }    
 }
