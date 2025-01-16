@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -36,8 +37,7 @@ namespace TradingSystems
             if ((int)fastDonchian > (int)slowDonchian)
                 return;
 
-            Logger logger = new TsLabLogger(context);
-            //Starter system;
+            Logger logger = new TsLabLogger(context);            
 
             if ((int)isLoggerOn == 1)
                 logger = new TsLabLogger(context);
@@ -83,6 +83,7 @@ namespace TradingSystems
 
             systemParameters.Add("isUSD", (int)isUSD);
             systemParameters.Add("contracts", (int)contracts);
+            systemParameters.Add("equity", (int)securities.First().InitDeposit);
 
             try
             {

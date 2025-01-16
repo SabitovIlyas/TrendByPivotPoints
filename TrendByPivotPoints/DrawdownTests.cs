@@ -47,11 +47,39 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void GetDrawdownTest()
         {
-            double expected = -1;
-            var account = new AccountFake(initDeposit: 100000, Currency.Ruble, new LoggerNull());
-            account.EquityHistory = equityHistory;
-            double actual = ((AccountLab)account).GetEquity(barNumber: 13);
-            Assert.AreEqual(expected, actual);
-        }      
+            double[] capitalValues = { 1000, 1200, 600, 1300, 1250, 1050, 1400, 900, 1100, 950 };
+            double maxDrawdown = CalculateMaxDrawdown(capitalValues);
+
+            //double expected = -1;
+            //var account = new AccountFake(initDeposit: 100000, Currency.Ruble, new LoggerNull());
+            //account.EquityHistory = equityHistory;
+            //double actual = ((AccountLab)account).GetEquity(barNumber: 13);
+            //Assert.AreEqual(expected, actual);
+            Assert.IsTrue(false);
+        }
+
+        public double CalculateMaxDrawdown(double[] capitalValues)
+        {
+            double maxCapital = capitalValues[0]; // Изначальный максимальный капитал
+            double maxDrawdown = 0; // Изначальная максимальная просадка
+
+            foreach (var value in capitalValues)
+            {
+                // Вычисляем просадку относительно текущего максимума
+                double drawdown = (maxCapital - value) / maxCapital * 100;
+                if (drawdown > maxDrawdown)
+                {
+                    maxDrawdown = drawdown;
+                }
+
+                // Обновляем максимальный капитал, если находим новый максимум
+                if (value > maxCapital)
+                {
+                    maxCapital = value;
+                }
+            }
+
+            return maxDrawdown;
+        }
     }
 }
