@@ -34,7 +34,7 @@ namespace TradingSystems.Tests
                 106000.00,
                 101666.67,
                 97333.34,
-                9,000.01,
+                93000.01,
                 88666.68,
                 84333.35,
                 80000.00,
@@ -49,7 +49,7 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void GetDrawdownTest()
         {          
-            double expected = 0.375d;
+            double expected = 37.5d;
             var account = new AccountFake(initDeposit: 100000, Currency.Ruble, new LoggerNull());
             account.EquityHistory = equityHistory;
             var actual = account.GetDrawDown(barNumber: equityHistory.Length);
