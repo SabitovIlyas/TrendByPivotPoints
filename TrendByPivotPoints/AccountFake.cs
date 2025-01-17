@@ -18,6 +18,12 @@ namespace TradingSystems
         public new double Rate { get; set; }
 
         public ISecurity Security { get; set; }
-        public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }        
+        public Logger Logger { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public override double GetEquity(int barNumber)
+        {
+            if (barNumber == 0) return initDeposit;
+            return EquityHistory[barNumber - 1];            
+        }
     }
 }

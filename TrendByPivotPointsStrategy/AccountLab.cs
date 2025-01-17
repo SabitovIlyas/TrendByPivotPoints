@@ -9,7 +9,7 @@ namespace TradingSystems
 
         public override double FreeBalance => freeBalance;
 
-        private double initDeposit;
+        protected double initDeposit;
         protected double freeBalance;
 
         public AccountLab(double initDeposit, Currency currency, Logger logger)
@@ -61,7 +61,22 @@ namespace TradingSystems
 
         public double GetDrawDown(int barNumber)
         {
-            return 0;
+            var maxCapital = initDeposit;
+            var maxDrawdown = 0d;
+
+            for (var i = 1; i <= barNumber; i++)
+            {
+                var capital = GetEquity(i);
+                var drawdown = (maxCapital - capital) / maxCapital * 100;
+                
+                if (drawdown > maxDrawdown)                
+                    maxDrawdown = drawdown;                
+
+                if (capital > maxCapital)                
+                    maxCapital = capital;                
+            }            
+
+            return maxDrawdown;
         }
     }
 }
