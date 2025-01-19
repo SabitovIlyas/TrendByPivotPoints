@@ -83,7 +83,7 @@ namespace TradingSystems
 
             systemParameters.Add("isUSD", (int)isUSD);
             systemParameters.Add("contracts", (int)contracts);
-            systemParameters.Add("equity", (int)securities.First().InitDeposit);
+            systemParameters.Add("equity", securities.First().InitDeposit);
 
             try
             {
