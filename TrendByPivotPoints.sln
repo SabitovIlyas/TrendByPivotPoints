@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationCalculator", "Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorrelationCalculatorTests", "CorrelationCalculatorTests\CorrelationCalculatorTests.csproj", "{9EF9DAA7-BFB7-4887-BE13-4C30198050D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CandlesGraphicsWinForm", "..\CandlesGraphicsWinForm\CandlesGraphicsWinForm.csproj", "{43090686-4108-4920-9D40-1BAA17F4750B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CandlesGraphicsWinForm", "CandlesGraphicsWinForm\CandlesGraphicsWinForm.csproj", "{43090686-4108-4920-9D40-1BAA17F4750B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
