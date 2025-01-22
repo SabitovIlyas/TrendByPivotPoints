@@ -275,5 +275,10 @@ namespace TradingSystems
 
             return profit;
         }
+
+        public List<Order> GetDeals(int barNumber)
+        {
+            return null;
+        }
     }
 }

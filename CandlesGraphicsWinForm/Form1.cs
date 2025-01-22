@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Lifetime;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using OxyPlot;
 using OxyPlot.Series;
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace CandlesGraphicsWinForm
 {
@@ -27,6 +17,7 @@ namespace CandlesGraphicsWinForm
             // Данные для построения графика
             var data = new List<CandleStickData>
             {
+                new CandleStickData(new DateTime(2024,01,01,09,30,00),  5425,  5500,  5400,  5475,  10000),
                 new CandleStickData(new DateTime(2024,01,02,09,30,00),  5000,  5100,  4950,  5050,  12345),
                 new CandleStickData(new DateTime(2024,01,03,09,31,00),  5060,  5150,  5040,  5130,  12567),
                 new CandleStickData(new DateTime(2024,01,04,09,32,00),  5140,  5200,  5120,  5180,  12789),
