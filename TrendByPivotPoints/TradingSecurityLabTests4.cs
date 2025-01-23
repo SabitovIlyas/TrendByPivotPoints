@@ -28,7 +28,7 @@ namespace TradingSystems.Tests
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
             systemParameters.Add("kAtr", 0.5d);
-            systemParameters.Add("atrPeriod", 10);
+            systemParameters.Add("atrPeriod", 5);
             systemParameters.Add("limitOpenedPositions", 4);
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
@@ -50,6 +50,7 @@ namespace TradingSystems.Tests
         {
             bars = new List<Bar>()
             {
+                //Bar.Create(new DateTime(2023,12,31,09,30,00), open: 5425, high: 5500, low: 5400, close: 5475, volume: 10000, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
                 Bar.Create(new DateTime(2024,01,01,09,30,00), open: 5425, high: 5500, low: 5400, close: 5475, volume: 10000, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
 
                 // Восходящий тренд

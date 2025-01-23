@@ -276,9 +276,26 @@ namespace TradingSystems
             return profit;
         }
 
-        public List<Order> GetDeals(int barNumber)
+        public List<Position> GetDeals(int barNumber)
         {
-            return null;
+            var oP = mapping.GetActivePositions(barNumber);
+            var cP = mapping.GetClosedPositions(barNumber);
+
+            var od = (from position in oP
+                      select position.Position).ToList();
+
+            var cd = (from position in cP
+                      select position.Position).ToList();
+
+            var result = new List<Position>();
+
+            foreach (var position in cd)
+                result.Add(position);
+
+            foreach (var position in od)
+                result.Add(position);
+
+            return result;
         }
     }
 }
