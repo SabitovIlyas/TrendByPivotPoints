@@ -29,7 +29,7 @@ namespace TradingSystems.Tests
             systemParameters.Add("fastDonchian", 5);
             systemParameters.Add("kAtr", 0.5d);
             systemParameters.Add("atrPeriod", 5);
-            systemParameters.Add("limitOpenedPositions", 4);
+            systemParameters.Add("limitOpenedPositions", 1);
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
             systemParameters.Add("positionSide", 0);
@@ -49,8 +49,7 @@ namespace TradingSystems.Tests
         private void FillBars()
         {
             bars = new List<Bar>()
-            {
-                //Bar.Create(new DateTime(2023,12,31,09,30,00), open: 5425, high: 5500, low: 5400, close: 5475, volume: 10000, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+            {                
                 Bar.Create(new DateTime(2024,01,01,09,30,00), open: 5425, high: 5500, low: 5400, close: 5475, volume: 10000, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
 
                 // Восходящий тренд
@@ -151,7 +150,7 @@ namespace TradingSystems.Tests
         public void GetDeals()
         {   
             double expectedQtyDeals = 8;
-            var deals = sec.GetDeals(barNumber: bars.Count - 1);
+            var deals = sec.GetDeals(barNumber: 10);
             double actual = deals.Count;
             Assert.AreEqual(expectedQtyDeals, actual);
         }
