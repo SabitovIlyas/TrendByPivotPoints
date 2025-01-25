@@ -26,12 +26,14 @@ namespace TradingSystems
             var converter = new Converter(isConverted);
             var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
 
-            var map = orders.Find(p => p.SignalName == signalNameForOpenPosition);
-            map?.Order.Cancel(barNumber);
+            var maps = orders.FindAll(p => p.SignalName == signalNameForOpenPosition);
+
+            foreach (var m in  maps)
+                m.Order.Cancel(barNumber);
 
             var order = new Order(barNumber, positionSide, entryPricePlanned, contracts,
                   signalNameForOpenPosition);
-            map = new OrderToPositionMap(order);
+            var map = new OrderToPositionMap(order);
             orders.Add(map);        
         }
 

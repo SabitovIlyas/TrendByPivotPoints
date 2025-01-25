@@ -7,30 +7,37 @@ namespace TradingSystems.Tests
 {
     [TestClass()]
     public class TradingSecurityLabTests4
-    {
-        List<Bar> bars;
-        Security security;
-        SecurityLab sec;
-        Starter starter;
+    {   
+        [DataTestMethod]
+        [DataRow(2, 10, 1)]
+        [DataRow(2, 15, 2)]
+        [DataRow(3, 15, 3)]
+        [DataRow(4, 15, 4)]
+        public void GetDealsTest(int limitOpenedPositions, int barNumber, int expected)
+        {
+            var sec = CreateSecurity(limitOpenedPositions);            
+            var deals = sec.GetDeals(barNumber: barNumber);
+            double actual = deals.Count;
+            Assert.AreEqual(expected, actual);
+        }
 
-        [TestInitialize]
-        public void TestInitialize()
+        private SecurityLab CreateSecurity(int limitOpenedPositions)
         {
             var logger = new ConsoleLogger();
-            FillBars();
-            security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger);
+            var bars = CreateBars();
+            var security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger);
 
             var context = new ContextLab();
             var securities = new List<Security>() { security };
-            
-            starter = new StarterDonchianTradingSystemLab(context, securities, logger);
+
+            var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
 
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
             systemParameters.Add("kAtr", 0.5d);
             systemParameters.Add("atrPeriod", 5);
-            systemParameters.Add("limitOpenedPositions", 2);
+            systemParameters.Add("limitOpenedPositions", limitOpenedPositions);
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
             systemParameters.Add("positionSide", 0);
@@ -44,13 +51,13 @@ namespace TradingSystems.Tests
             starter.Initialize();
             starter.Run();
 
-            sec = security as SecurityLab;
+            return security;
         }
 
-        private void FillBars()
+        private List<Bar> CreateBars()
         {
-            bars = new List<Bar>()
-            {                
+            var bars = new List<Bar>()
+            {
                 Bar.Create(new DateTime(2024,01,01,09,30,00), open: 5425, high: 5500, low: 5400, close: 5475, volume: 10000, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
 
                 // Восходящий тренд
@@ -90,79 +97,63 @@ namespace TradingSystems.Tests
                 Bar.Create(new DateTime(2024,02,02,10,01,00), open: 6570, high: 6590, low: 6510, close: 6530, volume: 19262, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
                 Bar.Create(new DateTime(2024,02,03,10,02,00), open: 6520, high: 6560, low: 6460, close: 6480, volume: 19485, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
                 Bar.Create(new DateTime(2024,02,04,10,03,00), open: 6470, high: 6510, low: 6410, close: 6430, volume: 19708, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,05,10,04,00), open: 6420, high: 6460, low: 6360, close: 6380, volume: 19932, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,06,10,05,00), open: 6370, high: 6410, low: 6310, close: 6330, volume: 20155, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,07,10,06,00), open: 6320, high: 6360, low: 6260, close: 6280, volume: 20378, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,08,10,07,00), open: 6270, high: 6310, low: 6210, close: 6230, volume: 20601, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,09,10,08,00), open: 6220, high: 6260, low: 6160, close: 6180, volume: 20825, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,10,10,09,00), open: 6170, high: 6210, low: 6110, close: 6130, volume: 21048, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,11,10,10,00), open: 6120, high: 6160, low: 6060, close: 6080, volume: 21271, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,12,10,11,00), open: 6070, high: 6110, low: 6010, close: 6030, volume: 21494, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,13,10,12,00), open: 6020, high: 6060, low: 5960, close: 5980, volume: 21718, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,14,10,13,00), open: 5970, high: 6010, low: 5910, close: 5930, volume: 21941, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,15,10,14,00), open: 5920, high: 5960, low: 5860, close: 5880, volume: 22164, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,16,10,15,00), open: 5870, high: 5910, low: 5810, close: 5830, volume: 22387, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,17,10,16,00), open: 5820, high: 5860, low: 5760, close: 5780, volume: 22611, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,18,10,17,00), open: 5770, high: 5810, low: 5710, close: 5730, volume: 22834, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,19,10,18,00), open: 5720, high: 5760, low: 5660, close: 5680, volume: 23057, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,20,10,19,00), open: 5670, high: 5710, low: 5610, close: 5630, volume: 23280, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,21,10,20,00), open: 5620, high: 5660, low: 5560, close: 5580, volume: 23504, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,22,10,21,00), open: 5570, high: 5610, low: 5510, close: 5530, volume: 23727, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,23,10,22,00), open: 5520, high: 5560, low: 5460, close: 5480, volume: 23950, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,24,10,23,00), open: 5470, high: 5510, low: 5410, close: 5430, volume: 24173, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,25,10,24,00), open: 5420, high: 5460, low: 5360, close: 5380, volume: 24397, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,26,10,25,00), open: 5370, high: 5410, low: 5310, close: 5330, volume: 24620, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,27,10,26,00), open: 5320, high: 5360, low: 5260, close: 5280, volume: 24843, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,28,10,27,00), open: 5270, high: 5310, low: 5210, close: 5230, volume: 25066, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,02,29,10,28,00), open: 5220, high: 5260, low: 5160, close: 5180, volume: 25290, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,05,10,04,00), open: 6420, high: 6460, low: 6360, close: 6380, volume: 19932, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,06,10,05,00), open: 6370, high: 6410, low: 6310, close: 6330, volume: 20155, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,07,10,06,00), open: 6320, high: 6360, low: 6260, close: 6280, volume: 20378, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,08,10,07,00), open: 6270, high: 6310, low: 6210, close: 6230, volume: 20601, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,09,10,08,00), open: 6220, high: 6260, low: 6160, close: 6180, volume: 20825, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,10,10,09,00), open: 6170, high: 6210, low: 6110, close: 6130, volume: 21048, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,11,10,10,00), open: 6120, high: 6160, low: 6060, close: 6080, volume: 21271, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,12,10,11,00), open: 6070, high: 6110, low: 6010, close: 6030, volume: 21494, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,13,10,12,00), open: 6020, high: 6060, low: 5960, close: 5980, volume: 21718, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,14,10,13,00), open: 5970, high: 6010, low: 5910, close: 5930, volume: 21941, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,15,10,14,00), open: 5920, high: 5960, low: 5860, close: 5880, volume: 22164, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,16,10,15,00), open: 5870, high: 5910, low: 5810, close: 5830, volume: 22387, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,17,10,16,00), open: 5820, high: 5860, low: 5760, close: 5780, volume: 22611, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,18,10,17,00), open: 5770, high: 5810, low: 5710, close: 5730, volume: 22834, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,19,10,18,00), open: 5720, high: 5760, low: 5660, close: 5680, volume: 23057, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,20,10,19,00), open: 5670, high: 5710, low: 5610, close: 5630, volume: 23280, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,21,10,20,00), open: 5620, high: 5660, low: 5560, close: 5580, volume: 23504, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,22,10,21,00), open: 5570, high: 5610, low: 5510, close: 5530, volume: 23727, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,23,10,22,00), open: 5520, high: 5560, low: 5460, close: 5480, volume: 23950, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,24,10,23,00), open: 5470, high: 5510, low: 5410, close: 5430, volume: 24173, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,25,10,24,00), open: 5420, high: 5460, low: 5360, close: 5380, volume: 24397, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,26,10,25,00), open: 5370, high: 5410, low: 5310, close: 5330, volume: 24620, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,27,10,26,00), open: 5320, high: 5360, low: 5260, close: 5280, volume: 24843, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,28,10,27,00), open: 5270, high: 5310, low: 5210, close: 5230, volume: 25066, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,02,29,10,28,00), open: 5220, high: 5260, low: 5160, close: 5180, volume: 25290, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
 
-                // Восходящий тренд
-                Bar.Create(new DateTime(2024,03,01,10,29,00), open: 5180, high: 5240, low: 5140, close: 5220, volume: 25513, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,02,10,30,00), open: 5230, high: 5290, low: 5190, close: 5270, volume: 25736, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,03,10,31,00), open: 5280, high: 5340, low: 5240, close: 5320, volume: 25959, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,04,10,32,00), open: 5330, high: 5390, low: 5290, close: 5370, volume: 26183, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,05,10,33,00), open: 5380, high: 5440, low: 5340, close: 5420, volume: 26406, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,06,10,34,00), open: 5430, high: 5490, low: 5390, close: 5470, volume: 26629, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,07,10,35,00), open: 5480, high: 5540, low: 5440, close: 5520, volume: 26852, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,08,10,36,00), open: 5530, high: 5590, low: 5490, close: 5570, volume: 27076, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,09,10,37,00), open: 5580, high: 5640, low: 5540, close: 5620, volume: 27299, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,10,10,38,00), open: 5630, high: 5690, low: 5590, close: 5670, volume: 27522, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,11,10,39,00), open: 5680, high: 5740, low: 5640, close: 5720, volume: 27745, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,12,10,40,00), open: 5730, high: 5790, low: 5690, close: 5770, volume: 27969, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,13,10,41,00), open: 5780, high: 5840, low: 5740, close: 5820, volume: 28192, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,14,10,42,00), open: 5830, high: 5890, low: 5790, close: 5870, volume: 28415, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,15,10,43,00), open: 5880, high: 5940, low: 5840, close: 5920, volume: 28638, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,16,10,44,00), open: 5930, high: 5990, low: 5890, close: 5970, volume: 28862, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,17,10,45,00), open: 5980, high: 6040, low: 5940, close: 6020, volume: 29085, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,18,10,46,00), open: 6030, high: 6090, low: 5990, close: 6070, volume: 29308, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,19,10,47,00), open: 6080, high: 6140, low: 6040, close: 6120, volume: 29531, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,20,10,48,00), open: 6130, high: 6190, low: 6090, close: 6170, volume: 29755, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,21,10,49,00), open: 6180, high: 6240, low: 6140, close: 6220, volume: 29978, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,22,10,50,00), open: 6230, high: 6290, low: 6190, close: 6270, volume: 30201, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,23,10,51,00), open: 6280, high: 6340, low: 6240, close: 6320, volume: 30424, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,24,10,52,00), open: 6330, high: 6390, low: 6290, close: 6370, volume: 30648, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,25,10,53,00), open: 6380, high: 6440, low: 6340, close: 6420, volume: 30871, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,26,10,54,00), open: 6430, high: 6490, low: 6390, close: 6470, volume: 31094, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
-                Bar.Create(new DateTime(2024,03,27,10,55,00), open: 6480, high: 6540, low: 6440, close: 6520, volume: 31317, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //// Восходящий тренд
+                //Bar.Create(new DateTime(2024,03,01,10,29,00), open: 5180, high: 5240, low: 5140, close: 5220, volume: 25513, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,02,10,30,00), open: 5230, high: 5290, low: 5190, close: 5270, volume: 25736, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,03,10,31,00), open: 5280, high: 5340, low: 5240, close: 5320, volume: 25959, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,04,10,32,00), open: 5330, high: 5390, low: 5290, close: 5370, volume: 26183, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,05,10,33,00), open: 5380, high: 5440, low: 5340, close: 5420, volume: 26406, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,06,10,34,00), open: 5430, high: 5490, low: 5390, close: 5470, volume: 26629, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,07,10,35,00), open: 5480, high: 5540, low: 5440, close: 5520, volume: 26852, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,08,10,36,00), open: 5530, high: 5590, low: 5490, close: 5570, volume: 27076, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,09,10,37,00), open: 5580, high: 5640, low: 5540, close: 5620, volume: 27299, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,10,10,38,00), open: 5630, high: 5690, low: 5590, close: 5670, volume: 27522, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,11,10,39,00), open: 5680, high: 5740, low: 5640, close: 5720, volume: 27745, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,12,10,40,00), open: 5730, high: 5790, low: 5690, close: 5770, volume: 27969, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,13,10,41,00), open: 5780, high: 5840, low: 5740, close: 5820, volume: 28192, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,14,10,42,00), open: 5830, high: 5890, low: 5790, close: 5870, volume: 28415, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,15,10,43,00), open: 5880, high: 5940, low: 5840, close: 5920, volume: 28638, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,16,10,44,00), open: 5930, high: 5990, low: 5890, close: 5970, volume: 28862, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,17,10,45,00), open: 5980, high: 6040, low: 5940, close: 6020, volume: 29085, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,18,10,46,00), open: 6030, high: 6090, low: 5990, close: 6070, volume: 29308, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,19,10,47,00), open: 6080, high: 6140, low: 6040, close: 6120, volume: 29531, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,20,10,48,00), open: 6130, high: 6190, low: 6090, close: 6170, volume: 29755, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,21,10,49,00), open: 6180, high: 6240, low: 6140, close: 6220, volume: 29978, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,22,10,50,00), open: 6230, high: 6290, low: 6190, close: 6270, volume: 30201, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,23,10,51,00), open: 6280, high: 6340, low: 6240, close: 6320, volume: 30424, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,24,10,52,00), open: 6330, high: 6390, low: 6290, close: 6370, volume: 30648, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,25,10,53,00), open: 6380, high: 6440, low: 6340, close: 6420, volume: 30871, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,26,10,54,00), open: 6430, high: 6490, low: 6390, close: 6470, volume: 31094, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
+                //Bar.Create(new DateTime(2024,03,27,10,55,00), open: 6480, high: 6540, low: 6440, close: 6520, volume: 31317, ticker:"TEST.TICKER", period: "1", digitsAfterPoint: 0),
             };
-        }
 
-        [TestMethod()]
-        public void GetDealsTest1()
-        {   
-            double expectedQtyDeals = 1;
-            var deals = sec.GetDeals(barNumber: 10);
-            double actual = deals.Count;
-            Assert.AreEqual(expectedQtyDeals, actual);
-        }
-
-        [TestMethod()]
-        public void GetDealsTest2()
-        {
-            double expectedQtyDeals = 2;
-            var deals = sec.GetDeals(barNumber: 15);
-            double actual = deals.Count;
-            Assert.AreEqual(expectedQtyDeals, actual);
+            return bars;
         }
     }
 }
