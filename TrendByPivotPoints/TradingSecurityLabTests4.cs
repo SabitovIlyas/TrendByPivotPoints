@@ -16,12 +16,13 @@ namespace TradingSystems.Tests
         [TestInitialize]
         public void TestInitialize()
         {
+            var logger = new ConsoleLogger();
             FillBars();
-            security = new SecurityLab(Currency.Ruble, shares: 1, bars);
+            security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger);
 
             var context = new ContextLab();
             var securities = new List<Security>() { security };
-            var logger = new LoggerNull();
+            
             starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
 

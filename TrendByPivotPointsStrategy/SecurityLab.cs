@@ -28,6 +28,7 @@ namespace TradingSystems
         private Dictionary<Order, Position> ordersPositions = new Dictionary<Order, Position>();
         private List<Order> activeOrders = new List<Order>();
         private OrderToPositionMapping mapping;
+        private Logger logger;
 
         public SecurityLab(Currency currency, int shares)
         {
@@ -44,13 +45,14 @@ namespace TradingSystems
             this.GOselling = GOselling;
         }
 
-        public SecurityLab(Currency currency, int shares, List<Bar> bars)
+        public SecurityLab(Currency currency, int shares, List<Bar> bars, Logger logger)
         {
             if (bars != null || bars.Count > 0)
                 Name = bars.First().Ticker;
             this.currency = currency;
             this.shares = shares;
             Bars = bars;
+            this.logger = logger;
             Initialize();
         }
 
@@ -75,7 +77,7 @@ namespace TradingSystems
                 HighPrices.Add(bar.High);
                 LowPrices.Add(bar.Low);
             }
-            mapping = new OrderToPositionMapping(Bars, this);            
+            mapping = new OrderToPositionMapping(Bars, this, logger);            
         }
 
         public Bar LastBar

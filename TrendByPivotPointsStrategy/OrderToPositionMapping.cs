@@ -9,16 +9,20 @@ namespace TradingSystems
         private List<OrderToPositionMap> orders = new List<OrderToPositionMap>();
         private List<Bar> bars;
         public Security security;
+        private Logger logger;
 
-        public OrderToPositionMapping(List<Bar> bars, Security security)
+        public OrderToPositionMapping(List<Bar> bars, Security security, Logger logger)
         {
             this.bars = bars;
             this.security = security;
+            this.logger = logger;
         }
 
         public void CreateOpenLimitOrder(int barNumber, int contracts, double entryPricePlanned,
             string signalNameForOpenPosition, bool isConverted)
         {
+            Log("Создаём лимитный ордер для открытия позиции. {0} = {1}; {2} = {3};", nameof(barNumber), barNumber, 
+                nameof(entryPricePlanned), entryPricePlanned);
             var converter = new Converter(isConverted);
             var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
 
@@ -28,8 +32,19 @@ namespace TradingSystems
             var order = new Order(barNumber, positionSide, entryPricePlanned, contracts,
                   signalNameForOpenPosition);
             map = new OrderToPositionMap(order);
-            orders.Add(map);
+            orders.Add(map);        
         }
+
+        protected void Log(string text, params object[] args)
+        {
+            text = string.Format(text, args);
+            Log(text);
+        }
+
+        protected void Log(string text)
+        {
+            logger.Log("{0}: {1}", nameof(security), text);
+        }        
 
         public void CreateCloseLimitOrder(int barNumber, double stopPrice,
             string signalNameForClosePosition, string notes, Position position)
