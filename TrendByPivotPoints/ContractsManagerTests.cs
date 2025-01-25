@@ -18,7 +18,7 @@ namespace TrendByPivotPoints.Tests
         {
             var currencyBalance = 50000;
             var estimatedBalance = 1000000;
-            var security = new SecurityLab(currency: Currency.Ruble, shares: 1);
+            var security = new SecurityLab(currency: Currency.Ruble, shares: 1, logger);
             account = new AccountFake(initDeposit: estimatedBalance, baseCurrency: Currency.Ruble, logger: logger);
 
             currencyConverter = new CurrencyConverter(baseCurrency);
@@ -42,7 +42,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 11;
@@ -62,7 +62,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
             
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 5;
@@ -82,7 +82,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);            
             
             var expected = 0;
@@ -102,7 +102,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.Ruble;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 0;
@@ -125,7 +125,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 0;
@@ -145,7 +145,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 0;
@@ -165,7 +165,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 12;
@@ -185,7 +185,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.Ruble;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 5;
@@ -212,7 +212,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 11;
@@ -232,7 +232,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 10;
@@ -252,7 +252,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
@@ -272,7 +272,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
@@ -295,7 +295,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
@@ -315,7 +315,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 0;
@@ -335,7 +335,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 12;
@@ -355,7 +355,7 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Short;
             var currency = Currency.USD;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000);
+            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
 
             var expected = 10;

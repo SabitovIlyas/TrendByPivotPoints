@@ -30,7 +30,7 @@ namespace TradingSystems.Tests
             systemParameters.Add("fastDonchian", 5);
             systemParameters.Add("kAtr", 0.5d);
             systemParameters.Add("atrPeriod", 5);
-            systemParameters.Add("limitOpenedPositions", 1);
+            systemParameters.Add("limitOpenedPositions", 2);
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
             systemParameters.Add("positionSide", 0);
@@ -148,10 +148,19 @@ namespace TradingSystems.Tests
         }
 
         [TestMethod()]
-        public void GetDeals()
+        public void GetDealsTest1()
         {   
-            double expectedQtyDeals = 8;
+            double expectedQtyDeals = 1;
             var deals = sec.GetDeals(barNumber: 10);
+            double actual = deals.Count;
+            Assert.AreEqual(expectedQtyDeals, actual);
+        }
+
+        [TestMethod()]
+        public void GetDealsTest2()
+        {
+            double expectedQtyDeals = 2;
+            var deals = sec.GetDeals(barNumber: 15);
             double actual = deals.Count;
             Assert.AreEqual(expectedQtyDeals, actual);
         }

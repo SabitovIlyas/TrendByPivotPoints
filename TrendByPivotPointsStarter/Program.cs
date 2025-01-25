@@ -31,7 +31,7 @@ namespace TrendByPivotPointsStarter
             {
                 var context = new ContextLab();
                 var security = new SecurityLab(securityName, Currency.USD, shares: 10,
-                    5000, 4500, bars);
+                    5000, 4500, bars, logger);
 
                 var securities = new List<Security>() { security };
                 var system = new StarterDonchianTradingSystemLab(context, securities, logger);

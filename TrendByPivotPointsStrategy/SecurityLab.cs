@@ -30,19 +30,21 @@ namespace TradingSystems
         private OrderToPositionMapping mapping;
         private Logger logger;
 
-        public SecurityLab(Currency currency, int shares)
+        public SecurityLab(Currency currency, int shares, Logger logger)
         {
             this.currency = currency;
             this.shares = shares;
+            this.logger = logger;
         }
 
         public SecurityLab(Currency currency, int shares,
-            double GObuying, double GOselling)
+            double GObuying, double GOselling, Logger logger)
         {
             this.currency = currency;
             this.shares = shares;
             this.GObuying = GObuying;
             this.GOselling = GOselling;
+            this.logger = logger;
         }
 
         public SecurityLab(Currency currency, int shares, List<Bar> bars, Logger logger)
@@ -57,7 +59,7 @@ namespace TradingSystems
         }
 
         public SecurityLab(string securityName, Currency currency, int shares,
-            double GObuying, double GOselling, List<Bar> bars)
+            double GObuying, double GOselling, List<Bar> bars, Logger logger)
         {
             Name = securityName;
             this.currency = currency;
@@ -65,6 +67,7 @@ namespace TradingSystems
             this.GObuying = GObuying;
             this.GOselling = GOselling;
             Bars = bars;
+            this.logger = logger;
             Initialize();
         }
 
@@ -284,19 +287,21 @@ namespace TradingSystems
             var cP = mapping.GetClosedPositions(barNumber);
 
             var od = (from position in oP
-                      select position.Position).ToList();
+                      select position.Position).ToList();            
 
             var cd = (from position in cP
                       select position.Position).ToList();
 
             var result = new List<Position>();
 
-            foreach (var position in cd)
+            foreach (var position in cd)            
+                if (!result.Contains(position))
+                    result.Add(position);
+            
+            foreach (var position in od)            
+                if (!result.Contains(position))
                 result.Add(position);
-
-            foreach (var position in od)
-                result.Add(position);
-
+            
             return result;
         }
     }

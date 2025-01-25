@@ -26,7 +26,7 @@ namespace TrendByPivotPointsStarter
 
         public override void Initialize()
         {
-            var security = new SecurityLab(currency, shares);
+            var security = new SecurityLab(currency, shares, logger);
             securities = new List<Security> { security };
             var context = new ContextLab();
             var baseCurrency = Currency.Ruble;

@@ -12,6 +12,7 @@ namespace TradingSystems.Tests
         [TestInitialize]
         public void TestInitialize()
         {
+            var logger = new LoggerNull();
             var bars = new List<Bar>() {
                 Bar.Create(new DateTime(2023, 11, 17), 90090, 91400, 89926, 91012),
                 Bar.Create(new DateTime(2023, 11, 20), 91036, 91233, 88744, 89003),
@@ -21,7 +22,7 @@ namespace TradingSystems.Tests
             };
 
             security = new SecurityLab("SecurityNameTest", Currency.Ruble, shares: 1,
-                5000, 4500, bars);
+                5000, 4500, bars, logger);
         }
 
         [TestMethod()]

@@ -16,6 +16,7 @@ namespace TradingSystems.Tests
         [TestInitialize]
         public void TestInitialize()
         {
+            var logger = new LoggerNull();
             bars = new List<Bar>()
             {
                 Bar.Create(new DateTime(2025,11,27,10,00,00),90000,90000,90000,90000,1, "SPFB.TEST", "1",0),
@@ -45,11 +46,10 @@ namespace TradingSystems.Tests
                 Bar.Create(new DateTime(2025,11,27,10,00,00),87000,87000,87000,87000,1, "SPFB.TEST", "1",0)
             };
 
-            security = new SecurityLab(Currency.Ruble, shares: 1, bars);
+            security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger);
 
             var context = new ContextLab();
-            var securities = new List<Security>() { security };
-            var logger = new LoggerNull();
+            var securities = new List<Security>() { security };            
             starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
 
