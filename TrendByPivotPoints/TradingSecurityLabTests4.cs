@@ -9,20 +9,23 @@ namespace TradingSystems.Tests
     public class TradingSecurityLabTests4
     {   
         [DataTestMethod]
-        [DataRow(2, 10, 1)]
-        [DataRow(2, 15, 2)]
-        [DataRow(3, 15, 3)]
-        [DataRow(4, 15, 4)]
-        [DataRow(4, 85, 8)]
-        public void GetDealsTest(int limitOpenedPositions, int barNumber, int expected)
-        {            
-            var sec = CreateSecurity(limitOpenedPositions);            
+        [DataRow(2, 10, PositionSide.Long, 1)]
+        [DataRow(2, 15, PositionSide.Long, 2)]
+        [DataRow(3, 15, PositionSide.Long, 3)]
+        [DataRow(4, 15, PositionSide.Long, 4)]
+        [DataRow(4, 87, PositionSide.Long, 8)]
+        [DataRow(4, 87, PositionSide.Short, 4)]
+        public void GetDealsTest(int limitOpenedPositions, int barNumber, 
+            PositionSide positionSide, int expected)
+        {
+            var sec = CreateSecurity(limitOpenedPositions, positionSide);            
             var deals = sec.GetDeals(barNumber: barNumber);
             double actual = deals.Count;
             Assert.AreEqual(expected, actual);
         }
 
-        private SecurityLab CreateSecurity(int limitOpenedPositions)
+        private SecurityLab CreateSecurity(int limitOpenedPositions, 
+            PositionSide positionSide)
         {
             var logger = new ConsoleLogger();
             var bars = CreateBars();
@@ -34,6 +37,13 @@ namespace TradingSystems.Tests
             var starter = new StarterDonchianTradingSystemLab(context, securities, logger);
             var systemParameters = new SystemParameters();
 
+            var pSide = 0;
+
+            if (positionSide == PositionSide.Long)
+                pSide = 0;
+            else
+                pSide = 1;
+
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
             systemParameters.Add("kAtr", 0.5d);
@@ -41,7 +51,7 @@ namespace TradingSystems.Tests
             systemParameters.Add("limitOpenedPositions", limitOpenedPositions);
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
-            systemParameters.Add("positionSide", 0);
+            systemParameters.Add("positionSide", pSide);
             systemParameters.Add("shares", 1);
 
             systemParameters.Add("equity", 1000000d);
