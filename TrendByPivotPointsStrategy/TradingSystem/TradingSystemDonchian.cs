@@ -20,11 +20,6 @@ namespace TradingSystems
         private ISecurity secCompressed;
         
         private IList<double> atr;
-
-        private PositionSide positionSide;        
-
-        private string name = "TradingSystemDonchian";
-        private string parametersCombination;
         private double fixedAtr;
 
         private IList<double> highest;
@@ -162,7 +157,15 @@ namespace TradingSystems
             kAtrForStopLoss = (double)systemParameters.GetValue("kAtr");            
             atrPeriod = (int)systemParameters.GetValue("atrPeriod");           
             limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
-            
+            var pSide = (int)systemParameters.GetValue("positionSide");
+
+            if (pSide == 0)
+                positionSide = PositionSide.Long;
+            else if (pSide == 1)
+                positionSide = PositionSide.Short;
+            else
+                positionSide = PositionSide.Null;
+
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
