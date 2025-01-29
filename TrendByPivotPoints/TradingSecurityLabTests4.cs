@@ -14,7 +14,8 @@ namespace TradingSystems.Tests
         //[DataRow(3, 15, PositionSide.Long, 3)]
         //[DataRow(4, 15, PositionSide.Long, 4)]
         //[DataRow(4, 87, PositionSide.Long, 8)]
-        [DataRow(4, 87, PositionSide.Short, 4)]
+        //[DataRow(4, 87, PositionSide.Short, 4)]
+        [DataRow(1, 87, PositionSide.Short, 1)]
         public void GetDealsTest(int limitOpenedPositions, int barNumber, 
             PositionSide positionSide, int expected)
         {
