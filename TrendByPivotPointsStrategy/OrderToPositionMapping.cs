@@ -59,7 +59,10 @@ namespace TradingSystems
 
             var closeOrder = new Order(barNumber, position.PositionSide, stopPrice, position.Contracts,
                 signalNameForClosePosition, OrderType.StopLossLimit);
-            orders.Add(new OrderToPositionMap(closeOrder, position));            
+            orders.Add(new OrderToPositionMap(closeOrder, position));
+            
+            if (order != null)
+                order.Order.Cancel(barNumber);
         }
 
         public void CreateOpenMarketOrder(int barNumber, int contracts, double entryPricePlanned,
