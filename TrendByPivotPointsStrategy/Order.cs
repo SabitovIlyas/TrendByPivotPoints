@@ -79,7 +79,7 @@ namespace TradingSystems
             //    BarNumberSinceOrderIsNotActive = barNumber;
             //    return true;
             //}
-            else if (converter.IsGreaterOrEqual(converter.GetBarHigh(bar), Price) &&
+            else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) &&
                 (OrderType == OrderType.StopLossLimit))
             {
                 ExecutedPrice = Price;
