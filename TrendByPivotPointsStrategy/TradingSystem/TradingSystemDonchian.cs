@@ -154,7 +154,8 @@ namespace TradingSystems
         {
             slowDonchian = (int)systemParameters.GetValue("slowDonchian");            
             fastDonchian = (int)systemParameters.GetValue("fastDonchian");
-            kAtrForStopLoss = (double)systemParameters.GetValue("kAtr");            
+            kAtrForStopLoss = (double)systemParameters.GetValue("kAtrForStopLoss");
+            kAtrForOpenPosition = (double)systemParameters.GetValue("kAtrForOpenPosition");
             atrPeriod = (int)systemParameters.GetValue("atrPeriod");           
             limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
             var pSide = (int)systemParameters.GetValue("positionSide");

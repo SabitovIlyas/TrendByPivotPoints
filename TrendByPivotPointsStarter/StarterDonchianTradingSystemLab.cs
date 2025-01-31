@@ -22,8 +22,7 @@ namespace TrendByPivotPointsStarter
             this.systemParameters = systemParameters;
             try
             {
-                base.SetParameters(systemParameters);
-                kAtr = (double)systemParameters.GetValue("kAtr");
+                base.SetParameters(systemParameters);                
                 limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");                
             }
             catch (KeyNotFoundException e)

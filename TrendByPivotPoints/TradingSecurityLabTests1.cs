@@ -54,7 +54,8 @@ namespace TradingSystems.Tests
 
             systemParameters.Add("slowDonchian", 10);
             systemParameters.Add("fastDonchian", 5);
-            systemParameters.Add("kAtr", 0d);
+            systemParameters.Add("kAtrForStopLoss", 0d);
+            systemParameters.Add("kAtrForOpenPosition", 0.5d);
             systemParameters.Add("atrPeriod", 10);
             systemParameters.Add("limitOpenedPositions", 1);
             systemParameters.Add("isUSD", 0);

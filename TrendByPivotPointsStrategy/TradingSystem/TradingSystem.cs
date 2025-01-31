@@ -48,6 +48,8 @@ namespace TradingSystems
             if (barNumber < nonTradingPeriod - 1)
                 return;
 
+            //var nTradingPeriod = new int[3][] { new int[0, 1], new int[2, 3], new int[3, 4] };
+
             try
             {
                 this.barNumber = barNumber;
