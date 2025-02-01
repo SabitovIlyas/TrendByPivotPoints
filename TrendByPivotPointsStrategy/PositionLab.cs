@@ -25,6 +25,13 @@
             converter = new Converter(isConverted: PositionSide != PositionSide.Long);
         }
 
+        public PositionLab(int barNumber, PositionSide positionSide, Security security)
+        {
+            BarNumberOpenPosition = barNumber;            
+            Security = security;
+            converter = new Converter(isConverted: positionSide != PositionSide.Long);
+        }
+
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
         {
             BarNumberClosePosition = barNumber;

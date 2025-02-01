@@ -304,5 +304,26 @@ namespace TradingSystems
             
             return result;
         }
+
+        public List<Position> GetMetaDeals(int barNumber)
+        {
+            var deals = GetDeals(barNumber);
+
+            Position metaDeal;
+            foreach (var deal in deals)
+            {
+                
+                if (deal.SignalNameForOpenPosition.Contains("1"))
+                {
+                    metaDeal = new PositionLab(barNumber, deal.PositionSide, this);
+                }
+                else
+                {
+
+                }
+            }
+
+            return deals;
+        }
     }
 }
