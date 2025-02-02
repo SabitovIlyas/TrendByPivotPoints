@@ -309,19 +309,38 @@ namespace TradingSystems
         {
             var deals = GetDeals(barNumber);
 
-            Position metaDeal;
+            Position metaDeal = null;
+            var profit = 0d;
+            var barNumberOpenPosition = 0;
+            var barNumberClosePosition = 0;
+            var positionSide = PositionSide.Null;
+
             foreach (var deal in deals)
             {
-                
                 if (deal.SignalNameForOpenPosition.Contains("1"))
                 {
-                    metaDeal = new PositionLab(barNumber, deal.PositionSide, this);
+                    if (deal != deals.First())
+                    {
+
+                    }
+
+                    //metaDeal = new PositionLab(deal.PositionSide, this, profit,
+                    //    barNumberOpenPosition, barNumberClosePosition);
+
+
+                    profit = deal.Profit;
+                    barNumberOpenPosition = deal.BarNumberOpenPosition;
+                    barNumberClosePosition = deal.BarNumberClosePosition;
+                    positionSide = deal.PositionSide;
                 }
                 else
                 {
-
+                    profit += deal.Profit;
                 }
             }
+
+            metaDeal = new PositionLab(positionSide, this, profit, barNumberOpenPosition, 
+                barNumberClosePosition);
 
             return deals;
         }

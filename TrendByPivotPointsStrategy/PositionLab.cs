@@ -15,7 +15,8 @@
 
         private Order openOrder;
         private Order closeOrder;
-        private Converter converter;       
+        private Converter converter;
+        private double profit;
 
         public PositionLab(int barNumber, Order openOrder, Security security)
         {
@@ -30,6 +31,14 @@
             BarNumberOpenPosition = barNumber;            
             Security = security;
             converter = new Converter(isConverted: positionSide != PositionSide.Long);
+        }
+
+        public PositionLab(PositionSide positionSide, Security security, double profit, 
+            int barNumberOpenPosition, int barNumberClosePosition) : this(barNumberOpenPosition, positionSide, security)
+        {
+
+            BarNumberClosePosition = barNumberClosePosition;
+            this.profit = profit;
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
@@ -54,11 +63,15 @@
 
         public double GetFixedProfit()
         {
+            if (profit != double.MinValue)
+                return profit;
             return converter.Difference(ExitPrice, EntryPrice) * Contracts;
         }
 
         public double GetUnfixedProfit(double barClose)
         {
+            if (profit != double.MinValue)
+                return profit;
             return converter.Difference(barClose, EntryPrice) * Contracts;
         }
     }
