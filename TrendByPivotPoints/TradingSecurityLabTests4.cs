@@ -171,7 +171,7 @@ namespace TradingSystems.Tests
         }
 
         [DataTestMethod]
-        [DataRow(4, 10, PositionSide.Long, 2)]
+        [DataRow(4, 87, PositionSide.Long, 2)]
         [DataRow(4, 87, PositionSide.Short, 1)]
         public void GetMetaDealsTest(int limitOpenedPositions, int barNumber,
             PositionSide positionSide, int expected)

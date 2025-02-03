@@ -308,7 +308,7 @@ namespace TradingSystems
         public List<Position> GetMetaDeals(int barNumber)
         {
             var deals = GetDeals(barNumber);
-
+            List<Position> result = new List<Position>();
             Position metaDeal = null;
             var profit = 0d;
             var barNumberOpenPosition = 0;
@@ -321,13 +321,12 @@ namespace TradingSystems
                 {
                     if (deal != deals.First())
                     {
-
+                        metaDeal = new PositionLab(positionSide, this, profit,
+                            barNumberOpenPosition, barNumberClosePosition);
+                        result.Add(metaDeal);
                     }
 
-                    //metaDeal = new PositionLab(deal.PositionSide, this, profit,
-                    //    barNumberOpenPosition, barNumberClosePosition);
-
-
+                    
                     profit = deal.Profit;
                     barNumberOpenPosition = deal.BarNumberOpenPosition;
                     barNumberClosePosition = deal.BarNumberClosePosition;
@@ -340,9 +339,10 @@ namespace TradingSystems
             }
 
             metaDeal = new PositionLab(positionSide, this, profit, barNumberOpenPosition, 
-                barNumberClosePosition);
+                barNumberClosePosition);            
+            result.Add(metaDeal);
 
-            return deals;
+            return result;
         }
     }
 }

@@ -16,7 +16,7 @@
         private Order openOrder;
         private Order closeOrder;
         private Converter converter;
-        private double profit;
+        private double profit = double.MinValue;
 
         public PositionLab(int barNumber, Order openOrder, Security security)
         {
