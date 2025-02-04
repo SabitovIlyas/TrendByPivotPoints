@@ -51,5 +51,10 @@ namespace TradingSystems
         {
             throw new System.NotImplementedException();
         }
+
+        public double GetProfit(int barNumber)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

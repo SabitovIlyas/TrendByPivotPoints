@@ -6,15 +6,13 @@
         public double EntryPrice => openOrder.Price;
         public double ExitPrice { get; private set; }
         public PositionSide PositionSide => openOrder.PositionSide;
-        public int Contracts => openOrder.Contracts;
-        public double Profit { get { return GetFixedProfit(); } }
+        public int Contracts => openOrder.Contracts;        
         public string SignalNameForOpenPosition => openOrder.SignalName;
         public string SignalNameForClosePosition { get; private set; }
         public Security Security { get; private set; }
         public int BarNumberClosePosition { get; set; } = int.MaxValue;
 
         private Order openOrder;
-        private Order closeOrder;
         private Converter converter;
         private double profit = double.MinValue;
 
@@ -61,18 +59,32 @@
             SignalNameForClosePosition = signalNameForClosePosition;
         }
 
-        public double GetFixedProfit()
+        public double GetProfit(int barNumber)
         {
             if (profit != double.MinValue)
                 return profit;
+
+            if (barNumber >= BarNumberClosePosition)
+            {
+                return GetFixedProfit();
+            }
+            else if (barNumber >= BarNumberOpenPosition)
+            {
+                return GetUnfixedProfit(barNumber);
+            }
+            return 0;
+        }
+
+
+        public double GetFixedProfit()
+        {            
             return converter.Difference(ExitPrice, EntryPrice) * Contracts;
         }
 
-        public double GetUnfixedProfit(double barClose)
+        public double GetUnfixedProfit(int barNmber)
         {
-            if (profit != double.MinValue)
-                return profit;
+            var barClose = Security.GetBarClose(barNmber);            
             return converter.Difference(barClose, EntryPrice) * Contracts;
-        }
+        }        
     }
 }

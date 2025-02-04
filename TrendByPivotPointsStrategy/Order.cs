@@ -65,20 +65,7 @@ namespace TradingSystems
                 ExecutedPrice = Price;
                 BarNumberSinceOrderIsNotActive = barNumber;
                 return true;
-            }
-            //else if (converter.IsLessOrEqual(bar.Open, Price) && (OrderType != OrderType.StopLossLimit))
-            //{
-            //    ExecutedPrice = bar.Open;
-            //    BarNumberSinceOrderIsNotActive = barNumber;
-            //    return true;
-            //}
-            //else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) &&
-            //    (OrderType == OrderType.StopLossLimit))
-            //{
-            //    ExecutedPrice = Price;
-            //    BarNumberSinceOrderIsNotActive = barNumber;
-            //    return true;
-            //}
+            }            
             else if (converter.IsLessOrEqual(converter.GetBarLow(bar), Price) &&
                 (OrderType == OrderType.StopLossLimit))
             {

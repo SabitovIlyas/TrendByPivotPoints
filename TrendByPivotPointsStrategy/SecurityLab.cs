@@ -264,7 +264,7 @@ namespace TradingSystems
                     uniqueClosedPositions.Add(position);            
             
             foreach (var position in uniqueClosedPositions)            
-                profit += position.Profit;
+                profit += position.GetProfit(barNumber);
 
             var activePositionsMap = mapping.GetActivePositions(barNumber);
             var activePositions = (from position in activePositionsMap
@@ -276,7 +276,7 @@ namespace TradingSystems
                     uniqueActivePositions.Add(position);
 
             foreach (var position in uniqueActivePositions)
-                profit += position.GetUnfixedProfit(GetBarClose(barNumber));
+                profit += position.GetProfit(barNumber);
 
             return profit;
         }
@@ -327,14 +327,14 @@ namespace TradingSystems
                     }
 
                     
-                    profit = deal.Profit;
+                    profit = deal.GetProfit(barNumber);
                     barNumberOpenPosition = deal.BarNumberOpenPosition;
                     barNumberClosePosition = deal.BarNumberClosePosition;
                     positionSide = deal.PositionSide;
                 }
                 else
                 {
-                    profit += deal.Profit;
+                    profit += deal.GetProfit(barNumber);
                 }
             }
 
