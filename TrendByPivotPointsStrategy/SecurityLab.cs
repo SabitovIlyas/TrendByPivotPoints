@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
@@ -314,6 +315,11 @@ namespace TradingSystems
             var barNumberOpenPosition = 0;
             var barNumberClosePosition = 0;
             var positionSide = PositionSide.Null;
+            var sumEntryPrice = 0d;
+            var sumExitPrice = 0d;
+            var contracts = 0;
+            var avrEntryPrice = 0d;
+            var avrExitPrice = 0d;
 
             foreach (var deal in deals)
             {
@@ -321,25 +327,47 @@ namespace TradingSystems
                 {
                     if (deal != deals.First())
                     {
+                        avrEntryPrice = sumEntryPrice / contracts;
+                        avrExitPrice = sumExitPrice / contracts;
                         metaDeal = new PositionLab(positionSide, this, profit,
-                            barNumberOpenPosition, barNumberClosePosition);
+                            barNumberOpenPosition, barNumberClosePosition, avrEntryPrice,
+                            avrExitPrice, contracts);
                         result.Add(metaDeal);
                     }
-
                     
                     profit = deal.GetProfit(barNumber);
                     barNumberOpenPosition = deal.BarNumberOpenPosition;
                     barNumberClosePosition = deal.BarNumberClosePosition;
                     positionSide = deal.PositionSide;
+                    contracts = deal.Contracts;
+                    sumEntryPrice = deal.EntryPrice * deal.Contracts;
+
+                    if (deal.ExitPrice != double.MinValue)
+                        sumExitPrice = deal.ExitPrice * deal.Contracts;
+                    else                    
+                        sumExitPrice = GetBarClose(barNumber) * deal.Contracts;
+                    
+
+                    //средний вход, средний выход, количество лотов
                 }
                 else
                 {
                     profit += deal.GetProfit(barNumber);
+                    contracts += deal.Contracts;
+                    sumEntryPrice += deal.EntryPrice * deal.Contracts;                    
+
+                    if (deal.ExitPrice != double.MinValue)
+                        sumExitPrice += deal.ExitPrice * deal.Contracts;
+                    else
+                        sumExitPrice += GetBarClose(barNumber) * deal.Contracts;
                 }
             }
 
+            avrEntryPrice = sumEntryPrice / contracts;
+            avrExitPrice = sumExitPrice / contracts;
+
             metaDeal = new PositionLab(positionSide, this, profit, barNumberOpenPosition, 
-                barNumberClosePosition);            
+                barNumberClosePosition, avrEntryPrice, avrExitPrice, contracts);            
             result.Add(metaDeal);
 
             return result;

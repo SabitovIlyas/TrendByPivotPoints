@@ -3,10 +3,10 @@
     public class PositionLab : Position
     {
         public int BarNumberOpenPosition { get; private set; } = int.MaxValue;
-        public double EntryPrice => openOrder.Price;
-        public double ExitPrice { get; private set; }
+        public double EntryPrice { get; private set; } = double.MinValue;
+        public double ExitPrice { get; private set; } = double.MinValue;
         public PositionSide PositionSide => openOrder.PositionSide;
-        public int Contracts => openOrder.Contracts;        
+        public int Contracts { get; private set; } = 0;
         public string SignalNameForOpenPosition => openOrder.SignalName;
         public string SignalNameForClosePosition { get; private set; }
         public Security Security { get; private set; }
@@ -22,21 +22,28 @@
             this.openOrder = openOrder;
             Security = security;
             converter = new Converter(isConverted: PositionSide != PositionSide.Long);
+            EntryPrice = openOrder.Price;
+            Contracts = openOrder.Contracts;
         }
 
         public PositionLab(int barNumber, PositionSide positionSide, Security security)
         {
             BarNumberOpenPosition = barNumber;            
             Security = security;
-            converter = new Converter(isConverted: positionSide != PositionSide.Long);
+            converter = new Converter(isConverted: positionSide != PositionSide.Long);            
         }
 
         public PositionLab(PositionSide positionSide, Security security, double profit, 
-            int barNumberOpenPosition, int barNumberClosePosition) : this(barNumberOpenPosition, positionSide, security)
+            int barNumberOpenPosition, int barNumberClosePosition, double averageEntryPrice,
+            double averageExitPrice, int contracts) : this(barNumberOpenPosition, positionSide, 
+                security)
         {
 
             BarNumberClosePosition = barNumberClosePosition;
             this.profit = profit;
+            EntryPrice = averageEntryPrice;
+            ExitPrice = averageExitPrice;
+            Contracts = contracts;
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
@@ -75,15 +82,14 @@
             return 0;
         }
 
-
         public double GetFixedProfit()
         {            
             return converter.Difference(ExitPrice, EntryPrice) * Contracts;
         }
 
-        public double GetUnfixedProfit(int barNmber)
+        public double GetUnfixedProfit(int barNumber)
         {
-            var barClose = Security.GetBarClose(barNmber);            
+            var barClose = Security.GetBarClose(barNumber);            
             return converter.Difference(barClose, EntryPrice) * Contracts;
         }        
     }
