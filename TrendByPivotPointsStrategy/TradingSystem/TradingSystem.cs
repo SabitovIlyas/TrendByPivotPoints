@@ -48,7 +48,17 @@ namespace TradingSystems
             if (barNumber < nonTradingPeriod - 1)
                 return;
 
-            //var nTradingPeriod = new int[3][] { new int[0, 1], new int[2, 3], new int[3, 4] };
+            //int[,] nTradingPeriod = new int[2, 2];
+            //nTradingPeriod[0,0] = 10;
+            //nTradingPeriod[0,1] = 34;
+            //nTradingPeriod[1,0] = 65;
+            //nTradingPeriod[1,1] = 86;
+
+            //for (int i = 0; i < nTradingPeriod.Length; i++)
+            //{
+            //    if (nTradingPeriod[i,0] <= barNumber && barNumber <= nTradingPeriod[i,1])
+            //        return;
+            //}
 
             try
             {

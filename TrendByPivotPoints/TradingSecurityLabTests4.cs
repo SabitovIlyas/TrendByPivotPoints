@@ -177,7 +177,7 @@ namespace TradingSystems.Tests
             PositionSide positionSide, int expected)
         {
             var sec = CreateSecurity(limitOpenedPositions, positionSide);            
-            var deals = sec.GetMetaDeals(barNumber: barNumber);
+            var deals = sec.GetMetaDeals(barNumber: barNumber);//0..10 10..34; 65..
             double actual = deals.Count;
             Assert.AreEqual(expected, actual);
         }
