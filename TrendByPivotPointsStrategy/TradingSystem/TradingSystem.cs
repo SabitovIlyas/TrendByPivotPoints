@@ -25,7 +25,8 @@ namespace TradingSystems
         protected double entryPricePlanned;
         protected double currentPrice;
         protected Context context;
-        protected int nonTradingPeriod;        
+        protected int nonTradingPeriod;
+        
 
         public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Context context, Logger logger)
         {
@@ -48,18 +49,21 @@ namespace TradingSystems
             if (barNumber < nonTradingPeriod - 1)
                 return;
 
-            //int[,] nTradingPeriod = new int[2, 2];
-            //nTradingPeriod[0,0] = 10;
-            //nTradingPeriod[0,1] = 34;
-            //nTradingPeriod[1,0] = 65;
-            //nTradingPeriod[1,1] = 86;
+            var nTradingPeriod = new List<NonTradingPeriod>();
+            var n = new NonTradingPeriod();
+            n.BarStart = 10;
+            n.BarStop = 36;
+            nTradingPeriod.Add(n);
 
-            //for (int i = 0; i < nTradingPeriod.Length; i++)
-            //{
-            //    if (nTradingPeriod[i,0] <= barNumber && barNumber <= nTradingPeriod[i,1])
-            //        return;
-            //}
+            n = new NonTradingPeriod();
+            n.BarStart = 65;
+            n.BarStop = 86;
+            nTradingPeriod.Add(n);
 
+            for (int i = 0; i < nTradingPeriod.Count; i++)
+                if (nTradingPeriod[i].BarStart <= barNumber && barNumber <= nTradingPeriod[i].BarStop)
+                    return;
+            
             try
             {
                 this.barNumber = barNumber;
@@ -143,4 +147,11 @@ namespace TradingSystems
 
         }
     }
+
+    struct NonTradingPeriod
+    {
+        public int BarStart;
+        public int BarStop;
+    }
+
 }
