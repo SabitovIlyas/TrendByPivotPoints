@@ -38,6 +38,7 @@ namespace TradingSystems
         void SellIfLess(int barNumber, int contracts, double price,
             string signalName, bool isConverted = false);        
         void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, string notes, Position position);
+        void CancelAllOrders(int barNumber);
 
         List<double> HighPrices { get; }
         List<double> LowPrices { get; }

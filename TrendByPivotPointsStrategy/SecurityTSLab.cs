@@ -436,5 +436,9 @@ namespace TradingSystems
         {
             position.CloseAtStop(barNumber, stopPrice, signalNameForClosePosition);
         }
+
+        public void CancelAllOrders(int barNumber)
+        {            
+        }
     }
 }

@@ -62,7 +62,10 @@ namespace TradingSystems
 
             for (int i = 0; i < nTradingPeriod.Count; i++)
                 if (nTradingPeriod[i].BarStart <= barNumber && barNumber <= nTradingPeriod[i].BarStop)
-                    return;
+                {
+                    CancelAllOrders(barNumber);
+                    return; 
+                }
             
             try
             {
@@ -79,6 +82,14 @@ namespace TradingSystems
             catch (Exception e)
             {
                 Log("Исключение в методе Update(): " + e.ToString());
+            }
+        }
+
+        private void CancelAllOrders(int barNumber)
+        {
+            foreach(var security in securities)
+            {
+                security.CancelAllOrders(barNumber);
             }
         }
 
@@ -147,11 +158,4 @@ namespace TradingSystems
 
         }
     }
-
-    struct NonTradingPeriod
-    {
-        public int BarStart;
-        public int BarStop;
-    }
-
 }

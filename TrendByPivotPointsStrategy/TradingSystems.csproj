@@ -128,6 +128,7 @@
     <Compile Include="TradingPatterns\PatternPivotPoints_1l2.cs" />
     <Compile Include="TradingPatterns\PatternPivotPoints_1l2g3.cs" />
     <Compile Include="TradingPatterns\PatternPivotPoints_1l2l3.cs" />
+    <Compile Include="TradingSystem\NonTradingPeriod.cs" />
     <Compile Include="TradingSystem\TradingSystem.cs" />
     <Compile Include="TradingSystem\TradingSystemDonchian.cs" />
     <None Include="TradingSystem\TradingSystemEmasCrossingUpdateTrailStopLoss.cs_old" />

@@ -372,5 +372,12 @@ namespace TradingSystems
 
             return result;
         }
+
+        public void CancelAllOrders(int barNumber)
+        {
+            var orders = GetActiveOrders(barNumber);
+            foreach (var order in orders)            
+                order.Cancel(barNumber);            
+        }
     }
 }
