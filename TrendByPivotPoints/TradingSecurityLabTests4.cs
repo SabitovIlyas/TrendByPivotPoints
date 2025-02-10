@@ -172,7 +172,7 @@ namespace TradingSystems.Tests
 
         [DataTestMethod]
         [DataRow(4, 86, PositionSide.Long, 2)]
-        //[DataRow(4, 86, PositionSide.Short, 1)]
+        [DataRow(4, 86, PositionSide.Short, 1)]
         public void GetMetaDealsTest(int limitOpenedPositions, int barNumber,
             PositionSide positionSide, int expected)
         {
@@ -181,5 +181,21 @@ namespace TradingSystems.Tests
             double actual = deals.Count;
             Assert.AreEqual(expected, actual);
         }
+
+        [DataTestMethod]
+        [DataRow(4, 86, PositionSide.Long, 10, 36, 65, 86, 0)]
+        [DataRow(4, 86, PositionSide.Long, 10, 36, 0, 0, 1)]
+        [DataRow(4, 86, PositionSide.Long, 0, 0, 65, 86, 1)]        
+        public void GetMetaDealsTestExcludeSomeDeals(int limitOpenedPositions, int barNumber,
+            PositionSide positionSide, int barStartDealExclude1, int barStopDealExclude1,
+            int barStartDealExclude2, int barStopDealExclude2, int expected)
+        {
+
+            var sec = CreateSecurity(limitOpenedPositions, positionSide);
+            var deals = sec.GetMetaDeals(barNumber: barNumber);//0..10 10..36; 65..
+            double actual = deals.Count;
+            Assert.AreEqual(expected, actual);
+        }
+
     }
 }

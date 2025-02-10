@@ -346,9 +346,6 @@ namespace TradingSystems
                         sumExitPrice = deal.ExitPrice * deal.Contracts;
                     else                    
                         sumExitPrice = GetBarClose(barNumber) * deal.Contracts;
-                    
-
-                    //средний вход, средний выход, количество лотов
                 }
                 else
                 {
@@ -366,9 +363,12 @@ namespace TradingSystems
             avrEntryPrice = sumEntryPrice / contracts;
             avrExitPrice = sumExitPrice / contracts;
 
-            metaDeal = new PositionLab(positionSide, this, profit, barNumberOpenPosition, 
-                barNumberClosePosition, avrEntryPrice, avrExitPrice, contracts);            
-            result.Add(metaDeal);
+            if (deals.Count > 0)
+            {
+                metaDeal = new PositionLab(positionSide, this, profit, barNumberOpenPosition,
+                    barNumberClosePosition, avrEntryPrice, avrExitPrice, contracts);
+                result.Add(metaDeal);
+            }
 
             return result;
         }

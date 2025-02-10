@@ -51,13 +51,13 @@ namespace TradingSystems
 
             var nTradingPeriod = new List<NonTradingPeriod>();
             var n = new NonTradingPeriod();
-            n.BarStart = 10;
-            n.BarStop = 36;
+            n.BarStart = 9;//10
+            n.BarStop = 35;//36
             nTradingPeriod.Add(n);
 
             n = new NonTradingPeriod();
-            n.BarStart = 65;
-            n.BarStop = 86;
+            n.BarStart = 64;//65
+            n.BarStop = 85;//86
             nTradingPeriod.Add(n);
 
             for (int i = 0; i < nTradingPeriod.Count; i++)
