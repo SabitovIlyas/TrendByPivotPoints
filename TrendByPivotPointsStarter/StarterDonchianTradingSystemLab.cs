@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TradingSystems;
+using TSLab.Script;
 
 namespace TrendByPivotPointsStarter
 {
@@ -8,13 +9,15 @@ namespace TrendByPivotPointsStarter
     {
         private double kAtr;
         private int limitOpenedPositions;
+        private List<NonTradingPeriod> nonTradingPeriods;
 
         public StarterDonchianTradingSystemLab(Context context, List<Security> securities,
-            Logger logger)
+            Logger logger, List<NonTradingPeriod> nonTradingPeriods = null)
         {
             this.context = context;
             this.securities = securities;
             this.logger = logger;
+            this.nonTradingPeriods = nonTradingPeriods;
         }
 
         public override void SetParameters(SystemParameters systemParameters)
@@ -60,11 +63,11 @@ namespace TrendByPivotPointsStarter
 
             tradingSystems = new List<TradingSystem>();
             var tradingSystem = new TradingSystemDonchian(securities, contractsManager,
-                indicators, context, logger);
+                indicators, context, logger, nonTradingPeriods);
 
             tradingSystem.SetParameters(systemParameters);
             tradingSystem.Initialize();
             tradingSystems.Add(tradingSystem);            
-        }        
+        }       
     }
 }

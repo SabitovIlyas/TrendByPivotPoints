@@ -5,9 +5,8 @@ using System.Linq;
 namespace TradingSystems
 {
     public abstract class TradingSystem
-    {
+    {  
         protected List<Security> securities { get; set; }
-
         protected Logger logger;
         protected PositionSide positionSide;
         protected int lastBarNumber;
@@ -26,9 +25,12 @@ namespace TradingSystems
         protected double currentPrice;
         protected Context context;
         protected int nonTradingPeriod;
-        
 
-        public TradingSystem(List<Security> securities, ContractsManager contractsManager, Indicators indicators, Context context, Logger logger)
+        private List<NonTradingPeriod> nonTradingPeriods;
+
+        public TradingSystem(List<Security> securities, ContractsManager contractsManager,
+            Indicators indicators, Context context, Logger logger, 
+            List<NonTradingPeriod> nonTradingPeriods = null)
         {
             if (securities.Count == 0)            
                 throw new ArgumentOutOfRangeException(nameof(securities));
@@ -39,7 +41,8 @@ namespace TradingSystems
             this.contractsManager = contractsManager;
             this.indicators = indicators;
             this.context = context;
-            this.logger = logger;            
+            this.logger = logger;
+            this.nonTradingPeriods = nonTradingPeriods;
         }
 
         public abstract void CalculateIndicators();
@@ -49,24 +52,14 @@ namespace TradingSystems
             if (barNumber < nonTradingPeriod - 1)
                 return;
 
-            var nTradingPeriod = new List<NonTradingPeriod>();
-            var n = new NonTradingPeriod();
-            n.BarStart = 9;//10
-            n.BarStop = 35;//36
-            nTradingPeriod.Add(n);
+            if (nonTradingPeriods != null)
+                for (int i = 0; i < nonTradingPeriods.Count; i++)
+                    if (nonTradingPeriods[i].BarStart <= barNumber && barNumber <= nonTradingPeriods[i].BarStop)
+                    {
+                        CancelAllOrders(barNumber);
+                        return;
+                    }
 
-            n = new NonTradingPeriod();
-            n.BarStart = 64;//65
-            n.BarStop = 85;//86
-            nTradingPeriod.Add(n);
-
-            for (int i = 0; i < nTradingPeriod.Count; i++)
-                if (nTradingPeriod[i].BarStart <= barNumber && barNumber <= nTradingPeriod[i].BarStop)
-                {
-                    CancelAllOrders(barNumber);
-                    return; 
-                }
-            
             try
             {
                 this.barNumber = barNumber;
@@ -155,7 +148,6 @@ namespace TradingSystems
         public virtual void Paint(Context context)
         {
             throw new NotImplementedException();
-
         }
     }
 }

@@ -33,10 +33,10 @@ namespace TradingSystems
         private double openPositionPrice;
         private double firstPositionEntryPrice;
 
-        public TradingSystemDonchian(List<Security> securities, 
+        public TradingSystemDonchian(List<Security> securities,
             ContractsManager contractsManager, Indicators indicators, Context context,
-            Logger logger) :
-            base(securities, contractsManager, indicators, context, logger)
+            Logger logger, List<NonTradingPeriod> nonTradingPeriods = null):
+            base(securities, contractsManager, indicators, context, logger, nonTradingPeriods)
         {            
         }                               
 

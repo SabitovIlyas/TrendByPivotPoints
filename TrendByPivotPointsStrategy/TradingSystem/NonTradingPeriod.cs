@@ -1,9 +1,8 @@
 ﻿namespace TradingSystems
 {
-    struct NonTradingPeriod
+    public struct NonTradingPeriod
     {
         public int BarStart;
         public int BarStop;
     }
-
 }

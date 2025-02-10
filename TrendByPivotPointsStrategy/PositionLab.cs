@@ -1,4 +1,6 @@
-﻿namespace TradingSystems
+﻿using System.Diagnostics;
+
+namespace TradingSystems
 {
     public class PositionLab : Position
     {
@@ -84,13 +86,32 @@
 
         public double GetFixedProfit()
         {            
-            return converter.Difference(ExitPrice, EntryPrice) * Contracts;
+            return GetProfit(ExitPrice);
         }
 
         public double GetUnfixedProfit(int barNumber)
         {
             var barClose = Security.GetBarClose(barNumber);            
-            return converter.Difference(barClose, EntryPrice) * Contracts;
-        }        
+            return GetProfit(barClose);
+        }
+
+        private double GetProfit(double price)
+        {
+            var profit = converter.Difference(price, EntryPrice);
+            var commissionEnter = GetTotalCommision(EntryPrice);
+            var commissionExit = GetTotalCommision(price);
+            var result = (profit - commissionEnter - commissionExit) * Contracts;
+            return result;
+        }
+
+        private double GetTotalCommision(double price)
+        {
+            var exchangeCommission = price;// * comissionRate; 0,01980%
+            var brokerCommission = exchangeCommission;
+            var totalCommission = exchangeCommission + brokerCommission;
+            var reserve = 0.25 * totalCommission;
+
+            return totalCommission + reserve;            
+        }
     }
 }
