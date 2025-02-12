@@ -27,11 +27,12 @@ namespace TradingSystems.Tests
         }
 
         private SecurityLab CreateSecurity(int limitOpenedPositions,
-            PositionSide positionSide, List<NonTradingPeriod> nonTradingPeriods = null)
+            PositionSide positionSide, double commissionRate = 0,
+            List<NonTradingPeriod> nonTradingPeriods = null)
         {
             var logger = new ConsoleLogger();
             var bars = CreateBars();
-            var security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger);
+            var security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger, commissionRate);
 
             var context = new ContextLab();
             var securities = new List<Security>() { security };
@@ -61,7 +62,6 @@ namespace TradingSystems.Tests
             systemParameters.Add("equity", 1000000d);
             systemParameters.Add("riskValuePrcnt", 2d);
             systemParameters.Add("contracts", 0);
-            systemParameters.Add("commission", 0);
 
             starter.SetParameters(systemParameters);
             starter.Initialize();
@@ -207,7 +207,32 @@ namespace TradingSystems.Tests
             if (barStartDealExclude1 >= 0)
                 nonTradingPeriods.Add(n);            
 
-            var sec = CreateSecurity(limitOpenedPositions, positionSide, nonTradingPeriods);
+            var sec = CreateSecurity(limitOpenedPositions, positionSide, 0, nonTradingPeriods);
+            var deals = sec.GetMetaDeals(barNumber: barNumber);
+            double actual = deals.Count;
+            Assert.AreEqual(expected, actual);
+        }
+
+        public void GetProfitWithCommission(int limitOpenedPositions, int barNumber,
+            PositionSide positionSide, int barStartDealExclude1, int barStopDealExclude1,
+            int barStartDealExclude2, int barStopDealExclude2, int expected)
+        {
+            var nonTradingPeriods = new List<NonTradingPeriod>();
+            var n = new NonTradingPeriod();
+            n.BarStart = barStartDealExclude1 - 1;
+            n.BarStop = barStopDealExclude1 - 1;
+
+            if (barStartDealExclude1 >= 0)
+                nonTradingPeriods.Add(n);
+
+            n = new NonTradingPeriod();
+            n.BarStart = barStartDealExclude2 - 1;
+            n.BarStop = barStopDealExclude2 - 1;
+
+            if (barStartDealExclude1 >= 0)
+                nonTradingPeriods.Add(n);
+
+            var sec = CreateSecurity(limitOpenedPositions, positionSide, 0.0001980, nonTradingPeriods);
             var deals = sec.GetMetaDeals(barNumber: barNumber);
             double actual = deals.Count;
             Assert.AreEqual(expected, actual);

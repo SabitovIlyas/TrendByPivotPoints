@@ -17,7 +17,7 @@ namespace TrendByPivotPointsStarter
             this.context = context;
             this.securities = securities;
             this.logger = logger;
-            this.nonTradingPeriods = nonTradingPeriods;
+            this.nonTradingPeriods = nonTradingPeriods;            
         }
 
         public override void SetParameters(SystemParameters systemParameters)

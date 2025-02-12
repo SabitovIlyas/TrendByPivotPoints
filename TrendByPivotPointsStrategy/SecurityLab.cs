@@ -31,7 +31,7 @@ namespace TradingSystems
         private OrderToPositionMapping mapping;
         private Logger logger;
 
-        public SecurityLab(Currency currency, int shares, Logger logger)
+        public SecurityLab(Currency currency, int shares, Logger logger, double commissionRate)
         {
             this.currency = currency;
             this.shares = shares;
@@ -48,7 +48,8 @@ namespace TradingSystems
             this.logger = logger;
         }
 
-        public SecurityLab(Currency currency, int shares, List<Bar> bars, Logger logger)
+        public SecurityLab(Currency currency, int shares, List<Bar> bars, Logger logger, 
+            double commissionRate)
         {
             if (bars != null || bars.Count > 0)
                 Name = bars.First().Ticker;

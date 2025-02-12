@@ -26,6 +26,7 @@ namespace TradingSystems
         protected Context context;
         protected int contracts;
         protected double equity;
+        protected double commissionRate;
 
         public Logger Logger { get { return logger; } set { logger = value; } }
 
@@ -64,7 +65,7 @@ namespace TradingSystems
                 shares = (int)systemParameters.GetValue("shares");
                 contracts = (int)systemParameters.GetValue("contracts");
                 equity = (double)systemParameters.GetValue("equity");
-                riskValuePrcnt = (double)systemParameters.GetValue("riskValuePrcnt");
+                riskValuePrcnt = (double)systemParameters.GetValue("riskValuePrcnt");                
 
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;
