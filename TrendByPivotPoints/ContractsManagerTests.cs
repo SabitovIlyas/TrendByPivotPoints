@@ -18,7 +18,7 @@ namespace TrendByPivotPoints.Tests
         {
             var currencyBalance = 50000;
             var estimatedBalance = 1000000;
-            var security = new SecurityLab(currency: Currency.Ruble, shares: 1, logger);
+            var security = new SecurityLab(currency: Currency.Ruble, shares: 1, logger, commissionRate: 0);
             account = new AccountFake(initDeposit: estimatedBalance, baseCurrency: Currency.Ruble, logger: logger);
 
             currencyConverter = new CurrencyConverter(baseCurrency);

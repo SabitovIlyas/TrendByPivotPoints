@@ -12,11 +12,11 @@ namespace TradingSystems
         public string SignalNameForOpenPosition => openOrder.SignalName;
         public string SignalNameForClosePosition { get; private set; }
         public Security Security { get; private set; }
-        public int BarNumberClosePosition { get; set; } = int.MaxValue;
+        public int BarNumberClosePosition { get; set; } = int.MaxValue;   
 
         private Order openOrder;
         private Converter converter;
-        private double profit = double.MinValue;
+        private double profit = double.MinValue;        
 
         public PositionLab(int barNumber, Order openOrder, Security security)
         {
@@ -106,7 +106,7 @@ namespace TradingSystems
 
         private double GetTotalCommision(double price)
         {
-            var exchangeCommission = price;// * comissionRate; 0,01980%
+            var exchangeCommission = price * Security.CommissionRate;// 0,01980%
             var brokerCommission = exchangeCommission;
             var totalCommission = exchangeCommission + brokerCommission;
             var reserve = 0.25 * totalCommission;

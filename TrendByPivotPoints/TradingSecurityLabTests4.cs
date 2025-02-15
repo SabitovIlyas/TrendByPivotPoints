@@ -213,29 +213,16 @@ namespace TradingSystems.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [DataTestMethod]
+        [DataRow(4, 86, PositionSide.Long, 0, 775186.26d)]
+        [DataRow(4, 86, PositionSide.Long, 0.0001980d, 770094.63d)]
         public void GetProfitWithCommission(int limitOpenedPositions, int barNumber,
-            PositionSide positionSide, int barStartDealExclude1, int barStopDealExclude1,
-            int barStartDealExclude2, int barStopDealExclude2, int expected)
+            PositionSide positionSide, double commissionRate, double expected)
         {
-            var nonTradingPeriods = new List<NonTradingPeriod>();
-            var n = new NonTradingPeriod();
-            n.BarStart = barStartDealExclude1 - 1;
-            n.BarStop = barStopDealExclude1 - 1;
-
-            if (barStartDealExclude1 >= 0)
-                nonTradingPeriods.Add(n);
-
-            n = new NonTradingPeriod();
-            n.BarStart = barStartDealExclude2 - 1;
-            n.BarStop = barStopDealExclude2 - 1;
-
-            if (barStartDealExclude1 >= 0)
-                nonTradingPeriods.Add(n);
-
-            var sec = CreateSecurity(limitOpenedPositions, positionSide, 0.0001980, nonTradingPeriods);
+            var sec = CreateSecurity(limitOpenedPositions, positionSide, commissionRate);
             var deals = sec.GetMetaDeals(barNumber: barNumber);
-            double actual = deals.Count;
-            Assert.AreEqual(expected, actual);
+            double actual = sec.GetProfit(barNumber);
+            Assert.AreEqual(expected, actual, 0.01);
         }
 
     }

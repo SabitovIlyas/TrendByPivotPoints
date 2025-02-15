@@ -22,6 +22,7 @@ namespace TradingSystems
         public double GOselling { get; private set; } = double.NaN;
         public List<double> HighPrices { get; private set; }
         public List<double> LowPrices { get; private set; }
+        public double CommissionRate { get; }
 
         private Currency currency;
         private int shares;
@@ -36,6 +37,7 @@ namespace TradingSystems
             this.currency = currency;
             this.shares = shares;
             this.logger = logger;
+            CommissionRate = commissionRate;
         }
 
         public SecurityLab(Currency currency, int shares,
@@ -57,6 +59,7 @@ namespace TradingSystems
             this.shares = shares;
             Bars = bars;
             this.logger = logger;
+            CommissionRate = commissionRate;
             Initialize();
         }
 

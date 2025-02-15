@@ -43,5 +43,6 @@ namespace TradingSystems
         List<double> HighPrices { get; }
         List<double> LowPrices { get; }
         List<Bar> Bars { get; }
+        double CommissionRate { get; }
     }
 }

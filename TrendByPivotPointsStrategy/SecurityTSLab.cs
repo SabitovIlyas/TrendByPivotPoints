@@ -300,6 +300,8 @@ namespace TradingSystems
         public bool IsLaboratory => isLaboratory;
         public bool IsRealTimeTrading => !isLaboratory;
 
+        public double CommissionRate => throw new NotImplementedException();
+
         private bool isLaboratory;
         private void DefineIsLaboratory()
         {
