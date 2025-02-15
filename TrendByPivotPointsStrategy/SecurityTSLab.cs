@@ -354,7 +354,7 @@ namespace TradingSystems
         public ISecurity CompressLessIntervalTo1DayInterval()
         {
             var bars = new List<Bar>();
-            fillBarParams(security.Bars.First(), out var date, out var open, out var high, out var low, out var close, out var volume);//, out var ticker, out var period);
+            FillBarParams(security.Bars.First(), out var date, out var open, out var high, out var low, out var close, out var volume);//, out var ticker, out var period);
 
             for (int i = 1; i < security.Bars.Count; i++)
             {
@@ -363,7 +363,7 @@ namespace TradingSystems
                 if (date.Date != baseBar.Date.Date)
                 {
                     bars.Add(new Bar() { Date = date, Open = open, High = high, Low = low, Close = close, Volume = volume, Ticker = security.Symbol, Period = "1D" });
-                    fillBarParams(security.Bars[i], out date, out open, out high, out low, out close, out volume);
+                    FillBarParams(security.Bars[i], out date, out open, out high, out low, out close, out volume);
                 }
                 else
                 {
@@ -380,7 +380,7 @@ namespace TradingSystems
             return result;
         }
 
-        private void fillBarParams(IDataBar bar, out DateTime date, out double open, out double high, out double low, out double close, out double volume)//, out string ticker, out string period)
+        private void FillBarParams(IDataBar bar, out DateTime date, out double open, out double high, out double low, out double close, out double volume)//, out string ticker, out string period)
         {
             date = new DateTime(bar.Date.Year, bar.Date.Month, bar.Date.Day, 10, 0, 0);
             open = bar.Open;
