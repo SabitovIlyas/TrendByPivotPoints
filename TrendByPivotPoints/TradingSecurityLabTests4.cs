@@ -224,6 +224,5 @@ namespace TradingSystems.Tests
             double actual = sec.GetProfit(barNumber);
             Assert.AreEqual(expected, actual, 0.01);
         }
-
     }
 }
