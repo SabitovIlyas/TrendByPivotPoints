@@ -30,6 +30,8 @@ namespace TrendByPivotPointsOptimizator
             try
             {
                 var context = new ContextLab();
+
+                //TODO: Реализовать список из security с разным значениям Currency, Shares и пр.
                 var security = new SecurityLab(securityName, Currency.USD, shares: 10,
                     5000, 4500, bars, logger);
 
