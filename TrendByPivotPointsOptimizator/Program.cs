@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.Remoting.Messaging;
 using System.Windows.Forms;
 using TradingSystems;
 
@@ -13,7 +11,7 @@ namespace TrendByPivotPointsOptimizator
         private static string fileNameLong;
         private static string fileNameShort;
         private static int dimension;
-        private static int useCase = 2;
+        private static int useCase = 3;
 
         [STAThread]
         static void Main(string[] args)
@@ -24,7 +22,7 @@ namespace TrendByPivotPointsOptimizator
             {
                 case 1:
                     {
-                        PrintOptomalParametersUseCase();
+                        PrintOptimalParametersUseCase();
                         break;
                     }
                 case 2:
@@ -32,8 +30,19 @@ namespace TrendByPivotPointsOptimizator
                         PrintOptimalParametersPercentUseCase();
                         break;
                     }
+                case 3:
+                    {
+                        Optimize();
+                        break;
+                    }
             }
         }
+
+        private static void Optimize()
+        {
+            var os = new OptimizatorStarter();
+            os.Start();
+        }        
 
         private static void PrintOptimalParameters(PositionSide side, int[] radiusNeighbour, int barrier)
         {
@@ -81,14 +90,14 @@ namespace TrendByPivotPointsOptimizator
                         parser.Param2Str = "ВнешнийСкрипт.fastDonchian";
                         var points = parser.ParseForPoints();
                         var optimizator = Optimizator.Create();
-                        return optimizator.GetOptimalParametersPercent1(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+                        return optimizator.GetOptimalParametersPercentNew(points, dimension, radiusNeighbour, barrier, isCheckedPass);
                     }
             }
 
             return "";
         }
 
-        private static void PrintOptomalParametersUseCase()
+        private static void PrintOptimalParametersUseCase()
         {
             path = "C:\\Users\\1\\Dropbox\\Трейдинг\\";
 

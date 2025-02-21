@@ -113,7 +113,7 @@ namespace TrendByPivotPointsOptimizator
             return result;
         }
 
-        public string GetOptimalParametersPercent1(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
+        public string GetOptimalParametersPercentNew(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
         {
             var matrixCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
             matrixCreator.CreateMatrixPercent();
@@ -126,12 +126,7 @@ namespace TrendByPivotPointsOptimizator
 
             for (int i = 0; i < combinations.Count; i++)
             {
-                //var coords = matrixCreator.GetCoords(combinations[i].Combination);
-                //for (var j = 0; j < coords.Length; j++)                
-                //    result += coords[j] + ";";
-
                 result += matrixCreator.Combinations[i].Id + ";";
-                //result += combinations[i].Value + ";";
                 result += combinations[i].AverageValue + ";";
                 result += combinations[i].Rank + ";\n";
             }

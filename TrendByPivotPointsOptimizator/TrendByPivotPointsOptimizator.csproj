@@ -70,6 +70,7 @@
     <Compile Include="IdCombinationDecoratorsAscendingComparer.cs" />
     <Compile Include="MatrixCreator.cs" />
     <Compile Include="Optimizator.cs" />
+    <Compile Include="OptimizatorStarter.cs" />
     <Compile Include="ParserPointValueFromFile.cs" />
     <Compile Include="PointValue.cs" />
     <Compile Include="Program.cs" />
@@ -80,6 +81,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TrendByPivotPointsPeparatorDataForSpread\TrendByPivotPointsPeparatorDataForSpread.csproj">
+      <Project>{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}</Project>
+      <Name>TrendByPivotPointsPeparatorDataForSpread</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj">
+      <Project>{A9C7C965-F0F0-48ED-986A-21D98A8221FC}</Project>
+      <Name>TrendByPivotPointsStarter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TrendByPivotPointsStrategy\TradingSystems.csproj">
       <Project>{B9A9953F-E415-44D8-ABA8-35A77304CCFA}</Project>
       <Name>TradingSystems</Name>
