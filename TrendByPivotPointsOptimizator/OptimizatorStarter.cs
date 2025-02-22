@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows.Forms;
 using TradingSystems;
 using TrendByPivotPointsStarter;
+using TSLab.Script.Handlers;
+using TSLab.Utils;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -15,11 +17,15 @@ namespace TrendByPivotPointsOptimizator
             Console.WriteLine("Старт!");
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = "Выберите файлы с историческими данными";
+            openFileDialog.Title = "Выберите файл с инструментами";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
             var fullFileName = openFileDialog.FileName;
+            List<SecurityData> securitiesData = GetSecuritiesData(fullFileName);
+            List<Security> secs = CreateSecurities(securitiesData, fullFileName);
+            
+
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var fileName = fullFileName.Split('\\').Last();
             var securityName = fileName.Split('.').First();
@@ -47,6 +53,60 @@ namespace TrendByPivotPointsOptimizator
                 logger.Log(e.ToString());
             }
             Console.ReadLine();
+        }        
+
+        private List<SecurityData> GetSecuritiesData(string fullFileName)
+        {
+            var result = new List<SecurityData>();
+            try
+            {
+                if (!System.IO.File.Exists(fullFileName))
+                    throw new Exception("Файл не найден!");
+
+                string[] listStrings = System.IO.File.ReadAllLines(fullFileName);
+
+                if (listStrings == null)
+                    throw new Exception("Файл пустой!");
+                foreach (var str in listStrings)
+                {
+                    var splStr = str.Split(';');
+                    var name = splStr[0];
+                    var currency = splStr[1];
+                    var shares = int.Parse(splStr[2]);
+                    var commissionRate = double.Parse(splStr[3]);
+                    result.Add(new SecurityData()
+                    {
+                        Name = name,
+                        Currency = currency,
+                        Shares = shares,
+                        CommissionRate = commissionRate
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return result;
+
+        }
+
+        private List<Security> CreateSecurities(List<SecurityData> securitiesData, string fullFileName)
+        {
+            var result = new List<Security>();
+            foreach (var data in securitiesData)
+            {
+                var securityName = data.Name;
+                var fileNameSplitted = fullFileName.Split('\\');
+
+                var path = string.Empty;
+                for (var i = 0; i < fileNameSplitted.Length - 1; i++)
+                    path += fileNameSplitted[i] + "\\";
+                var fileName = path + securityName + ".txt";
+            }
+
+            return result;
         }
 
         private static SystemParameters GetSystemParameters()
@@ -66,5 +126,13 @@ namespace TrendByPivotPointsOptimizator
 
             return systemParameters;
         }
+    }
+
+    struct SecurityData
+    {
+        public string Name;
+        public string Currency;
+        public int Shares;
+        public double CommissionRate;
     }
 }

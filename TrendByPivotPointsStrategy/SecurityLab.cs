@@ -76,6 +76,18 @@ namespace TradingSystems
             Initialize();
         }
 
+        public SecurityLab(string securityName, Currency currency, int shares, List<Bar> bars, 
+            Logger logger, double commissionRate)
+        {
+            Name = securityName;
+            this.currency = currency;
+            this.shares = shares;            
+            Bars = bars;
+            this.logger = logger;
+            CommissionRate = commissionRate;
+            Initialize();
+        }
+
         private void Initialize()
         {
             HighPrices = new List<double>();

@@ -16,6 +16,9 @@ namespace TrendByPivotPointsOptimizator
         [STAThread]
         static void Main(string[] args)
         {
+            //var str = "0,0001320";
+            //var d = double.Parse(str);
+
             Console.WriteLine("Введите номер примера использования");
             useCase = int.Parse(Console.ReadLine());
             switch (useCase)
