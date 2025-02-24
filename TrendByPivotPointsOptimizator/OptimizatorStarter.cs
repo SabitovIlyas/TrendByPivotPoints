@@ -5,8 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using TradingSystems;
 using TrendByPivotPointsStarter;
-using TSLab.Script.Handlers;
-using TSLab.Utils;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -89,7 +87,6 @@ namespace TrendByPivotPointsOptimizator
             }
 
             return result;
-
         }
 
         private List<Security> CreateSecurities(List<SecurityData> securitiesData, string fullFileName)
@@ -104,9 +101,22 @@ namespace TrendByPivotPointsOptimizator
                 for (var i = 0; i < fileNameSplitted.Length - 1; i++)
                     path += fileNameSplitted[i] + "\\";
                 var fileName = path + securityName + ".txt";
-            }
 
+                var security = CreateSecurity(fileName);
+
+                result.Add(security);
+            }
             return result;
+        }
+
+        private Security CreateSecurity(string fileName)
+        {
+            var converter = ConverterTextDataToBar.Create(fileName);
+            var bars = converter.ConvertFileWithBarsToListOfBars();
+
+
+
+            return null;
         }
 
         private static SystemParameters GetSystemParameters()
