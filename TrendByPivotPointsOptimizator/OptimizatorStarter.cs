@@ -10,6 +10,8 @@ namespace TrendByPivotPointsOptimizator
 {
     public class OptimizatorStarter
     {
+        Logger logger;
+
         public void Start()
         {
             Console.WriteLine("Старт!");
@@ -29,7 +31,7 @@ namespace TrendByPivotPointsOptimizator
             var securityName = fileName.Split('.').First();
             var bars = converter.ConvertFileWithBarsToListOfBars();
 
-            var logger = new ConsoleLogger();
+            logger = new ConsoleLogger();
 
             try
             {
@@ -72,10 +74,12 @@ namespace TrendByPivotPointsOptimizator
                     var currency = splStr[1];
                     var shares = int.Parse(splStr[2]);
                     var commissionRate = double.Parse(splStr[3]);
+
+
                     result.Add(new SecurityData()
                     {
                         Name = name,
-                        Currency = currency,
+                        Currency = GetCurrency(currency),
                         Shares = shares,
                         CommissionRate = commissionRate
                     });
@@ -87,6 +91,17 @@ namespace TrendByPivotPointsOptimizator
             }
 
             return result;
+        }
+
+        private Currency GetCurrency(string currency)
+        {
+            if (currency == Currency.USD.ToString())
+                return Currency.USD;
+
+            if (currency == Currency.Ruble.ToString())
+                return Currency.Ruble;
+
+            throw new Exception("Неверное значение валюты");
         }
 
         private List<Security> CreateSecurities(List<SecurityData> securitiesData, string fullFileName)
@@ -102,21 +117,22 @@ namespace TrendByPivotPointsOptimizator
                     path += fileNameSplitted[i] + "\\";
                 var fileName = path + securityName + ".txt";
 
-                var security = CreateSecurity(fileName);
+                var security = CreateSecurity(fileName, data);
 
                 result.Add(security);
             }
             return result;
         }
 
-        private Security CreateSecurity(string fileName)
+        private Security CreateSecurity(string fileName, SecurityData data)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
             var bars = converter.ConvertFileWithBarsToListOfBars();
 
+            var security = new SecurityLab(data.Name, data.Currency, data.Shares, bars,
+                logger, data.CommissionRate);
 
-
-            return null;
+            return security;
         }
 
         private static SystemParameters GetSystemParameters()
@@ -141,7 +157,7 @@ namespace TrendByPivotPointsOptimizator
     struct SecurityData
     {
         public string Name;
-        public string Currency;
+        public Currency Currency;
         public int Shares;
         public double CommissionRate;
     }
