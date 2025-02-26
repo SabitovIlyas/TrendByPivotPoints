@@ -75,7 +75,6 @@ namespace TrendByPivotPointsOptimizator
                     var shares = int.Parse(splStr[2]);
                     var commissionRate = double.Parse(splStr[3]);
 
-
                     result.Add(new SecurityData()
                     {
                         Name = name,
@@ -117,11 +116,17 @@ namespace TrendByPivotPointsOptimizator
                     path += fileNameSplitted[i] + "\\";
                 var fileName = path + securityName + ".txt";
 
+                CreateSecurities();
                 var security = CreateSecurity(fileName, data);
 
                 result.Add(security);
             }
             return result;
+        }
+
+        private void CreateSecurities()
+        {
+
         }
 
         private Security CreateSecurity(string fileName, SecurityData data)
@@ -160,5 +165,11 @@ namespace TrendByPivotPointsOptimizator
         public Currency Currency;
         public int Shares;
         public double CommissionRate;
+    }
+
+    struct Agent
+    {
+        //Я здесь
+        //Так как сделки привязаны к Security, мне нужен Security для каждого бота...
     }
 }
