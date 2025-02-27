@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows.Forms;
 using TradingSystems;
 using TrendByPivotPointsStarter;
+using TSLab.DataSource;
+using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -17,14 +19,22 @@ namespace TrendByPivotPointsOptimizator
             Console.WriteLine("Старт!");
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = "Выберите файл с инструментами";
+            openFileDialog.Title = "Выберите файл с настройками";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
             var fullFileName = openFileDialog.FileName;
+
+            var settings = CreateSettings(fullFileName);
+
+            openFileDialog.Title = "Выберите файл с инструментами";
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            fullFileName = openFileDialog.FileName;
+
             List<SecurityData> securitiesData = GetSecuritiesData(fullFileName);
-            List<Security> secs = CreateSecurities(securitiesData, fullFileName);
-            
+            List<Security> securities = CreateSecurities(securitiesData, fullFileName, settings);            
 
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var fileName = fullFileName.Split('\\').Last();
@@ -37,23 +47,68 @@ namespace TrendByPivotPointsOptimizator
             {
                 var context = new ContextLab();
 
-                //TODO: Реализовать список из security с разным значениям Currency, Shares и пр.
-                var security = new SecurityLab(securityName, Currency.USD, shares: 10,
-                    5000, 4500, bars, logger);
-
-                var securities = new List<Security>() { security };
-                var system = new StarterDonchianTradingSystemLab(context, securities, logger);
-                var systemParameters = GetSystemParameters();
-                system.SetParameters(systemParameters);
-                system.Initialize();
-                system.Run();
+                foreach (var sec in securities)
+                {
+                    var listSystemParameters = CreateSystemParameters();
+                    foreach (var sp in listSystemParameters)
+                    {
+                        var system = new StarterDonchianTradingSystemLab(context, 
+                            new List<Security>() { sec }, logger);                        
+                        system.SetParameters(sp);
+                        system.Initialize();
+                        system.Run();
+                    }
+                }
             }
             catch (Exception e)
             {
                 logger.Log(e.ToString());
             }
             Console.ReadLine();
-        }        
+        }
+
+        private Settings CreateSettings(string fullFileName)
+        {
+            var sides = new List<PositionSide>();
+            var timeFrames = new List<Interval>();
+
+            try
+            {
+                if (!System.IO.File.Exists(fullFileName))
+                    throw new Exception("Файл не найден!");
+
+                string[] listStrings = System.IO.File.ReadAllLines(fullFileName);
+
+                if (listStrings == null)
+                    throw new Exception("Файл пустой!");
+                
+                foreach (var str in listStrings)
+                {
+                    if (str.Contains("Long"))
+                        sides.Add(PositionSide.Long);
+                    if (str.Contains("Short"))
+                        sides.Add(PositionSide.Short);
+                    if (str.Contains("1min"))
+                        timeFrames.Add(new Interval(1, DataIntervals.MINUTE));
+                    if (str.Contains("5min"))
+                        timeFrames.Add(new Interval(5, DataIntervals.MINUTE));
+                    if (str.Contains("15min"))
+                        timeFrames.Add(new Interval(15, DataIntervals.MINUTE));
+                    if (str.Contains("30min"))
+                        timeFrames.Add(new Interval(30, DataIntervals.MINUTE));
+                    if (str.Contains("60min"))
+                        timeFrames.Add(new Interval(60, DataIntervals.MINUTE));
+                    if (str.Contains("1d"))
+                        timeFrames.Add(new Interval(1, DataIntervals.DAYS));                       
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return new Settings() { Sides = sides, TimeFrames = timeFrames };        
+        }
 
         private List<SecurityData> GetSecuritiesData(string fullFileName)
         {
@@ -97,42 +152,46 @@ namespace TrendByPivotPointsOptimizator
             if (currency == Currency.USD.ToString())
                 return Currency.USD;
 
-            if (currency == Currency.Ruble.ToString())
-                return Currency.Ruble;
+            if (currency == Currency.RUB.ToString())
+                return Currency.RUB;
 
             throw new Exception("Неверное значение валюты");
         }
 
-        private List<Security> CreateSecurities(List<SecurityData> securitiesData, string fullFileName)
+        private List<Security> CreateSecurities(List<SecurityData> securitiesData, string fullFileName, 
+            Settings settings)
         {
             var result = new List<Security>();
-            foreach (var data in securitiesData)
+
+            foreach(var side in settings.Sides)
             {
-                var securityName = data.Name;
-                var fileNameSplitted = fullFileName.Split('\\');
+                foreach(var timeFrame in settings.TimeFrames)
+                {
+                    foreach (var data in securitiesData)
+                    {
+                        var securityName = data.Name;
+                        var fileNameSplitted = fullFileName.Split('\\');
 
-                var path = string.Empty;
-                for (var i = 0; i < fileNameSplitted.Length - 1; i++)
-                    path += fileNameSplitted[i] + "\\";
-                var fileName = path + securityName + ".txt";
+                        var path = string.Empty;
+                        for (var i = 0; i < fileNameSplitted.Length - 1; i++)
+                            path += fileNameSplitted[i] + "\\";
+                        var fileName = path + securityName + ".txt";
 
-                CreateSecurities();
-                var security = CreateSecurity(fileName, data);
+                        var security = CreateSecurity(fileName, data, timeFrame);
 
-                result.Add(security);
+                        result.Add(security);
+                    }
+                }
             }
+            
             return result;
         }
 
-        private void CreateSecurities()
-        {
-
-        }
-
-        private Security CreateSecurity(string fileName, SecurityData data)
+        private Security CreateSecurity(string fileName, SecurityData data, Interval timeframe)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
-            var bars = converter.ConvertFileWithBarsToListOfBars();
+            var baseBars = converter.ConvertFileWithBarsToListOfBars();
+            var bars = CompressBars(baseBars);          
 
             var security = new SecurityLab(data.Name, data.Currency, data.Shares, bars,
                 logger, data.CommissionRate);
@@ -140,36 +199,56 @@ namespace TrendByPivotPointsOptimizator
             return security;
         }
 
-        private static SystemParameters GetSystemParameters()
+        private List<Bar> CompressBars(List<Bar> bars)
         {
-            var systemParameters = new SystemParameters();
-
-            systemParameters.Add("slowDonchian", 50);
-            systemParameters.Add("fastDonchian", 20);
-            systemParameters.Add("kAtr", 2d);
-            systemParameters.Add("atrPeriod", 20);
-
-            systemParameters.Add("limitOpenedPositions", 4);
-            systemParameters.Add("isUSD", 1);
-            systemParameters.Add("rateUSD", 100d);
-            systemParameters.Add("positionSide", 0);
-            systemParameters.Add("shares", 10);
-
-            return systemParameters;
+            //TODO: реализовать сжатие баров
+            return bars;
         }
-    }
 
-    struct SecurityData
-    {
-        public string Name;
-        public Currency Currency;
-        public int Shares;
-        public double CommissionRate;
-    }
+        private List<SystemParameters> CreateSystemParameters()
+        {
+            var listSystemParameters = new List<SystemParameters>();
 
-    struct Agent
-    {
-        //Я здесь
-        //Так как сделки привязаны к Security, мне нужен Security для каждого бота...
-    }
+            for (var slowDonchian = 9; slowDonchian <= 208; slowDonchian++)
+            {
+                for (var fastDonchian = 9; fastDonchian <= 208; fastDonchian++)
+                {
+                    for (var atrPeriod = 1; atrPeriod <= 25; atrPeriod++)
+                    {
+                        for (var limitOpenedPositions = 1; limitOpenedPositions <= 4;
+                            limitOpenedPositions++)
+                        {
+                            for (var kAtrForOpenPosition = 0.5; kAtrForOpenPosition <= 2; 
+                                kAtrForOpenPosition = kAtrForOpenPosition + 0.5)
+                            {
+                                for (var kAtrForStopLoss = 0.5; kAtrForStopLoss <= 2;
+                                kAtrForStopLoss = kAtrForStopLoss + 0.5)
+                                {
+                                    var systemParameters = new SystemParameters();
+
+                                    systemParameters.Add("slowDonchian", slowDonchian);//1
+                                    systemParameters.Add("fastDonchian", fastDonchian);//2
+                                    systemParameters.Add("kAtrForStopLoss", kAtrForStopLoss);//3
+                                    systemParameters.Add("kAtrForOpenPosition",kAtrForOpenPosition);//4
+                                    systemParameters.Add("atrPeriod", atrPeriod);//3
+                                    systemParameters.Add("limitOpenedPositions", limitOpenedPositions);//4
+                                    systemParameters.Add("isUSD", 0);
+                                    systemParameters.Add("rateUSD", 0d);
+                                    systemParameters.Add("positionSide", pSide);
+                                    systemParameters.Add("shares", 1);
+
+                                    systemParameters.Add("equity", 1000000d);
+                                    systemParameters.Add("riskValuePrcnt", 2d);
+                                    systemParameters.Add("contracts", 0);
+
+                                    listSystemParameters.Add(systemParameters);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return listSystemParameters;
+        }
+    }    
 }

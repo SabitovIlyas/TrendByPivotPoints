@@ -76,7 +76,7 @@ namespace TradingSystems
 
                 if (isUSD == 1)
                     currency = Currency.USD;
-                currency = Currency.Ruble;
+                currency = Currency.RUB;
             }
             catch (KeyNotFoundException e)
             {

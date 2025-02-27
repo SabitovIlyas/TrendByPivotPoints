@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using TrendByPivotPointsStarter;
+using TSLab.DataSource;
 
 namespace TradingSystems.Tests
 {
@@ -32,7 +33,7 @@ namespace TradingSystems.Tests
         {
             var logger = new ConsoleLogger();
             var bars = CreateBars();
-            var security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger, commissionRate);
+            var security = new SecurityLab(Currency.RUB, shares: 1, bars, logger, commissionRate);
 
             var context = new ContextLab();
             var securities = new List<Security>() { security };
@@ -48,12 +49,12 @@ namespace TradingSystems.Tests
             else
                 pSide = 1;
 
-            systemParameters.Add("slowDonchian", 10);
-            systemParameters.Add("fastDonchian", 5);
-            systemParameters.Add("kAtrForStopLoss", 2d);
-            systemParameters.Add("kAtrForOpenPosition", 0.5d);
-            systemParameters.Add("atrPeriod", 5);
-            systemParameters.Add("limitOpenedPositions", limitOpenedPositions);
+            systemParameters.Add("slowDonchian", 10);//1
+            systemParameters.Add("fastDonchian", 5);//2
+            systemParameters.Add("kAtrForStopLoss", 2d);//3
+            systemParameters.Add("kAtrForOpenPosition", 0.5d);//4
+            systemParameters.Add("atrPeriod", 5);//3
+            systemParameters.Add("limitOpenedPositions", limitOpenedPositions);//4
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
             systemParameters.Add("positionSide", pSide);

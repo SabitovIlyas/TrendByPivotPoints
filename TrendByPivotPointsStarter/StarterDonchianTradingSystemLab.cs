@@ -39,7 +39,7 @@ namespace TrendByPivotPointsStarter
         {
             base.Initialize();
             
-            var baseCurrency = Currency.Ruble;
+            var baseCurrency = Currency.RUB;
             account = new AccountLab(initDeposit: equity, baseCurrency, securities, logger);            
             
             var currencyConverter = new CurrencyConverter(baseCurrency);

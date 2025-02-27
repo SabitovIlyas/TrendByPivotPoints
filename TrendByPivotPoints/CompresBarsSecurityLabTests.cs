@@ -13,7 +13,7 @@ namespace TradingSystems.Tests
         {
             var logger = new ConsoleLogger();
             var bars = CreateBars();
-            var security = new SecurityLab(Currency.Ruble, shares: 1, bars, logger, commissionRate:0);          
+            var security = new SecurityLab(Currency.RUB, shares: 1, bars, logger, commissionRate:0);          
 
             return security;
         }

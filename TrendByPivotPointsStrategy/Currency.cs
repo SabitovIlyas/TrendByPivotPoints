@@ -2,6 +2,6 @@
 {
     public enum Currency
     {
-        Ruble, USD
+        RUB, USD
     }
 }

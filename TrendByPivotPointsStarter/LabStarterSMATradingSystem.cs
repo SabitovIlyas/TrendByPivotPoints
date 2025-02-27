@@ -29,7 +29,7 @@ namespace TrendByPivotPointsStarter
             var security = new SecurityLab(currency, shares, logger, commissionRate: 0);
             securities = new List<Security> { security };
             var context = new ContextLab();
-            var baseCurrency = Currency.Ruble;
+            var baseCurrency = Currency.RUB;
 
             base.Initialize();
 

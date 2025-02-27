@@ -10,7 +10,7 @@ namespace TrendByPivotPoints.Tests
         ContractsManager contractsManager;
         RiskManagerReal riskManager;
         Logger logger = new LoggerNull();
-        Currency baseCurrency = Currency.Ruble;
+        Currency baseCurrency = Currency.RUB;
         CurrencyConverter currencyConverter;
 
         [TestInitialize]
@@ -18,8 +18,8 @@ namespace TrendByPivotPoints.Tests
         {
             var currencyBalance = 50000;
             var estimatedBalance = 1000000;
-            var security = new SecurityLab(currency: Currency.Ruble, shares: 1, logger, commissionRate: 0);
-            account = new AccountFake(initDeposit: estimatedBalance, baseCurrency: Currency.Ruble, logger: logger);
+            var security = new SecurityLab(currency: Currency.RUB, shares: 1, logger, commissionRate: 0);
+            account = new AccountFake(initDeposit: estimatedBalance, baseCurrency: Currency.RUB, logger: logger);
 
             currencyConverter = new CurrencyConverter(baseCurrency);
             account.GObying = 4500;
@@ -40,7 +40,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 69000;
             var position = PositionSide.Long;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
 
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
@@ -60,7 +60,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 60000;
             var position = PositionSide.Long;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
             
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
@@ -80,7 +80,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 71000;
             var position = PositionSide.Long;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
 
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);            
@@ -100,7 +100,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 80000;
             var position = PositionSide.Long;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
 
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
@@ -123,7 +123,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 69000;
             var position = PositionSide.Short;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
 
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
@@ -143,7 +143,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 60000;
             var position = PositionSide.Short;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
 
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
@@ -163,7 +163,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 71000;
             var position = PositionSide.Short;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
 
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
@@ -183,7 +183,7 @@ namespace TrendByPivotPoints.Tests
             var enterPrice = 70000;
             var stopPrice = 80000;
             var position = PositionSide.Short;
-            var currency = Currency.Ruble;
+            var currency = Currency.RUB;
 
             var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);

@@ -21,7 +21,7 @@ namespace TradingSystems.Tests
                 Bar.Create(new DateTime(2023, 11, 27), 89127, 90080, 88830, 89463)
             };
 
-            security = new SecurityLab("SecurityNameTest", Currency.Ruble, shares: 1,
+            security = new SecurityLab("SecurityNameTest", Currency.RUB, shares: 1,
                 5000, 4500, bars, logger);
         }
 
