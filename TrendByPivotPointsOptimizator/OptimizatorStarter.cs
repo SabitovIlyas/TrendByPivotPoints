@@ -47,9 +47,9 @@ namespace TrendByPivotPointsOptimizator
             {
                 var context = new ContextLab();
 
-                foreach (var sec in securities)
+                foreach (var sec in securities)//возможно, что я делаю лишний перебор с pSide и tFrame
                 {
-                    var listSystemParameters = CreateSystemParameters();
+                    var listSystemParameters = CreateSystemParameters(settings);
                     foreach (var sp in listSystemParameters)
                     {
                         var system = new StarterDonchianTradingSystemLab(context, 
@@ -205,49 +205,57 @@ namespace TrendByPivotPointsOptimizator
             return bars;
         }
 
-        private List<SystemParameters> CreateSystemParameters()
-        {
+        private List<SystemParameters> CreateSystemParameters(Settings settings)
+        {            
             var listSystemParameters = new List<SystemParameters>();
 
-            for (var slowDonchian = 9; slowDonchian <= 208; slowDonchian++)
+            foreach(var tF in settings.TimeFrames)
             {
-                for (var fastDonchian = 9; fastDonchian <= 208; fastDonchian++)
+                foreach (var pSide in settings.Sides)
                 {
-                    for (var atrPeriod = 1; atrPeriod <= 25; atrPeriod++)
+                    for (var slowDonchian = 9; slowDonchian <= 208; slowDonchian++)
                     {
-                        for (var limitOpenedPositions = 1; limitOpenedPositions <= 4;
-                            limitOpenedPositions++)
+                        for (var fastDonchian = 9; fastDonchian <= 208; fastDonchian++)
                         {
-                            for (var kAtrForOpenPosition = 0.5; kAtrForOpenPosition <= 2; 
-                                kAtrForOpenPosition = kAtrForOpenPosition + 0.5)
+                            for (var atrPeriod = 1; atrPeriod <= 25; atrPeriod++)
                             {
-                                for (var kAtrForStopLoss = 0.5; kAtrForStopLoss <= 2;
-                                kAtrForStopLoss = kAtrForStopLoss + 0.5)
+                                for (var limitOpenedPositions = 1; limitOpenedPositions <= 4;
+                                    limitOpenedPositions++)
                                 {
-                                    var systemParameters = new SystemParameters();
+                                    for (var kAtrForOpenPosition = 0.5; kAtrForOpenPosition <= 2;
+                                        kAtrForOpenPosition = kAtrForOpenPosition + 0.5)
+                                    {
+                                        for (var kAtrForStopLoss = 0.5; kAtrForStopLoss <= 2;
+                                        kAtrForStopLoss = kAtrForStopLoss + 0.5)
+                                        {
+                                            var systemParameters = new SystemParameters();
 
-                                    systemParameters.Add("slowDonchian", slowDonchian);//1
-                                    systemParameters.Add("fastDonchian", fastDonchian);//2
-                                    systemParameters.Add("kAtrForStopLoss", kAtrForStopLoss);//3
-                                    systemParameters.Add("kAtrForOpenPosition",kAtrForOpenPosition);//4
-                                    systemParameters.Add("atrPeriod", atrPeriod);//3
-                                    systemParameters.Add("limitOpenedPositions", limitOpenedPositions);//4
-                                    systemParameters.Add("isUSD", 0);
-                                    systemParameters.Add("rateUSD", 0d);
-                                    systemParameters.Add("positionSide", pSide);
-                                    systemParameters.Add("shares", 1);
+                                            systemParameters.Add("slowDonchian", slowDonchian);//1
+                                            systemParameters.Add("fastDonchian", fastDonchian);//2
+                                            systemParameters.Add("kAtrForStopLoss", kAtrForStopLoss);//3
+                                            systemParameters.Add("kAtrForOpenPosition", kAtrForOpenPosition);//4
+                                            systemParameters.Add("atrPeriod", atrPeriod);//3
+                                            systemParameters.Add("limitOpenedPositions", limitOpenedPositions);//4
+                                            systemParameters.Add("isUSD", 0);
+                                            systemParameters.Add("rateUSD", 0d);
+                                            systemParameters.Add("positionSide", pSide);//5
+                                            systemParameters.Add("timeFrame", tF);//6
+                                            systemParameters.Add("shares", 1);// разобраться!!!
 
-                                    systemParameters.Add("equity", 1000000d);
-                                    systemParameters.Add("riskValuePrcnt", 2d);
-                                    systemParameters.Add("contracts", 0);
+                                            systemParameters.Add("equity", 1000000d);
+                                            systemParameters.Add("riskValuePrcnt", 2d);
+                                            systemParameters.Add("contracts", 0);
 
-                                    listSystemParameters.Add(systemParameters);
+                                            listSystemParameters.Add(systemParameters);
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
+            }            
+                        
             return listSystemParameters;
         }
     }    
