@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using TradingSystems;
-using TrendByPivotPointsStarter;
 using TSLab.DataSource;
-using TSLab.Script.Handlers;
-using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -35,7 +32,7 @@ namespace TrendByPivotPointsOptimizator
             fullFileName = openFileDialog.FileName;
 
             List<SecurityData> securitiesData = GetSecuritiesData(fullFileName);
-            List<Security> securities = CreateSecurities(securitiesData, fullFileName, settings);
+            List<Ticker> tickers = CreateTickers(securitiesData, fullFileName, settings);
 
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var fileName = fullFileName.Split('\\').Last();
@@ -48,16 +45,16 @@ namespace TrendByPivotPointsOptimizator
             {
                 var context = new ContextLab();
 
-                foreach (var sec in securities)//возможно, что я делаю лишний перебор с pSide и tFrame
+                foreach (var ticker in tickers)//возможно, что я делаю лишний перебор с pSide и tFrame
                 {
-                    var listSystemParameters = CreateSystemParameters(settings);
+                    var listSystemParameters = CreateSystemParameters(settings, tickers);
                     foreach (var sp in listSystemParameters)
                     {
-                        var system = new StarterDonchianTradingSystemLab(context,
-                            new List<Security>() { sec }, logger);
-                        system.SetParameters(sp);
-                        system.Initialize();
-                        system.Run();
+                        //var system = new StarterDonchianTradingSystemLab(context,
+                        //    new List<Security>() { ticker }, logger);
+                        //system.SetParameters(ticker);
+                        //system.Initialize();
+                        //system.Run();
                     }
                 }
             }
@@ -159,10 +156,10 @@ namespace TrendByPivotPointsOptimizator
             throw new Exception("Неверное значение валюты");
         }
 
-        private List<Security> CreateSecurities(List<SecurityData> securitiesData, string fullFileName,
+        private List<Ticker> CreateTickers(List<SecurityData> securitiesData, string fullFileName,
             Settings settings)
         {
-            var result = new List<Security>();
+            var result = new List<Ticker>();
 
             foreach (var side in settings.Sides)
             {
@@ -178,9 +175,9 @@ namespace TrendByPivotPointsOptimizator
                             path += fileNameSplitted[i] + "\\";
                         var fileName = path + securityName + ".txt";
 
-                        var security = CreateSecurity(fileName, data, timeFrame);
+                        var ticker = CreateTicker(fileName, data, timeFrame);
 
-                        result.Add(security);
+                        result.Add(ticker);
                     }
                 }
             }
@@ -188,16 +185,15 @@ namespace TrendByPivotPointsOptimizator
             return result;
         }
 
-        private Security CreateSecurity(string fileName, SecurityData data, Interval timeframe)
+        private Ticker CreateTicker(string fileName, SecurityData data, Interval timeframe)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
-            var baseBars = converter.ConvertFileWithBarsToListOfBars();
-            var bars = CompressBars(baseBars);
+            var bars = converter.ConvertFileWithBarsToListOfBars();            
 
-            var security = new SecurityLab(data.Name, data.Currency, data.Shares, bars,
+            var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,
                 logger, data.CommissionRate);
 
-            return security;
+            return ticker;
         }
 
         private List<Bar> CompressBars(List<Bar> bars)
@@ -206,15 +202,17 @@ namespace TrendByPivotPointsOptimizator
             return bars;
         }
 
-        private List<TradingSystemParameters> CreateSystemParameters(Settings settings)
+        private List<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
         {
-            //var listSystemParameters = new List<SystemParameters>();
             var listTradingSystemParameters = new List<TradingSystemParameters>();
 
-            foreach (var tiker in tikers)
+            foreach (var ticker in tickers)
             {
                 foreach (var tF in settings.TimeFrames)
-                {
+                {                    
+                    var bars = CompressBars(ticker.Bars);
+                    var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
+                ticker.Logger, ticker.CommissionRate);
                     foreach (var pSide in settings.Sides)
                     {
                         for (var slowDonchian = 9; slowDonchian <= 208; slowDonchian++)
@@ -250,9 +248,11 @@ namespace TrendByPivotPointsOptimizator
                                                 systemParameters.Add("riskValuePrcnt", 2d);
                                                 systemParameters.Add("contracts", 0);
 
-                                                //listSystemParameters.Add(systemParameters);
-                                                listTradingSystemParameters.Add(systemParameters);
-                                                var security = CreateSecurity(fileName, data, timeframe);
+                                                listTradingSystemParameters.Add(new TradingSystemParameters()
+                                                {
+                                                    Security = security,
+                                                    SystemParameter = systemParameters
+                                                });
                                             }
                                         }
                                     }
@@ -264,13 +264,6 @@ namespace TrendByPivotPointsOptimizator
             }
 
             return listTradingSystemParameters;
-            //return listSystemParameters;
         }
-    }
-    public struct TradingSystemParameters
-    {
-        Security security;
-        SystemParameter systemParameter;
-
     }
 }

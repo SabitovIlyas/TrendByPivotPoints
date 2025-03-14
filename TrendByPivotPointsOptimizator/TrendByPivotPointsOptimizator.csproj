@@ -77,6 +77,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityData.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Ticker.cs" />
+    <Compile Include="TradingSystemParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
