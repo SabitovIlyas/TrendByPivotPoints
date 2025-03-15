@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using TradingSystems;
+using TrendByPivotPointsStarter;
 using TSLab.DataSource;
+using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -45,16 +47,15 @@ namespace TrendByPivotPointsOptimizator
             {
                 var context = new ContextLab();
 
-                foreach (var ticker in tickers)//возможно, что я делаю лишний перебор с pSide и tFrame
+                foreach (var ticker in tickers)
                 {
                     var listSystemParameters = CreateSystemParameters(settings, tickers);
                     foreach (var sp in listSystemParameters)
-                    {
-                        //var system = new StarterDonchianTradingSystemLab(context,
-                        //    new List<Security>() { ticker }, logger);
-                        //system.SetParameters(ticker);
-                        //system.Initialize();
-                        //system.Run();
+                    {                        
+                        var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { sp.Security }, logger);
+                        system.SetParameters(sp.SystemParameter);
+                        system.Initialize();
+                        system.Run();
                     }
                 }
             }
@@ -198,6 +199,7 @@ namespace TrendByPivotPointsOptimizator
 
         private List<Bar> CompressBars(List<Bar> bars)
         {
+            //Я здесь
             //TODO: реализовать сжатие баров
             return bars;
         }
@@ -211,8 +213,7 @@ namespace TrendByPivotPointsOptimizator
                 foreach (var tF in settings.TimeFrames)
                 {                    
                     var bars = CompressBars(ticker.Bars);
-                    var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
-                ticker.Logger, ticker.CommissionRate);
+                    
                     foreach (var pSide in settings.Sides)
                     {
                         for (var slowDonchian = 9; slowDonchian <= 208; slowDonchian++)
@@ -247,6 +248,9 @@ namespace TrendByPivotPointsOptimizator
                                                 systemParameters.Add("equity", 1000000d);
                                                 systemParameters.Add("riskValuePrcnt", 2d);
                                                 systemParameters.Add("contracts", 0);
+
+                                                var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
+                                                                    ticker.Logger, ticker.CommissionRate);
 
                                                 listTradingSystemParameters.Add(new TradingSystemParameters()
                                                 {
