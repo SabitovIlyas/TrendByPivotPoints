@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TrendByPivotPointsStarter;
 
 namespace TradingSystems.Tests
 {
@@ -39,5 +38,5 @@ namespace TradingSystems.Tests
             var actual = sec.Bars.First();
             Assert.AreEqual(expected, actual);
         }              
-    }
+    }    
 }
