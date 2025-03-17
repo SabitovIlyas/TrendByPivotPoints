@@ -95,4 +95,317 @@ namespace TradingSystems.Tests
             return new DateTime(ticks);
         }
     }
+
+    [TestClass]
+    public class BarCompressorTests
+    {
+        private List<BarA> GenerateTestBars()
+        {
+            return new List<BarA>
+        {
+            new BarA(new DateTime(2024, 3, 15, 10, 0, 0), 100, 105, 99, 102, 500),
+            new BarA(new DateTime(2024, 3, 15, 10, 5, 0), 102, 108, 101, 106, 600),
+            new BarA(new DateTime(2024, 3, 15, 10, 10, 0), 106, 110, 104, 108, 550),
+            new BarA(new DateTime(2024, 3, 15, 10, 15, 0), 108, 112, 107, 111, 700),
+            new BarA(new DateTime(2024, 3, 15, 10, 20, 0), 111, 115, 109, 114, 800),
+            new BarA(new DateTime(2024, 3, 15, 10, 25, 0), 114, 118, 113, 117, 750),
+            new BarA(new DateTime(2024, 3, 15, 10, 30, 0), 117, 120, 115, 119, 650)
+        };
+        }
+
+        [TestMethod]
+        public void Test_CompressBars_M15()
+        {
+            var bars = GenerateTestBars();
+            var compressedBars = BarCompressor.CompressBars(bars, TimeFrame.M15);
+
+            Assert.AreEqual(2, compressedBars.Count);
+            Assert.AreEqual(new DateTime(2024, 3, 15, 10, 0, 0), compressedBars[0].Time);
+            Assert.AreEqual(new DateTime(2024, 3, 15, 10, 15, 0), compressedBars[1].Time);
+
+            Assert.AreEqual(100, compressedBars[0].Open);
+            Assert.AreEqual(108, compressedBars[0].Close);
+            Assert.AreEqual(110, compressedBars[0].High);
+            Assert.AreEqual(99, compressedBars[0].Low);
+            Assert.AreEqual(1650, compressedBars[0].Volume);
+        }
+
+        [TestMethod]
+        public void Test_CompressBars_M30()
+        {
+            var bars = GenerateTestBars();
+            var compressedBars = BarCompressor.CompressBars(bars, TimeFrame.M30);
+
+            Assert.AreEqual(1, compressedBars.Count);
+            Assert.AreEqual(new DateTime(2024, 3, 15, 10, 0, 0), compressedBars[0].Time);
+            Assert.AreEqual(100, compressedBars[0].Open);
+            Assert.AreEqual(119, compressedBars[0].Close);
+            Assert.AreEqual(120, compressedBars[0].High);
+            Assert.AreEqual(99, compressedBars[0].Low);
+            Assert.AreEqual(4550, compressedBars[0].Volume);
+        }
+
+        [TestMethod]
+        public void Test_CompressBars_D1()
+        {
+            var bars = GenerateTestBars();
+            var compressedBars = BarCompressor.CompressBars(bars, TimeFrame.D1);
+
+            Assert.AreEqual(1, compressedBars.Count);
+            Assert.AreEqual(new DateTime(2024, 3, 15, 0, 0, 0), compressedBars[0].Time);
+            Assert.AreEqual(100, compressedBars[0].Open);
+            Assert.AreEqual(119, compressedBars[0].Close);
+            Assert.AreEqual(120, compressedBars[0].High);
+            Assert.AreEqual(99, compressedBars[0].Low);
+            Assert.AreEqual(4550, compressedBars[0].Volume);
+        }
+
+        [TestMethod]
+        public void Test_EmptyInput()
+        {
+            var compressedBars = BarCompressor.CompressBars(new List<BarA>(), TimeFrame.M15);
+            Assert.AreEqual(0, compressedBars.Count);
+        }
+
+        [TestMethod]
+        public void Test_NullInput()
+        {
+            var compressedBars = BarCompressor.CompressBars(null, TimeFrame.M15);
+            Assert.AreEqual(0, compressedBars.Count);
+        }
+    }
+
+    public class BarA
+    {
+        public DateTime Time { get; set; }
+        public decimal Open { get; set; }
+        public decimal High { get; set; }
+        public decimal Low { get; set; }
+        public decimal Close { get; set; }
+        public long Volume { get; set; }
+
+        public BarA(DateTime time, decimal open, decimal high, decimal low, decimal close, long volume)
+        {
+            Time = time;
+            Open = open;
+            High = high;
+            Low = low;
+            Close = close;
+            Volume = volume;
+        }
+    }
+
+    public enum TimeFrame
+    {
+        M5 = 5,
+        M15 = 15,
+        M30 = 30,
+        H1 = 60,
+        D1 = 1440
+    }
+
+    public static class BarCompressor
+    {
+        public static List<BarA> CompressBars(List<BarA> inputBars, TimeFrame targetTimeFrame)
+        {
+            if (inputBars == null || inputBars.Count == 0)
+                return new List<BarA>();
+
+            int targetMinutes = (int)targetTimeFrame;
+
+            return inputBars
+                .GroupBy(bar => GetCompressionTime(bar.Time, targetMinutes))
+                .Select(group => new BarA(
+                    time: group.Key,
+                    open: group.First().Open,
+                    high: group.Max(b => b.High),
+                    low: group.Min(b => b.Low),
+                    close: group.Last().Close,
+                    volume: group.Sum(b => b.Volume)
+                ))
+                .OrderBy(bar => bar.Time)
+                .ToList();
+        }
+
+        private static DateTime GetCompressionTime(DateTime barTime, int targetMinutes)
+        {
+            if (targetMinutes == 1440) // Дневной таймфрейм
+            {
+                return new DateTime(barTime.Year, barTime.Month, barTime.Day, 0, 0, 0);
+            }
+
+            int compressedMinute = (barTime.Hour * 60 + barTime.Minute) / targetMinutes * targetMinutes;
+            return new DateTime(barTime.Year, barTime.Month, barTime.Day, compressedMinute / 60, compressedMinute % 60, 0);
+        }
+    }
+}
+
+namespace TradingSystems.Tests1
+{
+    [TestClass]
+    public class BarCompressorTests
+    {
+        private BarCompressor compressor;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            compressor = new BarCompressor();
+        }
+
+        [TestMethod]
+        public void CompressBars_EmptyList_ReturnsEmptyList()
+        {
+            var result = compressor.To5Minute(new List<Bar>());
+            Assert.AreEqual(0, result.Count);
+        }
+
+        [TestMethod]
+        public void CompressBars_SingleBar_ReturnsSingleBar()
+        {
+            var bars = new List<Bar>
+        {
+            new Bar { Time = new DateTime(2025, 1, 1, 10, 0, 0), Open = 100, High = 101, Low = 99, Close = 100, Volume = 1000 }
+        };
+
+            var result = compressor.To5Minute(bars);
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(bars[0].Open, result[0].Open);
+            Assert.AreEqual(bars[0].High, result[0].High);
+            Assert.AreEqual(bars[0].Low, result[0].Low);
+            Assert.AreEqual(bars[0].Close, result[0].Close);
+            Assert.AreEqual(bars[0].Volume, result[0].Volume);
+        }
+
+        [TestMethod]
+        public void CompressBars_5MinuteCompression_WorksCorrectly()
+        {
+            var bars = new List<Bar>
+        {
+            new Bar { Time = new DateTime(2025, 1, 1, 10, 0, 0), Open = 100, High = 101, Low = 99, Close = 100, Volume = 1000 },
+            new Bar { Time = new DateTime(2025, 1, 1, 10, 2, 0), Open = 100, High = 102, Low = 98, Close = 101, Volume = 1500 },
+            new Bar { Time = new DateTime(2025, 1, 1, 10, 6, 0), Open = 101, High = 103, Low = 100, Close = 102, Volume = 2000 }
+        };
+
+            var result = compressor.To5Minute(bars);
+            Assert.AreEqual(2, result.Count);
+
+            // First 5-minute bar (10:00-10:04)
+            Assert.AreEqual(new DateTime(2025, 1, 1, 10, 0, 0), result[0].Time);
+            Assert.AreEqual(100m, result[0].Open);
+            Assert.AreEqual(102m, result[0].High);
+            Assert.AreEqual(98m, result[0].Low);
+            Assert.AreEqual(101m, result[0].Close);
+            Assert.AreEqual(2500, result[0].Volume);
+
+            // Second 5-minute bar (10:05-10:09)
+            Assert.AreEqual(new DateTime(2025, 1, 1, 10, 5, 0), result[1].Time);
+            Assert.AreEqual(101m, result[1].Open);
+            Assert.AreEqual(103m, result[1].High);
+            Assert.AreEqual(100m, result[1].Low);
+            Assert.AreEqual(102m, result[1].Close);
+            Assert.AreEqual(2000, result[1].Volume);
+        }
+
+        [TestMethod]
+        public void CompressBars_DailyCompression_WorksCorrectly()
+        {
+            var bars = new List<Bar>
+        {
+            new Bar { Time = new DateTime(2025, 1, 1, 9, 0, 0), Open = 100, High = 101, Low = 99, Close = 100, Volume = 1000 },
+            new Bar { Time = new DateTime(2025, 1, 1, 15, 0, 0), Open = 100, High = 102, Low = 98, Close = 101, Volume = 1500 },
+            new Bar { Time = new DateTime(2025, 1, 2, 9, 0, 0), Open = 101, High = 103, Low = 100, Close = 102, Volume = 2000 }
+        };
+
+            var result = compressor.ToDaily(bars);
+
+            Assert.AreEqual(2, result.Count);
+
+            // First day
+            Assert.AreEqual(new DateTime(2025, 1, 1, 0, 0, 0), result[0].Time);
+            Assert.AreEqual(100m, result[0].Open);
+            Assert.AreEqual(102m, result[0].High);
+            Assert.AreEqual(98m, result[0].Low);
+            Assert.AreEqual(101m, result[0].Close);
+            Assert.AreEqual(2500, result[0].Volume);
+
+            // Second day
+            Assert.AreEqual(new DateTime(2025, 1, 2, 0, 0, 0), result[1].Time);
+            Assert.AreEqual(101m, result[1].Open);
+            Assert.AreEqual(103m, result[1].High);
+            Assert.AreEqual(100m, result[1].Low);
+            Assert.AreEqual(102m, result[1].Close);
+            Assert.AreEqual(2000, result[1].Volume);
+        }
+    }
+
+    public class Bar
+    {
+        public DateTime Time { get; set; }
+        public decimal Open { get; set; }
+        public decimal High { get; set; }
+        public decimal Low { get; set; }
+        public decimal Close { get; set; }
+        public long Volume { get; set; }
+    }
+
+    public class BarCompressor
+    {
+        public List<Bar> CompressBars(List<Bar> bars, TimeSpan timeframe)
+        {
+            if (bars == null || !bars.Any()) return new List<Bar>();
+
+            var result = new List<Bar>();
+            var orderedBars = bars.OrderBy(b => b.Time).ToList();
+
+            DateTime periodStart = TruncateToTimeframe(orderedBars[0].Time, timeframe);
+            Bar currentBar = null;
+
+            foreach (var bar in orderedBars)
+            {
+                var barPeriod = TruncateToTimeframe(bar.Time, timeframe);
+
+                if (barPeriod > periodStart || currentBar == null)
+                {
+                    if (currentBar != null)
+                        result.Add(currentBar);
+
+                    currentBar = new Bar
+                    {
+                        Time = barPeriod,
+                        Open = bar.Open,
+                        High = bar.High,
+                        Low = bar.Low,
+                        Close = bar.Close,
+                        Volume = bar.Volume
+                    };
+                    periodStart = barPeriod;
+                }
+                else
+                {
+                    currentBar.High = Math.Max(currentBar.High, bar.High);
+                    currentBar.Low = Math.Min(currentBar.Low, bar.Low);
+                    currentBar.Close = bar.Close;
+                    currentBar.Volume += bar.Volume;
+                }
+            }
+
+            if (currentBar != null)
+                result.Add(currentBar);
+
+            return result;
+        }
+
+        private DateTime TruncateToTimeframe(DateTime dt, TimeSpan timeframe)
+        {
+            long ticks = dt.Ticks - (dt.Ticks % timeframe.Ticks);
+            return new DateTime(ticks);
+        }
+
+        public List<Bar> To5Minute(List<Bar> bars) => CompressBars(bars, TimeSpan.FromMinutes(5));
+        public List<Bar> To15Minute(List<Bar> bars) => CompressBars(bars, TimeSpan.FromMinutes(15));
+        public List<Bar> To30Minute(List<Bar> bars) => CompressBars(bars, TimeSpan.FromMinutes(30));
+        public List<Bar> ToHourly(List<Bar> bars) => CompressBars(bars, TimeSpan.FromHours(1));
+        public List<Bar> ToDaily(List<Bar> bars) => CompressBars(bars, TimeSpan.FromDays(1));
+    }
 }
