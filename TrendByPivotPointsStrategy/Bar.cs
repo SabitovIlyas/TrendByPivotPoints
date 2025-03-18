@@ -53,12 +53,21 @@ namespace TradingSystems
 
         public static bool operator ==(Bar a, Bar b)
         {
+            // Проверяем, что оба объекта не равны null
+            if (a is null || b is null)
+                return false;
+
+            // Если объекты одинаковы по ссылке, то они равны
+            if (ReferenceEquals(a, b))
+                return true;
+
+            // Сравниваем содержимое объектов через Equals
             return a.Equals(b);
         }
 
         public static bool operator !=(Bar a, Bar b)
         {
-            return !a.Equals(b);
+            return !(a == b);
         }
 
         public override bool Equals(object obj)
