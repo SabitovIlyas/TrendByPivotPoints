@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TradingSystems.Tests
 {
@@ -55,18 +54,18 @@ namespace TradingSystems.Tests
 
             // First 5-minute bar (10:00-10:04)
             Assert.AreEqual(new DateTime(2025, 1, 1, 10, 0, 0), result[0].Date);
-            Assert.AreEqual(100m, result[0].Open);
-            Assert.AreEqual(102m, result[0].High);
-            Assert.AreEqual(98m, result[0].Low);
-            Assert.AreEqual(101m, result[0].Close);
+            Assert.AreEqual(100, result[0].Open);
+            Assert.AreEqual(102, result[0].High);
+            Assert.AreEqual(98, result[0].Low);
+            Assert.AreEqual(101, result[0].Close);
             Assert.AreEqual(2500, result[0].Volume);
 
             // Second 5-minute bar (10:05-10:09)
             Assert.AreEqual(new DateTime(2025, 1, 1, 10, 5, 0), result[1].Date);
-            Assert.AreEqual(101m, result[1].Open);
-            Assert.AreEqual(103m, result[1].High);
-            Assert.AreEqual(100m, result[1].Low);
-            Assert.AreEqual(102m, result[1].Close);
+            Assert.AreEqual(101, result[1].Open);
+            Assert.AreEqual(103, result[1].High);
+            Assert.AreEqual(100, result[1].Low);
+            Assert.AreEqual(102, result[1].Close);
             Assert.AreEqual(2000, result[1].Volume);
         }
 
@@ -86,79 +85,19 @@ namespace TradingSystems.Tests
 
             // First day
             Assert.AreEqual(new DateTime(2025, 1, 1, 0, 0, 0), result[0].Date);
-            Assert.AreEqual(100m, result[0].Open);
-            Assert.AreEqual(102m, result[0].High);
-            Assert.AreEqual(98m, result[0].Low);
-            Assert.AreEqual(101m, result[0].Close);
+            Assert.AreEqual(100, result[0].Open);
+            Assert.AreEqual(102, result[0].High);
+            Assert.AreEqual(98, result[0].Low);
+            Assert.AreEqual(101, result[0].Close);
             Assert.AreEqual(2500, result[0].Volume);
 
             // Second day
             Assert.AreEqual(new DateTime(2025, 1, 2, 0, 0, 0), result[1].Date);
-            Assert.AreEqual(101m, result[1].Open);
-            Assert.AreEqual(103m, result[1].High);
-            Assert.AreEqual(100m, result[1].Low);
-            Assert.AreEqual(102m, result[1].Close);
+            Assert.AreEqual(101, result[1].Open);
+            Assert.AreEqual(103, result[1].High);
+            Assert.AreEqual(100, result[1].Low);
+            Assert.AreEqual(102, result[1].Close);
             Assert.AreEqual(2000, result[1].Volume);
         }
-    }   
-
-    public class BarCompressor
-    {
-        public List<Bar> CompressBars(List<Bar> bars, TimeSpan timeframe)
-        {
-            if (bars == null || !bars.Any()) return new List<Bar>();
-
-            var result = new List<Bar>();
-            var orderedBars = bars.OrderBy(b => b.Date).ToList();
-
-            DateTime periodStart = TruncateToTimeframe(orderedBars[0].Date, timeframe);
-            Bar currentBar = null;
-
-            foreach (var bar in orderedBars)
-            {
-                var barPeriod = TruncateToTimeframe(bar.Date, timeframe);
-
-                if (barPeriod > periodStart || currentBar == null)
-                {
-                    if (currentBar != null)
-                        result.Add(currentBar);
-
-                    currentBar = new Bar
-                    {
-                        Date = barPeriod,
-                        Open = bar.Open,
-                        High = bar.High,
-                        Low = bar.Low,
-                        Close = bar.Close,
-                        Volume = bar.Volume
-                    };
-                    periodStart = barPeriod;
-                }
-                else
-                {
-                    currentBar.High = Math.Max(currentBar.High, bar.High);
-                    currentBar.Low = Math.Min(currentBar.Low, bar.Low);
-                    currentBar.Close = bar.Close;
-                    currentBar.Volume += bar.Volume;
-                }
-            }
-
-            if (currentBar != null)
-                result.Add(currentBar);
-
-            return result;
-        }
-
-        private DateTime TruncateToTimeframe(DateTime dt, TimeSpan timeframe)
-        {
-            long ticks = dt.Ticks - (dt.Ticks % timeframe.Ticks);
-            return new DateTime(ticks);
-        }
-
-        public List<Bar> To5Minute(List<Bar> bars) => CompressBars(bars, TimeSpan.FromMinutes(5));
-        public List<Bar> To15Minute(List<Bar> bars) => CompressBars(bars, TimeSpan.FromMinutes(15));
-        public List<Bar> To30Minute(List<Bar> bars) => CompressBars(bars, TimeSpan.FromMinutes(30));
-        public List<Bar> ToHourly(List<Bar> bars) => CompressBars(bars, TimeSpan.FromHours(1));
-        public List<Bar> ToDaily(List<Bar> bars) => CompressBars(bars, TimeSpan.FromDays(1));
     }
 }

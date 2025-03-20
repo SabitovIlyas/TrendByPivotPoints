@@ -73,6 +73,7 @@
     <Compile Include="AccountTsLab.cs" />
     <Compile Include="AccountTsLabRt.cs" />
     <Compile Include="Bar.cs" />
+    <Compile Include="BarCompressor.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="ContextTSLab.cs" />
     <Compile Include="Converter.cs" />

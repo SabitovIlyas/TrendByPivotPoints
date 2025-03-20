@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountFake.cs" />
-    <Compile Include="BarAggregatorTests.cs" />
+    <Compile Include="BarCompressorTests.cs" />
     <Compile Include="ClassForTestKeyWords.cs" />
     <Compile Include="ClassForTestReflection.cs" />
     <Compile Include="CompressionBarsTest.cs" />
