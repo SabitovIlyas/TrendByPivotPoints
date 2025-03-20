@@ -58,7 +58,6 @@ namespace TradingSystems
 
             return equity;
         }
-
         public double GetDrawDown(int barNumber)
         {
             var maxCapital = initDeposit;
@@ -68,15 +67,20 @@ namespace TradingSystems
             {
                 var capital = GetEquity(i);
                 var drawdown = (maxCapital - capital) / maxCapital * 100;
-                
-                if (drawdown > maxDrawdown)                
-                    maxDrawdown = drawdown;                
 
-                if (capital > maxCapital)                
-                    maxCapital = capital;                
-            }            
+                if (drawdown > maxDrawdown)
+                    maxDrawdown = drawdown;
+
+                if (capital > maxCapital)
+                    maxCapital = capital;
+            }
 
             return maxDrawdown;
+        }
+
+        public override double GetDrawDown()
+        {
+            return 0; //заглушка
         }
     }
 }

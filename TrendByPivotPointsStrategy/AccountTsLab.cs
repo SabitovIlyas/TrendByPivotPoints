@@ -39,6 +39,11 @@ namespace TradingSystems
             equity = Security.InitDeposit;           
             this.currency = currency;
             this.logger = logger;            
-        }        
+        }
+
+        public override double GetDrawDown()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

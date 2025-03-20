@@ -39,6 +39,12 @@ namespace TradingSystems
             string signalName, bool isConverted = false);        
         void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, string notes, Position position);
         void CancelAllOrders(int barNumber);
+        double GetProfit(int barNumber);
+        double GetProfit();
+        List<Order> GetOrders(int barNumber);
+        List<Order> GetActiveOrders(int barNumber);
+        List<Position> GetDeals(int barNumber);
+        List<Position> GetMetaDeals(int barNumber);
 
         List<double> HighPrices { get; }
         List<double> LowPrices { get; }

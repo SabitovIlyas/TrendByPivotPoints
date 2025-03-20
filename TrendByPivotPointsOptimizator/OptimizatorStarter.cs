@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using TradingSystems;
 using TrendByPivotPointsStarter;
 using TSLab.DataSource;
+using TSLab.Script.Handlers;
 using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
@@ -56,6 +57,7 @@ namespace TrendByPivotPointsOptimizator
                         system.SetParameters(sp.SystemParameter);
                         system.Initialize();
                         system.Run();
+                        system.PrintResults();
                     }
                 }
             }
@@ -197,11 +199,69 @@ namespace TrendByPivotPointsOptimizator
             return ticker;
         }
 
-        private List<Bar> CompressBars(List<Bar> bars)
+        private List<Bar> CompressBars(List<Bar> bars, Interval timeframe)
         {
-            //Я здесь
-            //TODO: реализовать сжатие баров
-            return bars;
+            var compressor = new BarCompressor();
+            var result = new List<Bar>();
+
+            switch (timeframe.Base)
+            {
+                case DataIntervals.MINUTE:
+                    {
+                        switch (timeframe.Value)
+                        {
+                            case 1:
+                                {
+                                    result = bars;
+                                    break;
+                                }
+
+                            case 5:
+                                {
+                                    result = compressor.To5Minute(bars);
+                                    break;
+                                }
+                            case 15:
+                                {
+                                    result = compressor.To15Minute(bars);
+                                    break;
+                                }
+                            case 30:
+                                {
+                                    result = compressor.To30Minute(bars);
+                                    break;
+                                }
+                            case 60:
+                                {
+                                    result = compressor.ToHourly(bars);
+                                    break;
+                                }
+                            default:
+                                {
+                                    throw new NotImplementedException();
+                                }
+                        }
+                        break;
+                    }
+                case DataIntervals.DAYS:
+                    {
+                        switch (timeframe.Value)
+                        {
+                            case 1:
+                                {
+                                    result = compressor.ToDaily(bars);
+                                    break;
+                                }
+                            default:
+                                {
+                                    throw new NotImplementedException();
+                                }
+                        }
+                        break;
+                    }
+            }
+
+            return result;
         }
 
         private List<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
@@ -212,7 +272,7 @@ namespace TrendByPivotPointsOptimizator
             {
                 foreach (var tF in settings.TimeFrames)
                 {                    
-                    var bars = CompressBars(ticker.Bars);
+                    var bars = CompressBars(ticker.Bars, tF);
                     
                     foreach (var pSide in settings.Sides)
                     {

@@ -65,7 +65,7 @@ namespace TradingSystems
                 shares = (int)systemParameters.GetValue("shares");
                 contracts = (int)systemParameters.GetValue("contracts");
                 equity = (double)systemParameters.GetValue("equity");
-                riskValuePrcnt = (double)systemParameters.GetValue("riskValuePrcnt");                
+                riskValuePrcnt = (double)systemParameters.GetValue("riskValuePrcnt");
 
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;
@@ -84,5 +84,7 @@ namespace TradingSystems
                 throw new ApplicationException("Не удалось установить основные параметры для торговой системы.");
             }
         }
-    }    
+
+        public virtual void PrintResults() { }
+    }
 }

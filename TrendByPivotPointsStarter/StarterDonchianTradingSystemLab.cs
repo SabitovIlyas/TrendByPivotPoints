@@ -68,6 +68,24 @@ namespace TrendByPivotPointsStarter
             tradingSystem.SetParameters(systemParameters);
             tradingSystem.Initialize();
             tradingSystems.Add(tradingSystem);            
-        }       
+        }
+
+        public override void PrintResults()
+        {
+            //Я здесь. Надо дописать вывод результатов
+            foreach (var security in securities)
+            {
+                //security.GetProfit();
+                //account.GetDrawDown();
+
+                //security.GetProfit()/account.GetDrawDown();
+                //security.GetMetaDeals();
+                //security.GetDeals();
+
+                //security.GetMetaDeals();
+            }
+
+            logger.Log("");
+        }
     }
 }
