@@ -73,5 +73,10 @@ namespace TradingSystems
         public void Initialize(List<Security> securities)
         {            
         }
+
+        public override double GetDrawDown()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -442,5 +442,35 @@ namespace TradingSystems
         public void CancelAllOrders(int barNumber)
         {            
         }
+
+        public double GetProfit(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetProfit()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Order> GetOrders(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Order> GetActiveOrders(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Position> GetDeals(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Position> GetMetaDeals(int barNumber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

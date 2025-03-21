@@ -395,5 +395,10 @@ namespace TradingSystems
             foreach (var order in orders)            
                 order.Cancel(barNumber);            
         }
+
+        public double GetProfit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
