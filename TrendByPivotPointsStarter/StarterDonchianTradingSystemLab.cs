@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TradingSystems;
 using TSLab.Script;
+using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStarter
 {
@@ -73,19 +75,21 @@ namespace TrendByPivotPointsStarter
         public override void PrintResults()
         {
             //Я здесь. Надо дописать вывод результатов
-            foreach (var security in securities)
-            {
-                //security.GetProfit();
-                //account.GetDrawDown();
+            var security = securities.First();
+            
+            var profit = security.GetProfit();
+            var drawdown = account.GetDrawDown();
 
-                //security.GetProfit()/account.GetDrawDown();
-                //security.GetMetaDeals();
-                //security.GetDeals();
+            var recoveryFactor = profit / drawdown;
+            var deals = security.GetDeals();
+            var metaDeals = security.GetMetaDeals();
+            var profitableDeals = metaDeals.Where(deal => deal.GetProfit() > 0).ToList();
 
-                //security.GetMetaDeals();
-            }
+            var log = string.Format("Прибыль: {0}\r\nПросадка: {1}\r\nФактор восстановления: {2}\r\n" +
+                "Количество сделок: {3}\r\nКоличество прибыльных сделок:{4}\r\n", profit, drawdown,
+                recoveryFactor, metaDeals.Count, profitableDeals);
 
-            logger.Log("");
+            logger.Log(profit.ToString());
         }
     }
 }

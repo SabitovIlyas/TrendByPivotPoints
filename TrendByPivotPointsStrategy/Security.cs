@@ -45,6 +45,8 @@ namespace TradingSystems
         List<Order> GetActiveOrders(int barNumber);
         List<Position> GetDeals(int barNumber);
         List<Position> GetMetaDeals(int barNumber);
+        List<Position> GetDeals();
+        List<Position> GetMetaDeals();
 
         List<double> HighPrices { get; }
         List<double> LowPrices { get; }
