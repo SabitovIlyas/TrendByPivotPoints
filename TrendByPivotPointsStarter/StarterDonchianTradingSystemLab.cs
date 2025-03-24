@@ -74,10 +74,12 @@ namespace TrendByPivotPointsStarter
 
         public override void PrintResults()
         {
-            //Я здесь. Надо дописать вывод результатов
-            var security = securities.First();
+            var profit = double.NaN;
+
+            foreach (var sec in securities)            
+                profit += sec.GetProfit();
             
-            var profit = security.GetProfit();
+            var security = securities.First();
             var drawdown = account.GetDrawDown();
 
             var recoveryFactor = profit / drawdown;

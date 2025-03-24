@@ -400,5 +400,15 @@ namespace TradingSystems
         {
             throw new NotImplementedException();
         }
+
+        public List<Position> GetDeals()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Position> GetMetaDeals()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

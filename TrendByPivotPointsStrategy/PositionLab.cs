@@ -113,5 +113,10 @@ namespace TradingSystems
 
             return totalCommission + reserve;            
         }
+
+        public double GetProfit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

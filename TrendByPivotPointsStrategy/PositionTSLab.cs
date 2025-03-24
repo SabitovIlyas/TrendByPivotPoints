@@ -56,5 +56,10 @@ namespace TradingSystems
         {
             throw new System.NotImplementedException();
         }
+
+        public double GetProfit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
