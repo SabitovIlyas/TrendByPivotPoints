@@ -17,7 +17,9 @@ namespace TrendByPivotPointsOptimizator
 
         public void Start()
         {
-            Console.WriteLine("Старт!");
+            logger = new ConsoleLogger();
+
+            logger.Log("Старт!");
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = "Выберите файл с настройками";
@@ -40,9 +42,6 @@ namespace TrendByPivotPointsOptimizator
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var fileName = fullFileName.Split('\\').Last();
             var securityName = fileName.Split('.').First();
-            var bars = converter.ConvertFileWithBarsToListOfBars();
-
-            logger = new ConsoleLogger();
 
             try
             {
