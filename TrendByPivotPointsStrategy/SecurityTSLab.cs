@@ -15,8 +15,23 @@ namespace TradingSystems
         public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double GObuying => goBuying;
         public double GOselling => goSelling;
-        public List<double> HighPrices => security.HighPrices.ToList();
-        public List<double> LowPrices => security.LowPrices.ToList();
+        public LinkedList<double> HighPrices
+        {
+            get
+            {
+                return security.HighPrices.ToList();
+            }
+        }
+
+        public LinkedList<double> LowPrices
+        {
+            get
+            {
+                LinkedList
+                return security.LowPrices.ToList();
+            }
+        }
+
         public List<Bar> Bars => bars;
         public double? StepPrice => finInfo.StepPrice;
         public double? SellDeposit => finInfo.SellDeposit;

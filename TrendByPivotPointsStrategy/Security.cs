@@ -48,8 +48,8 @@ namespace TradingSystems
         List<Position> GetDeals();
         List<Position> GetMetaDeals();
 
-        List<double> HighPrices { get; }
-        List<double> LowPrices { get; }
+        LinkedList<double> HighPrices { get; }
+        LinkedList<double> LowPrices { get; }
         List<Bar> Bars { get; }
         double CommissionRate { get; }
     }

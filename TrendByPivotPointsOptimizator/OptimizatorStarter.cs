@@ -263,9 +263,9 @@ namespace TrendByPivotPointsOptimizator
             return result;
         }
 
-        private List<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
+        private LinkedList<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
         {
-            var listTradingSystemParameters = new List<TradingSystemParameters>();
+            var listTradingSystemParameters = new LinkedList<TradingSystemParameters>();
 
             foreach (var ticker in tickers)
             {
@@ -311,7 +311,7 @@ namespace TrendByPivotPointsOptimizator
                                                 var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
                                                                     ticker.Logger, ticker.CommissionRate);
 
-                                                listTradingSystemParameters.Add(new TradingSystemParameters()
+                                                listTradingSystemParameters.AddLast(new TradingSystemParameters()
                                                 {
                                                     Security = security,
                                                     SystemParameter = systemParameters
