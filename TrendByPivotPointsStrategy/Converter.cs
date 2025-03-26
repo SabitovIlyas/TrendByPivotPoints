@@ -234,7 +234,7 @@ namespace TradingSystems
             return security.LowPrices;
         }
 
-        public List<double> GetHighPrices(Security security)
+        public LinkedList<double> GetHighPrices(Security security)
         {
             if (!isConverted)                
                 return security.HighPrices;
