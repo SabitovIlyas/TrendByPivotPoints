@@ -212,14 +212,14 @@ namespace TradingSystems
             }
         }
 
-        public IList<double> GetHighest(IList<double> values, int period)
+        public LinkedList<double> GetHighest(IList<double> values, int period)
         {
             if (!isConverted)
-                return Series.Highest(values, period);//Нахожусь здесь. В логах написано, что выбран некорректный период
-            return Series.Lowest(values, period);
+                return new LinkedList<double>(Series.Highest(values, period));
+            return new LinkedList<double>(Series.Lowest(values, period));
         }
 
-        public IList<double> GetLowest(IList<double> values, int period)
+        public LinkedList<double> GetLowest(IList<double> values, int period)
         {
             isConverted = !isConverted;
             var result = GetHighest(values, period);
@@ -249,7 +249,7 @@ namespace TradingSystems
             return result;
         }
 
-        public List<double> GetLowPrices(Security security)
+        public LinkedList<double> GetLowPrices(Security security)
         {
             isConverted = !isConverted;
             var result = GetHighPrices(security);

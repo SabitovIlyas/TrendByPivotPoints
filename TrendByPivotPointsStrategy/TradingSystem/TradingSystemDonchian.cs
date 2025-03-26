@@ -22,8 +22,8 @@ namespace TradingSystems
         private IList<double> atr;
         private double fixedAtr;
 
-        private IList<double> highest;
-        private IList<double> lowest;
+        private LinkedList<double> highest;
+        private LinkedList<double> lowest;
 
         private int slowDonchian;
         private int fastDonchian;
@@ -60,8 +60,8 @@ namespace TradingSystems
                 stopPriceAtr = converter.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);                
             }
             else
-                stopPriceAtr = converter.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
-            var stopPriceDonchian = lowest[barNumber];
+                stopPriceAtr = converter.Minus(highest.ElementAt(barNumber), kAtrForStopLoss * fixedAtr);
+            var stopPriceDonchian = lowest.ElementAt(barNumber);
             if (kAtrForStopLoss > 0)
                 return converter.Maximum(stopPriceAtr, stopPriceDonchian);
             return stopPriceDonchian;
@@ -87,7 +87,7 @@ namespace TradingSystems
                 stopPrice = GetStopPrice(notes);
 
                 Log("Определяем количество контрактов...");
-                var contracts = contractsManager.GetQntContracts(security, highest[barNumber], stopPrice, positionSide);
+                var contracts = contractsManager.GetQntContracts(security, highest.ElementAt(barNumber), stopPrice, positionSide);
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)
@@ -101,7 +101,7 @@ namespace TradingSystems
 
                 if (positionNumber == 0)
                 {
-                    openPositionPrice = highest[barNumber];
+                    openPositionPrice = highest.ElementAt(barNumber);
                     firstPositionEntryPrice = 0;
                 }
                 else
@@ -174,8 +174,8 @@ namespace TradingSystems
         public override void CalculateIndicators()
         {
             nonTradingPeriod = Math.Max(slowDonchian, atrPeriod);
-            highest = converter.GetHighest(converter.GetHighPrices(security), slowDonchian);
-            lowest = converter.GetLowest(converter.GetLowPrices(security), fastDonchian);
+            highest = converter.GetHighest(converter.GetHighPrices(security).ToList(), slowDonchian);
+            lowest = converter.GetLowest(converter.GetLowPrices(security).ToList(), fastDonchian);
             var candles = ConvertBarsForUsingInTsLabIndicators();
             atr = Series.AverageTrueRange(candles, atrPeriod);        
         }
@@ -199,13 +199,13 @@ namespace TradingSystems
             var colorTSlab3 = new Color(SystemColor.Red.ToArgb());
 
             pane.AddList(security.ToString(), security, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
-            pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
-            pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
+            pane.AddList("Highest", highest.ToList(), ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
+            pane.AddList("Lowest", lowest.ToList(), ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
 
             pane = context.CreatePane("Вторая панель", 50, true);            
             pane.AddList(security.ToString(), security, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
-            pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
-            pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
+            pane.AddList("Highest", highest.ToList(), ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
+            pane.AddList("Lowest", lowest.ToList(), ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
         }        
 
         private IReadOnlyList<IDataBar> GetBars()
