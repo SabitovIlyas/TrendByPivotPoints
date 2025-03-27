@@ -266,6 +266,7 @@ namespace TrendByPivotPointsOptimizator
         private LinkedList<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
         {
             var listTradingSystemParameters = new LinkedList<TradingSystemParameters>();
+            var counter = 0;
 
             foreach (var ticker in tickers)
             {
@@ -276,9 +277,12 @@ namespace TrendByPivotPointsOptimizator
                     foreach (var pSide in settings.Sides)
                     {
                         for (var slowDonchian = 9; slowDonchian <= 208; slowDonchian++)
-                        {
+                        {                            
                             for (var fastDonchian = 9; fastDonchian <= 208; fastDonchian++)
                             {
+                                if (fastDonchian > slowDonchian)
+                                    continue;
+
                                 for (var atrPeriod = 1; atrPeriod <= 25; atrPeriod++)
                                 {
                                     for (var limitOpenedPositions = 1; limitOpenedPositions <= 4;
@@ -290,6 +294,10 @@ namespace TrendByPivotPointsOptimizator
                                             for (var kAtrForStopLoss = 0.5; kAtrForStopLoss <= 2;
                                             kAtrForStopLoss = kAtrForStopLoss + 0.5)
                                             {
+                                                counter++;
+
+                                                if (counter > 50000)
+                                                    continue;
                                                 var systemParameters = new SystemParameters();
 
                                                 systemParameters.Add("slowDonchian", slowDonchian);//1
@@ -310,6 +318,7 @@ namespace TrendByPivotPointsOptimizator
 
                                                 var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
                                                                     ticker.Logger, ticker.CommissionRate);
+                                                logger.Log(counter.ToString());
 
                                                 listTradingSystemParameters.AddLast(new TradingSystemParameters()
                                                 {
@@ -325,6 +334,8 @@ namespace TrendByPivotPointsOptimizator
                     }
                 }
             }
+            logger.Log("================");
+            logger.Log(counter.ToString());
 
             return listTradingSystemParameters;
         }
