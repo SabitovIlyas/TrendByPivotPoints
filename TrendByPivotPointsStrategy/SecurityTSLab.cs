@@ -15,9 +15,9 @@ namespace TradingSystems
         public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double GObuying => goBuying;
         public double GOselling => goSelling;
-        public LinkedList<double> HighPrices => highPrices;
+        public double[] HighPrices => highPrices;
 
-        public LinkedList<double> LowPrices => lowPrices;
+        public double[] LowPrices => lowPrices;
 
         public List<Bar> Bars => bars;
         public double? StepPrice => finInfo.StepPrice;
@@ -85,8 +85,8 @@ namespace TradingSystems
         private List<Bar> bars = new List<Bar>();
         private double goBuying;
         private double goSelling;
-        private LinkedList<double> highPrices;
-        private LinkedList<double> lowPrices;
+        private double[] highPrices;
+        private double[] lowPrices;
 
         public SecurityTSLab(ISecurity security)
         {
@@ -150,8 +150,17 @@ namespace TradingSystems
             ConvertBars();
             goBuying = security.FinInfo.BuyDeposit ?? (double.NaN);
             goSelling = security.FinInfo.SellDeposit ?? (double.NaN);
-            highPrices = new LinkedList<double>(security.HighPrices);
-            lowPrices = new LinkedList<double>(security.LowPrices);
+
+            highPrices = new double[security.Bars.Count];            
+            lowPrices = new double[security.Bars.Count];
+
+            var i = 0;
+            foreach (Bar bar in security.Bars)
+            {
+                HighPrices[i] = bar.High;
+                LowPrices[i] = bar.Low;
+                i++;
+            }
         }        
 
         private void ConvertBars()

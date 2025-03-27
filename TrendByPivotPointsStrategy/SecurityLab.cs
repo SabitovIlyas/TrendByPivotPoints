@@ -20,8 +20,8 @@ namespace TradingSystems
         public int RealTimeActualBarNumber => throw new NotImplementedException();
         public double GObuying { get; private set; } = double.NaN;
         public double GOselling { get; private set; } = double.NaN;
-        public LinkedList<double> HighPrices { get; private set; }
-        public LinkedList<double> LowPrices { get; private set; }
+        public double[] HighPrices { get; private set; }
+        public double[] LowPrices { get; private set; }
         public double CommissionRate { get; }
 
         private Currency currency;
@@ -90,12 +90,14 @@ namespace TradingSystems
 
         private void Initialize()
         {
-            HighPrices = new LinkedList<double>();
-            LowPrices = new LinkedList<double>();
+            HighPrices = new double[Bars.Count];
+            LowPrices = new double[Bars.Count];
+            var i = 0;
             foreach (Bar bar in Bars)
             {
-                HighPrices.AddLast(bar.High);
-                LowPrices.AddLast(bar.Low);
+                HighPrices[i] = bar.High;
+                LowPrices[i] = bar.Low;
+                i++;
             }
             mapping = new OrderToPositionMapping(Bars, this, logger);            
         }

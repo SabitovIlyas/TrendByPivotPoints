@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
@@ -48,8 +49,8 @@ namespace TradingSystems
         List<Position> GetDeals();
         List<Position> GetMetaDeals();
 
-        LinkedList<double> HighPrices { get; }
-        LinkedList<double> LowPrices { get; }
+        double[] HighPrices { get; }
+        double[] LowPrices { get; }
         List<Bar> Bars { get; }
         double CommissionRate { get; }
     }
