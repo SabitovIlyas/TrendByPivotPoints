@@ -298,6 +298,8 @@ namespace TrendByPivotPointsOptimizator
 
                                                 if (counter > 50000)
                                                     continue;
+                                                //Задачи: 1) Разобраться со знаками после запятой. 2) Нужно наконец сравнить результат с TSLab. 3) Нужно писать генетический алгоритм
+
                                                 var systemParameters = new SystemParameters();
 
                                                 systemParameters.Add("slowDonchian", slowDonchian);//1
@@ -310,8 +312,8 @@ namespace TrendByPivotPointsOptimizator
                                                 systemParameters.Add("rateUSD", 0d);
                                                 systemParameters.Add("positionSide", pSide);//5
                                                 systemParameters.Add("timeFrame", tF);//6
-                                                systemParameters.Add("shares", 1);// разобраться!!!
-
+                                                systemParameters.Add("shares", ticker.Shares);
+                                                
                                                 systemParameters.Add("equity", 1000000d);
                                                 systemParameters.Add("riskValuePrcnt", 2d);
                                                 systemParameters.Add("contracts", 0);

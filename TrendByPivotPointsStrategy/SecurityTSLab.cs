@@ -155,7 +155,7 @@ namespace TradingSystems
             lowPrices = new double[security.Bars.Count];
 
             var i = 0;
-            foreach (Bar bar in security.Bars)
+            foreach (var bar in security.Bars)
             {
                 HighPrices[i] = bar.High;
                 LowPrices[i] = bar.Low;
