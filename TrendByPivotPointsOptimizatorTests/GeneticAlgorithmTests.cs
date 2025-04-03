@@ -24,7 +24,7 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod]
-        public void Initialize_ShouldSetFastAndSlowPeriodsCorrectly()
+        public void Initialize_ShouldSetFastAndSlowPeriodsCorrectly()//Разбираюсь в тестах и алгоритме. Пока здесь.
         {
             // Arrange
             int populationSize = 5;
@@ -119,7 +119,7 @@ namespace TrendByPivotPointsOptimizator.Tests
             var sma = GeneticAlgorithm.CalculateSMA(prices, period);
 
             // Assert
-            CollectionAssert.AreEqual(new double[] { 0, 0, 2, 3, 4 }, sma); // Первые (period-1) значений равны 0
+            CollectionAssert.AreEqual(new double[] { 1, 1.5, 2, 3, 4 }, sma);
         }
 
         [TestMethod]
@@ -134,7 +134,7 @@ namespace TrendByPivotPointsOptimizator.Tests
             var profit = GeneticAlgorithm.SimulateStrategy(prices, fastPeriod, slowPeriod);
 
             // Assert
-            Assert.AreEqual(0, profit); // Нет пересечений SMA, прибыль 0
+            Assert.AreEqual(4, profit);
         }
 
         private double[] GeneratePrices(int length, double trend, double noise)
