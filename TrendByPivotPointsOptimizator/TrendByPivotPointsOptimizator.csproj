@@ -70,6 +70,7 @@
     <Compile Include="IdCombinationDecoratorsAscendingComparer.cs" />
     <Compile Include="MatrixCreator.cs" />
     <Compile Include="Optimizator.cs" />
+    <Compile Include="OptimizatorGeneticAlgorithmStarter.cs" />
     <Compile Include="OptimizatorStarter.cs" />
     <Compile Include="ParserPointValueFromFile.cs" />
     <Compile Include="PointValue.cs" />
