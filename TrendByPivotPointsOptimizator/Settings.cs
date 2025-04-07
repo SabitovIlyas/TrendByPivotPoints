@@ -4,7 +4,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsOptimizator
 {
-    struct Settings
+    public struct Settings
     {
         public List<PositionSide> Sides;
         public List<Interval> TimeFrames;

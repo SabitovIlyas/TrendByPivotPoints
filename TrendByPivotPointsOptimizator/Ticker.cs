@@ -3,7 +3,7 @@ using TradingSystems;
 
 namespace TrendByPivotPointsOptimizator
 {
-    internal class Ticker
+    public class Ticker
     {        
         public List<Bar> Bars { get; private set; }
         public string Name { get; private set; }

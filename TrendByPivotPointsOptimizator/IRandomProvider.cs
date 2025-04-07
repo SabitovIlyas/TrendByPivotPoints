@@ -1,4 +1,4 @@
-﻿namespace TrendByPivotPointsOptimizator.Tests
+﻿namespace TrendByPivotPointsOptimizator
 {
     public interface IRandomProvider
     {

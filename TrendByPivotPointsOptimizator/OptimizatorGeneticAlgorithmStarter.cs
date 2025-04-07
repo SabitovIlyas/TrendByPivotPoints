@@ -48,7 +48,7 @@ namespace TrendByPivotPointsOptimizator
 
                 foreach (var ticker in tickers)
                 {
-                    
+
                 }
             }
             catch (Exception e)
@@ -57,6 +57,8 @@ namespace TrendByPivotPointsOptimizator
             }
             Console.ReadLine();
         }
+
+
 
         private Settings CreateSettings(string fullFileName)
         {
@@ -252,6 +254,22 @@ namespace TrendByPivotPointsOptimizator
             }
 
             return result;
-        }        
+        }
+
+        private LinkedList<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
+        {
+            var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, new RandomProvider());//50, 100, 0.8, 0.1
+            ga.Initialize();
+
+            
+
+            return null;
+        }
+
+        private TradingSystemParameters CreateSysParam(Settings settings, Ticker ticker)
+        {
+            //var ga = new GeneticAlgorithm(10, 100, 0.8, 1.0, mockRandom.Object); // Mutation rate 1.0 для предсказуемости
+            return new TradingSystemParameters();
+        }
     }
 }

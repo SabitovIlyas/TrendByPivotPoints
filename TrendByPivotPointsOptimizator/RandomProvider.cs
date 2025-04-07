@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TrendByPivotPointsOptimizator.Tests
+namespace TrendByPivotPointsOptimizator
 {
     public class RandomProvider : IRandomProvider
     {

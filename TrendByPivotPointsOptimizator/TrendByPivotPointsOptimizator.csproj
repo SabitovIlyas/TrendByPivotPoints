@@ -62,12 +62,16 @@
   <ItemGroup>
     <Compile Include="AverageValueCombinationDecoratorsAscendingComparer.cs" />
     <Compile Include="AverageValueCombinationDecoratorsDescendingComparer.cs" />
+    <Compile Include="Chromosome.cs" />
     <Compile Include="Combination.cs" />
     <Compile Include="CombinationDecorator.cs" />
     <Compile Include="AverageValueCombinationsAscendingComparer.cs" />
     <Compile Include="AverageValueCombinationsDescendingComparer.cs" />
+    <Compile Include="GeneticAlgorithm.cs" />
+    <Compile Include="GeneticAlgorithmDonchianChannel.cs" />
     <Compile Include="IdCombinationDecoratorsDescendingComparer.cs" />
     <Compile Include="IdCombinationDecoratorsAscendingComparer.cs" />
+    <Compile Include="IRandomProvider.cs" />
     <Compile Include="MatrixCreator.cs" />
     <Compile Include="Optimizator.cs" />
     <Compile Include="OptimizatorGeneticAlgorithmStarter.cs" />
@@ -76,6 +80,7 @@
     <Compile Include="PointValue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomProvider.cs" />
     <Compile Include="SecurityData.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Ticker.cs" />

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TSLab.Utils;
 
-namespace TrendByPivotPointsOptimizator.Tests
+namespace TrendByPivotPointsOptimizator
 {
-    public class GeneticAlgorithm
+    public class GeneticAlgorithmDonchianChannel
     {
         public List<Chromosome> GetPopulation() => population;
 
@@ -14,7 +15,7 @@ namespace TrendByPivotPointsOptimizator.Tests
         private double mutationRate;
         private readonly IRandomProvider randomProvider;
 
-        public GeneticAlgorithm(int populationSize, int generations, double crossoverRate, double mutationRate, 
+        public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate, 
             IRandomProvider randomProvider)
         {
             this.populationSize = populationSize;
@@ -25,10 +26,13 @@ namespace TrendByPivotPointsOptimizator.Tests
             population = new List<Chromosome>();
         }
 
-        public void Initialize()
+        public void Initialize(List<Ticker> tickers, Settings settings)
         {
             for (int i = 0; i < populationSize; i++)
             {
+                var ticker = tickers.GetRandom();
+                //var s = settings.GetRandom();
+
                 int fast = randomProvider.Next(1, 51); // Быстрая SMA: 1-50
                 int slow = randomProvider.Next(fast + 1, 201); // Медленная SMA: 10-200
                 population.Add(new Chromosome(fast, slow));
