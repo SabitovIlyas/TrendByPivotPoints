@@ -280,7 +280,7 @@ namespace TrendByPivotPointsOptimizator
                         {                            
                             for (var fastDonchian = 9; fastDonchian <= 208; fastDonchian++)
                             {
-                                if (fastDonchian > slowDonchian)
+                                if (fastDonchian < slowDonchian)
                                     continue;
 
                                 for (var atrPeriod = 1; atrPeriod <= 25; atrPeriod++)

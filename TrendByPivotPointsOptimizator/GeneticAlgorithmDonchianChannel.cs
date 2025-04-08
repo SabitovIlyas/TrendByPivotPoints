@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TradingSystems;
 using TSLab.Utils;
 
 namespace TrendByPivotPointsOptimizator
@@ -30,12 +31,51 @@ namespace TrendByPivotPointsOptimizator
         {
             for (int i = 0; i < populationSize; i++)
             {
-                var ticker = tickers.GetRandom();
-                //var s = settings.GetRandom();
+                var rand = randomProvider;
+                
+                var ticker = tickers[rand.Next(tickers.Count)];
+                var tfs = settings.TimeFrames;
+                var timeFrame = tfs[rand.Next(tfs.Count)];
+                var sides = settings.Sides;
+                var side = sides[rand.Next(sides.Count)];
 
-                int fast = randomProvider.Next(1, 51); // Быстрая SMA: 1-50
-                int slow = randomProvider.Next(fast + 1, 201); // Медленная SMA: 10-200
-                population.Add(new Chromosome(fast, slow));
+                var fastDonchian = rand.Next(10, 208);              //9..208;
+                var slowDonchian = rand.Next(fastDonchian, 208);    // -//-
+                var atrPeriod = rand.Next(2, 25);                  //1..25
+                var limitOpenedPositions = rand.Next(1, 5);
+                var kAtrForOpenPosition = 0.5 * rand.Next(1, 5);
+                var kAtrForStopLoss = 0.5 * rand.Next(1, 5);
+
+                var systemParameters = new SystemParameters();
+
+                systemParameters.Add("slowDonchian", slowDonchian);//1
+                systemParameters.Add("fastDonchian", fastDonchian);//2
+                systemParameters.Add("kAtrForStopLoss", kAtrForStopLoss);//3
+                systemParameters.Add("kAtrForOpenPosition", kAtrForOpenPosition);//4
+                systemParameters.Add("atrPeriod", atrPeriod);//3
+                systemParameters.Add("limitOpenedPositions", limitOpenedPositions);//4
+                systemParameters.Add("isUSD", 0);
+                systemParameters.Add("rateUSD", 0d);
+                systemParameters.Add("positionSide", pSide);//5
+                systemParameters.Add("timeFrame", tF);//6
+                systemParameters.Add("shares", ticker.Shares);
+
+                systemParameters.Add("equity", 1000000d);
+                systemParameters.Add("riskValuePrcnt", 2d);
+                systemParameters.Add("contracts", 0);
+
+                var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
+                                    ticker.Logger, ticker.CommissionRate);
+                //logger.Log(counter.ToString());
+
+                //listTradingSystemParameters.AddLast(new TradingSystemParameters()
+                //{
+                //    Security = security,
+                //    SystemParameter = systemParameters
+                //});
+
+
+                //population.Add(new Chromosome(fast, slow));
             }
         }
 
