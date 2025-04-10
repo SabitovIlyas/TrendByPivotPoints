@@ -7,9 +7,9 @@ namespace TrendByPivotPointsOptimizator
 {
     public class GeneticAlgorithmDonchianChannel
     {
-        public List<Chromosome> GetPopulation() => population;
+        public List<ChromosomeDonchianChannel> GetPopulation() => population;
 
-        private List<Chromosome> population;
+        private List<ChromosomeDonchianChannel> population;
         private int populationSize;
         private int generations;
         private double crossoverRate;
@@ -24,7 +24,7 @@ namespace TrendByPivotPointsOptimizator
             this.crossoverRate = crossoverRate;
             this.mutationRate = mutationRate;
             this.randomProvider = randomProvider;
-            population = new List<Chromosome>();
+            population = new List<ChromosomeDonchianChannel>();
         }
 
         public void Initialize(List<Ticker> tickers, Settings settings)
@@ -46,36 +46,9 @@ namespace TrendByPivotPointsOptimizator
                 var kAtrForOpenPosition = 0.5 * rand.Next(1, 5);
                 var kAtrForStopLoss = 0.5 * rand.Next(1, 5);
 
-                var systemParameters = new SystemParameters();
-
-                systemParameters.Add("slowDonchian", slowDonchian);//1
-                systemParameters.Add("fastDonchian", fastDonchian);//2
-                systemParameters.Add("kAtrForStopLoss", kAtrForStopLoss);//3
-                systemParameters.Add("kAtrForOpenPosition", kAtrForOpenPosition);//4
-                systemParameters.Add("atrPeriod", atrPeriod);//3
-                systemParameters.Add("limitOpenedPositions", limitOpenedPositions);//4
-                systemParameters.Add("isUSD", 0);
-                systemParameters.Add("rateUSD", 0d);
-                systemParameters.Add("positionSide", pSide);//5
-                systemParameters.Add("timeFrame", tF);//6
-                systemParameters.Add("shares", ticker.Shares);
-
-                systemParameters.Add("equity", 1000000d);
-                systemParameters.Add("riskValuePrcnt", 2d);
-                systemParameters.Add("contracts", 0);
-
-                var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
-                                    ticker.Logger, ticker.CommissionRate);
-                //logger.Log(counter.ToString());
-
-                //listTradingSystemParameters.AddLast(new TradingSystemParameters()
-                //{
-                //    Security = security,
-                //    SystemParameter = systemParameters
-                //});
-
-
-                //population.Add(new Chromosome(fast, slow));
+                population.Add(new ChromosomeDonchianChannel(ticker, timeFrame, side,
+                    fastDonchian,slowDonchian, atrPeriod, limitOpenedPositions,
+                    kAtrForOpenPosition, kAtrForStopLoss));
             }
         }
 
@@ -87,14 +60,14 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
-        public Chromosome TournamentSelection()
+        public ChromosomeDonchianChannel TournamentSelection()
         {
             int tournamentSize = 3;
-            Chromosome best = null;
+            ChromosomeDonchianChannel best = null;
             for (int i = 0; i < tournamentSize; i++)
             {
-                Chromosome candidate = population[randomProvider.Next(populationSize)];
-                if (best == null || candidate.Fitness > best.Fitness)
+                var candidate = population[randomProvider.Next(populationSize)];
+                if (best == null || (candidate.FitnessPassed && candidate.FitnessValue > best.FitnessValue))
                 {
                     best = candidate;
                 }
@@ -102,17 +75,29 @@ namespace TrendByPivotPointsOptimizator
             return best;
         }
 
-        public Chromosome Crossover(Chromosome parent1, Chromosome parent2)
+        public ChromosomeDonchianChannel Crossover(ChromosomeDonchianChannel parent1, ChromosomeDonchianChannel parent2)
         {
+            var ticker = randomProvider.Next(2) == 0 ? parent1.Ticker : parent2.Ticker;
+            var timeFrame = randomProvider.Next(2) == 0 ? parent1.TimeFrame : parent2.TimeFrame;
+
+            //Я здесь
+            int slow = randomProvider.Next(2) == 0 ? parent1.SlowPeriod : parent2.SlowPeriod;
+
             int fast = randomProvider.Next(2) == 0 ? parent1.FastPeriod : parent2.FastPeriod;
             int slow = randomProvider.Next(2) == 0 ? parent1.SlowPeriod : parent2.SlowPeriod;
+
+
+
+
+
+
             if (slow <= fast)
             {
                 int temp = fast;
                 fast = slow;
                 slow = temp;
             }
-            return new Chromosome(fast, slow);
+            return new ChromosomeDonchianChannel(fast, slow);
         }
 
         public void Mutate(Chromosome chrom)

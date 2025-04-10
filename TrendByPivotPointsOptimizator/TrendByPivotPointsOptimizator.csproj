@@ -63,6 +63,7 @@
     <Compile Include="AverageValueCombinationDecoratorsAscendingComparer.cs" />
     <Compile Include="AverageValueCombinationDecoratorsDescendingComparer.cs" />
     <Compile Include="Chromosome.cs" />
+    <Compile Include="ChromosomeDonchianChannel.cs" />
     <Compile Include="Combination.cs" />
     <Compile Include="CombinationDecorator.cs" />
     <Compile Include="AverageValueCombinationsAscendingComparer.cs" />
