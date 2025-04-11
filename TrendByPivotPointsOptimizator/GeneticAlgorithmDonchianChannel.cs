@@ -79,25 +79,23 @@ namespace TrendByPivotPointsOptimizator
         {
             var ticker = randomProvider.Next(2) == 0 ? parent1.Ticker : parent2.Ticker;
             var timeFrame = randomProvider.Next(2) == 0 ? parent1.TimeFrame : parent2.TimeFrame;
+            var side = randomProvider.Next(2) == 0 ? parent1.Side : parent2.Side;
+            var fastDonchian = randomProvider.Next(2) == 0 ? parent1.FastDonchian : parent2.FastDonchian;
+            var slowDonchian = randomProvider.Next(2) == 0 ? parent1.SlowDonchian : parent2.SlowDonchian;
+            var atrPeriod = randomProvider.Next(2) == 0 ? parent1.AtrPeriod : parent2.AtrPeriod;
+            var limitOpenedPositions = randomProvider.Next(2) == 0 ? parent1.LimitOpenedPositions : parent2.LimitOpenedPositions;
+            var kAtrForOpenPosition = randomProvider.Next(2) == 0 ? parent1.KAtrForOpenPosition : parent2.KAtrForOpenPosition;
+            var kAtrForStopLoss = randomProvider.Next(2) == 0 ? parent1.KAtrForStopLoss : parent2.KAtrForStopLoss;
 
-            //Я здесь
-            int slow = randomProvider.Next(2) == 0 ? parent1.SlowPeriod : parent2.SlowPeriod;
-
-            int fast = randomProvider.Next(2) == 0 ? parent1.FastPeriod : parent2.FastPeriod;
-            int slow = randomProvider.Next(2) == 0 ? parent1.SlowPeriod : parent2.SlowPeriod;
-
-
-
-
-
-
-            if (slow <= fast)
+            if (slowDonchian < fastDonchian)
             {
-                int temp = fast;
-                fast = slow;
-                slow = temp;
+                int temp = fastDonchian;
+                fastDonchian = slowDonchian;
+                slowDonchian = temp;
             }
-            return new ChromosomeDonchianChannel(fast, slow);
+            return new ChromosomeDonchianChannel(ticker, timeFrame, side,
+                fastDonchian, slowDonchian, atrPeriod, limitOpenedPositions,
+                kAtrForOpenPosition, kAtrForStopLoss);
         }
 
         public void Mutate(Chromosome chrom)
