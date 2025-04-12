@@ -7,15 +7,15 @@ namespace TrendByPivotPointsOptimizator
     {
         public bool FitnessPassed { get; set; }
         public double FitnessValue { get; set; }
-        public Ticker Ticker { get; }
-        public Interval TimeFrame { get; }
-        public PositionSide Side { get; }
-        public int FastDonchian { get; }
-        public int SlowDonchian { get; }
-        public int AtrPeriod { get; }
-        public int LimitOpenedPositions { get; }
-        public double KAtrForOpenPosition { get; }
-        public double KAtrForStopLoss { get; }
+        public Ticker Ticker { get; set; }
+        public Interval TimeFrame { get; set; }
+        public PositionSide Side { get; set; }
+        public int FastDonchian { get; set; }
+        public int SlowDonchian { get; set; }
+        public int AtrPeriod { get; set; }
+        public int LimitOpenedPositions { get; set; }
+        public double KAtrForOpenPosition { get; set; }
+        public double KAtrForStopLoss { get; set; }
 
         public ChromosomeDonchianChannel(Ticker ticker, Interval timeFrame, PositionSide side, int fastDonchian, int slowDonchian, int atrPeriod, int limitOpenedPositions, double kAtrForOpenPosition, double kAtrForStopLoss)
         {

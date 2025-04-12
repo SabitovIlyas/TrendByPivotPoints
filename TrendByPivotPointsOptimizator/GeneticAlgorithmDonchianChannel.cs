@@ -15,36 +15,38 @@ namespace TrendByPivotPointsOptimizator
         private double crossoverRate;
         private double mutationRate;
         private readonly IRandomProvider randomProvider;
+        private List<Ticker> tickers;
+        private Settings settings;        
 
         public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate, 
-            IRandomProvider randomProvider)
+            IRandomProvider randomProvider, List<Ticker> tickers, Settings settings)
         {
             this.populationSize = populationSize;
             this.generations = generations;
             this.crossoverRate = crossoverRate;
             this.mutationRate = mutationRate;
             this.randomProvider = randomProvider;
+            this.tickers = tickers;
+            this.settings = settings;
             population = new List<ChromosomeDonchianChannel>();
         }
 
-        public void Initialize(List<Ticker> tickers, Settings settings)
+        public void Initialize()
         {
             for (int i = 0; i < populationSize; i++)
-            {
-                var rand = randomProvider;
-                
-                var ticker = tickers[rand.Next(tickers.Count)];
+            {                
+                var ticker = tickers[randomProvider.Next(tickers.Count)];
                 var tfs = settings.TimeFrames;
-                var timeFrame = tfs[rand.Next(tfs.Count)];
+                var timeFrame = tfs[randomProvider.Next(tfs.Count)];
                 var sides = settings.Sides;
-                var side = sides[rand.Next(sides.Count)];
+                var side = sides[randomProvider.Next(sides.Count)];
 
-                var fastDonchian = rand.Next(10, 208);              //9..208;
-                var slowDonchian = rand.Next(fastDonchian, 208);    // -//-
-                var atrPeriod = rand.Next(2, 25);                  //1..25
-                var limitOpenedPositions = rand.Next(1, 5);
-                var kAtrForOpenPosition = 0.5 * rand.Next(1, 5);
-                var kAtrForStopLoss = 0.5 * rand.Next(1, 5);
+                var fastDonchian = randomProvider.Next(10, 208);              //9..208;
+                var slowDonchian = randomProvider.Next(fastDonchian, 208);    // -//-
+                var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                var limitOpenedPositions = randomProvider.Next(1, 5);
+                var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+                var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
 
                 population.Add(new ChromosomeDonchianChannel(ticker, timeFrame, side,
                     fastDonchian,slowDonchian, atrPeriod, limitOpenedPositions,
@@ -56,7 +58,7 @@ namespace TrendByPivotPointsOptimizator
         {
             foreach (var chrom in population)
             {
-                chrom.Fitness = SimulateStrategy(prices, chrom.FastPeriod, chrom.SlowPeriod);
+                //chrom.Fitness = SimulateStrategy(prices, chrom.FastPeriod, chrom.SlowPeriod);
             }
         }
 
@@ -98,41 +100,67 @@ namespace TrendByPivotPointsOptimizator
                 kAtrForOpenPosition, kAtrForStopLoss);
         }
 
-        public void Mutate(Chromosome chrom)
+        public void Mutate(ChromosomeDonchianChannel chrom)
         {
             if (randomProvider.NextDouble() < mutationRate)
-            {
-                chrom.FastPeriod = randomProvider.Next(1, chrom.SlowPeriod);
-            }
+                chrom.Ticker = tickers[randomProvider.Next(tickers.Count)];
+
             if (randomProvider.NextDouble() < mutationRate)
             {
-                chrom.SlowPeriod = randomProvider.Next(chrom.FastPeriod + 1, 201);
+                var tfs = settings.TimeFrames;
+                chrom.TimeFrame = tfs[randomProvider.Next(tfs.Count)];
             }
+
+            if (randomProvider.NextDouble() < mutationRate)
+            {
+                var sides = settings.Sides;
+                chrom.Side = sides[randomProvider.Next(sides.Count)];
+            }
+
+            if (randomProvider.NextDouble() < mutationRate)            
+                chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
+                
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian, 208);  // -//-
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+
+            if (randomProvider.NextDouble() < mutationRate)  
+                chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);            
         }
 
-        public Chromosome Run(double[] prices)
+        public List<ChromosomeDonchianChannel> Run(double[] prices)
         {
             Initialize();
             for (int gen = 0; gen < generations; gen++)
             {
                 Evaluate(prices);
-                List<Chromosome> newPopulation = new List<Chromosome>();
+                List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
                 // Элитизм: сохраняем лучшую хромосому
-                Chromosome best = population.OrderByDescending(c => c.Fitness).First();
+                ChromosomeDonchianChannel best = population.OrderByDescending(c => c.FitnessValue).First();
                 newPopulation.Add(best);
                 // Создаем потомков
                 while (newPopulation.Count < populationSize)
                 {
-                    Chromosome parent1 = TournamentSelection();
-                    Chromosome parent2 = TournamentSelection();
-                    Chromosome child;
+                    ChromosomeDonchianChannel parent1 = TournamentSelection();
+                    ChromosomeDonchianChannel parent2 = TournamentSelection();
+                    ChromosomeDonchianChannel child;
                     if (randomProvider.NextDouble() < crossoverRate)
                     {
                         child = Crossover(parent1, parent2);
                     }
                     else
                     {
-                        child = new Chromosome(parent1.FastPeriod, parent1.SlowPeriod);
+                        child = new ChromosomeDonchianChannel(parent1.Ticker, parent1.TimeFrame, parent1.Side,
+                            parent1.FastDonchian, parent1.SlowDonchian, parent1.AtrPeriod,
+                            parent1.LimitOpenedPositions, parent1.KAtrForOpenPosition, parent1.KAtrForStopLoss);
                     }
                     Mutate(child);
                     newPopulation.Add(child);
@@ -140,51 +168,8 @@ namespace TrendByPivotPointsOptimizator
                 population = newPopulation;
             }
             Evaluate(prices);
-            return population.OrderByDescending(c => c.Fitness).First();
-        }
-
-        public static double[] CalculateSMA(double[] prices, int period)
-        {
-            double[] sma = new double[prices.Length];
-            double sum = 0;
-            for (int i = 0; i < period && i < prices.Length; i++)
-            {
-                sum += prices[i];
-                sma[i] = sum / (i + 1);
-            }
-            for (int i = period; i < prices.Length; i++)
-            {
-                sum += prices[i] - prices[i - period];
-                sma[i] = sum / period;
-            }
-            return sma;
-        }
-
-        public static double SimulateStrategy(double[] prices, int fastPeriod, int slowPeriod)
-        {
-            double[] fastSMA = CalculateSMA(prices, fastPeriod);
-            double[] slowSMA = CalculateSMA(prices, slowPeriod);
-            bool inPosition = false;
-            double entryPrice = 0;
-            double profit = 0;
-            for (int i = 1; i < prices.Length; i++)
-            {
-                if (!inPosition && fastSMA[i] > slowSMA[i] && fastSMA[i - 1] <= slowSMA[i - 1])
-                {
-                    inPosition = true;
-                    entryPrice = prices[i];
-                }
-                else if (inPosition && fastSMA[i] < slowSMA[i] && fastSMA[i - 1] >= slowSMA[i - 1])
-                {
-                    profit += prices[i] - entryPrice;
-                    inPosition = false;
-                }
-            }
-            if (inPosition)
-            {
-                profit += prices[prices.Length - 1] - entryPrice;
-            }
-            return profit;
-        }
+            var populationPasssed = population.Where(population => population.FitnessPassed == true);
+            return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(30).ToList();
+        }        
     }
 }
