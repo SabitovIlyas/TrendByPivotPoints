@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using TradingSystems;
+using TrendByPivotPointsStarter;
 using TSLab.Utils;
+using Context = TradingSystems.Context;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -54,12 +57,55 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
-        public void Evaluate(double[] prices)
+        public void Evaluate(Context context, List<SecurityData> securitiesData, List<Ticker> tickers)
         {
             foreach (var chrom in population)
             {
+
+
+
+
+                var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { chrom.Security }, logger);
+
+                system.SetParameters(sp.SystemParameter);
+                system.Initialize();
+                system.Run();
+                system.PrintResults();
+
+
                 //chrom.Fitness = SimulateStrategy(prices, chrom.FastPeriod, chrom.SlowPeriod);
             }
+        }
+
+        private void CreateSecurity(ChromosomeDonchianChannel chrom)
+        {
+            var systemParameters = new SystemParameters();
+
+            systemParameters.Add("slowDonchian", chrom.SlowDonchian);//1
+            systemParameters.Add("fastDonchian", chrom.FastDonchian);//2
+            systemParameters.Add("kAtrForStopLoss", chrom.KAtrForStopLoss);//3
+            systemParameters.Add("kAtrForOpenPosition", chrom.KAtrForOpenPosition);//4
+            systemParameters.Add("atrPeriod", chrom.AtrPeriod);//3
+            systemParameters.Add("limitOpenedPositions", chrom.LimitOpenedPositions);//4
+            systemParameters.Add("isUSD", 0);
+            systemParameters.Add("rateUSD", 0d);
+            systemParameters.Add("positionSide", chrom.Side);//5
+            systemParameters.Add("timeFrame", chrom.TimeFrame);//6
+            systemParameters.Add("shares", ticker.Shares);
+
+            systemParameters.Add("equity", 1000000d);
+            systemParameters.Add("riskValuePrcnt", 2d);
+            systemParameters.Add("contracts", 0);
+
+            var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
+                                ticker.Logger, ticker.CommissionRate);
+            logger.Log(counter.ToString());
+
+            listTradingSystemParameters.AddLast(new TradingSystemParameters()
+            {
+                Security = security,
+                SystemParameter = systemParameters
+            });
         }
 
         public ChromosomeDonchianChannel TournamentSelection()
@@ -136,12 +182,12 @@ namespace TrendByPivotPointsOptimizator
                 chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);            
         }
 
-        public List<ChromosomeDonchianChannel> Run(double[] prices)
+        public List<ChromosomeDonchianChannel> Run()
         {
             Initialize();
             for (int gen = 0; gen < generations; gen++)
             {
-                Evaluate(prices);
+                Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
                 // Элитизм: сохраняем лучшую хромосому
                 ChromosomeDonchianChannel best = population.OrderByDescending(c => c.FitnessValue).First();
@@ -167,7 +213,7 @@ namespace TrendByPivotPointsOptimizator
                 }
                 population = newPopulation;
             }
-            Evaluate(prices);
+            Evaluate();
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(30).ToList();
         }        

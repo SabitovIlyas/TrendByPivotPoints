@@ -45,6 +45,14 @@ namespace TrendByPivotPointsOptimizator
             try
             {
                 var context = new ContextLab();
+                var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { sp.Security }, logger);
+
+
+
+                var rand = new RandomProvider();
+                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, settings);//50, 100, 0.8, 0.1
+                ga.Initialize();
+                ga.Evaluate();
 
                 foreach (var ticker in tickers)
                 {
@@ -258,10 +266,9 @@ namespace TrendByPivotPointsOptimizator
 
         private LinkedList<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
         {
-            var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, new RandomProvider());//50, 100, 0.8, 0.1
-            ga.Initialize();
-
-            
+            var rand = new RandomProvider();
+            var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, settings);//50, 100, 0.8, 0.1
+            ga.Run();           
 
             return null;
         }
