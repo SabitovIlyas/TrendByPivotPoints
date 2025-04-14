@@ -2,7 +2,7 @@
 
 namespace TrendByPivotPointsOptimizator
 {
-    struct SecurityData
+    public struct SecurityData
     {
         public string Name;
         public Currency Currency;

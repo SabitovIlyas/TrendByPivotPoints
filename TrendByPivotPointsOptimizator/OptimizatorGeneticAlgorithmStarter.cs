@@ -45,19 +45,13 @@ namespace TrendByPivotPointsOptimizator
             try
             {
                 var context = new ContextLab();
-                var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { sp.Security }, logger);
-
-
-
                 var rand = new RandomProvider();
-                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, settings);//50, 100, 0.8, 0.1
-                ga.Initialize();
-                ga.Evaluate();
-
-                foreach (var ticker in tickers)
-                {
-
-                }
+                var optimizator = Optimizator.Create();
+                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, settings, context, optimizator, logger);//50, 100, 0.8, 0.1
+                var result = ga.Run();
+                logger.Log("Генетический алгоритм завершил работу. Результаты:\r\n");
+                foreach (var res in result)
+                    logger.Log("{0}\r\n", res.ToString());
             }
             catch (Exception e)
             {
@@ -65,8 +59,6 @@ namespace TrendByPivotPointsOptimizator
             }
             Console.ReadLine();
         }
-
-
 
         private Settings CreateSettings(string fullFileName)
         {
@@ -191,7 +183,9 @@ namespace TrendByPivotPointsOptimizator
         private Ticker CreateTicker(string fileName, SecurityData data, Interval timeframe)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
-            var bars = converter.ConvertFileWithBarsToListOfBars();
+            var baseBars = converter.ConvertFileWithBarsToListOfBars();
+
+            var bars = CompressBars(baseBars, timeframe);
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,
                 logger, data.CommissionRate);
@@ -262,21 +256,6 @@ namespace TrendByPivotPointsOptimizator
             }
 
             return result;
-        }
-
-        private LinkedList<TradingSystemParameters> CreateSystemParameters(Settings settings, List<Ticker> tickers)
-        {
-            var rand = new RandomProvider();
-            var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, settings);//50, 100, 0.8, 0.1
-            ga.Run();           
-
-            return null;
-        }
-
-        private TradingSystemParameters CreateSysParam(Settings settings, Ticker ticker)
-        {
-            //var ga = new GeneticAlgorithm(10, 100, 0.8, 1.0, mockRandom.Object); // Mutation rate 1.0 для предсказуемости
-            return new TradingSystemParameters();
-        }
+        }        
     }
 }

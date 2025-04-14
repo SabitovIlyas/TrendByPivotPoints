@@ -19,10 +19,13 @@ namespace TrendByPivotPointsOptimizator
         private double mutationRate;
         private readonly IRandomProvider randomProvider;
         private List<Ticker> tickers;
-        private Settings settings;        
+        private Settings settings;
+        private Context context;
+        private Optimizator optimizator;
+        private Logger logger;
 
-        public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate, 
-            IRandomProvider randomProvider, List<Ticker> tickers, Settings settings)
+        public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate,
+            IRandomProvider randomProvider, List<Ticker> tickers, Settings settings, Context context, Optimizator optimizator, Logger logger)
         {
             this.populationSize = populationSize;
             this.generations = generations;
@@ -31,6 +34,9 @@ namespace TrendByPivotPointsOptimizator
             this.randomProvider = randomProvider;
             this.tickers = tickers;
             this.settings = settings;
+            this.context = context;
+            this.logger = logger;
+            this.optimizator = optimizator;
             population = new List<ChromosomeDonchianChannel>();
         }
 
@@ -57,28 +63,24 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
-        public void Evaluate(Context context, List<SecurityData> securitiesData, List<Ticker> tickers)
+        public void Evaluate()
         {
             foreach (var chrom in population)
             {
+                var trSysParams = CreateSecurity(chrom);
 
+                var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
 
-
-
-                var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { chrom.Security }, logger);
-
-                system.SetParameters(sp.SystemParameter);
+                system.SetParameters(trSysParams.SystemParameter);
                 system.Initialize();
                 system.Run();
-                system.PrintResults();
-
-
-                //chrom.Fitness = SimulateStrategy(prices, chrom.FastPeriod, chrom.SlowPeriod);
+                new FitnessDonchianChannel(trSysParams.Security, chrom);
             }
         }
 
-        private void CreateSecurity(ChromosomeDonchianChannel chrom)
+        private TradingSystemParameters CreateSecurity(ChromosomeDonchianChannel chrom)
         {
+            var ticker = chrom.Ticker;
             var systemParameters = new SystemParameters();
 
             systemParameters.Add("slowDonchian", chrom.SlowDonchian);//1
@@ -97,15 +99,14 @@ namespace TrendByPivotPointsOptimizator
             systemParameters.Add("riskValuePrcnt", 2d);
             systemParameters.Add("contracts", 0);
 
-            var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, bars,
+            var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, ticker.Bars,
                                 ticker.Logger, ticker.CommissionRate);
-            logger.Log(counter.ToString());
 
-            listTradingSystemParameters.AddLast(new TradingSystemParameters()
+            return new TradingSystemParameters()
             {
                 Security = security,
                 SystemParameter = systemParameters
-            });
+            };
         }
 
         public ChromosomeDonchianChannel TournamentSelection()
@@ -190,8 +191,13 @@ namespace TrendByPivotPointsOptimizator
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
                 // Элитизм: сохраняем лучшую хромосому
-                ChromosomeDonchianChannel best = population.OrderByDescending(c => c.FitnessValue).First();
-                newPopulation.Add(best);
+                var populationPassed = population.Where(c => c.FitnessPassed == true);
+                if (populationPassed.Count() != 0)
+                {
+                    var best = populationPassed.OrderByDescending(c => c.FitnessValue).First();
+                    if (best != null)
+                        newPopulation.Add(best);
+                }                
                 // Создаем потомков
                 while (newPopulation.Count < populationSize)
                 {

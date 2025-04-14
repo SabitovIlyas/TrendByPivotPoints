@@ -1,5 +1,7 @@
-﻿using TradingSystems;
+﻿using System;
+using TradingSystems;
 using TSLab.DataSource;
+using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -33,14 +35,25 @@ namespace TrendByPivotPointsOptimizator
 
     public class FitnessDonchianChannel
     {
-        public bool IsPassed()
+        private Security security;
+        private ChromosomeDonchianChannel chromosome;
+
+        public FitnessDonchianChannel(Security security, ChromosomeDonchianChannel chromosome)
         {
-            return false;
+            this.security = security;
+            this.chromosome = chromosome;
+            chromosome.FitnessPassed = CalcIsPassed();
+            chromosome.FitnessValue = CalcValue();
+        }    
+
+        private bool CalcIsPassed()
+        {
+            throw new NotImplementedException();
         }
 
-        public double Value()
+        private double CalcValue()
         {
-            return 0;
+            throw new NotImplementedException();
         }
     }
 }
