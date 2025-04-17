@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using TradingSystems;
 using TrendByPivotPointsStarter;
@@ -46,12 +47,18 @@ namespace TrendByPivotPointsOptimizator
             {
                 var context = new ContextLab();
                 var rand = new RandomProvider();
+
+                //Я здесь
                 var optimizator = Optimizator.Create();
                 var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, settings, context, optimizator, logger);//50, 100, 0.8, 0.1
                 var result = ga.Run();
+
                 logger.Log("Генетический алгоритм завершил работу. Результаты:\r\n");
                 foreach (var res in result)
                     logger.Log("{0}\r\n", res.ToString());
+
+                
+
             }
             catch (Exception e)
             {

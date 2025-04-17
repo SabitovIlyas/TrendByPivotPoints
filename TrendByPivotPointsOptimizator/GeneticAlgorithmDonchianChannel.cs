@@ -190,13 +190,12 @@ namespace TrendByPivotPointsOptimizator
             {
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
-                // Элитизм: сохраняем лучшую хромосому
+                // Элитизм: сохраняем 30 лучших хромосом
                 var populationPassed = population.Where(c => c.FitnessPassed == true);
                 if (populationPassed.Count() != 0)
                 {
-                    var best = populationPassed.OrderByDescending(c => c.FitnessValue).First();
-                    if (best != null)
-                        newPopulation.Add(best);
+                    var best = populationPassed.OrderByDescending(c => c.FitnessValue).Take(30).ToList();
+                    newPopulation.AddRange(best);
                 }                
                 // Создаем потомков
                 while (newPopulation.Count < populationSize)
