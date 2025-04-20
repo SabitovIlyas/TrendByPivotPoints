@@ -37,14 +37,32 @@ namespace TrendByPivotPointsOptimizator
     {
         private Security security;
         private ChromosomeDonchianChannel chromosome;
+        private Optimizator optimizator;
 
-        public FitnessDonchianChannel(Security security, ChromosomeDonchianChannel chromosome)
+        public FitnessDonchianChannel(Security security, ChromosomeDonchianChannel chromosome, 
+            Optimizator optimizator)
         {
             this.security = security;
             this.chromosome = chromosome;
+            this.optimizator = optimizator;
+            Calc();
+        }
+        
+        private void Calc()
+        {
+            //Я здесь
+            //Параметры для оптимизации: быстрая доунчиан, медленная доунчиан, период АТР,
+            //лимит открытых позиций, коэф. АТР для открытия позиции, коэф. АТР для стоп-лосса
+            optimizator.GetOptimalParametersPercentNew(
+                points:null,
+                dimension: 6, // Количество параметров  
+                radiusNeighbourInPercent:new int[3] { 5, 5, 5 },
+                barrier: 1.0, // Пороговое значение
+                isCheckedPass: true); // Проверка на прохождение барьера            
+
             chromosome.FitnessPassed = CalcIsPassed();
             chromosome.FitnessValue = CalcValue();
-        }    
+        }
 
         private bool CalcIsPassed()
         {

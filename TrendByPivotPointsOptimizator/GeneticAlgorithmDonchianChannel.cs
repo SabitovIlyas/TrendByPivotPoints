@@ -74,7 +74,7 @@ namespace TrendByPivotPointsOptimizator
                 system.SetParameters(trSysParams.SystemParameter);
                 system.Initialize();
                 system.Run();
-                new FitnessDonchianChannel(trSysParams.Security, chrom);
+                new FitnessDonchianChannel(trSysParams.Security, chrom, optimizator);
             }
         }
 
