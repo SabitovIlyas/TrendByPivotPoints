@@ -75,7 +75,7 @@ namespace TradingSystems
             }
         }
 
-        public abstract double GetDrawDown();        
+        public abstract double GetMaxDrawDown();        
         
     }
 }

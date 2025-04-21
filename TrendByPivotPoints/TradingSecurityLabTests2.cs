@@ -87,7 +87,7 @@ namespace TradingSystems.Tests
         public void GetEquity()
         {
             double expected = 100000 + 2 * (92000 - 89000);
-            var account = starter.account;
+            var account = starter.Account;
             double actual =  ((AccountLab)account).GetEquity(barNumber: 13);
             Assert.AreEqual(expected, actual);
         }

@@ -52,7 +52,7 @@ namespace TradingSystems.Tests
             double expected = 37.5d;
             var account = new AccountFake(initDeposit: 100000, Currency.RUB, new LoggerNull());
             account.EquityHistory = equityHistory;
-            var actual = account.GetDrawDown(barNumber: equityHistory.Length);
+            var actual = account.GetMaxDrawDown(barNumber: equityHistory.Length);
             Assert.AreEqual(expected, actual);            
         }
     }

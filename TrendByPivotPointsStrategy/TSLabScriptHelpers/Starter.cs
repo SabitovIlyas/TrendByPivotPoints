@@ -6,7 +6,7 @@ namespace TradingSystems
 {
     public abstract class Starter
     {
-        public Account account { get; protected set; }
+        public Account Account { get; protected set; }
 
         protected List<TradingSystem> tradingSystems;
         protected int securityNumber;
@@ -49,7 +49,7 @@ namespace TradingSystems
             {
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    account.Update(barNumber);
+                    Account.Update(barNumber);
                     tradingSystem.Update(barNumber);
                 }
             }

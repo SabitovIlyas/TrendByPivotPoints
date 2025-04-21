@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TradingSystems
 {
@@ -58,7 +59,7 @@ namespace TradingSystems
 
             return equity;
         }
-        public double GetDrawDown(int barNumber)
+        public double GetMaxDrawDown(int barNumber)
         {
             var maxCapital = initDeposit;
             var maxDrawdown = 0d;
@@ -78,9 +79,10 @@ namespace TradingSystems
             return maxDrawdown;
         }
 
-        public override double GetDrawDown()
+        public override double GetMaxDrawDown()
         {
-            return 0; //заглушка
+            var lastBarNumber = securities.First().Bars.Count - 1;
+            return GetMaxDrawDown(lastBarNumber);            
         }
     }
 }

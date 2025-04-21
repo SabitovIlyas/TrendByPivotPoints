@@ -42,7 +42,7 @@ namespace TrendByPivotPointsStarter
             base.Initialize();
             
             var baseCurrency = Currency.RUB;
-            account = new AccountLab(initDeposit: equity, baseCurrency, securities, logger);            
+            Account = new AccountLab(initDeposit: equity, baseCurrency, securities, logger);            
             
             var currencyConverter = new CurrencyConverter(baseCurrency);
             currencyConverter.AddCurrencyRate(Currency.USD, rateUSD);
@@ -51,13 +51,13 @@ namespace TrendByPivotPointsStarter
             ContractsManager contractsManager;
             if (contracts <= 0)
             {
-                var riskManager = new RiskManagerReal(account, logger, riskValuePrcnt);
-                contractsManager = new ContractsManager(riskManager, account, currency,
+                var riskManager = new RiskManagerReal(Account, logger, riskValuePrcnt);
+                contractsManager = new ContractsManager(riskManager, Account, currency,
                 currencyConverter, shares, logger);
             }
             else
             {
-                contractsManager = new ContractsManager(contracts, account, currency,
+                contractsManager = new ContractsManager(contracts, Account, currency,
                 currencyConverter, shares, logger);
             }
 
@@ -80,7 +80,7 @@ namespace TrendByPivotPointsStarter
                 profit += sec.GetProfit();
             
             var security = securities.First();
-            var drawdown = account.GetDrawDown();
+            var drawdown = Account.GetMaxDrawDown();
 
             var recoveryFactor = profit / drawdown;
             var deals = security.GetDeals();

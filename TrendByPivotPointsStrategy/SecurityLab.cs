@@ -400,17 +400,17 @@ namespace TradingSystems
 
         public double GetProfit()
         {
-            throw new NotImplementedException();
+            return GetProfit(Bars.Count - 1);
         }
 
         public List<Position> GetDeals()
         {
-            throw new NotImplementedException();
+            return GetDeals(Bars.Count - 1);
         }
 
         public List<Position> GetMetaDeals()
         {
-            throw new NotImplementedException();
+            return GetMetaDeals(Bars.Count - 1);            
         }
     }
 }
