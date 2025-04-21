@@ -77,7 +77,7 @@ namespace TrendByPivotPointsOptimizator.Tests
             var exptected = "4,44: (21; 9); 4,44: (22; 9); 4,44: (23; 9)";
             var optimizator = Optimizator.Create();
             var actual =
-                optimizator.GetOptimalParametersPercent(points, dimension: 2, radiusNeighbourInPercent: new int[2] { 10, 10 },
+                optimizator.GetOptimalParametersPercentDeprecated(points, dimension: 2, radiusNeighbourInPercent: new int[2] { 10, 10 },
                 barrier: 1, isCheckedPass: true);
             Assert.AreEqual(exptected, actual);
         }

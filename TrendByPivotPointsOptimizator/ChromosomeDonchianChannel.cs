@@ -53,7 +53,7 @@ namespace TrendByPivotPointsOptimizator
             //Я здесь
             //Параметры для оптимизации: быстрая доунчиан, медленная доунчиан, период АТР,
             //лимит открытых позиций, коэф. АТР для открытия позиции, коэф. АТР для стоп-лосса
-            optimizator.GetOptimalParametersPercentNew(
+            optimizator.GetOptimalParametersPercent(
                 points:null,
                 dimension: 6, // Количество параметров  
                 radiusNeighbourInPercent:new int[3] { 5, 5, 5 },

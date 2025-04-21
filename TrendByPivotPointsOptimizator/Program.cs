@@ -91,7 +91,7 @@ namespace TrendByPivotPointsOptimizator
                         parser.Param2Str = "ВнешнийСкрипт.fastDonchian";
                         var points = parser.ParseForPoints();
                         var optimizator = Optimizator.Create();
-                        return optimizator.GetOptimalParametersPercentNew(points, dimension, radiusNeighbour, barrier, isCheckedPass);
+                        return optimizator.GetOptimalParametersPercent(points, dimension, radiusNeighbour, barrier, isCheckedPass);
                     }
             }
 

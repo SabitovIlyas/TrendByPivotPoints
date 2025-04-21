@@ -63,8 +63,9 @@ namespace TrendByPivotPointsOptimizator
             }
             return result;
         }
-
-        public string GetOptimalParametersPercent(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
+        
+        [Obsolete("Этот метод устарел. Используйте метод GetOptimalParametersPercent вместо него.")]
+        public string GetOptimalParametersPercentDeprecated(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
         {
             var matirxCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
             var matrix = matirxCreator.CreateMatrixPercent();
@@ -113,7 +114,7 @@ namespace TrendByPivotPointsOptimizator
             return result;
         }
 
-        public string GetOptimalParametersPercentNew(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
+        public string GetOptimalParametersPercent(List<PointValue> points, int dimension, int[] radiusNeighbourInPercent, double barrier, bool isCheckedPass)
         {
             var matrixCreator = MatrixCreator.Create(points, dimension, radiusNeighbourInPercent);
             matrixCreator.CreateMatrixPercent();
