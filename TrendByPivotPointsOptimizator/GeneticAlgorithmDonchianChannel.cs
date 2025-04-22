@@ -68,13 +68,9 @@ namespace TrendByPivotPointsOptimizator
             foreach (var chrom in population)
             {
                 var trSysParams = CreateSecurity(chrom);
-
                 var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
-
-                system.SetParameters(trSysParams.SystemParameter);
-                system.Initialize();
-                system.Run();
                 new FitnessDonchianChannel(trSysParams.Security, chrom, optimizator, system);
+                new FitnessDonchianChannel(trSysParams, chrom, system);
             }
         }
 

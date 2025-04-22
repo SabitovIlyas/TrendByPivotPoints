@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TradingSystems;
 using TrendByPivotPointsStarter;
@@ -12,6 +13,7 @@ namespace TrendByPivotPointsOptimizator
         private ChromosomeDonchianChannel chromosome;
         private Optimizator optimizator;
         private Starter system;
+        private TradingSystemParameters trSysParams;
 
         public FitnessDonchianChannel(Security security, ChromosomeDonchianChannel chromosome, 
             Optimizator optimizator, Starter system)
@@ -22,21 +24,38 @@ namespace TrendByPivotPointsOptimizator
             this.system = system;
             Calc();
         }
-        
+
+        public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
+            Starter system)
+        {
+            security = trSysParams.Security;
+            this.chromosome = chromosome;
+            this.system = system;
+            Calc();
+        }
+
         private void Calc()
         {
-            //Я здесь
-            //Параметры для оптимизации: быстрая доунчиан, медленная доунчиан, период АТР,
-            //лимит открытых позиций, коэф. АТР для открытия позиции, коэф. АТР для стоп-лосса
-            optimizator.GetOptimalParametersPercent(
-                points:null,
-                dimension: 6, // Количество параметров  
-                radiusNeighbourInPercent:new int[3] { 5, 5, 5 },
-                barrier: 1.0, // Пороговое значение
-                isCheckedPass: true); // Проверка на прохождение барьера            
+            ////Параметры для оптимизации: быстрая доунчиан, медленная доунчиан, период АТР,
+            ////лимит открытых позиций, коэф. АТР для открытия позиции, коэф. АТР для стоп-лосса
+            //optimizator.GetOptimalParametersPercent(
+            //    points:null,
+            //    dimension: 6, // Количество параметров  
+            //    radiusNeighbourInPercent:new int[3] { 5, 5, 5 },
+            //    barrier: 1.0, // Пороговое значение
+            //    isCheckedPass: true); // Проверка на прохождение барьера           
+
+            SystemRun(); // Запускаем систему на тестирование
 
             chromosome.FitnessPassed = CalcIsPassed();
             chromosome.FitnessValue = CalcValue();
+        }
+
+        private void SystemRun()
+        {
+            system.SetParameters(trSysParams.SystemParameter);
+            system.Initialize();
+            system.Run();
         }
 
         private bool CalcIsPassed()
@@ -51,18 +70,29 @@ namespace TrendByPivotPointsOptimizator
                 return false;
 
             var qtyDealForExclude = (int)Math.Round(0.05 * deals.Count, MidpointRounding.AwayFromZero);
-
             var dealsForExclude = deals.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
 
-            //Нахожусь здесь. Исключаю сделки с наибольшей прибылью
+            var nonTradingPeriods = new List<NonTradingPeriod>();
+
             foreach (var deal in dealsForExclude)
             {
-                var o = deal.BarNumberOpenPosition;
-                var c = deal.BarNumberClosePosition;
-
+                var n = new NonTradingPeriod();
+                n.BarStart = deal.BarNumberOpenPosition - 1;
+                n.BarStop = deal.BarNumberClosePosition - 1;
+                nonTradingPeriods.Add(n);
             }
 
-            throw new NotImplementedException();
+            system.NonTradingPeriods = nonTradingPeriods;
+            SystemRun();
+
+            recoveryFactor = CalcRecoeveryFactor();
+            if (recoveryFactor < 1.0)
+                return false;
+
+            //Нахожусь здесь! Теперь надо повторить всё это для системы, с рядом стоящими значениями параметров
+
+
+            return false;
         }
 
         private double CalcValue()

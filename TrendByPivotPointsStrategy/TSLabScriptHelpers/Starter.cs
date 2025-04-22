@@ -7,6 +7,7 @@ namespace TradingSystems
     public abstract class Starter
     {
         public Account Account { get; protected set; }
+        public List<NonTradingPeriod> NonTradingPeriods { get;  set; }
 
         protected List<TradingSystem> tradingSystems;
         protected int securityNumber;
