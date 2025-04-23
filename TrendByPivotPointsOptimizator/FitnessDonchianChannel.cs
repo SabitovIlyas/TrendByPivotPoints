@@ -59,7 +59,18 @@ namespace TrendByPivotPointsOptimizator
         }
 
         private bool CalcIsPassed()
-        {   
+        {
+            CalcIsPassedOneSystem();
+
+            //Нахожусь здесь! Теперь надо повторить всё это для системы, с рядом стоящими значениями параметров
+
+            var matrixCreator = MatrixCreator.Create(points: null, dimension: 0, radiusNeighbour: null);
+
+            return false;
+        }
+
+        private bool CalcIsPassedOneSystem()
+        {
             var deals = security.GetMetaDeals();
             var qtyDealsCase = deals.Count >= 30;
             if (!qtyDealsCase)
@@ -89,10 +100,7 @@ namespace TrendByPivotPointsOptimizator
             if (recoveryFactor < 1.0)
                 return false;
 
-            //Нахожусь здесь! Теперь надо повторить всё это для системы, с рядом стоящими значениями параметров
-
-
-            return false;
+            return true;
         }
 
         private double CalcValue()
