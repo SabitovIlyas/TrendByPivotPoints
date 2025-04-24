@@ -22,6 +22,14 @@ namespace TrendByPivotPointsStarter
             this.nonTradingPeriods = nonTradingPeriods;            
         }
 
+        public StarterDonchianTradingSystemLab(StarterDonchianTradingSystemLab starter)
+        {
+            context = starter.context;
+            securities = starter.securities;
+            logger = starter.logger;
+            nonTradingPeriods = starter.nonTradingPeriods;
+        }
+
         public override void SetParameters(SystemParameters systemParameters)
         {
             this.systemParameters = systemParameters;

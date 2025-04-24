@@ -12,21 +12,21 @@ namespace TrendByPivotPointsOptimizator
         private Security security;
         private ChromosomeDonchianChannel chromosome;
         private Optimizator optimizator;
-        private Starter system;
+        private StarterDonchianTradingSystemLab system;
         private TradingSystemParameters trSysParams;
 
         public FitnessDonchianChannel(Security security, ChromosomeDonchianChannel chromosome, 
-            Optimizator optimizator, Starter system)
+            Optimizator optimizator, StarterDonchianTradingSystemLab system)
         {
             this.security = security;
             this.chromosome = chromosome;
             this.optimizator = optimizator;
-            this.system = system;
+            this.system = system;            
             Calc();
         }
 
         public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
-            Starter system)
+            StarterDonchianTradingSystemLab system)
         {
             security = trSysParams.Security;
             this.chromosome = chromosome;
@@ -63,6 +63,40 @@ namespace TrendByPivotPointsOptimizator
             CalcIsPassedOneSystem();
 
             //Нахожусь здесь! Теперь надо повторить всё это для системы, с рядом стоящими значениями параметров
+
+            var systems = new List<StarterDonchianTradingSystemLab>();
+            var sD = (int)trSysParams.SystemParameter.GetValue("slowDonchian");
+            var fD = (int)trSysParams.SystemParameter.GetValue("fastDonchian");
+            var atr = (int)trSysParams.SystemParameter.GetValue("atrPeriod");
+
+            var minSd = (int)Math.Round(sD - 0.05 * sD, MidpointRounding.AwayFromZero);
+            var maxSd = (int)Math.Round(sD + 0.05 * sD, MidpointRounding.AwayFromZero);
+
+            var minFd = (int)Math.Round(fD - 0.5 * fD, MidpointRounding.AwayFromZero);
+            var maxFd = (int)Math.Round(fD + 0.5 * fD, MidpointRounding.AwayFromZero);
+
+            var minAtr = (int)Math.Round(atr - 0.05 * atr, MidpointRounding.AwayFromZero);
+            var maxAtr = (int)Math.Round(atr + 0.05 * atr, MidpointRounding.AwayFromZero);
+
+
+            for (int i = minSd; i <= maxSd; i++)
+            {
+                for (int j = minFd; j <= maxFd; j++)
+                {
+                    if (j > i)
+                        continue;
+
+                    for (int k = minAtr; k <= maxAtr; k++)
+                    {
+                        var starter = new StarterDonchianTradingSystemLab(system);
+
+                        var param = new TradingSystemParameters(trSysParams);
+                        starter.SetParameters(trSysParams.SystemParameter);
+                        //Я здесь. Надо изменить исходные параметры.
+                        systems.Add(starter);
+                    }
+                }
+            }
 
             var matrixCreator = MatrixCreator.Create(points: null, dimension: 0, radiusNeighbour: null);
 

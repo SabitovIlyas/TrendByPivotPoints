@@ -6,6 +6,11 @@ namespace TradingSystems
     public class SystemParameters
     {
         private readonly Dictionary<string, object> parameters = new Dictionary<string, object>();
+        public SystemParameters() { }
+        public SystemParameters(SystemParameters systemParameters)
+        {
+            //Я здесь
+        }        
 
         public void Add(string key, object value)
         {
