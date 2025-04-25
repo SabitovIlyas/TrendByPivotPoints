@@ -53,7 +53,7 @@ namespace TrendByPivotPointsOptimizator
                     foreach (var sp in listSystemParameters)
                     {                        
                         var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { sp.Security }, logger);
-                        system.SetParameters(sp.SystemParameter);
+                        system.SetParameters(sp.SystemParameters);
                         system.Initialize();
                         system.Run();
                         system.PrintResults();
@@ -325,7 +325,7 @@ namespace TrendByPivotPointsOptimizator
                                                 listTradingSystemParameters.AddLast(new TradingSystemParameters()
                                                 {
                                                     Security = security,
-                                                    SystemParameter = systemParameters
+                                                    SystemParameters = systemParameters
                                                 });
                                             }
                                         }

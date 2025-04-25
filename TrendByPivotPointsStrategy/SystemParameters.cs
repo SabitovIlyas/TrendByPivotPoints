@@ -9,8 +9,9 @@ namespace TradingSystems
         public SystemParameters() { }
         public SystemParameters(SystemParameters systemParameters)
         {
-            //Я здесь
-        }        
+            foreach (var param in systemParameters.parameters)
+                parameters.Add(param.Key, param.Value);            
+        }
 
         public void Add(string key, object value)
         {
@@ -19,7 +20,7 @@ namespace TradingSystems
         }
 
         public object GetValue(string key)
-        {            
+        {
             if (parameters.TryGetValue(key, out object value))
                 return value;
             else

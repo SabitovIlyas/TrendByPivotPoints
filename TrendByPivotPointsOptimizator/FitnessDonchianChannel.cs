@@ -53,7 +53,7 @@ namespace TrendByPivotPointsOptimizator
 
         private void SystemRun()
         {
-            system.SetParameters(trSysParams.SystemParameter);
+            system.SetParameters(trSysParams.SystemParameters);
             system.Initialize();
             system.Run();
         }
@@ -65,9 +65,9 @@ namespace TrendByPivotPointsOptimizator
             //Нахожусь здесь! Теперь надо повторить всё это для системы, с рядом стоящими значениями параметров
 
             var systems = new List<StarterDonchianTradingSystemLab>();
-            var sD = (int)trSysParams.SystemParameter.GetValue("slowDonchian");
-            var fD = (int)trSysParams.SystemParameter.GetValue("fastDonchian");
-            var atr = (int)trSysParams.SystemParameter.GetValue("atrPeriod");
+            var sD = (int)trSysParams.SystemParameters.GetValue("slowDonchian");
+            var fD = (int)trSysParams.SystemParameters.GetValue("fastDonchian");
+            var atr = (int)trSysParams.SystemParameters.GetValue("atrPeriod");
 
             var minSd = (int)Math.Round(sD - 0.05 * sD, MidpointRounding.AwayFromZero);
             var maxSd = (int)Math.Round(sD + 0.05 * sD, MidpointRounding.AwayFromZero);
@@ -91,7 +91,7 @@ namespace TrendByPivotPointsOptimizator
                         var starter = new StarterDonchianTradingSystemLab(system);
 
                         var param = new TradingSystemParameters(trSysParams);
-                        starter.SetParameters(trSysParams.SystemParameter);
+                        starter.SetParameters(trSysParams.SystemParameters);
                         //Я здесь. Надо изменить исходные параметры.
                         systems.Add(starter);
                     }

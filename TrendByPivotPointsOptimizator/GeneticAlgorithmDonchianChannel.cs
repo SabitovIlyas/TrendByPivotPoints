@@ -101,7 +101,7 @@ namespace TrendByPivotPointsOptimizator
             return new TradingSystemParameters()
             {
                 Security = security,
-                SystemParameter = systemParameters
+                SystemParameters = systemParameters
             };
         }
 

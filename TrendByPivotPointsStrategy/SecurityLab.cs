@@ -31,6 +31,7 @@ namespace TradingSystems
         private List<Order> activeOrders = new List<Order>();
         private OrderToPositionMapping mapping;
         private Logger logger;
+        private int constructorNumber;
 
         public SecurityLab(Currency currency, int shares, Logger logger, double commissionRate)
         {
@@ -38,6 +39,7 @@ namespace TradingSystems
             this.shares = shares;
             this.logger = logger;
             CommissionRate = commissionRate;
+            constructorNumber = 0;
         }
 
         public SecurityLab(Currency currency, int shares,
@@ -48,6 +50,7 @@ namespace TradingSystems
             this.GObuying = GObuying;
             this.GOselling = GOselling;
             this.logger = logger;
+            constructorNumber = 1;
         }
 
         public SecurityLab(Currency currency, int shares, List<Bar> bars, Logger logger, 
@@ -61,6 +64,7 @@ namespace TradingSystems
             this.logger = logger;
             CommissionRate = commissionRate;
             Initialize();
+            constructorNumber = 2;
         }
 
         public SecurityLab(string securityName, Currency currency, int shares,
@@ -74,6 +78,7 @@ namespace TradingSystems
             Bars = bars;
             this.logger = logger;
             Initialize();
+            constructorNumber = 3;
         }
 
         public SecurityLab(string securityName, Currency currency, int shares, List<Bar> bars, 
@@ -86,6 +91,7 @@ namespace TradingSystems
             this.logger = logger;
             CommissionRate = commissionRate;
             Initialize();
+            constructorNumber = 4;
         }
 
         private void Initialize()
@@ -107,6 +113,25 @@ namespace TradingSystems
             get
             {
                 return Bars?.Last();
+            }
+        }
+
+        public Security GetClone()
+        {
+            switch (constructorNumber)
+            {
+                case 0:
+                    return new SecurityLab(currency, shares, logger, CommissionRate);
+                case 1:
+                    return new SecurityLab(currency, shares, GObuying, GOselling, logger);
+                case 2:
+                    return new SecurityLab(currency, shares, Bars, logger, CommissionRate);
+                case 3:
+                    return new SecurityLab(Name, currency, shares, GObuying, GOselling, Bars, logger);
+                case 4:
+                    return new SecurityLab(Name, currency, shares, Bars, logger, CommissionRate);
+                default:
+                    throw new InvalidOperationException("Invalid constructorNumber for cloning.");
             }
         }
 

@@ -317,6 +317,11 @@ namespace TradingSystems
 
         public double CommissionRate => throw new NotImplementedException();
 
+        public Security GetClone()
+        {
+            throw new NotImplementedException();
+        }
+
         private bool isLaboratory;
         private void DefineIsLaboratory()
         {

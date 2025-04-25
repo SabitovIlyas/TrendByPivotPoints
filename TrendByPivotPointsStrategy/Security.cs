@@ -53,5 +53,6 @@ namespace TradingSystems
         double[] LowPrices { get; }
         List<Bar> Bars { get; }
         double CommissionRate { get; }
+        Security GetClone();
     }
 }

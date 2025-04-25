@@ -7,15 +7,14 @@ namespace TrendByPivotPointsOptimizator
     public class TradingSystemParameters
     {
         public Security Security;
-        public SystemParameters SystemParameter;
+        public SystemParameters SystemParameters;
 
         public TradingSystemParameters() { }        
 
         public TradingSystemParameters(TradingSystemParameters tradingSystemParameters)
         {
-            //Я здесь
-            Security = new Security();
-            SystemParameter = new SystemParameters();
+            Security = tradingSystemParameters.Security.GetClone();
+            SystemParameters = new SystemParameters(tradingSystemParameters.SystemParameters);
         }
     }
 }
