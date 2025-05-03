@@ -60,24 +60,26 @@ namespace TrendByPivotPointsOptimizator
 
         private bool CalcIsPassed()
         {
-            CalcIsPassedOneSystem();
-
             //Нахожусь здесь! Теперь надо повторить всё это для системы, с рядом стоящими значениями параметров
 
-            var systems = new List<StarterDonchianTradingSystemLab>();
+            //var systems = new List<StarterDonchianTradingSystemLab>();
             var sD = (int)trSysParams.SystemParameters.GetValue("slowDonchian");
             var fD = (int)trSysParams.SystemParameters.GetValue("fastDonchian");
             var atr = (int)trSysParams.SystemParameters.GetValue("atrPeriod");
+            
+            var neighborhoodPercent = 0.05;
 
-            var minSd = (int)Math.Round(sD - 0.05 * sD, MidpointRounding.AwayFromZero);
-            var maxSd = (int)Math.Round(sD + 0.05 * sD, MidpointRounding.AwayFromZero);
+            var minSd = (int)Math.Round(sD - neighborhoodPercent * sD, MidpointRounding.AwayFromZero);
+            var maxSd = (int)Math.Round(sD + neighborhoodPercent * sD, MidpointRounding.AwayFromZero);
 
-            var minFd = (int)Math.Round(fD - 0.5 * fD, MidpointRounding.AwayFromZero);
-            var maxFd = (int)Math.Round(fD + 0.5 * fD, MidpointRounding.AwayFromZero);
+            var minFd = (int)Math.Round(fD - neighborhoodPercent * fD, MidpointRounding.AwayFromZero);
+            var maxFd = (int)Math.Round(fD + neighborhoodPercent * fD, MidpointRounding.AwayFromZero);
 
-            var minAtr = (int)Math.Round(atr - 0.05 * atr, MidpointRounding.AwayFromZero);
-            var maxAtr = (int)Math.Round(atr + 0.05 * atr, MidpointRounding.AwayFromZero);
+            var minAtr = (int)Math.Round(atr - neighborhoodPercent * atr, MidpointRounding.AwayFromZero);
+            var maxAtr = (int)Math.Round(atr + neighborhoodPercent * atr, MidpointRounding.AwayFromZero);
 
+            var counter = 0;
+            var sumRecoveryFactor = 0d;
 
             for (int i = minSd; i <= maxSd; i++)
             {
@@ -91,27 +93,38 @@ namespace TrendByPivotPointsOptimizator
                         var starter = new StarterDonchianTradingSystemLab(system);
 
                         var param = new TradingSystemParameters(trSysParams);
+                        param.SystemParameters.SetValue("slowDonchian", i);
+                        param.SystemParameters.SetValue("fastDonchian", j);
+                        param.SystemParameters.SetValue("atrPeriod", k);
+                        
                         starter.SetParameters(trSysParams.SystemParameters);
-                        //Я здесь. Надо изменить исходные параметры.
-                        systems.Add(starter);
+                        starter.Initialize();
+                        starter.Run();
+                        var recoveryFactor = 0d;
+                        if (!CheckCriteriaPassed(param.Security, starter.Account, out recoveryFactor))
+                            return false;
+
+                        counter++;
+                        sumRecoveryFactor += recoveryFactor;
                     }
                 }
             }
 
+            var averageRecoveryFactor = sumRecoveryFactor / counter;
+
+            //Я здесь! Надо использовать averageRecoveryFactor.
             var matrixCreator = MatrixCreator.Create(points: null, dimension: 0, radiusNeighbour: null);
 
             return false;
         }
 
-        private bool CalcIsPassedOneSystem()
+        private bool CheckCriteriaPassed(Security security, Account account, out double recoveryFactor)
         {
+            recoveryFactor = 0;
+
             var deals = security.GetMetaDeals();
             var qtyDealsCase = deals.Count >= 30;
             if (!qtyDealsCase)
-                return false;
-
-            var recoveryFactor = CalcRecoeveryFactor();
-            if (recoveryFactor < 1.0)
                 return false;
 
             var qtyDealForExclude = (int)Math.Round(0.05 * deals.Count, MidpointRounding.AwayFromZero);
@@ -130,7 +143,7 @@ namespace TrendByPivotPointsOptimizator
             system.NonTradingPeriods = nonTradingPeriods;
             SystemRun();
 
-            recoveryFactor = CalcRecoeveryFactor();
+            recoveryFactor = CalcRecoeveryFactor(security, account);
             if (recoveryFactor < 1.0)
                 return false;
 
@@ -142,10 +155,9 @@ namespace TrendByPivotPointsOptimizator
             throw new NotImplementedException();
         }
 
-        private double CalcRecoeveryFactor()
+        private double CalcRecoeveryFactor(Security security, Account account)
         {
-            var profit = security.GetProfit();
-            var account = system.Account;
+            var profit = security.GetProfit();            
             var drawDown = account.GetMaxDrawDown();
             
             var recoveryFactor = double.PositiveInfinity;

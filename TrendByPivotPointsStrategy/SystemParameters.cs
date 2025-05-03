@@ -23,10 +23,15 @@ namespace TradingSystems
         {
             if (parameters.TryGetValue(key, out object value))
                 return value;
-            else
-            {
+            else            
+                throw new KeyNotFoundException("Не найден параметр " + key);            
+        }
+
+        public void SetValue(string key, object value)
+        {
+            if (!parameters.ContainsKey(key))
                 throw new KeyNotFoundException("Не найден параметр " + key);
-            }
+            parameters[key] = value;
         }
     }
 }
