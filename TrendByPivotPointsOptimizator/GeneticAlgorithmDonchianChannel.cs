@@ -69,8 +69,8 @@ namespace TrendByPivotPointsOptimizator
             {
                 var trSysParams = CreateSecurity(chrom);
                 var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
-                new FitnessDonchianChannel(trSysParams.Security, chrom, optimizator, system);
-                new FitnessDonchianChannel(trSysParams, chrom, system);
+                var fitness = new FitnessDonchianChannel(trSysParams, chrom, system);
+                fitness.SetUpChromosomeFitnessValue();
             }
         }
 
@@ -191,6 +191,7 @@ namespace TrendByPivotPointsOptimizator
                 if (populationPassed.Count() != 0)
                 {
                     var best = populationPassed.OrderByDescending(c => c.FitnessValue).Take(30).ToList();
+                    //Я здесь. Проконтролировать, чтобы не класть в популяцию "соседей". Выбрать лучшего соседа и его добавить.
                     newPopulation.AddRange(best);
                 }                
                 // Создаем потомков

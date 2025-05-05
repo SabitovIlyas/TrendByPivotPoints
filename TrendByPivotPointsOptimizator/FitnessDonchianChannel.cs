@@ -9,44 +9,21 @@ namespace TrendByPivotPointsOptimizator
 {
     public class FitnessDonchianChannel
     {
-        private Security security;
         private ChromosomeDonchianChannel chromosome;
-        private Optimizator optimizator;
         private StarterDonchianTradingSystemLab system;
         private TradingSystemParameters trSysParams;
-
-        public FitnessDonchianChannel(Security security, ChromosomeDonchianChannel chromosome, 
-            Optimizator optimizator, StarterDonchianTradingSystemLab system)
-        {
-            this.security = security;
-            this.chromosome = chromosome;
-            this.optimizator = optimizator;
-            this.system = system;            
-            Calc();
-        }
 
         public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
             StarterDonchianTradingSystemLab system)
         {
-            security = trSysParams.Security;
             this.chromosome = chromosome;
-            this.system = system;
-            Calc();
+            this.system = system;            
         }
-
-        private void Calc()
+        
+        public void SetUpChromosomeFitnessValue()
         {
-            ////Параметры для оптимизации: быстрая доунчиан, медленная доунчиан, период АТР,
-            ////лимит открытых позиций, коэф. АТР для открытия позиции, коэф. АТР для стоп-лосса
-            //optimizator.GetOptimalParametersPercent(
-            //    points:null,
-            //    dimension: 6, // Количество параметров  
-            //    radiusNeighbourInPercent:new int[3] { 5, 5, 5 },
-            //    barrier: 1.0, // Пороговое значение
-            //    isCheckedPass: true); // Проверка на прохождение барьера           
-
             chromosome.FitnessValue = CalcIsPassed();
-        }        
+        }
 
         private double CalcIsPassed()
         {
@@ -84,13 +61,11 @@ namespace TrendByPivotPointsOptimizator
                         var param = new TradingSystemParameters(trSysParams);
                         param.SystemParameters.SetValue("slowDonchian", i);
                         param.SystemParameters.SetValue("fastDonchian", j);
-                        param.SystemParameters.SetValue("atrPeriod", k);
+                        param.SystemParameters.SetValue("atrPeriod", k);                        
+                        SystemRun(starter, param);
                         
-                        starter.SetParameters(trSysParams.SystemParameters);
-                        starter.Initialize();
-                        starter.Run();
-                        var recoveryFactor = double.NegativeInfinity;
-                        if (!CheckCriteriaPassed(param.Security, starter.Account, out recoveryFactor))
+                        var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
+                        if (double.IsNegativeInfinity(recoveryFactor))
                             return averageRecoveryFactor;
 
                         counter++;
@@ -103,14 +78,15 @@ namespace TrendByPivotPointsOptimizator
             return averageRecoveryFactor;
         }
 
-        private bool CheckCriteriaPassed(Security security, Account account, out double recoveryFactor)
+        private double CheckCriteriaPassed(Starter system, TradingSystemParameters parameters, Account account)
         {
-            recoveryFactor = 0;
+            var recoveryFactor = double.NegativeInfinity;
+            var security = parameters.Security;
 
             var deals = security.GetMetaDeals();
             var qtyDealsCase = deals.Count >= 30;
             if (!qtyDealsCase)
-                return false;
+                return recoveryFactor;
 
             var qtyDealForExclude = (int)Math.Round(0.05 * deals.Count, MidpointRounding.AwayFromZero);
             var dealsForExclude = deals.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
@@ -126,20 +102,15 @@ namespace TrendByPivotPointsOptimizator
             }
 
             system.NonTradingPeriods = nonTradingPeriods;
-
-            //Я здесь. Здесь возможна ошибка.
-            SystemRun();
-
+            SystemRun(system, parameters);
             recoveryFactor = CalcRecoeveryFactor(security, account);
-            if (recoveryFactor < 1.0)
-                return false;
 
-            return true;
+            return recoveryFactor;
         }
 
-        private void SystemRun()
+        private void SystemRun(Starter system, TradingSystemParameters parameters)
         {
-            system.SetParameters(trSysParams.SystemParameters);
+            system.SetParameters(parameters.SystemParameters);
             system.Initialize();
             system.Run();
         }

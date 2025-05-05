@@ -5,7 +5,7 @@ namespace TrendByPivotPointsOptimizator
 {
     public class ChromosomeDonchianChannel
     {
-        public bool FitnessPassed { get; set; }
+        public bool FitnessPassed { get { return !double.IsNegativeInfinity(FitnessValue); } }
         public double FitnessValue { get; set; }
         public Ticker Ticker { get; set; }
         public Interval TimeFrame { get; set; }
