@@ -45,24 +45,13 @@ namespace TrendByPivotPointsOptimizator
             //    barrier: 1.0, // Пороговое значение
             //    isCheckedPass: true); // Проверка на прохождение барьера           
 
-            SystemRun(); // Запускаем систему на тестирование
+            chromosome.FitnessValue = CalcIsPassed();
+        }        
 
-            chromosome.FitnessPassed = CalcIsPassed();
-            chromosome.FitnessValue = CalcValue();
-        }
-
-        private void SystemRun()
+        private double CalcIsPassed()
         {
-            system.SetParameters(trSysParams.SystemParameters);
-            system.Initialize();
-            system.Run();
-        }
+            var averageRecoveryFactor = double.NegativeInfinity;
 
-        private bool CalcIsPassed()
-        {
-            //Нахожусь здесь! Теперь надо повторить всё это для системы, с рядом стоящими значениями параметров
-
-            //var systems = new List<StarterDonchianTradingSystemLab>();
             var sD = (int)trSysParams.SystemParameters.GetValue("slowDonchian");
             var fD = (int)trSysParams.SystemParameters.GetValue("fastDonchian");
             var atr = (int)trSysParams.SystemParameters.GetValue("atrPeriod");
@@ -100,9 +89,9 @@ namespace TrendByPivotPointsOptimizator
                         starter.SetParameters(trSysParams.SystemParameters);
                         starter.Initialize();
                         starter.Run();
-                        var recoveryFactor = 0d;
+                        var recoveryFactor = double.NegativeInfinity;
                         if (!CheckCriteriaPassed(param.Security, starter.Account, out recoveryFactor))
-                            return false;
+                            return averageRecoveryFactor;
 
                         counter++;
                         sumRecoveryFactor += recoveryFactor;
@@ -110,12 +99,8 @@ namespace TrendByPivotPointsOptimizator
                 }
             }
 
-            var averageRecoveryFactor = sumRecoveryFactor / counter;
-
-            //Я здесь! Надо использовать averageRecoveryFactor.
-            var matrixCreator = MatrixCreator.Create(points: null, dimension: 0, radiusNeighbour: null);
-
-            return false;
+            averageRecoveryFactor = sumRecoveryFactor / counter;
+            return averageRecoveryFactor;
         }
 
         private bool CheckCriteriaPassed(Security security, Account account, out double recoveryFactor)
@@ -141,6 +126,8 @@ namespace TrendByPivotPointsOptimizator
             }
 
             system.NonTradingPeriods = nonTradingPeriods;
+
+            //Я здесь. Здесь возможна ошибка.
             SystemRun();
 
             recoveryFactor = CalcRecoeveryFactor(security, account);
@@ -150,9 +137,11 @@ namespace TrendByPivotPointsOptimizator
             return true;
         }
 
-        private double CalcValue()
+        private void SystemRun()
         {
-            throw new NotImplementedException();
+            system.SetParameters(trSysParams.SystemParameters);
+            system.Initialize();
+            system.Run();
         }
 
         private double CalcRecoeveryFactor(Security security, Account account)
