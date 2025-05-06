@@ -179,6 +179,12 @@ namespace TrendByPivotPointsOptimizator
                 chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);            
         }
 
+        private List<ChromosomeDonchianChannel> RemoveNeighbours(List<ChromosomeDonchianChannel> best)
+        {
+            //Я здесь. Можно попробовать ChatGPT
+            return best;
+        }
+
         public List<ChromosomeDonchianChannel> Run()
         {
             Initialize();
@@ -186,12 +192,12 @@ namespace TrendByPivotPointsOptimizator
             {
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
-                // Элитизм: сохраняем 30 лучших хромосом
+                // Элитизм: сохраняем 10 лучших хромосом
                 var populationPassed = population.Where(c => c.FitnessPassed == true);
                 if (populationPassed.Count() != 0)
                 {
-                    var best = populationPassed.OrderByDescending(c => c.FitnessValue).Take(30).ToList();
-                    //Я здесь. Проконтролировать, чтобы не класть в популяцию "соседей". Выбрать лучшего соседа и его добавить.
+                    var best = populationPassed.OrderByDescending(c => c.FitnessValue).Take(10).ToList();
+                    best = RemoveNeighbours(best);                    
                     newPopulation.AddRange(best);
                 }                
                 // Создаем потомков
