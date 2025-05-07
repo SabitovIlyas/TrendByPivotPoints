@@ -178,12 +178,52 @@ namespace TrendByPivotPointsOptimizator
             if (randomProvider.NextDouble() < mutationRate)  
                 chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);            
         }
-
-        private List<ChromosomeDonchianChannel> RemoveNeighbours(List<ChromosomeDonchianChannel> best)
+            
+        public List<ChromosomeDonchianChannel> SelectBestNonNeighborChromosomes(List<ChromosomeDonchianChannel> population, 
+            int count = 30, double neighborhoodPercentage = 0.05)
         {
-            //Я здесь. Можно попробовать ChatGPT
-            return best;
+            // Сортируем популяцию по убыванию фитнес-функции
+            var sortedPopulation = population.OrderByDescending(c => c.FitnessValue).ToList();
+
+            // Список для хранения выбранных хромосом
+            var selected = new List<ChromosomeDonchianChannel>();
+
+            //Я здесь!!!
+
+            // Множество для отслеживания окрестностей выбранных хромосом
+            var selectedNeighborhoods = new List<(int fastMin, int fastMax, int slowMin, int slowMax)>();
+
+            foreach (var candidate in sortedPopulation)
+            {
+                if (selected.Count >= count)
+                    break;
+
+                bool isNeighbor = false;
+                int fastMin = (int)(candidate.FastPeriod * (1 - neighborhoodPercentage));
+                int fastMax = (int)(candidate.FastPeriod * (1 + neighborhoodPercentage));
+                int slowMin = (int)(candidate.SlowPeriod * (1 - neighborhoodPercentage));
+                int slowMax = (int)(candidate.SlowPeriod * (1 + neighborhoodPercentage));
+
+                foreach (var neighborhood in selectedNeighborhoods)
+                {
+                    if (candidate.FastPeriod >= neighborhood.fastMin && candidate.FastPeriod <= neighborhood.fastMax &&
+                        candidate.SlowPeriod >= neighborhood.slowMin && candidate.SlowPeriod <= neighborhood.slowMax)
+                    {
+                        isNeighbor = true;
+                        break;
+                    }
+                }
+
+                if (!isNeighbor)
+                {
+                    selected.Add(candidate);
+                    selectedNeighborhoods.Add((fastMin, fastMax, slowMin, slowMax));
+                }
+            }
+
+            return selected;
         }
+
 
         public List<ChromosomeDonchianChannel> Run()
         {
@@ -193,13 +233,10 @@ namespace TrendByPivotPointsOptimizator
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
                 // Элитизм: сохраняем 10 лучших хромосом
-                var populationPassed = population.Where(c => c.FitnessPassed == true);
-                if (populationPassed.Count() != 0)
-                {
-                    var best = populationPassed.OrderByDescending(c => c.FitnessValue).Take(10).ToList();
-                    best = RemoveNeighbours(best);                    
-                    newPopulation.AddRange(best);
-                }                
+
+                var best = SelectBestNonNeighborChromosomes(population, count: 10, neighborhoodPercentage: 0.05);
+                newPopulation.AddRange(best);
+                         
                 // Создаем потомков
                 while (newPopulation.Count < populationSize)
                 {
