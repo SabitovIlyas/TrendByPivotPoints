@@ -188,10 +188,9 @@ namespace TrendByPivotPointsOptimizator
             // Список для хранения выбранных хромосом
             var selected = new List<ChromosomeDonchianChannel>();
 
-            //Я здесь!!!
-
             // Множество для отслеживания окрестностей выбранных хромосом
-            var selectedNeighborhoods = new List<(int fastMin, int fastMax, int slowMin, int slowMax)>();
+            var selectedNeighborhoods = new List<(int fastMin, int fastMax, 
+                int slowMin, int slowMax, int atrMin, int atrMax)>();
 
             foreach (var candidate in sortedPopulation)
             {
@@ -199,15 +198,21 @@ namespace TrendByPivotPointsOptimizator
                     break;
 
                 bool isNeighbor = false;
-                int fastMin = (int)(candidate.FastPeriod * (1 - neighborhoodPercentage));
-                int fastMax = (int)(candidate.FastPeriod * (1 + neighborhoodPercentage));
-                int slowMin = (int)(candidate.SlowPeriod * (1 - neighborhoodPercentage));
-                int slowMax = (int)(candidate.SlowPeriod * (1 + neighborhoodPercentage));
+                int fastMin = (int)(candidate.FastDonchian * (1 - neighborhoodPercentage));
+                int fastMax = (int)(candidate.FastDonchian * (1 + neighborhoodPercentage));
+                int slowMin = (int)(candidate.SlowDonchian * (1 - neighborhoodPercentage));
+                int slowMax = (int)(candidate.SlowDonchian * (1 + neighborhoodPercentage));
+                int atrMin = (int)(candidate.AtrPeriod * (1 - neighborhoodPercentage));
+                int atrMax = (int)(candidate.AtrPeriod * (1 + neighborhoodPercentage));
 
                 foreach (var neighborhood in selectedNeighborhoods)
                 {
-                    if (candidate.FastPeriod >= neighborhood.fastMin && candidate.FastPeriod <= neighborhood.fastMax &&
-                        candidate.SlowPeriod >= neighborhood.slowMin && candidate.SlowPeriod <= neighborhood.slowMax)
+                    if (candidate.FastDonchian >= neighborhood.fastMin &&
+                        candidate.FastDonchian <= neighborhood.fastMax &&
+                        candidate.SlowDonchian >= neighborhood.slowMin &&
+                        candidate.SlowDonchian <= neighborhood.slowMax &&
+                        candidate.AtrPeriod >= neighborhood.atrMin &&
+                        candidate.AtrPeriod <= neighborhood.atrMax)
                     {
                         isNeighbor = true;
                         break;
@@ -217,13 +222,12 @@ namespace TrendByPivotPointsOptimizator
                 if (!isNeighbor)
                 {
                     selected.Add(candidate);
-                    selectedNeighborhoods.Add((fastMin, fastMax, slowMin, slowMax));
+                    selectedNeighborhoods.Add((fastMin, fastMax, slowMin, slowMax, atrMin, atrMax));
                 }
             }
 
             return selected;
         }
-
 
         public List<ChromosomeDonchianChannel> Run()
         {

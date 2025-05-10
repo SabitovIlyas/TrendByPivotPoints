@@ -32,7 +32,7 @@ namespace TrendByPivotPointsOptimizator
             var sD = (int)trSysParams.SystemParameters.GetValue("slowDonchian");
             var fD = (int)trSysParams.SystemParameters.GetValue("fastDonchian");
             var atr = (int)trSysParams.SystemParameters.GetValue("atrPeriod");
-            
+
             var neighborhoodPercent = 0.05;
 
             var minSd = (int)Math.Round(sD - neighborhoodPercent * sD, MidpointRounding.AwayFromZero);
