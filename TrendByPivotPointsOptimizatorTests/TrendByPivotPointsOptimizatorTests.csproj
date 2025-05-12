@@ -73,6 +73,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CombinationTests.cs" />
+    <Compile Include="ForwardAnalysisTests.cs" />
     <Compile Include="GeneticAlgorithmTests.cs" />
     <Compile Include="MatrixCreatorTests.cs" />
     <Compile Include="OptimizatorTests.cs" />
@@ -89,6 +90,10 @@
     <ProjectReference Include="..\TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj">
       <Project>{a9c7c965-f0f0-48ed-986a-21d98a8221fc}</Project>
       <Name>TrendByPivotPointsStarter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TrendByPivotPointsStrategy\TradingSystems.csproj">
+      <Project>{B9A9953F-E415-44D8-ABA8-35A77304CCFA}</Project>
+      <Name>TradingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
