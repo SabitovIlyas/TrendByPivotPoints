@@ -174,15 +174,27 @@ namespace TradingSystems.Tests
         }        
 
         [DataTestMethod]
-        [DataRow(4, 86, PositionSide.Long, 2)]
-        [DataRow(4, 86, PositionSide.Short, 1)]
-        public void GetMetaDealsTest(int limitOpenedPositions, int barNumber,
-            PositionSide positionSide, int expected)
-        {
-            var sec = CreateSecurity(limitOpenedPositions, positionSide);            
-            var deals = sec.GetMetaDeals(barNumber: barNumber);//0..10 10..36; 65..
-            double actual = deals.Count;
-            Assert.AreEqual(expected, actual);
+        public void GetMetaDealsLongTest()
+        {            
+            var sec = CreateSecurity(limitOpenedPositions:4, positionSide:PositionSide.Long);            
+            var deals = sec.GetMetaDeals(barNumber: 86);
+            
+            Assert.AreEqual(expected:2, actual: deals.Count);
+            Assert.AreEqual(expected: 10, actual: deals[0].BarNumberOpenPosition);
+            Assert.AreEqual(expected: 34, actual: deals[0].BarNumberClosePosition);
+            Assert.AreEqual(expected: 65, actual: deals[1].BarNumberOpenPosition);
+            Assert.AreEqual(expected: int.MaxValue, actual: deals[1].BarNumberClosePosition);
+        }
+
+        [DataTestMethod]                
+        public void GetMetaDealsShortTest()
+        {            
+            var sec = CreateSecurity(limitOpenedPositions:4, positionSide:PositionSide.Short);
+            var deals = sec.GetMetaDeals(barNumber: 86);
+            
+            Assert.AreEqual(expected: 1, actual: deals.Count);
+            Assert.AreEqual(expected: 37, actual: deals[0].BarNumberOpenPosition);
+            Assert.AreEqual(expected: 63, actual: deals[0].BarNumberClosePosition);            
         }
 
         [DataTestMethod]

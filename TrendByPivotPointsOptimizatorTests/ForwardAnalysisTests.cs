@@ -23,7 +23,8 @@ namespace TrendByPivotPointsOptimizatorTests
                     Close = 100 + i
                 });
             }
-            return new Security { Bars = bars };
+            return new SecurityLab(Currency.RUB, shares: 1, bars, new LoggerNull(),
+                commissionRate: 0);
         }
 
         private double SimpleFitnessFunction(List<Bar> bars)
@@ -68,7 +69,8 @@ namespace TrendByPivotPointsOptimizatorTests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Constructor_EmptyBars_ThrowsInvalidOperationException()
         {
-            var security = new Security { Bars = new List<Bar>() };
+            var security = new SecurityLab(Currency.RUB, shares: 1, new List<Bar>(),
+                new LoggerNull(), commissionRate: 0);
             var analysis = new ForwardAnalysis(security, 30, 180, 10);
         }
 
