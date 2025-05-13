@@ -9,35 +9,35 @@ namespace TrendByPivotPointsOptimizator
 {
     public class ForwardAnalysis
     {
-        private readonly Security _security;
-        private readonly int _forwardPeriodDays;
-        private readonly int _backwardPeriodDays;
-        private readonly int _forwardPeriodsCount;
+        private readonly Security security;
+        private readonly int forwardPeriodDays;
+        private readonly int backwardPeriodDays;
+        private readonly int forwardPeriodsCount;
 
         public ForwardAnalysis(Security security, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount)
         {
-            _security = security ?? throw new ArgumentNullException(nameof(security));
-            _forwardPeriodDays = forwardPeriodDays;
-            _backwardPeriodDays = backwardPeriodDays;
-            _forwardPeriodsCount = forwardPeriodsCount;
+            this.security = security ?? throw new ArgumentNullException(nameof(security));
+            this.forwardPeriodDays = forwardPeriodDays;
+            this.backwardPeriodDays = backwardPeriodDays;
+            this.forwardPeriodsCount = forwardPeriodsCount;
 
             ValidateParameters();
         }
 
         private void ValidateParameters()
         {
-            if (_forwardPeriodDays <= 0)
-                throw new ArgumentException("Forward period must be positive", nameof(_forwardPeriodDays));
-            if (_backwardPeriodDays <= 0)
-                throw new ArgumentException("Backward period must be positive", nameof(_backwardPeriodDays));
-            if (_forwardPeriodsCount <= 0)
-                throw new ArgumentException("Forward periods count must be positive", nameof(_forwardPeriodsCount));
+            if (forwardPeriodDays <= 0)
+                throw new ArgumentException("Forward period must be positive", nameof(forwardPeriodDays));
+            if (backwardPeriodDays <= 0)
+                throw new ArgumentException("Backward period must be positive", nameof(backwardPeriodDays));
+            if (forwardPeriodsCount <= 0)
+                throw new ArgumentException("Forward periods count must be positive", nameof(forwardPeriodsCount));
 
-            if (!_security.Bars.Any())
+            if (!security.Bars.Any())
                 throw new InvalidOperationException("Bars list is empty");
 
-            var totalRequiredDays = _backwardPeriodDays + (_forwardPeriodDays * _forwardPeriodsCount);
-            var availableDays = (_security.Bars.Max(b => b.Date) - _security.Bars.Min(b => b.Date)).Days;
+            var totalRequiredDays = backwardPeriodDays + (forwardPeriodDays * forwardPeriodsCount);
+            var availableDays = (security.Bars.Max(b => b.Date) - security.Bars.Min(b => b.Date)).Days;
 
             if (availableDays < totalRequiredDays)
                 throw new InvalidOperationException(
@@ -47,15 +47,16 @@ namespace TrendByPivotPointsOptimizator
         public List<ForwardAnalysisResult> PerformAnalysis(Func<List<Bar>, double> fitnessFunction)
         {
             var results = new List<ForwardAnalysisResult>();
-            var sortedBars = _security.Bars.OrderBy(b => b.Date).ToList();
+            var sortedBars = security.Bars.OrderBy(b => b.Date).ToList();
             var latestDate = sortedBars.Last().Date;
 
-            for (int i = 0; i < _forwardPeriodsCount; i++)
+            for (int i = 0; i < forwardPeriodsCount; i++)
             {
-                var forwardEnd = latestDate.AddDays(-_forwardPeriodDays * i);
-                var forwardStart = forwardEnd.AddDays(-_forwardPeriodDays + 1);
+                //Возможно, ошибка! Надо разобраться с forwardEnd. Последний день же должен быть текущим днем.
+                var forwardEnd = latestDate.AddDays(-forwardPeriodDays * i);
+                var forwardStart = forwardEnd.AddDays(-forwardPeriodDays + 1);
                 var backwardEnd = forwardStart.AddDays(-1);
-                var backwardStart = backwardEnd.AddDays(-_backwardPeriodDays + 1);
+                var backwardStart = backwardEnd.AddDays(-backwardPeriodDays + 1);
 
                 if (backwardStart < sortedBars.First().Date)
                     throw new InvalidOperationException("Not enough historical data for backward testing");
@@ -71,6 +72,7 @@ namespace TrendByPivotPointsOptimizator
                 if (!backwardBars.Any() || !forwardBars.Any())
                     continue;
 
+                //Разбираюсь с кодом. Остановился на этом месте.
                 var result = new ForwardAnalysisResult
                 {
                     BackwardFitness = fitnessFunction(backwardBars),

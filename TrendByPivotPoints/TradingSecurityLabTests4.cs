@@ -217,7 +217,7 @@ namespace TradingSystems.Tests
             n.BarStart = barStartDealExclude2 - 1;
             n.BarStop = barStopDealExclude2 - 1;
 
-            if (barStartDealExclude1 > 0)
+            if (barStartDealExclude2 > 0)
                 nonTradingPeriods.Add(n);            
 
             var sec = CreateSecurity(limitOpenedPositions, positionSide, 0, nonTradingPeriods);
