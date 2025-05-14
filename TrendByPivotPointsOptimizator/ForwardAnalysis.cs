@@ -37,7 +37,7 @@ namespace TrendByPivotPointsOptimizator
                 throw new InvalidOperationException("Bars list is empty");
 
             var totalRequiredDays = backwardPeriodDays + (forwardPeriodDays * forwardPeriodsCount);
-            var availableDays = (security.Bars.Max(b => b.Date) - security.Bars.Min(b => b.Date)).Days;
+            var availableDays = (security.Bars.Max(b => b.Date) - security.Bars.Min(b => b.Date)).Days + 1;
 
             if (availableDays < totalRequiredDays)
                 throw new InvalidOperationException(

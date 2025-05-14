@@ -86,7 +86,7 @@ namespace TrendByPivotPointsOptimizatorTests
         public void PerformAnalysis_ValidParameters_ReturnsCorrectNumberOfResults()
         {
             var security = CreateTestSecurity(DateTime.Now.AddDays(-1000), 1000);
-            var analysis = new ForwardAnalysis(security, 30, 180, 5);//Ошибка! Количество доступных дней должно быть 1000, а не 999.
+            var analysis = new ForwardAnalysis(security, 30, 180, 5);
 
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);
 
