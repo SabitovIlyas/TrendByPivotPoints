@@ -52,7 +52,6 @@ namespace TrendByPivotPointsOptimizator
 
             for (int i = 0; i < forwardPeriodsCount; i++)
             {
-                //Возможно, ошибка! Надо разобраться с forwardEnd. Последний день же должен быть текущим днем.
                 var forwardEnd = latestDate.AddDays(-forwardPeriodDays * i);
                 var forwardStart = forwardEnd.AddDays(-forwardPeriodDays + 1);
                 var backwardEnd = forwardStart.AddDays(-1);

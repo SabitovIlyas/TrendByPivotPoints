@@ -96,11 +96,13 @@ namespace TrendByPivotPointsOptimizatorTests
         [TestMethod]
         public void PerformAnalysis_DateRanges_CorrectlyAligned()
         {
-            var security = CreateTestSecurity(DateTime.Now.AddDays(-1000), 1000);
-            var analysis = new ForwardAnalysis(security, 30, 180, 2);
+            var security = CreateTestSecurity(DateTime.Now.AddDays(-1000 + 1), 1000); //чтобы попал текущий день
+            var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30, 
+                backwardPeriodDays: 180, forwardPeriodsCount: 2);
 
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);
 
+            //Нахожусь здесь! Продолжаю разбираться.
             var firstResult = results[0];
             var secondResult = results[1];
 
