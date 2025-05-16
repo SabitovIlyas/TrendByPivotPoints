@@ -29,6 +29,7 @@ namespace TrendByPivotPointsOptimizatorTests
 
         private double SimpleFitnessFunction(List<Bar> bars)
         {
+            //Я здесь
             if (!bars.Any()) return 0;
             var returns = bars.Zip(bars.Skip(1), (a, b) => b.Close / a.Close - 1);
             return returns.Average() * 100;
