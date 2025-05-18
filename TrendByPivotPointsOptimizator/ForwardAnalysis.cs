@@ -71,7 +71,6 @@ namespace TrendByPivotPointsOptimizator
                 if (!backwardBars.Any() || !forwardBars.Any())
                     continue;
 
-                //Разбираюсь с кодом. Остановился на этом месте.
                 var result = new ForwardAnalysisResult
                 {
                     BackwardFitness = fitnessFunction(backwardBars),
@@ -105,6 +104,8 @@ namespace TrendByPivotPointsOptimizator
             double sumSquareBackward = 0;
             double sumSquareForward = 0;
 
+
+            //Я здесь. Почитать про корреляцию Пирсона.
             for (int i = 0; i < backwardFitness.Count; i++)
             {
                 var diffBackward = backwardFitness[i] - meanBackward;

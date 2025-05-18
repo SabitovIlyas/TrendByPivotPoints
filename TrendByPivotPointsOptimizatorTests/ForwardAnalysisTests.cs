@@ -2,9 +2,6 @@
 using TrendByPivotPointsOptimizator;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TradingSystems;
 
 namespace TrendByPivotPointsOptimizatorTests
@@ -29,10 +26,24 @@ namespace TrendByPivotPointsOptimizatorTests
 
         private double SimpleFitnessFunction(List<Bar> bars)
         {
-            //Я здесь
-            if (!bars.Any()) return 0;
-            var returns = bars.Zip(bars.Skip(1), (a, b) => b.Close / a.Close - 1);
-            return returns.Average() * 100;
+            // Если список баров пустой, возвращаем 0
+            if (bars == null || bars.Count < 2)
+                return 0;
+
+            // Считаем доходности между соседними барами
+            double sumReturns = 0;
+            int count = 0;
+            for (int i = 1; i < bars.Count; i++)
+            {
+                double prevClose = bars[i - 1].Close;
+                double currClose = bars[i].Close;
+                double ret = (currClose / prevClose) - 1;
+                sumReturns += ret;
+                count++;
+            }
+
+            // Возвращаем среднюю доходность в процентах
+            return (sumReturns / count) * 100;
         }
 
         [TestMethod]
@@ -88,9 +99,7 @@ namespace TrendByPivotPointsOptimizatorTests
         {
             var security = CreateTestSecurity(DateTime.Now.AddDays(-1000), 1000);
             var analysis = new ForwardAnalysis(security, 30, 180, 5);
-
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);
-
             Assert.AreEqual(5, results.Count);
         }
 
@@ -102,8 +111,6 @@ namespace TrendByPivotPointsOptimizatorTests
                 backwardPeriodDays: 180, forwardPeriodsCount: 2);
 
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);
-
-            //Нахожусь здесь! Продолжаю разбираться.
             var firstResult = results[0];
             var secondResult = results[1];
 
@@ -119,8 +126,10 @@ namespace TrendByPivotPointsOptimizatorTests
         [TestMethod]
         public void IsStrategyViable_EmptyResults_ReturnsFalse()
         {
+            //Я здесь
             var security = CreateTestSecurity(DateTime.Now, 1000);
-            var analysis = new ForwardAnalysis(security, 30, 180, 10);
+            var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
+                backwardPeriodDays: 180, forwardPeriodsCount: 10);
 
             var result = analysis.IsStrategyViable(new List<ForwardAnalysisResult>());
 
@@ -131,7 +140,8 @@ namespace TrendByPivotPointsOptimizatorTests
         public void IsStrategyViable_HighCorrelation_ReturnsTrue()
         {
             var security = CreateTestSecurity(DateTime.Now, 1000);
-            var analysis = new ForwardAnalysis(security, 30, 180, 3);
+            var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
+                backwardPeriodDays: 180, forwardPeriodsCount: 3);
 
             var results = new List<ForwardAnalysisResult>
         {
