@@ -159,7 +159,8 @@ namespace TrendByPivotPointsOptimizatorTests
         public void IsStrategyViable_LowCorrelation_ReturnsFalse()
         {
             var security = CreateTestSecurity(DateTime.Now, 1000);
-            var analysis = new ForwardAnalysis(security, 30, 180, 3);
+            var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
+                backwardPeriodDays: 180, forwardPeriodsCount: 3);
 
             var results = new List<ForwardAnalysisResult>
         {
