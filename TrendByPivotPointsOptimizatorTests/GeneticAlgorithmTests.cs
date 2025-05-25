@@ -99,7 +99,7 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod]
-        public void Mutate_ShouldChangePeriodsWithMutationRate()//мне кажется, что этот тест не верен, так как существует вероятнность генерации и 5, и 20.
+        public void Mutate_ShouldChangePeriodsWithMutationRate()
         {
             // Arrange
             var mockRandom = new Mock<IRandomProvider>();
