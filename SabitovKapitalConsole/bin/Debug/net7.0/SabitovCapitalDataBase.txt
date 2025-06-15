@@ -28,6 +28,7 @@ BalanceStamp;Id	21;DateTime	23.04.2024 22:21:00;Value	2221361,32
 BalanceStamp;Id	22;DateTime	05.09.2024 19:02:00;Value	1818980,21
 BalanceStamp;Id	23;DateTime	05.09.2024 19:04:00;Value	1718980,21
 BalanceStamp;Id	24;DateTime	20.11.2024 20:11:00;Value	1611881,53
+BalanceStamp;Id	25;DateTime	15.06.2025 16:17:00;Value	1699443,63
 
 Transaction;Id	0;DateTime	25.01.2023 0:00:00;Operation	Deposit;Value	2276298,88;BalanceStampId	0;AccountId	1
 Transaction;Id	1;DateTime	25.01.2023 0:00:00;Operation	Deposit;Value	362858,35;BalanceStampId	1;AccountId	0
