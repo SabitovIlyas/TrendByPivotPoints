@@ -58,7 +58,9 @@ namespace TrendByPivotPointsOptimizator.Tests
             foreach (var chrom in ga.GetPopulation())
             {
                 Assert.IsNotNull(chrom.Fitness);
-                Assert.IsTrue(chrom.Fitness >= 0 || chrom.Fitness < 0); // Прибыль может быть положительной или отрицательной
+                Assert.IsTrue(chrom.Fitness >= 0 || chrom.Fitness < 0); // Прибыль может быть
+                                                                        // положительной или
+                                                                        // отрицательной
             }
         }
 

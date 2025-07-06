@@ -236,9 +236,9 @@ namespace TrendByPivotPointsOptimizator
             {
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
-                // Элитизм: сохраняем 10 лучших хромосом
+                // Элитизм: сохраняем 30 лучших хромосом
 
-                var best = SelectBestNonNeighborChromosomes(population, count: 10, neighborhoodPercentage: 0.05);
+                var best = SelectBestNonNeighborChromosomes(population, count: 30, neighborhoodPercentage: 0.05);
                 newPopulation.AddRange(best);
                          
                 // Создаем потомков

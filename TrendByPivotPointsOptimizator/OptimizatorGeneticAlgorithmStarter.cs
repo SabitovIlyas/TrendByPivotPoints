@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using TradingSystems;
 using TrendByPivotPointsStarter;
 using TSLab.DataSource;
+using TSLab.Script;
 using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
@@ -50,9 +51,22 @@ namespace TrendByPivotPointsOptimizator
 
                 //Я здесь!!! Теперь надо реализовать форвардный анализ.
 
+                //var fa = new ForwardAnalysis(security, forwardPeriodDays: 30,
+                //backwardPeriodDays: 180, forwardPeriodsCount: 10);
+
+
+                //fa.PerformAnalysis();
+                //fa.IsStrategyViable();
+                
+
+                ///////////////////////////////////////////////////////
+                
+
+
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, settings, context, optimizator, logger);//50, 100, 0.8, 0.1
+                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, 
+                    settings, context, optimizator, logger);//50, 100, 0.8, 0.1
                 var result = ga.Run();
 
 
