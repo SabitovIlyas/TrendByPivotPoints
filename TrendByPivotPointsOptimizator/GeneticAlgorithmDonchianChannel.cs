@@ -70,6 +70,8 @@ namespace TrendByPivotPointsOptimizator
                 var trSysParams = CreateSecurity(chrom);
                 var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
                 var fitness = new FitnessDonchianChannel(trSysParams, chrom, system);
+
+                //Мне до этого момента надо задать неторгуемые периоды системы
                 fitness.SetUpChromosomeFitnessValue();
             }
         }

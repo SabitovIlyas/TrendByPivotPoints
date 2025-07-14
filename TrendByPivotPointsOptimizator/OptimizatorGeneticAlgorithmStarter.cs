@@ -51,8 +51,12 @@ namespace TrendByPivotPointsOptimizator
 
                 //Я здесь!!! Теперь надо реализовать форвардный анализ.
 
-                //var fa = new ForwardAnalysis(security, forwardPeriodDays: 30,
-                //backwardPeriodDays: 180, forwardPeriodsCount: 10);
+                var optimizator = Optimizator.Create();
+                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers,
+                    settings, context, optimizator, logger);//50, 100, 0.8, 0.1
+
+                var fa = new ForwardAnalysis(ga, forwardPeriodDays: 30,
+                backwardPeriodDays: 180, forwardPeriodsCount: 10);
 
 
                 //fa.PerformAnalysis();
@@ -64,10 +68,8 @@ namespace TrendByPivotPointsOptimizator
 
 
 
-                var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers, 
-                    settings, context, optimizator, logger);//50, 100, 0.8, 0.1
-                var result = ga.Run();
+                
+                //var result = ga.Run();
 
 
                 logger.Log("Генетический алгоритм завершил работу. Результаты:\r\n");

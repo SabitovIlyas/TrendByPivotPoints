@@ -9,6 +9,7 @@ namespace TrendByPivotPointsOptimizator
 {
     public class ForwardAnalysis
     {
+        private readonly GeneticAlgorithmDonchianChannel genAlg;
         private readonly Security security;
         private readonly int forwardPeriodDays;
         private readonly int backwardPeriodDays;
@@ -44,6 +45,23 @@ namespace TrendByPivotPointsOptimizator
                     $"Insufficient data: available {availableDays} days, required {totalRequiredDays} days");
         }
 
+        public ForwardAnalysis(GeneticAlgorithmDonchianChannel genAlg, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount)
+        {
+            this.genAlg = genAlg;
+            this.forwardPeriodDays = forwardPeriodDays;
+            this.backwardPeriodDays = backwardPeriodDays;
+            this.forwardPeriodsCount = forwardPeriodsCount;
+
+            Generate();
+        }
+
+        private void Generate()
+        {
+            //Остановился здесь. Эта строчка неверная.
+            var result = genAlg.Run();
+        }        
+
+        //Работает с датами! То что надо!
         public List<ForwardAnalysisResult> PerformAnalysis(Func<List<Bar>, double> fitnessFunction)
         {
             var results = new List<ForwardAnalysisResult>();
