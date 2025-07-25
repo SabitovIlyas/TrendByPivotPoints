@@ -50,7 +50,7 @@ namespace TrendByPivotPointsOptimizatorTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullSecurity_ThrowsArgumentNullException()
         {
-            var analysis = new ForwardAnalysis(null, 30, 180, 10);
+            var analysis = new ForwardAnalysis(security: null, 30, 180, 10);
         }
 
         [TestMethod]
@@ -107,7 +107,7 @@ namespace TrendByPivotPointsOptimizatorTests
         public void PerformAnalysis_DateRanges_CorrectlyAligned()
         {
             var security = CreateTestSecurity(DateTime.Now.AddDays(-1000 + 1), 1000); //чтобы попал текущий день
-            var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30, 
+            var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
                 backwardPeriodDays: 180, forwardPeriodsCount: 2);
 
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);

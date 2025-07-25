@@ -73,6 +73,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CombinationTests.cs" />
+    <Compile Include="ForwardAnalysisAndGeneticAlgorithmTests.cs" />
     <Compile Include="ForwardAnalysisTests.cs" />
     <Compile Include="GeneticAlgorithmTests.cs" />
     <Compile Include="MatrixCreatorTests.cs" />

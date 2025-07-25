@@ -73,8 +73,8 @@ namespace TrendByPivotPointsOptimizator
 
 
                 logger.Log("Генетический алгоритм завершил работу. Результаты:\r\n");
-                foreach (var res in result)
-                    logger.Log("{0}\r\n", res.ToString());
+                //foreach (var res in result)
+                //    logger.Log("{0}\r\n", res.ToString());
 
                 
 
