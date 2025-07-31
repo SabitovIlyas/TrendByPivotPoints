@@ -72,6 +72,8 @@ namespace TrendByPivotPointsOptimizator
                 var fitness = new FitnessDonchianChannel(trSysParams, chrom, system);
 
                 //Мне до этого момента надо задать неторгуемые периоды системы
+                chrom.UpdateBars();
+
                 fitness.SetUpChromosomeFitnessValue();
             }
         }

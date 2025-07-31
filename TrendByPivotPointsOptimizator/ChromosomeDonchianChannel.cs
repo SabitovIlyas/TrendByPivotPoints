@@ -1,4 +1,6 @@
-﻿using TradingSystems;
+﻿using System;
+using System.Collections.Generic;
+using TradingSystems;
 using TSLab.DataSource;
 
 namespace TrendByPivotPointsOptimizator
@@ -17,6 +19,7 @@ namespace TrendByPivotPointsOptimizator
         public double KAtrForOpenPosition { get; set; }
         public double KAtrForStopLoss { get; set; }
 
+        public List<ForwardAnalysisResult> ForwardAnalysisResults { get; set; } = new List<ForwardAnalysisResult>();
         public ChromosomeDonchianChannel(Ticker ticker, Interval timeFrame, PositionSide side, int fastDonchian, int slowDonchian, int atrPeriod, int limitOpenedPositions, double kAtrForOpenPosition, double kAtrForStopLoss)
         {
             Ticker = ticker;
@@ -28,6 +31,16 @@ namespace TrendByPivotPointsOptimizator
             LimitOpenedPositions = limitOpenedPositions;
             KAtrForOpenPosition = kAtrForOpenPosition;
             KAtrForStopLoss = kAtrForStopLoss;
+        }
+
+        public void UpdateBars()
+        {
+
+            //TODO: Сделать этот метод нормальным!
+            if (ForwardAnalysisResults[0].BackwardBars != null)
+            {
+                Ticker.Bars = ForwardAnalysisResults[0].BackwardBars;
+            }
         }
     }
 }

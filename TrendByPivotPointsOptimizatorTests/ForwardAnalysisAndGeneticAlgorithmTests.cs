@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime;
 using TradingSystems;
 using TrendByPivotPointsOptimizator;
@@ -32,8 +33,16 @@ namespace TrendByPivotPointsOptimizatorTests
 
             ga.Initialize(); //создали популяцию хромосом
 
+            var population = ga.GetPopulation();
+
             var fa = new ForwardAnalysis(genAlg: ga, forwardPeriodDays: 30,
                 backwardPeriodDays: 120, forwardPeriodsCount: 10);
+
+            fa.PerformAnalysis(population);
+
+            population.First()
+
+
             
             
 

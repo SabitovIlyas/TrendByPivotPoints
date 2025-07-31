@@ -105,6 +105,49 @@ namespace TrendByPivotPointsOptimizator
             return results;
         }
 
+        public void PerformAnalysis(List<ChromosomeDonchianChannel> population)
+        {
+            var results = new List<ForwardAnalysisResult>();
+            var sortedBars = security.Bars.OrderBy(b => b.Date).ToList();
+            var latestDate = sortedBars.Last().Date;
+
+            for (int i = 0; i < forwardPeriodsCount; i++)
+            {
+                var forwardEnd = latestDate.AddDays(-forwardPeriodDays * i);
+                var forwardStart = forwardEnd.AddDays(-forwardPeriodDays + 1);
+                var backwardEnd = forwardStart.AddDays(-1);
+                var backwardStart = backwardEnd.AddDays(-backwardPeriodDays + 1);
+
+                if (backwardStart < sortedBars.First().Date)
+                    throw new InvalidOperationException("Not enough historical data for backward testing");
+
+                var backwardBars = sortedBars
+                    .Where(b => b.Date >= backwardStart && b.Date <= backwardEnd)
+                    .ToList();
+
+                var forwardBars = sortedBars
+                    .Where(b => b.Date >= forwardStart && b.Date <= forwardEnd)
+                    .ToList();
+
+                if (!backwardBars.Any() || !forwardBars.Any())
+                    continue;
+
+                foreach (var chromosome in population)
+                {
+                    var result = new ForwardAnalysisResult
+                    {
+                        BackwardStart = backwardStart,
+                        BackwardEnd = backwardEnd,
+                        ForwardStart = forwardStart,
+                        ForwardEnd = forwardEnd,
+                        BackwardBars = backwardBars,
+                        ForwardBars = forwardBars
+                    };
+                    chromosome.ForwardAnalysisResults.Add(result);                   
+                }                        
+            }            
+        }
+
         public bool IsStrategyViable(List<ForwardAnalysisResult> results, double correlationThreshold = 0.7)
         {
             if (!results.Any())

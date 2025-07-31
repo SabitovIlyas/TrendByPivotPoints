@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using TradingSystems;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -10,5 +12,8 @@ namespace TrendByPivotPointsOptimizator
         public DateTime BackwardEnd { get; set; }
         public DateTime ForwardStart { get; set; }
         public DateTime ForwardEnd { get; set; }
+        public List<Bar> BackwardBars { get; set; }
+        public List<Bar> ForwardBars { get; set; }
+
     }
 }

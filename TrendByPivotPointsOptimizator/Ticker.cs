@@ -5,7 +5,7 @@ namespace TrendByPivotPointsOptimizator
 {
     public class Ticker
     {        
-        public List<Bar> Bars { get; private set; }
+        public List<Bar> Bars { get; set; }
         public string Name { get; private set; }
         public Currency Currency { get; private set; }
         public int Shares { get; private set; }
