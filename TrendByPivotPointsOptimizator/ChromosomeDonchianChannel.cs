@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TradingSystems;
 using TSLab.DataSource;
 
@@ -33,14 +34,16 @@ namespace TrendByPivotPointsOptimizator
             KAtrForStopLoss = kAtrForStopLoss;
         }
 
-        public void UpdateBars()
+        public void SetBackwardBarsAsTickerBars()
         {
+            if (ForwardAnalysisResults.Any() && ForwardAnalysisResults.First().BackwardBars != null)
+                Ticker.Bars = ForwardAnalysisResults.First().BackwardBars;
+        }
 
-            //TODO: Сделать этот метод нормальным!
-            if (ForwardAnalysisResults[0].BackwardBars != null)
-            {
-                Ticker.Bars = ForwardAnalysisResults[0].BackwardBars;
-            }
+        public void SetForwardBarsAsTickerBars()
+        {
+            if (ForwardAnalysisResults.Any() && ForwardAnalysisResults.First().ForwardBars != null)
+                Ticker.Bars = ForwardAnalysisResults.First().ForwardBars;
         }
     }
 }

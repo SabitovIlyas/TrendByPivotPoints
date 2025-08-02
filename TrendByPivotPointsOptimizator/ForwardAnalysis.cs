@@ -143,7 +143,7 @@ namespace TrendByPivotPointsOptimizator
                     BackwardBars = backwardBars,
                     ForwardBars = forwardBars
                 };
-                chromosome.ForwardAnalysisResults.Add(result);
+                chromosome.ForwardAnalysisResults.Add(result);               
 
             }
         }
