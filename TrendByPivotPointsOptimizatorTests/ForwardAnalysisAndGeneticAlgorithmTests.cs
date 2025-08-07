@@ -40,6 +40,14 @@ namespace TrendByPivotPointsOptimizatorTests
 
             fa.PerformAnalysis(population);
 
+            foreach (var c in population)
+            {
+                c.SetBackwardBarsAsTickerBars();
+                c.FitnessValue = 0;
+            }
+                
+            
+
             population.First()
 
 
