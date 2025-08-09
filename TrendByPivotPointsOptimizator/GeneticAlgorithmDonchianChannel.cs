@@ -67,18 +67,14 @@ namespace TrendByPivotPointsOptimizator
         {
             foreach (var chrom in population)
             {
-                var trSysParams = CreateSecurity(chrom);
+                var trSysParams = CreateTradingSystemParameters(chrom);
                 var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
                 var fitness = new FitnessDonchianChannel(trSysParams, chrom, system);
-
-                //Мне до этого момента надо задать неторгуемые периоды системы
-                chrom.UpdateBars();
-
                 fitness.SetUpChromosomeFitnessValue();
             }
         }
 
-        private TradingSystemParameters CreateSecurity(ChromosomeDonchianChannel chrom)
+        private TradingSystemParameters CreateTradingSystemParameters(ChromosomeDonchianChannel chrom)
         {
             var ticker = chrom.Ticker;
             var systemParameters = new SystemParameters();
@@ -236,6 +232,8 @@ namespace TrendByPivotPointsOptimizator
         public List<ChromosomeDonchianChannel> Run()
         {
             Initialize();
+            //PrepareChromosomes()
+            //Я здесь. Надо подготовить хромосомы
             for (int gen = 0; gen < generations; gen++)
             {
                 Evaluate();

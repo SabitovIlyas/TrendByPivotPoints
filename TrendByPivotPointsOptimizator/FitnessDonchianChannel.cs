@@ -9,6 +9,10 @@ namespace TrendByPivotPointsOptimizator
 {
     public class FitnessDonchianChannel
     {
+        public double NeighborhoodPercent { get; set; } = 0.05;
+        public int DealsCount { get; set; } = 30;
+        public double PrcntDealForExclude { get; set; } = 0.05;
+
         private ChromosomeDonchianChannel chromosome;
         private StarterDonchianTradingSystemLab system;
         private TradingSystemParameters trSysParams;
@@ -33,16 +37,14 @@ namespace TrendByPivotPointsOptimizator
             var fD = (int)trSysParams.SystemParameters.GetValue("fastDonchian");
             var atr = (int)trSysParams.SystemParameters.GetValue("atrPeriod");
 
-            var neighborhoodPercent = 0.05;
+            var minSd = (int)Math.Round(sD - NeighborhoodPercent * sD, MidpointRounding.AwayFromZero);
+            var maxSd = (int)Math.Round(sD + NeighborhoodPercent * sD, MidpointRounding.AwayFromZero);
 
-            var minSd = (int)Math.Round(sD - neighborhoodPercent * sD, MidpointRounding.AwayFromZero);
-            var maxSd = (int)Math.Round(sD + neighborhoodPercent * sD, MidpointRounding.AwayFromZero);
+            var minFd = (int)Math.Round(fD - NeighborhoodPercent * fD, MidpointRounding.AwayFromZero);
+            var maxFd = (int)Math.Round(fD + NeighborhoodPercent * fD, MidpointRounding.AwayFromZero);
 
-            var minFd = (int)Math.Round(fD - neighborhoodPercent * fD, MidpointRounding.AwayFromZero);
-            var maxFd = (int)Math.Round(fD + neighborhoodPercent * fD, MidpointRounding.AwayFromZero);
-
-            var minAtr = (int)Math.Round(atr - neighborhoodPercent * atr, MidpointRounding.AwayFromZero);
-            var maxAtr = (int)Math.Round(atr + neighborhoodPercent * atr, MidpointRounding.AwayFromZero);
+            var minAtr = (int)Math.Round(atr - NeighborhoodPercent * atr, MidpointRounding.AwayFromZero);
+            var maxAtr = (int)Math.Round(atr + NeighborhoodPercent * atr, MidpointRounding.AwayFromZero);
 
             var counter = 0;
             var sumRecoveryFactor = 0d;
@@ -84,11 +86,11 @@ namespace TrendByPivotPointsOptimizator
             var security = parameters.Security;
 
             var deals = security.GetMetaDeals();
-            var qtyDealsCase = deals.Count >= 30;
+            var qtyDealsCase = deals.Count >= DealsCount;
             if (!qtyDealsCase)
                 return recoveryFactor;
 
-            var qtyDealForExclude = (int)Math.Round(0.05 * deals.Count, MidpointRounding.AwayFromZero);
+            var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * deals.Count, MidpointRounding.AwayFromZero);
             var dealsForExclude = deals.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
 
             var nonTradingPeriods = new List<NonTradingPeriod>();

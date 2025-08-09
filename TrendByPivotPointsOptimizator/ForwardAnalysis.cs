@@ -106,7 +106,7 @@ namespace TrendByPivotPointsOptimizator
             return results;
         }
 
-        public void PerformAnalysis(List<ChromosomeDonchianChannel> population)
+        public void SetTradingPeriodsForEachCromosomeInPopulation(List<ChromosomeDonchianChannel> population)
         {
             var results = new List<ForwardAnalysisResult>();
             var sortedBars = security.Bars.OrderBy(b => b.Date).ToList();

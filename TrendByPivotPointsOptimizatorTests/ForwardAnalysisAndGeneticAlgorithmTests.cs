@@ -38,22 +38,12 @@ namespace TrendByPivotPointsOptimizatorTests
             var fa = new ForwardAnalysis(genAlg: ga, forwardPeriodDays: 30,
                 backwardPeriodDays: 120, forwardPeriodsCount: 10);
 
-            fa.PerformAnalysis(population);
+            fa.SetTradingPeriodsForEachCromosomeInPopulation(population);
 
             foreach (var c in population)
-            {
                 c.SetBackwardBarsAsTickerBars();
-                c.FitnessValue = 0;
-            }
-                
-            
 
-            population.First()
-
-
-            
-            
-
+            ga.Evaluate();
         }
     }
 }
