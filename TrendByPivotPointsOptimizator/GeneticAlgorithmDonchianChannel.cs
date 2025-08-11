@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using TradingSystems;
@@ -11,6 +12,7 @@ namespace TrendByPivotPointsOptimizator
     public class GeneticAlgorithmDonchianChannel
     {
         public List<ChromosomeDonchianChannel> GetPopulation() => population;
+        public FitnessDonchianChannel FitnessDonchianChannel { get; private set; }
 
         private List<ChromosomeDonchianChannel> population;
         private int populationSize;
@@ -69,8 +71,8 @@ namespace TrendByPivotPointsOptimizator
             {
                 var trSysParams = CreateTradingSystemParameters(chrom);
                 var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
-                var fitness = new FitnessDonchianChannel(trSysParams, chrom, system);
-                fitness.SetUpChromosomeFitnessValue();
+                FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chrom, system);
+                FitnessDonchianChannel.SetUpChromosomeFitnessValue();
             }
         }
 
@@ -232,15 +234,16 @@ namespace TrendByPivotPointsOptimizator
         public List<ChromosomeDonchianChannel> Run()
         {
             Initialize();
-            //PrepareChromosomes()
-            //Я здесь. Надо подготовить хромосомы
+            PrepareChromosomes();            
             for (int gen = 0; gen < generations; gen++)
             {
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
-                // Элитизм: сохраняем 30 лучших хромосом
+                var qtyBestChromosomes = 30;                
+                var neighborhoodPercentage = 0.05;
 
-                var best = SelectBestNonNeighborChromosomes(population, count: 30, neighborhoodPercentage: 0.05);
+                // Элитизм: сохраняем лучшие хромосомы, исключая № соседних
+                var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, neighborhoodPercentage);
                 newPopulation.AddRange(best);
                          
                 // Создаем потомков
@@ -266,7 +269,20 @@ namespace TrendByPivotPointsOptimizator
             }
             Evaluate();
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
-            return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(30).ToList();
-        }        
+            return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(10).ToList();
+        }
+
+        private void PrepareChromosomes()
+        {
+            var population = GetPopulation();
+
+            var fa = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 30,
+                backwardPeriodDays: 120, forwardPeriodsCount: 10);
+
+            fa.SetTradingPeriodsForEachCromosomeInPopulation(population);
+
+            foreach (var c in population)
+                c.SetBackwardBarsAsTickerBars();            
+        }
     }
 }

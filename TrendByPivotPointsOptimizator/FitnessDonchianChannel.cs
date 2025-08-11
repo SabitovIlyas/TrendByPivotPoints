@@ -12,6 +12,7 @@ namespace TrendByPivotPointsOptimizator
         public double NeighborhoodPercent { get; set; } = 0.05;
         public int DealsCount { get; set; } = 30;
         public double PrcntDealForExclude { get; set; } = 0.05;
+        public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
         private ChromosomeDonchianChannel chromosome;
         private StarterDonchianTradingSystemLab system;
@@ -86,8 +87,8 @@ namespace TrendByPivotPointsOptimizator
             var security = parameters.Security;
 
             var deals = security.GetMetaDeals();
-            var qtyDealsCase = deals.Count >= DealsCount;
-            if (!qtyDealsCase)
+            var isQtyDealsEnough = deals.Count >= DealsCount;
+            if (IsCriteriaPassedNeedToCheck && !isQtyDealsEnough)
                 return recoveryFactor;
 
             var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * deals.Count, MidpointRounding.AwayFromZero);

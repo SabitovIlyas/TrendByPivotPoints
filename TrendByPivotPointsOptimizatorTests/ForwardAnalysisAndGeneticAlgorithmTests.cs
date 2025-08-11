@@ -30,20 +30,23 @@ namespace TrendByPivotPointsOptimizatorTests
             var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100, 
                 crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
                 optimizator, logger);
+                       
 
-            ga.Initialize(); //создали популяцию хромосом
+            var bestPopulation = ga.Run();
 
-            var population = ga.GetPopulation();
+            foreach (var c in bestPopulation)
+            {
+                c.ForwardAnalysisResults.First().BackwardFitness = c.FitnessValue;
+                c.SetForwardBarsAsTickerBars();
+            }
 
-            var fa = new ForwardAnalysis(genAlg: ga, forwardPeriodDays: 30,
-                backwardPeriodDays: 120, forwardPeriodsCount: 10);
+            ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue();
+            ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = false;
 
-            fa.SetTradingPeriodsForEachCromosomeInPopulation(population);
+            foreach (var c in bestPopulation)
+                c.ForwardAnalysisResults.First().ForwardFitness = c.FitnessValue;            
 
-            foreach (var c in population)
-                c.SetBackwardBarsAsTickerBars();
-
-            ga.Evaluate();
+            //Теперь надо повторить это для прочих 9 периодов
         }
     }
 }
