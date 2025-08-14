@@ -30,23 +30,47 @@ namespace TrendByPivotPointsOptimizatorTests
             var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100, 
                 crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
                 optimizator, logger);
-                       
 
-            var bestPopulation = ga.Run();
+            var results = new List<ForwardAnalysisResult>();
 
-            foreach (var c in bestPopulation)
+            for (var period = 0; period < 10; period++)
             {
-                c.ForwardAnalysisResults.First().BackwardFitness = c.FitnessValue;
-                c.SetForwardBarsAsTickerBars();
+                ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = true;
+                var bestPopulation = ga.Run(period);
+
+                foreach (var chromosome in bestPopulation)
+                    chromosome.ForwardAnalysisResults.First().BackwardFitness =
+                        chromosome.FitnessValue;
+
+                foreach (var chromosome in bestPopulation)
+                    chromosome.SetForwardBarsAsTickerBars();
+
+                ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = false;
+                ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue();
+
+                foreach (var chromosome in bestPopulation)
+                    chromosome.ForwardAnalysisResults.First().ForwardFitness =
+                            chromosome.FitnessValue;
+                                
+                var sumResultsBackward = 0d;
+                var sumResultsForward = 0d;
+                foreach (var chromosome in bestPopulation)
+                {
+                    sumResultsBackward += chromosome.ForwardAnalysisResults.First().BackwardFitness;
+                    sumResultsForward += chromosome.ForwardAnalysisResults.First().ForwardFitness;                   
+                }
+
+                var avgResultsBackward = sumResultsBackward / bestPopulation.Count;
+                var avgResultsForward = sumResultsForward / bestPopulation.Count;
+
+                results.Add(new ForwardAnalysisResult()
+                {
+                    BackwardFitness = avgResultsBackward,
+                    ForwardFitness = avgResultsForward
+                });
             }
 
-            ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue();
-            ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = false;
-
-            foreach (var c in bestPopulation)
-                c.ForwardAnalysisResults.First().ForwardFitness = c.FitnessValue;            
-
-            //Теперь надо повторить это для прочих 9 периодов
+            var isStrategyViable = ga.IsStrategyViable(results);
         }
     }
 }

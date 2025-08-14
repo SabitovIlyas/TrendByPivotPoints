@@ -14,7 +14,7 @@ namespace TrendByPivotPointsOptimizator
         private readonly int forwardPeriodDays;
         private readonly int backwardPeriodDays;
         private readonly int forwardPeriodsCount;
-        private int Period { get; set; } = 0;
+        public int Period { get; set; } = 0;
 
         public ForwardAnalysis(Security security, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount)
         {

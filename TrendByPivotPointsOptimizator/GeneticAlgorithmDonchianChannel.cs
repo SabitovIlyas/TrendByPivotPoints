@@ -25,6 +25,7 @@ namespace TrendByPivotPointsOptimizator
         private Context context;
         private Optimizator optimizator;
         private Logger logger;
+        private ForwardAnalysis forwardAnalysis;
 
         public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate,
             IRandomProvider randomProvider, List<Ticker> tickers, Settings settings, Context context, Optimizator optimizator, Logger logger)
@@ -231,10 +232,10 @@ namespace TrendByPivotPointsOptimizator
             return selected;
         }
 
-        public List<ChromosomeDonchianChannel> Run()
+        public List<ChromosomeDonchianChannel> Run(int period = 0)
         {
             Initialize();
-            PrepareChromosomes();            
+            PrepareChromosomes(period);            
             for (int gen = 0; gen < generations; gen++)
             {
                 Evaluate();
@@ -272,17 +273,23 @@ namespace TrendByPivotPointsOptimizator
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(10).ToList();
         }
 
-        private void PrepareChromosomes()
+        private void PrepareChromosomes(int period)
         {
             var population = GetPopulation();
 
-            var fa = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 30,
+            forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 30,
                 backwardPeriodDays: 120, forwardPeriodsCount: 10);
 
-            fa.SetTradingPeriodsForEachCromosomeInPopulation(population);
+            forwardAnalysis.Period = period;
+            forwardAnalysis.SetTradingPeriodsForEachCromosomeInPopulation(population);
 
             foreach (var c in population)
                 c.SetBackwardBarsAsTickerBars();            
+        }
+
+        public bool IsStrategyViable(List<ForwardAnalysisResult> results)
+        {
+            return forwardAnalysis.IsStrategyViable(results);
         }
     }
 }

@@ -47,37 +47,57 @@ namespace TrendByPivotPointsOptimizator
             try
             {
                 var context = new ContextLab();
-                var rand = new RandomProvider();
-
-                //Я здесь!!! Теперь надо реализовать форвардный анализ.
+                var randomProvider = new RandomProvider();
+                var logger = new ConsoleLogger();               
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(50, 100, 0.8, 0.1, rand, tickers,
-                    settings, context, optimizator, logger);//50, 100, 0.8, 0.1
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100,
+                    crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
+                    optimizator, logger);
 
-                var fa = new ForwardAnalysis(ga, forwardPeriodDays: 30,
-                backwardPeriodDays: 180, forwardPeriodsCount: 10);
+                var results = new List<ForwardAnalysisResult>();
 
+                for (var period = 0; period < 10; period++)
+                {
+                    ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = true;
+                    var bestPopulation = ga.Run(period);
 
-                //fa.PerformAnalysis();
-                //fa.IsStrategyViable();
-                
+                    foreach (var chromosome in bestPopulation)
+                        chromosome.ForwardAnalysisResults.First().BackwardFitness =
+                            chromosome.FitnessValue;
 
-                ///////////////////////////////////////////////////////
-                
+                    foreach (var chromosome in bestPopulation)
+                        chromosome.SetForwardBarsAsTickerBars();
 
+                    ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = false;
+                    ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue();
 
+                    foreach (var chromosome in bestPopulation)
+                        chromosome.ForwardAnalysisResults.First().ForwardFitness =
+                                chromosome.FitnessValue;
 
-                
-                //var result = ga.Run();
+                    var sumResultsBackward = 0d;
+                    var sumResultsForward = 0d;
+                    foreach (var chromosome in bestPopulation)
+                    {
+                        sumResultsBackward += chromosome.ForwardAnalysisResults.First().BackwardFitness;
+                        sumResultsForward += chromosome.ForwardAnalysisResults.First().ForwardFitness;
+                    }
 
+                    var avgResultsBackward = sumResultsBackward / bestPopulation.Count;
+                    var avgResultsForward = sumResultsForward / bestPopulation.Count;
 
-                logger.Log("Генетический алгоритм завершил работу. Результаты:\r\n");
-                //foreach (var res in result)
-                //    logger.Log("{0}\r\n", res.ToString());
+                    results.Add(new ForwardAnalysisResult()
+                    {
+                        BackwardFitness = avgResultsBackward,
+                        ForwardFitness = avgResultsForward
+                    });
+                }
 
-                
+                var isStrategyViable = ga.IsStrategyViable(results);
 
+                logger.Log("Генетический алгоритм завершил работу. Результаты: {0}",
+                    isStrategyViable);
             }
             catch (Exception e)
             {
