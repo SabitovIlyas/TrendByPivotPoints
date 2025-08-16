@@ -25,8 +25,9 @@ namespace TrendByPivotPointsOptimizator
             this.system = system;            
         }
         
-        public void SetUpChromosomeFitnessValue()
+        public void SetUpChromosomeFitnessValue(bool isCriteriaPassedNeedToCheck = true)
         {
+            IsCriteriaPassedNeedToCheck = isCriteriaPassedNeedToCheck;
             chromosome.FitnessValue = CalcIsPassed();
         }
 

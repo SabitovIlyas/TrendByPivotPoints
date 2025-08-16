@@ -34,8 +34,7 @@ namespace TrendByPivotPointsOptimizatorTests
             var results = new List<ForwardAnalysisResult>();
 
             for (var period = 0; period < 10; period++)
-            {
-                ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = true;
+            {                
                 var bestPopulation = ga.Run(period);
 
                 foreach (var chromosome in bestPopulation)
@@ -44,9 +43,9 @@ namespace TrendByPivotPointsOptimizatorTests
 
                 foreach (var chromosome in bestPopulation)
                     chromosome.SetForwardBarsAsTickerBars();
-
-                ga.FitnessDonchianChannel.IsCriteriaPassedNeedToCheck = false;
-                ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue();
+                
+                ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck:
+                    false);
 
                 foreach (var chromosome in bestPopulation)
                     chromosome.ForwardAnalysisResults.First().ForwardFitness =
