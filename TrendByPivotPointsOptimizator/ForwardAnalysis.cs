@@ -53,7 +53,7 @@ namespace TrendByPivotPointsOptimizator
             this.backwardPeriodDays = backwardPeriodDays;
             this.forwardPeriodsCount = forwardPeriodsCount;
 
-            Generate();
+            //Generate();
         }
 
         private void Generate()

@@ -20,7 +20,8 @@ namespace TrendByPivotPointsOptimizator
         {
             logger = new ConsoleLogger();
 
-            logger.Log("Старт!");
+            var startTime = DateTime.Now;
+            logger.Log("Старт! {0}", startTime);
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = "Выберите файл с настройками";
@@ -94,6 +95,12 @@ namespace TrendByPivotPointsOptimizator
                 }
 
                 var isStrategyViable = ga.IsStrategyViable(results);
+
+                var stopTime = DateTime.Now;
+                logger.Log("Стоп {0}", stopTime);
+
+                var duration = stopTime-startTime;
+                logger.Log("Время выполнения {0}", duration);
 
                 logger.Log("Генетический алгоритм завершил работу. Результаты: {0}",
                     isStrategyViable);
