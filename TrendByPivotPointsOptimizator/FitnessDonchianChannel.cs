@@ -21,6 +21,7 @@ namespace TrendByPivotPointsOptimizator
         public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
             StarterDonchianTradingSystemLab system)
         {
+            this.trSysParams = trSysParams;
             this.chromosome = chromosome;
             this.system = system;            
         }

@@ -49,12 +49,12 @@ namespace TrendByPivotPointsOptimizator
             {
                 var context = new ContextLab();
                 var randomProvider = new RandomProvider();
-                var logger = new ConsoleLogger();               
+                var loggerForTradingSystem = new LoggerNull();
 
                 var optimizator = Optimizator.Create();
                 var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100,
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
-                    optimizator, logger);
+                    optimizator, loggerForTradingSystem);
 
                 var results = new List<ForwardAnalysisResult>();
 

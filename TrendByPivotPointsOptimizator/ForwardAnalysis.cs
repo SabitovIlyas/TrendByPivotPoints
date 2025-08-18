@@ -106,10 +106,10 @@ namespace TrendByPivotPointsOptimizator
             return results;
         }
 
-        public void SetTradingPeriodsForEachCromosomeInPopulation(List<ChromosomeDonchianChannel> population)
+        public void SetTradingPeriods(ChromosomeDonchianChannel chromosome)
         {
-            var results = new List<ForwardAnalysisResult>();
-            var sortedBars = security.Bars.OrderBy(b => b.Date).ToList();
+            var results = new List<ForwardAnalysisResult>();            
+            var sortedBars = chromosome.Ticker.Bars.OrderBy(b => b.Date).ToList();
             var latestDate = sortedBars.Last().Date;
 
 
@@ -132,19 +132,30 @@ namespace TrendByPivotPointsOptimizator
             if (!backwardBars.Any() || !forwardBars.Any())
                 throw new InvalidOperationException("Отсутствуют бары");
 
-            foreach (var chromosome in population)
+            var result = new ForwardAnalysisResult
             {
-                var result = new ForwardAnalysisResult
-                {
-                    BackwardStart = backwardStart,
-                    BackwardEnd = backwardEnd,
-                    ForwardStart = forwardStart,
-                    ForwardEnd = forwardEnd,
-                    BackwardBars = backwardBars,
-                    ForwardBars = forwardBars
-                };
-                chromosome.ForwardAnalysisResults.Add(result);
-            }
+                BackwardStart = backwardStart,
+                BackwardEnd = backwardEnd,
+                ForwardStart = forwardStart,
+                ForwardEnd = forwardEnd,
+                BackwardBars = backwardBars,
+                ForwardBars = forwardBars
+            };
+            chromosome.ForwardAnalysisResults.Add(result);          
+            
+            //foreach (var chromosome in population)
+            //{
+            //    var result = new ForwardAnalysisResult
+            //    {
+            //        BackwardStart = backwardStart,
+            //        BackwardEnd = backwardEnd,
+            //        ForwardStart = forwardStart,
+            //        ForwardEnd = forwardEnd,
+            //        BackwardBars = backwardBars,
+            //        ForwardBars = forwardBars
+            //    };
+            //    chromosome.ForwardAnalysisResults.Add(result);
+            //}
         }
 
         public bool IsStrategyViable(List<ForwardAnalysisResult> results, double correlationThreshold = 0.7)

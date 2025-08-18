@@ -66,13 +66,16 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
-        public void Evaluate()
+        public void Evaluate(int period = 0)
         {
-            foreach (var chrom in population)
+            foreach (var chromosome in population)
             {
-                var trSysParams = CreateTradingSystemParameters(chrom);
+                var trSysParams = CreateTradingSystemParameters(chromosome);
                 var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
-                FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chrom, system);
+                PrepareChromosome(chromosome, period);
+                chromosome.SetBackwardBarsAsTickerBars();            
+
+                FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
                 FitnessDonchianChannel.SetUpChromosomeFitnessValue();
             }
         }
@@ -235,7 +238,6 @@ namespace TrendByPivotPointsOptimizator
         public List<ChromosomeDonchianChannel> Run(int period = 0)
         {
             Initialize();
-            PrepareChromosomes(period);            
             for (int gen = 0; gen < generations; gen++)
             {
                 Evaluate();
@@ -273,18 +275,18 @@ namespace TrendByPivotPointsOptimizator
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(10).ToList();
         }
 
-        private void PrepareChromosomes(int period)
+        private void PrepareChromosome(ChromosomeDonchianChannel chromosome, int period)
         {
-            var population = GetPopulation();
+            //var population = GetPopulation();
 
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 30,
                 backwardPeriodDays: 120, forwardPeriodsCount: 10);
 
             forwardAnalysis.Period = period;
-            forwardAnalysis.SetTradingPeriodsForEachCromosomeInPopulation(population);
+            forwardAnalysis.SetTradingPeriods(chromosome);
 
-            foreach (var c in population)
-                c.SetBackwardBarsAsTickerBars();            
+            //foreach (var c in population)
+            //    c.SetBackwardBarsAsTickerBars();            
         }
 
         public bool IsStrategyViable(List<ForwardAnalysisResult> results)
