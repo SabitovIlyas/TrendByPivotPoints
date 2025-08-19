@@ -14,11 +14,11 @@ namespace TrendByPivotPointsOptimizator
 {
     public class OptimizatorGeneticAlgorithmStarter
     {
-        Logger logger;
+        //Logger logger;
 
         public void Start()
         {
-            logger = new ConsoleLogger();
+            var logger = new ConsoleLogger();
 
             var startTime = DateTime.Now;
             logger.Log("Старт! {0}", startTime);
@@ -39,7 +39,9 @@ namespace TrendByPivotPointsOptimizator
             fullFileName = openFileDialog.FileName;
 
             List<SecurityData> securitiesData = GetSecuritiesData(fullFileName);
-            List<Ticker> tickers = CreateTickers(securitiesData, fullFileName, settings);
+
+            var loggerNull = new LoggerNull();
+            List<Ticker> tickers = CreateTickers(securitiesData, fullFileName, settings, loggerNull);
 
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var fileName = fullFileName.Split('\\').Last();
@@ -49,17 +51,17 @@ namespace TrendByPivotPointsOptimizator
             {
                 var context = new ContextLab();
                 var randomProvider = new RandomProvider();
-                var loggerForTradingSystem = new LoggerNull();
 
                 var optimizator = Optimizator.Create();
                 var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100,
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
-                    optimizator, loggerForTradingSystem);
+                    optimizator, loggerNull);
 
                 var results = new List<ForwardAnalysisResult>();
 
                 for (var period = 0; period < 10; period++)
                 {
+                    logger.Log("Period = {0}", period);
                     var bestPopulation = ga.Run(period);
 
                     foreach (var chromosome in bestPopulation)
@@ -104,6 +106,11 @@ namespace TrendByPivotPointsOptimizator
 
                 logger.Log("Генетический алгоритм завершил работу. Результаты: {0}",
                     isStrategyViable);
+
+                ////foreach (var res in results)
+                ////{
+                    
+                ////}
             }
             catch (Exception e)
             {
@@ -135,7 +142,7 @@ namespace TrendByPivotPointsOptimizator
                         sides.Add(PositionSide.Short);
                     if (str.Contains("1min"))
                         timeFrames.Add(new Interval(1, DataIntervals.MINUTE));
-                    if (str.Contains("5min"))
+                    if (str.Contains("05min"))
                         timeFrames.Add(new Interval(5, DataIntervals.MINUTE));
                     if (str.Contains("15min"))
                         timeFrames.Add(new Interval(15, DataIntervals.MINUTE));
@@ -204,7 +211,7 @@ namespace TrendByPivotPointsOptimizator
         }
 
         private List<Ticker> CreateTickers(List<SecurityData> securitiesData, string fullFileName,
-            Settings settings)
+            Settings settings, Logger logger)
         {
             var result = new List<Ticker>();
 
@@ -222,7 +229,7 @@ namespace TrendByPivotPointsOptimizator
                             path += fileNameSplitted[i] + "\\";
                         var fileName = path + securityName + ".txt";
 
-                        var ticker = CreateTicker(fileName, data, timeFrame);
+                        var ticker = CreateTicker(fileName, data, timeFrame, logger);
 
                         result.Add(ticker);
                     }
@@ -232,11 +239,11 @@ namespace TrendByPivotPointsOptimizator
             return result;
         }
 
-        private Ticker CreateTicker(string fileName, SecurityData data, Interval timeframe)
+        private Ticker CreateTicker(string fileName, SecurityData data, Interval timeframe, Logger logger)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
             var baseBars = converter.ConvertFileWithBarsToListOfBars();
-
+            //видимо, ошибка с сжатием баров. Надо оттестировать.
             var bars = CompressBars(baseBars, timeframe);
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,

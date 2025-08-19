@@ -68,6 +68,7 @@ namespace TrendByPivotPointsOptimizator
 
         public void Evaluate(int period = 0)
         {
+            var i = 0;
             foreach (var chromosome in population)
             {
                 var trSysParams = CreateTradingSystemParameters(chromosome);
@@ -76,7 +77,12 @@ namespace TrendByPivotPointsOptimizator
                 chromosome.SetBackwardBarsAsTickerBars();            
 
                 FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
+
+                Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\nХромосома: {2}\r\n",
+                    ++i, population.Count, chromosome.Name);
                 FitnessDonchianChannel.SetUpChromosomeFitnessValue();
+                Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}\r\n",
+                    chromosome.FitnessPassed, chromosome.FitnessValue);
             }
         }
 
@@ -239,7 +245,8 @@ namespace TrendByPivotPointsOptimizator
         {
             Initialize();
             for (int gen = 0; gen < generations; gen++)
-            {
+            {                
+                Console.WriteLine("Генерация № {0}\r\n", gen);
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
                 var qtyBestChromosomes = 30;                
@@ -280,7 +287,7 @@ namespace TrendByPivotPointsOptimizator
             //var population = GetPopulation();
 
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 30,
-                backwardPeriodDays: 120, forwardPeriodsCount: 10);
+                backwardPeriodDays: 180, forwardPeriodsCount: 10);
 
             forwardAnalysis.Period = period;
             forwardAnalysis.SetTradingPeriods(chromosome);
