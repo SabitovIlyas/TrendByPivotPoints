@@ -78,7 +78,7 @@ namespace TrendByPivotPointsOptimizator
 
                 FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
 
-                Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\nХромосома: {2}\r\n",
+                Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
                     ++i, population.Count, chromosome.Name);
                 FitnessDonchianChannel.SetUpChromosomeFitnessValue();
                 Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}\r\n",
@@ -245,8 +245,8 @@ namespace TrendByPivotPointsOptimizator
         {
             Initialize();
             for (int gen = 0; gen < generations; gen++)
-            {                
-                Console.WriteLine("Генерация № {0}\r\n", gen);
+            {
+                Console.WriteLine("Генерация № {0}\r\n", gen + 1);
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
                 var qtyBestChromosomes = 30;                
@@ -284,16 +284,12 @@ namespace TrendByPivotPointsOptimizator
 
         private void PrepareChromosome(ChromosomeDonchianChannel chromosome, int period)
         {
-            //var population = GetPopulation();
-
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 30,
                 backwardPeriodDays: 180, forwardPeriodsCount: 10);
 
             forwardAnalysis.Period = period;
-            forwardAnalysis.SetTradingPeriods(chromosome);
-
-            //foreach (var c in population)
-            //    c.SetBackwardBarsAsTickerBars();            
+            chromosome.ResetBarsToInitBars();
+            forwardAnalysis.SetTradingPeriods(chromosome);         
         }
 
         public bool IsStrategyViable(List<ForwardAnalysisResult> results)

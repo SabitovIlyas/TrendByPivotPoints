@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TSLab.DataSource;
+using TradingSystems;
+using PeparatorDataForSpreadTradingSystems;
+using Castle.Components.DictionaryAdapter;
 
 namespace TrendByPivotPointsOptimizator.Tests
 {
@@ -84,34 +88,28 @@ namespace TrendByPivotPointsOptimizator.Tests
 
         [TestMethod()]
         public void CompressBarsTest()
-        {
-            Assert.Fail();
+        {            
+            var converter = ConverterTextDataToBar.Create("Si.txt");
+            var baseBars = converter.ConvertFileWithBarsToListOfBars();
+            var timeframe = new Interval(15, DataIntervals.MINUTE);
+            var expectedFirstBarDateTime = new DateTime(2024, 01, 03, 9, 0, 0);
+            var expectedSecondBarDateTime = new DateTime(2024, 01, 03, 9, 15, 0);
+            var expectedPrevLastBarDateTime = new DateTime(2025, 07, 31, 23, 30, 0);
+            var expectedLastBarDateTime = new DateTime(2025, 07, 31, 23, 45, 0);
+
+            var optimizator = new OptimizatorGeneticAlgorithmStarter();
+            var compressedBars = optimizator.CompressBars(baseBars, timeframe);
+
+            var actualFirstBarDateTime = compressedBars.First().Date;
+            var actualSecondBarDateTime = compressedBars[1].Date;
+            var actualPrevLastBarDateTime = compressedBars[compressedBars.Count-2].Date;
+            var actualLastBarDateTime = compressedBars.Last().Date;
+
+            Assert.AreEqual(expectedFirstBarDateTime, actualFirstBarDateTime);
+            Assert.AreEqual(expectedSecondBarDateTime, actualSecondBarDateTime);
+            Assert.AreEqual(expectedPrevLastBarDateTime, actualPrevLastBarDateTime);
+            Assert.AreEqual(expectedLastBarDateTime, actualLastBarDateTime);            
         }
-
-        //[TestMethod()]
-        //public void SortTest()
-        //{
-        //    ma
-
-        //    var points = new List<PointValue>
-        //    {
-        //        PointValue.Create(4.76, new int[2] { 21, 11 }),
-        //        PointValue.Create(3.95, new int[2] { 21, 10 }),
-        //        PointValue.Create(3.66, new int[2] { 21, 9 }),
-        //        PointValue.Create(2.23, new int[2] { 22, 11 }),
-        //        PointValue.Create(6.39, new int[2] { 22, 10}),
-        //        PointValue.Create(3.67, new int[2] { 22, 9 }),
-        //        PointValue.Create(-0.32, new int[2] { 23, 11 }),
-        //        PointValue.Create(4.9, new int[2] { 23, 10 }),
-        //        PointValue.Create(4.08, new int[2] { 23, 9 })
-        //    };
-
-        //    var exptected = "4,44: (21; 9); 4,44: (22; 9); 4,44: (23; 9)";
-        //    var optimizator = Optimizator.Create();
-        //    var actual =
-        //        optimizator.GetOptimalParametersPercent(points, dimension: 2, radiusNeighbourInPercent: new int[2] { 10, 10 },
-        //        barrier: 1, isCheckedPass: true);
-        //    Assert.AreEqual(exptected, actual);
-        //}
     }
 }
+            

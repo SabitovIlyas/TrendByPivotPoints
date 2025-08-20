@@ -9,6 +9,7 @@ namespace PeparatorDataForSpreadTradingSystems
     public class ConverterTextDataToBar
     {
         public string FullFileName { get; set; } = string.Empty;
+        public string[] StringLines { get; } = new string[0];
 
         public static ConverterTextDataToBar Create()
         {
@@ -20,6 +21,11 @@ namespace PeparatorDataForSpreadTradingSystems
             return new ConverterTextDataToBar(fullFileName);
         }
 
+        public static ConverterTextDataToBar Create(string[] stringLines)
+        {
+            return new ConverterTextDataToBar(stringLines);
+        }
+
         private ConverterTextDataToBar()
         {
         }
@@ -28,19 +34,36 @@ namespace PeparatorDataForSpreadTradingSystems
         {
             FullFileName = fullFileName;
         }
+
+        private ConverterTextDataToBar(string[] stringLines)
+        {
+            StringLines = stringLines;
+        }
+
         public List<Bar> ConvertFileWithBarsToListOfBars()
         {
             string line;
             var bars = new List<Bar>();
             try
             {
-                if (!System.IO.File.Exists(FullFileName))
-                    throw new Exception("Файл не найден!");
+                string[] listStrings = new string[0];
+                
+                if (StringLines.Length > 0)
+                {
+                    listStrings = StringLines;
+                }
+                else
+                {
+                    //var p = System.IO.Directory.GetCurrentDirectory();
+                    if (!System.IO.File.Exists(FullFileName))
+                        throw new Exception("Файл не найден!");
 
-                string[] listStrings = System.IO.File.ReadAllLines(FullFileName);
+                    listStrings = System.IO.File.ReadAllLines(FullFileName);
 
-                if (listStrings == null)
-                    throw new Exception("Файл пустой!");
+                    if (listStrings == null)
+                        throw new Exception("Файл пустой!");
+                }
+                
                 foreach (string str in listStrings)
                 {
                     line = str;

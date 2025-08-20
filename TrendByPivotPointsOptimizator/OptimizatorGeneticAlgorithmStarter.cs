@@ -21,7 +21,7 @@ namespace TrendByPivotPointsOptimizator
             var logger = new ConsoleLogger();
 
             var startTime = DateTime.Now;
-            logger.Log("Старт! {0}", startTime);
+            logger.Log("Старт! {0}\r\n", startTime);
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = "Выберите файл с настройками";
@@ -61,7 +61,7 @@ namespace TrendByPivotPointsOptimizator
 
                 for (var period = 0; period < 10; period++)
                 {
-                    logger.Log("Period = {0}", period);
+                    logger.Log("Период № {0}", period + 1);
                     var bestPopulation = ga.Run(period);
 
                     foreach (var chromosome in bestPopulation)

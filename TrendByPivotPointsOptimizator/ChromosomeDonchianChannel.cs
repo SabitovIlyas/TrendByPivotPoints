@@ -20,11 +20,13 @@ namespace TrendByPivotPointsOptimizator
         public double KAtrForOpenPosition { get; set; }
         public double KAtrForStopLoss { get; set; }
         public string Name { get; } = string.Empty;
+        private List<Bar> initBars;
 
         public List<ForwardAnalysisResult> ForwardAnalysisResults { get; set; } = new List<ForwardAnalysisResult>();
         public ChromosomeDonchianChannel(Ticker ticker, Interval timeFrame, PositionSide side, int fastDonchian, int slowDonchian, int atrPeriod, int limitOpenedPositions, double kAtrForOpenPosition, double kAtrForStopLoss)
         {
             Ticker = ticker;
+            initBars = Ticker.Bars;
             TimeFrame = timeFrame;
             Side = side;
             FastDonchian = fastDonchian;
@@ -46,6 +48,11 @@ namespace TrendByPivotPointsOptimizator
                 nameof(FastDonchian), FastDonchian, nameof(SlowDonchian), SlowDonchian, nameof(AtrPeriod),
                 AtrPeriod, nameof(LimitOpenedPositions), LimitOpenedPositions, nameof(KAtrForOpenPosition),
                 KAtrForOpenPosition, nameof(kAtrForStopLoss), KAtrForStopLoss);
+        }
+
+        public void ResetBarsToInitBars()
+        {
+            Ticker.Bars = initBars;
         }
 
         public void SetBackwardBarsAsTickerBars()

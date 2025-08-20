@@ -62,6 +62,10 @@
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="TSLab.DataSource, Version=2.2.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\TrendByPivotPoints\TSLab.DataSource.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -87,6 +91,10 @@
     <ProjectReference Include="..\TrendByPivotPointsOptimizator\TrendByPivotPointsOptimizator.csproj">
       <Project>{B51EBF1E-C11F-4D8B-8C1D-61059DEE03FF}</Project>
       <Name>TrendByPivotPointsOptimizator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TrendByPivotPointsPeparatorDataForSpread\TrendByPivotPointsPeparatorDataForSpread.csproj">
+      <Project>{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}</Project>
+      <Name>TrendByPivotPointsPeparatorDataForSpread</Name>
     </ProjectReference>
     <ProjectReference Include="..\TrendByPivotPointsStarter\TrendByPivotPointsStarter.csproj">
       <Project>{a9c7c965-f0f0-48ed-986a-21d98a8221fc}</Project>
