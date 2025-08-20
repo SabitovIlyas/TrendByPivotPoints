@@ -252,7 +252,7 @@ namespace TrendByPivotPointsOptimizator
             return ticker;
         }
 
-        private List<Bar> CompressBars(List<Bar> bars, Interval timeframe)
+        public List<Bar> CompressBars(List<Bar> bars, Interval timeframe)
         {
             var compressor = new BarCompressor();
             var result = new List<Bar>();

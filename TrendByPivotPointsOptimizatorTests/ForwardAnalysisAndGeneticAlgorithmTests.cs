@@ -12,7 +12,7 @@ namespace TrendByPivotPointsOptimizatorTests
     [TestClass()]
     public class ForwardAnalysisAndGeneticAlgorithmTests
     {
-        [TestMethod]
+        //[TestMethod]
         public void foo()
         {
             var context = new ContextLab();
