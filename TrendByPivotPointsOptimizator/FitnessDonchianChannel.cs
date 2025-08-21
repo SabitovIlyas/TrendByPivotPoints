@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using TradingSystems;
 using TrendByPivotPointsStarter;
+using TSLab.DataSource;
+using Account = TradingSystems.Account;
 using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
@@ -10,13 +13,14 @@ namespace TrendByPivotPointsOptimizator
     public class FitnessDonchianChannel
     {
         public double NeighborhoodPercent { get; set; } = 0.05;
-        public int DealsCount { get; set; } = 30;
+        public int DealsCountCriteria { get; set; } = 30;        
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
         private ChromosomeDonchianChannel chromosome;
         private StarterDonchianTradingSystemLab system;
         private TradingSystemParameters trSysParams;
+        private int dealsCount;
 
         public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
             StarterDonchianTradingSystemLab system)
@@ -30,6 +34,7 @@ namespace TrendByPivotPointsOptimizator
         {
             IsCriteriaPassedNeedToCheck = isCriteriaPassedNeedToCheck;
             chromosome.FitnessValue = CalcIsPassed();
+            chromosome.DealsCount = dealsCount;
         }
 
         private double CalcIsPassed()
@@ -89,7 +94,9 @@ namespace TrendByPivotPointsOptimizator
             var security = parameters.Security;
 
             var deals = security.GetMetaDeals();
-            var isQtyDealsEnough = deals.Count >= DealsCount;
+            dealsCount = deals.Count;
+            
+            var isQtyDealsEnough = deals.Count >= DealsCountCriteria;
             if (IsCriteriaPassedNeedToCheck && !isQtyDealsEnough)
                 return recoveryFactor;
 

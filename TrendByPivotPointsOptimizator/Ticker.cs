@@ -10,7 +10,8 @@ namespace TrendByPivotPointsOptimizator
         public Currency Currency { get; private set; }
         public int Shares { get; private set; }
         public double CommissionRate { get; private set; }
-        public Logger Logger { get; private set; }        
+        public Logger Logger { get; private set; }
+        public List<Bar> InitBars { get; }
 
         public Ticker(string name, Currency currency, int shares, List<Bar> bars, Logger logger, double commissionRate)
         {
@@ -20,6 +21,12 @@ namespace TrendByPivotPointsOptimizator
             Bars = bars;
             Logger = logger;
             CommissionRate = commissionRate;
+            InitBars = bars;
+        }
+
+        public void ResetBarsToInitBars()
+        {
+            Bars = InitBars;
         }
     }
 }

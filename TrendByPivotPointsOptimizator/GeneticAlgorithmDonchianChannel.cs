@@ -81,8 +81,9 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
                     ++i, population.Count, chromosome.Name);
                 FitnessDonchianChannel.SetUpChromosomeFitnessValue();
-                Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}\r\n",
-                    chromosome.FitnessPassed, chromosome.FitnessValue);
+                Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}. Количество сделок = " +
+                    "{2}.\r\n",
+                    chromosome.FitnessPassed, chromosome.FitnessValue, chromosome.DealsCount);
             }
         }
 
