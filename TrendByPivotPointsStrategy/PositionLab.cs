@@ -116,7 +116,7 @@ namespace TradingSystems
 
         public double GetProfit()
         {
-            throw new System.NotImplementedException();
+            return GetProfit(Security.Bars.Count - 1);
         }
     }
 }

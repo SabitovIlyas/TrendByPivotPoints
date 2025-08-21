@@ -56,6 +56,7 @@ namespace TrendByPivotPointsOptimizator
 
             var counter = 0;
             var sumRecoveryFactor = 0d;
+            Security sec = null;
 
             for (int i = minSd; i <= maxSd; i++)
             {
@@ -73,28 +74,39 @@ namespace TrendByPivotPointsOptimizator
                         param.SystemParameters.SetValue("fastDonchian", j);
                         param.SystemParameters.SetValue("atrPeriod", k);                        
                         SystemRun(starter, param);
-                        
+
+                        dealsCount = starter.GetSecurity().GetMetaDeals().Count;
                         var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
                         if (double.IsNegativeInfinity(recoveryFactor))
                             return averageRecoveryFactor;
 
                         counter++;
                         sumRecoveryFactor += recoveryFactor;
+
+                        var c = ((int)trSysParams.SystemParameters.GetValue("slowDonchian") == i)
+                            && ((int)trSysParams.SystemParameters.GetValue("fastDonchian") == j)
+                            && ((int)trSysParams.SystemParameters.GetValue("atrPeriod") == k);
+
+                        if (c)
+                            sec = starter.GetSecurity();
                     }
                 }
             }
+
+            if (sec != null)
+                dealsCount = sec.GetMetaDeals().Count;
 
             averageRecoveryFactor = sumRecoveryFactor / counter;
             return averageRecoveryFactor;
         }
 
-        private double CheckCriteriaPassed(Starter system, TradingSystemParameters parameters, Account account)
+        private double CheckCriteriaPassed(StarterDonchianTradingSystemLab system, TradingSystemParameters parameters, Account account)
         {
             var recoveryFactor = double.NegativeInfinity;
             var security = system.GetSecurity();
 
             var deals = security.GetMetaDeals();
-            dealsCount = deals.Count;
+            //dealsCount = deals.Count;
             
             var isQtyDealsEnough = deals.Count >= DealsCountCriteria;
             if (IsCriteriaPassedNeedToCheck && !isQtyDealsEnough)
@@ -112,12 +124,10 @@ namespace TrendByPivotPointsOptimizator
                 n.BarStop = deal.BarNumberClosePosition - 1;
                 nonTradingPeriods.Add(n);
             }
+            var newSystem = system.GetClone();
+            newSystem.NonTradingPeriods = nonTradingPeriods;
 
-            system.NonTradingPeriods = nonTradingPeriods;
-
-            //TODO:Здесь, наверное, ошибка!
-
-            SystemRun(system, parameters);
+            SystemRun(newSystem, parameters);
             recoveryFactor = CalcRecoeveryFactor(security, account);
 
             return recoveryFactor;
