@@ -66,9 +66,9 @@ namespace TrendByPivotPointsOptimizator
 
                     for (int k = minAtr; k <= maxAtr; k++)
                     {
-                        var starter = new StarterDonchianTradingSystemLab(system);
-
+                        var starter = system.GetClone();
                         var param = new TradingSystemParameters(trSysParams);
+
                         param.SystemParameters.SetValue("slowDonchian", i);
                         param.SystemParameters.SetValue("fastDonchian", j);
                         param.SystemParameters.SetValue("atrPeriod", k);                        
@@ -91,7 +91,7 @@ namespace TrendByPivotPointsOptimizator
         private double CheckCriteriaPassed(Starter system, TradingSystemParameters parameters, Account account)
         {
             var recoveryFactor = double.NegativeInfinity;
-            var security = parameters.Security;
+            var security = system.GetSecurity();
 
             var deals = security.GetMetaDeals();
             dealsCount = deals.Count;
@@ -114,6 +114,9 @@ namespace TrendByPivotPointsOptimizator
             }
 
             system.NonTradingPeriods = nonTradingPeriods;
+
+            //TODO:Здесь, наверное, ошибка!
+
             SystemRun(system, parameters);
             recoveryFactor = CalcRecoeveryFactor(security, account);
 

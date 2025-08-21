@@ -30,6 +30,24 @@ namespace TrendByPivotPointsStarter
             nonTradingPeriods = starter.nonTradingPeriods;
         }
 
+        public StarterDonchianTradingSystemLab GetClone()
+        {
+            var context = this.context;
+            
+            var securities = new List<Security>();            
+            foreach (var security in this.securities)            
+                securities.Add(security.GetClone());
+            
+            var logger = this.logger;
+            var nonTradingPeriods = new List<NonTradingPeriod>();
+
+            if (this.nonTradingPeriods != null)
+                foreach (var period in this.nonTradingPeriods)
+                    nonTradingPeriods.Add(period);            
+
+            return new StarterDonchianTradingSystemLab(context, securities, logger, nonTradingPeriods);
+        }
+
         public override void SetParameters(SystemParameters systemParameters)
         {
             this.systemParameters = systemParameters;

@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TradingSystems.Tests
 {
@@ -144,6 +146,30 @@ namespace TradingSystems.Tests
                 lots *= coef;
 
             return positionShares == lots;
+        }
+
+        [TestMethod()]
+        public void RefValueTest()
+        {
+            var n1 = new NonTradingPeriod() { BarStart = 1, BarStop = 2 };
+            var n2 = new NonTradingPeriod() { BarStart = 3, BarStop = 4 };
+
+            var periods1 = new List<NonTradingPeriod>() { n1, n2 };
+            var periods2 = new List<NonTradingPeriod>();
+
+            foreach (var period in periods1)
+                periods2.Add(period);
+
+            n1.BarStart = 5;
+
+            var expected1 = 1;
+            var expected2 = 1;
+
+            var actual1 = periods2.First().BarStart;
+            var actual2 = periods1.First().BarStart;
+
+            Assert.AreEqual(expected1, actual1);
+            Assert.AreEqual(expected2, actual2);
         }
     }
 }

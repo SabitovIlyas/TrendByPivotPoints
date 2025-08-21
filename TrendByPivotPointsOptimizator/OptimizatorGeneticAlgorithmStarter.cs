@@ -140,7 +140,7 @@ namespace TrendByPivotPointsOptimizator
                         sides.Add(PositionSide.Long);
                     if (str.Contains("Short"))
                         sides.Add(PositionSide.Short);
-                    if (str.Contains("1min"))
+                    if (str.Contains("01min"))
                         timeFrames.Add(new Interval(1, DataIntervals.MINUTE));
                     if (str.Contains("05min"))
                         timeFrames.Add(new Interval(5, DataIntervals.MINUTE));

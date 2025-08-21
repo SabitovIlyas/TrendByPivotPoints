@@ -46,5 +46,10 @@ namespace TradingSystems
             var graphPane = context.CreatePane(title, sizePct, hideLegend, addToTop);
             return new GraphPaneTsLab(graphPane);                       
         }
+
+        public Context GetClone()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

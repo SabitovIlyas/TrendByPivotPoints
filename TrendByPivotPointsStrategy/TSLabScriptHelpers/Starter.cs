@@ -87,5 +87,10 @@ namespace TradingSystems
         }
 
         public virtual void PrintResults() { }
+
+        public Security GetSecurity()
+        {
+            return securityFirst;
+        }
     }
 }

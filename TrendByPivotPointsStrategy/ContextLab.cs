@@ -21,6 +21,11 @@ namespace TradingSystems
             throw new System.NotImplementedException();
         }
 
+        public Context GetClone()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IReadOnlyList<RecalcReason> LastRecalcReasons()
         {
             return new ReadAndAddList<RecalcReason>();

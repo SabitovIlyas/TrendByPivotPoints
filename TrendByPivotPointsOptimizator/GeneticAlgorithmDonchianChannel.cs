@@ -84,6 +84,8 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}. Количество сделок = " +
                     "{2}.\r\n",
                     chromosome.FitnessPassed, chromosome.FitnessValue, chromosome.DealsCount);
+                //var tmp = trSysParams.Security.GetDeals();
+                //var tmp1 = trSysParams.Security.GetMetaDeals();
             }
         }
 
