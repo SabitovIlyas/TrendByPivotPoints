@@ -46,6 +46,7 @@ namespace TrendByPivotPointsOptimizator
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var fileName = fullFileName.Split('\\').Last();
             var securityName = fileName.Split('.').First();
+            var results = new List<ForwardAnalysisResult>();
 
             try
             {
@@ -53,13 +54,12 @@ namespace TrendByPivotPointsOptimizator
                 var randomProvider = new RandomProvider();
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 5, generations: 1,
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100,
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
                     optimizator, loggerNull);//50 //100
 
-                var results = new List<ForwardAnalysisResult>();
 
-                for (var period = 0; period < 1; period++)//10
+                for (var period = 0; period < 10; period++)//10
                 {
                     logger.Log("Период № {0}", period + 1);
                     var bestPopulation = ga.Run(period);

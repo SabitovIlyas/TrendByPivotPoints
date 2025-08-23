@@ -90,7 +90,7 @@ namespace TradingSystems
 
         public Security GetSecurity()
         {
-            return securityFirst;
+            return securities.First();
         }
     }
 }

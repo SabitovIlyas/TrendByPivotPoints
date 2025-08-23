@@ -9,7 +9,7 @@ namespace TradingSystems
     {
         public Currency Currency { get => currency; set { } }
         public int Shares { get => shares; set { } }
-        public List<Bar> Bars { get; private set; }
+        public List<Bar> Bars { get;  set; }
         public string Name { get; private set; }
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
         public double? SellDeposit => 4500;

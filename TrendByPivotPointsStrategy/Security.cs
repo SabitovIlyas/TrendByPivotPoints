@@ -51,7 +51,7 @@ namespace TradingSystems
 
         double[] HighPrices { get; }
         double[] LowPrices { get; }
-        List<Bar> Bars { get; }
+        List<Bar> Bars { get; set; }
         double CommissionRate { get; }
         Security GetClone();
     }

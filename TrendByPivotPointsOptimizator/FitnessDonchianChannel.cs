@@ -12,7 +12,7 @@ namespace TrendByPivotPointsOptimizator
 {
     public class FitnessDonchianChannel
     {
-        public double NeighborhoodPercent { get; set; } = 0.00;
+        public double NeighborhoodPercent { get; set; } = 0.01;
         public int DealsCountCriteria { get; set; } = 30;        
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
@@ -69,6 +69,9 @@ namespace TrendByPivotPointsOptimizator
                     for (int k = minAtr; k <= maxAtr; k++)
                     {
                         var starter = this.starter.GetClone();
+                        var s = starter.GetSecurity();
+                        if (s != null)
+                            starter.GetSecurity().Bars = chromosome.Ticker.Bars;
                         var param = new TradingSystemParameters(trSysParams);
 
                         param.SystemParameters.SetValue("slowDonchian", i);

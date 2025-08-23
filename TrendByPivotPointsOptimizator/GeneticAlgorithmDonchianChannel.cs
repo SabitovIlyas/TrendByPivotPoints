@@ -7,6 +7,7 @@ using TrendByPivotPointsStarter;
 using TSLab.DataSource;
 using TSLab.Utils;
 using Context = TradingSystems.Context;
+using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -52,13 +53,13 @@ namespace TrendByPivotPointsOptimizator
                 var sides = settings.Sides;
                 var side = sides[randomProvider.Next(sides.Count)];
 
-                //var fastDonchian = randomProvider.Next(10, 208);              //9..208;
-                //var slowDonchian = randomProvider.Next(fastDonchian, 208);    // -//-
-                //var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                var fastDonchian = randomProvider.Next(10, 208);              //9..208;
+                var slowDonchian = randomProvider.Next(fastDonchian+1, 208);    // -//-
+                var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
-                var fastDonchian = randomProvider.Next(10, 20);              //9..208;
-                var slowDonchian = randomProvider.Next(fastDonchian+1, 40);    // -//-
-                var atrPeriod = randomProvider.Next(2, 10);                  //1..25
+                //var fastDonchian = randomProvider.Next(10, 20);              //9..208;
+                //var slowDonchian = randomProvider.Next(fastDonchian+1, 40);    // -//-
+                //var atrPeriod = randomProvider.Next(2, 10);                  //1..25
 
                 var limitOpenedPositions = randomProvider.Next(1, 5);
                 var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
@@ -179,23 +180,23 @@ namespace TrendByPivotPointsOptimizator
                 chrom.Side = sides[randomProvider.Next(sides.Count)];
             }
 
-            //if (randomProvider.NextDouble() < mutationRate)            
-            //    chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
-                
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian + 1, 208);  // -//-
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
+
             //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian+1, 208);  // -//-
+            //    chrom.FastDonchian = randomProvider.Next(10, 20);                  //9..208;
 
             //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
+            //    chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian+1, 40);  // -//-
 
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.FastDonchian = randomProvider.Next(10, 20);                  //9..208;
-
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian+1, 40);  // -//-
-
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.AtrPeriod = randomProvider.Next(2, 10);                      //1..25
+            //if (randomProvider.NextDouble() < mutationRate)
+            //    chrom.AtrPeriod = randomProvider.Next(2, 10);                      //1..25
 
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
@@ -222,7 +223,7 @@ namespace TrendByPivotPointsOptimizator
             var selectedNeighborhoods = new List<(int fastMin, int fastMax, 
                 int slowMin, int slowMax, int atrMin, int atrMax, PositionSide side,
                 Interval timeFrame, Ticker ticker, double kAtrForOpenPosition,
-                double kAtrForStopLoss, int limtOpenedPostions)>();
+                double kAtrForStopLoss, int limitOpenedPositions)>();
 
             foreach (var candidate in sortedPopulation)
             {
@@ -239,9 +240,9 @@ namespace TrendByPivotPointsOptimizator
                 var side = candidate.Side;
                 var timeFrame = candidate.TimeFrame;
                 var ticker = candidate.Ticker;
-                var candidate.KAtrForOpenPosition;
-                candidate.KAtrForStopLoss;
-                candidate.LimitOpenedPositions;
+                var kAtrForOpenPosition = candidate.KAtrForOpenPosition;
+                var kAtrForStopLoss = candidate.KAtrForStopLoss;
+                var limitOpenedPositions = candidate.LimitOpenedPositions;
 
                 foreach (var neighborhood in selectedNeighborhoods)
                 {
@@ -250,7 +251,13 @@ namespace TrendByPivotPointsOptimizator
                         candidate.SlowDonchian >= neighborhood.slowMin &&
                         candidate.SlowDonchian <= neighborhood.slowMax &&
                         candidate.AtrPeriod >= neighborhood.atrMin &&
-                        candidate.AtrPeriod <= neighborhood.atrMax)
+                        candidate.AtrPeriod <= neighborhood.atrMax &&
+                        candidate.Side == neighborhood.side &&
+                        candidate.TimeFrame == neighborhood.timeFrame &&
+                        candidate.Ticker == neighborhood.ticker &&
+                        candidate.KAtrForOpenPosition == neighborhood.kAtrForOpenPosition &&
+                        candidate.KAtrForStopLoss == neighborhood.kAtrForStopLoss &&
+                        candidate.LimitOpenedPositions == neighborhood.limitOpenedPositions)
                     {
                         isNeighbor = true;
                         break;
@@ -260,7 +267,8 @@ namespace TrendByPivotPointsOptimizator
                 if (!isNeighbor)
                 {
                     selected.Add(candidate);
-                    selectedNeighborhoods.Add((fastMin, fastMax, slowMin, slowMax, atrMin, atrMax));
+                    selectedNeighborhoods.Add((fastMin, fastMax, slowMin, slowMax, atrMin, atrMax, side,
+                        timeFrame, ticker, kAtrForOpenPosition, kAtrForStopLoss, limitOpenedPositions));
                 }
             }
 

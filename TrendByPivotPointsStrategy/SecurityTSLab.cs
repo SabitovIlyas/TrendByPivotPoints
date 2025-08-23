@@ -317,6 +317,8 @@ namespace TradingSystems
 
         public double CommissionRate => throw new NotImplementedException();
 
+        List<Bar> Security.Bars { get => Bars; set => throw new NotImplementedException(); }
+
         public Security GetClone()
         {
             throw new NotImplementedException();
