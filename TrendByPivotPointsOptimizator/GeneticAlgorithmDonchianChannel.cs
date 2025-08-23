@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using TradingSystems;
 using TrendByPivotPointsStarter;
+using TSLab.DataSource;
 using TSLab.Utils;
 using Context = TradingSystems.Context;
 
@@ -12,8 +13,6 @@ namespace TrendByPivotPointsOptimizator
     public class GeneticAlgorithmDonchianChannel
     {
         public List<ChromosomeDonchianChannel> GetPopulation() => population;
-        public FitnessDonchianChannel FitnessDonchianChannel { get; private set; }
-
         private List<ChromosomeDonchianChannel> population;
         private int populationSize;
         private int generations;
@@ -53,9 +52,14 @@ namespace TrendByPivotPointsOptimizator
                 var sides = settings.Sides;
                 var side = sides[randomProvider.Next(sides.Count)];
 
-                var fastDonchian = randomProvider.Next(10, 208);              //9..208;
-                var slowDonchian = randomProvider.Next(fastDonchian, 208);    // -//-
-                var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                //var fastDonchian = randomProvider.Next(10, 208);              //9..208;
+                //var slowDonchian = randomProvider.Next(fastDonchian, 208);    // -//-
+                //var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+
+                var fastDonchian = randomProvider.Next(10, 20);              //9..208;
+                var slowDonchian = randomProvider.Next(fastDonchian+1, 40);    // -//-
+                var atrPeriod = randomProvider.Next(2, 10);                  //1..25
+
                 var limitOpenedPositions = randomProvider.Next(1, 5);
                 var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
                 var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
@@ -76,7 +80,7 @@ namespace TrendByPivotPointsOptimizator
                 PrepareChromosome(chromosome, period);
                 chromosome.SetBackwardBarsAsTickerBars();            
 
-                FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
+                var FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
 
                 Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
                     ++i, population.Count, chromosome.Name);
@@ -175,14 +179,23 @@ namespace TrendByPivotPointsOptimizator
                 chrom.Side = sides[randomProvider.Next(sides.Count)];
             }
 
-            if (randomProvider.NextDouble() < mutationRate)            
-                chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
+            //if (randomProvider.NextDouble() < mutationRate)            
+            //    chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
                 
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian, 208);  // -//-
+            //if (randomProvider.NextDouble() < mutationRate)
+            //    chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian+1, 208);  // -//-
+
+            //if (randomProvider.NextDouble() < mutationRate)
+            //    chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
+                chrom.FastDonchian = randomProvider.Next(10, 20);                  //9..208;
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian+1, 40);  // -//-
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.AtrPeriod = randomProvider.Next(2, 10);                      //1..25
 
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
@@ -191,7 +204,9 @@ namespace TrendByPivotPointsOptimizator
                 chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
 
             if (randomProvider.NextDouble() < mutationRate)  
-                chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);            
+                chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+
+            chrom.UpdateName();
         }
             
         public List<ChromosomeDonchianChannel> SelectBestNonNeighborChromosomes(List<ChromosomeDonchianChannel> population, 
@@ -205,7 +220,9 @@ namespace TrendByPivotPointsOptimizator
 
             // Множество для отслеживания окрестностей выбранных хромосом
             var selectedNeighborhoods = new List<(int fastMin, int fastMax, 
-                int slowMin, int slowMax, int atrMin, int atrMax)>();
+                int slowMin, int slowMax, int atrMin, int atrMax, PositionSide side,
+                Interval timeFrame, Ticker ticker, double kAtrForOpenPosition,
+                double kAtrForStopLoss, int limtOpenedPostions)>();
 
             foreach (var candidate in sortedPopulation)
             {
@@ -219,6 +236,12 @@ namespace TrendByPivotPointsOptimizator
                 int slowMax = (int)(candidate.SlowDonchian * (1 + neighborhoodPercentage));
                 int atrMin = (int)(candidate.AtrPeriod * (1 - neighborhoodPercentage));
                 int atrMax = (int)(candidate.AtrPeriod * (1 + neighborhoodPercentage));
+                var side = candidate.Side;
+                var timeFrame = candidate.TimeFrame;
+                var ticker = candidate.Ticker;
+                var candidate.KAtrForOpenPosition;
+                candidate.KAtrForStopLoss;
+                candidate.LimitOpenedPositions;
 
                 foreach (var neighborhood in selectedNeighborhoods)
                 {

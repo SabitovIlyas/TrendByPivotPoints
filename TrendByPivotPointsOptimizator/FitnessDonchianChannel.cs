@@ -12,22 +12,23 @@ namespace TrendByPivotPointsOptimizator
 {
     public class FitnessDonchianChannel
     {
-        public double NeighborhoodPercent { get; set; } = 0.05;
+        public double NeighborhoodPercent { get; set; } = 0.00;
         public int DealsCountCriteria { get; set; } = 30;        
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
         private ChromosomeDonchianChannel chromosome;
-        private StarterDonchianTradingSystemLab system;
+        private StarterDonchianTradingSystemLab starter;
         private TradingSystemParameters trSysParams;
         private int dealsCount;
 
         public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
-            StarterDonchianTradingSystemLab system)
+            StarterDonchianTradingSystemLab starter)
         {
             this.trSysParams = trSysParams;
             this.chromosome = chromosome;
-            this.system = system;            
+            this.starter = starter;
+            chromosome.FitnessDonchianChannel = this;
         }
         
         public void SetUpChromosomeFitnessValue(bool isCriteriaPassedNeedToCheck = true)
@@ -67,7 +68,7 @@ namespace TrendByPivotPointsOptimizator
 
                     for (int k = minAtr; k <= maxAtr; k++)
                     {
-                        var starter = system.GetClone();
+                        var starter = this.starter.GetClone();
                         var param = new TradingSystemParameters(trSysParams);
 
                         param.SystemParameters.SetValue("slowDonchian", i);

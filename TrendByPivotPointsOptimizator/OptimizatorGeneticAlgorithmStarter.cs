@@ -53,26 +53,32 @@ namespace TrendByPivotPointsOptimizator
                 var randomProvider = new RandomProvider();
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100,
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 5, generations: 1,
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
-                    optimizator, loggerNull);
+                    optimizator, loggerNull);//50 //100
 
                 var results = new List<ForwardAnalysisResult>();
 
-                for (var period = 0; period < 10; period++)
+                for (var period = 0; period < 1; period++)//10
                 {
                     logger.Log("Период № {0}", period + 1);
                     var bestPopulation = ga.Run(period);
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.ForwardAnalysisResults.First().BackwardFitness =
-                            chromosome.FitnessValue;
+                            chromosome.FitnessValue;                    
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.SetForwardBarsAsTickerBars();
 
-                    ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck:
-                    false);
+                    foreach (var chromosome in bestPopulation)
+                    {
+                        chromosome.FitnessDonchianChannel.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck:
+                            false);
+                    }                    
+
+                    //ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck:
+                    //false);
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.ForwardAnalysisResults.First().ForwardFitness =
