@@ -47,6 +47,7 @@ namespace TrendByPivotPointsOptimizator
             var fileName = fullFileName.Split('\\').Last();
             var securityName = fileName.Split('.').First();
             var results = new List<ForwardAnalysisResult>();
+            List<ChromosomeDonchianChannel> bestPopulationLast = null;
 
             try
             {
@@ -77,9 +78,6 @@ namespace TrendByPivotPointsOptimizator
                             false);
                     }                    
 
-                    //ga.FitnessDonchianChannel.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck:
-                    //false);
-
                     foreach (var chromosome in bestPopulation)
                         chromosome.ForwardAnalysisResults.First().ForwardFitness =
                                 chromosome.FitnessValue;
@@ -102,8 +100,28 @@ namespace TrendByPivotPointsOptimizator
                     });
                 }
 
-                var isStrategyViable = ga.IsStrategyViable(results);
+                //Финал!
+                logger.Log("Последний шаг!");
+                ga.IsLastBackwardTesting = true;
+                bestPopulationLast = ga.Run();
 
+                foreach (var chromosome in bestPopulationLast)
+                    chromosome.ForwardAnalysisResults.First().BackwardFitness =
+                        chromosome.FitnessValue;
+
+                var sumResults = 0d;
+                foreach (var chromosome in bestPopulationLast)
+                    sumResults += chromosome.ForwardAnalysisResults.First().BackwardFitness;
+
+                var avgResults = sumResults / bestPopulationLast.Count;
+
+                results.Add(new ForwardAnalysisResult()
+                {
+                    BackwardFitness = avgResults,
+                });
+                //////////////////////////////////////////////////////////////////////////////////////                
+
+                var isStrategyViable = ga.IsStrategyViable(results);
                 var stopTime = DateTime.Now;
                 logger.Log("Стоп {0}", stopTime);
 
@@ -112,16 +130,12 @@ namespace TrendByPivotPointsOptimizator
 
                 logger.Log("Генетический алгоритм завершил работу. Результаты: {0}",
                     isStrategyViable);
-
-                ////foreach (var res in results)
-                ////{
-                    
-                ////}
             }
             catch (Exception e)
             {
                 logger.Log(e.ToString());
-            }
+            }           
+
             Console.ReadLine();
         }
 

@@ -14,6 +14,7 @@ namespace TrendByPivotPointsOptimizator
     public class GeneticAlgorithmDonchianChannel
     {
         public List<ChromosomeDonchianChannel> GetPopulation() => population;
+        public bool IsLastBackwardTesting = false;
         private List<ChromosomeDonchianChannel> population;
         private int populationSize;
         private int generations;
@@ -78,7 +79,11 @@ namespace TrendByPivotPointsOptimizator
             {
                 var trSysParams = CreateTradingSystemParameters(chromosome);
                 var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
-                PrepareChromosome(chromosome, period);
+
+                if(IsLastBackwardTesting)
+                    PrepareChromosomeFinal(chromosome, period);
+                else
+                    PrepareChromosome(chromosome, period);
                 chromosome.SetBackwardBarsAsTickerBars();            
 
                 var FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
@@ -324,6 +329,16 @@ namespace TrendByPivotPointsOptimizator
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();
             forwardAnalysis.SetTradingPeriods(chromosome);         
+        }
+
+        private void PrepareChromosomeFinal(ChromosomeDonchianChannel chromosome, int period)
+        {
+            forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
+                backwardPeriodDays: 180, forwardPeriodsCount: 1);
+
+            forwardAnalysis.Period = period;
+            chromosome.ResetBarsToInitBars();
+            forwardAnalysis.SetTradingPeriodsFinal(chromosome);
         }
 
         public bool IsStrategyViable(List<ForwardAnalysisResult> results)
