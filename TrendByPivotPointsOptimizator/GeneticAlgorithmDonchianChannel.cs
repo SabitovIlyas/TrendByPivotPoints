@@ -110,8 +110,13 @@ namespace TrendByPivotPointsOptimizator
             systemParameters.Add("kAtrForOpenPosition", chrom.KAtrForOpenPosition);//4
             systemParameters.Add("atrPeriod", chrom.AtrPeriod);//3
             systemParameters.Add("limitOpenedPositions", chrom.LimitOpenedPositions);//4
-            systemParameters.Add("isUSD", 0);
-            systemParameters.Add("rateUSD", 0d);
+            
+            if (ticker.IsUSD)
+                systemParameters.Add("isUSD", 1);
+            else
+                systemParameters.Add("isUSD", 0);
+            systemParameters.Add("rateUSD", ticker.RateUSD);
+            
             systemParameters.Add("positionSide", chrom.Side);//5
             systemParameters.Add("timeFrame", chrom.TimeFrame);//6
             systemParameters.Add("shares", ticker.Shares);

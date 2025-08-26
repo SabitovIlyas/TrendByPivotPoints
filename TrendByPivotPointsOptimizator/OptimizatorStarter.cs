@@ -190,10 +190,10 @@ namespace TrendByPivotPointsOptimizator
         private Ticker CreateTicker(string fileName, SecurityData data, Interval timeframe)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
-            var bars = converter.ConvertFileWithBarsToListOfBars();            
+            var bars = converter.ConvertFileWithBarsToListOfBars();
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,
-                logger, data.CommissionRate);
+                logger, data.CommissionRate, false, 0);
 
             return ticker;
         }

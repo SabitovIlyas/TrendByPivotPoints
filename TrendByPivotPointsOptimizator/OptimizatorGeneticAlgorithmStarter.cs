@@ -47,6 +47,7 @@ namespace TrendByPivotPointsOptimizator
             var fileName = fullFileName.Split('\\').Last();
             var securityName = fileName.Split('.').First();
             var results = new List<ForwardAnalysisResult>();
+            List<ChromosomeDonchianChannel> bestPopulation = null;
             List<ChromosomeDonchianChannel> bestPopulationLast = null;
 
             try
@@ -63,7 +64,7 @@ namespace TrendByPivotPointsOptimizator
                 for (var period = 0; period < 10; period++)//10
                 {
                     logger.Log("Период № {0}", period + 1);
-                    var bestPopulation = ga.Run(period);
+                    bestPopulation = ga.Run(period);
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.ForwardAnalysisResults.First().BackwardFitness =
@@ -201,13 +202,17 @@ namespace TrendByPivotPointsOptimizator
                     var currency = splStr[1];
                     var shares = int.Parse(splStr[2]);
                     var commissionRate = double.Parse(splStr[3]);
+                    var isUSD = int.Parse(splStr[4]);
+                    var rateUSD = double.Parse(splStr[5]);
 
                     result.Add(new SecurityData()
                     {
                         Name = name,
                         Currency = GetCurrency(currency),
                         Shares = shares,
-                        CommissionRate = commissionRate
+                        CommissionRate = commissionRate,
+                        IsUSD = isUSD == 1,
+                        RateUSD = rateUSD,
                     });
                 }
             }
@@ -267,7 +272,7 @@ namespace TrendByPivotPointsOptimizator
             var bars = CompressBars(baseBars, timeframe);
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,
-                logger, data.CommissionRate);
+                logger, data.CommissionRate, data.IsUSD, data.RateUSD);
 
             return ticker;
         }
