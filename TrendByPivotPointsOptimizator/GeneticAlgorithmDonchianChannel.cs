@@ -54,17 +54,21 @@ namespace TrendByPivotPointsOptimizator
                 var sides = settings.Sides;
                 var side = sides[randomProvider.Next(sides.Count)];
 
-                var fastDonchian = randomProvider.Next(10, 208);              //9..208;
-                var slowDonchian = randomProvider.Next(fastDonchian+1, 208);    // -//-
-                var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                //var fastDonchian = randomProvider.Next(10, 208);              //9..208;
+                //var slowDonchian = randomProvider.Next(fastDonchian+1, 208);    // -//-
+                //var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
-                //var fastDonchian = randomProvider.Next(10, 20);              //9..208;
-                //var slowDonchian = randomProvider.Next(fastDonchian+1, 40);    // -//-
-                //var atrPeriod = randomProvider.Next(2, 10);                  //1..25
+                var fastDonchian = randomProvider.Next(10, 11);              //9..208;
+                var slowDonchian = randomProvider.Next(12,13);    // -//-
+                var atrPeriod = randomProvider.Next(2, 3);                  //1..25
 
-                var limitOpenedPositions = randomProvider.Next(1, 5);
-                var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
-                var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+                //var limitOpenedPositions = randomProvider.Next(1, 5);
+                //var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+                //var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+
+                var limitOpenedPositions = randomProvider.Next(3, 4);
+                var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 2);
+                var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 2);
 
                 population.Add(new ChromosomeDonchianChannel(ticker, timeFrame, side,
                     fastDonchian,slowDonchian, atrPeriod, limitOpenedPositions,
@@ -190,32 +194,41 @@ namespace TrendByPivotPointsOptimizator
                 chrom.Side = sides[randomProvider.Next(sides.Count)];
             }
 
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
-
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian + 1, 208);  // -//-
-
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
+            //if (randomProvider.NextDouble() < mutationRate)
+            //    chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
 
             //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.FastDonchian = randomProvider.Next(10, 20);                  //9..208;
+            //    chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian + 1, 208);  // -//-
 
             //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian+1, 40);  // -//-
+            //    chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.FastDonchian = randomProvider.Next(10, 11);                  //9..208;
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.SlowDonchian = randomProvider.Next(12, 13);  // -//-
+
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.AtrPeriod = randomProvider.Next(2, 3);                      //1..25
 
             //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.AtrPeriod = randomProvider.Next(2, 10);                      //1..25
+            //    chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
+
+            //if (randomProvider.NextDouble() < mutationRate)
+            //    chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+
+            //if (randomProvider.NextDouble() < mutationRate)  
+            //    chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
+                chrom.LimitOpenedPositions = randomProvider.Next(3, 4);
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+                chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 2);
 
-            if (randomProvider.NextDouble() < mutationRate)  
-                chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+            if (randomProvider.NextDouble() < mutationRate)
+                chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 2);
 
             chrom.UpdateName();
         }
