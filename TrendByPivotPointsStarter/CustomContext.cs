@@ -237,5 +237,10 @@ namespace TrendByPivotPointsStarter
         {
             throw new NotImplementedException();
         }
+
+        public IDataGridPane CreateDataGridPane(string name, string title, int displayIndexValueX, string formatValueX, string headerValueX, bool isVisibleValueX, TextAlignment textAlignmentValueX, int? widthValueX, int displayIndexDateTime, string formatDateTime, string headerDateTime, bool isVisibleDateTime, TextAlignment textAlignmentDateTime, int? widthDateTime, bool addToTop = false, int countLastValues = 0)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

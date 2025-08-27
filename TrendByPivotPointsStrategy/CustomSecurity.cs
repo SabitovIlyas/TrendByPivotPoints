@@ -120,6 +120,8 @@ namespace TradingSystems
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
 
+        public IDataSource DataSource => throw new NotImplementedException();
+
         public void Attach()
         {
             throw new NotImplementedException();
