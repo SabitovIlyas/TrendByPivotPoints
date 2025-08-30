@@ -181,13 +181,15 @@ namespace TrendByPivotPointsStarter
         {
             slowDonchian = systemParameters.GetInt("slowDonchian");
             fastDonchian = systemParameters.GetInt("fastDonchian");
-            kAtrForStopLoss = systemParameters.GetDouble("kAtr");
+            kAtrForStopLoss = systemParameters.GetDouble("kAtrForStopLoss");
+            kAtrForOpenPosition = systemParameters.GetDouble("kAtrForOpenPosition");
             atrPeriod = systemParameters.GetInt("atrPeriod");
             limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");
-            kAtrForOpenPosition = kAtrForStopLoss;
 
-            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
-            tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
+            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; " +
+                "kAtrForStopLoss: {2}; kAtrForOpenPosition: {3}; atrPeriod: {4}", 
+                slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
+            tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}", name, parametersCombination, security.Name, positionSide);
         }
 
         public void CalculateIndicators()

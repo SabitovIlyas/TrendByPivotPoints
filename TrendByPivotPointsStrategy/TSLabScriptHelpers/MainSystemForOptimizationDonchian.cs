@@ -10,7 +10,8 @@ namespace TradingSystems
     {
         private Security securityFirst;
         private IContext ctx;
-        private double kAtr;
+        private double kAtrForStopLoss;
+        private double kAtrForOpenPosition;
         private double limitOpenedPositions;
 
         public override void Initialize(ISecurity[] securities, IContext ctx)
@@ -27,11 +28,11 @@ namespace TradingSystems
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var riskValuePrcntCalc = kAtr * limitOpenedPositions;
+            var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions;
             if (riskValuePrcntCalc > riskValuePrcnt)
                 throw new System.Exception("Превышен уровень риска");
 
-            riskValuePrcnt = kAtr;
+            riskValuePrcnt = kAtrForStopLoss;
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
 
@@ -121,7 +122,8 @@ namespace TradingSystems
 
         public override void SetParameters(SystemParameters systemParameters)
         {
-            kAtr = systemParameters.GetDouble("kAtr");
+            kAtrForStopLoss = systemParameters.GetDouble("kAtrForStopLoss");
+            kAtrForOpenPosition = systemParameters.GetDouble("kAtrForOpenPosition");
             limitOpenedPositions = systemParameters.GetDouble("limitOpenedPositions");
             base.SetParameters(systemParameters);
         }

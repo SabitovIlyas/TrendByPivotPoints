@@ -9,7 +9,8 @@ namespace TradingSystems
     {        
         public OptimProperty slowDonchian = new OptimProperty(55, 20, 60, 1);
         public OptimProperty fastDonchian = new OptimProperty(20, 10, 20, 1);
-        public OptimProperty kAtr = new OptimProperty(2, 1, 2, 0.5);
+        public OptimProperty kAtrForOpenPosition = new OptimProperty(2, 1, 2, 0.5);
+        public OptimProperty kAtrForStopLoss = new OptimProperty(2, 1, 2, 0.5);
         public OptimProperty atrPeriod = new OptimProperty(20, 14, 20, 1);
         public OptimProperty limitOpenedPositions = new OptimProperty(2, 1, 4, 1);
 
@@ -58,7 +59,8 @@ namespace TradingSystems
             var systemParameters = new SystemParameters();            
             systemParameters.Add("slowDonchian", slowDonchian);
             systemParameters.Add("fastDonchian", fastDonchian);
-            systemParameters.Add("kAtr", kAtr);
+            systemParameters.Add("kAtrForOpenPosition", kAtrForOpenPosition);
+            systemParameters.Add("kAtrForStopLoss", kAtrForStopLoss);
             systemParameters.Add("atrPeriod", atrPeriod);
             systemParameters.Add("limitOpenedPositions", limitOpenedPositions);
 

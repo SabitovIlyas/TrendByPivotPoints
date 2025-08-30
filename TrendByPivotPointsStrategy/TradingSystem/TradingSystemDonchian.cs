@@ -238,10 +238,10 @@ namespace TradingSystems
         {
             slowDonchian = systemParameters.GetInt("slowDonchian");
             fastDonchian = systemParameters.GetInt("fastDonchian");
-            kAtrForStopLoss = systemParameters.GetDouble("kAtr");
+            kAtrForStopLoss = systemParameters.GetDouble("kAtrForStopLoss");
+            kAtrForOpenPosition = systemParameters.GetDouble("kAtrForOpenPosition");
             atrPeriod = systemParameters.GetInt("atrPeriod");
-            limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");
-            //kAtrForOpenPosition = kAtrForStopLoss;
+            limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");            
 
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
