@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script.Handlers;
 
@@ -78,34 +79,41 @@ namespace TradingSystems
 
         public void Update(int barNumber)
         {
-            var bar = bars[barNumber];
-            var activeOrders = GetActiveOrders(barNumber);
-
-            foreach (var order in activeOrders)
+            try
             {
-                if (order.Execute(bar, barNumber))
-                {
-                    if (order.OrderType == OrderType.Limit)
-                    {
-                        var position = new PositionLab(barNumber, order.Order, security);
-                        order.Position = position;
-                    }
-                    else if (order.OrderType == OrderType.StopLossLimit)
-                    {
-                        var position = order.Position;
-                        position.CloseAtStop(barNumber, order.ExecutedPrice, order.SignalName);
-                    }
-                    else if (order.OrderType == OrderType.Market)
-                    {
+                var bar = bars[barNumber];
+                var activeOrders = GetActiveOrders(barNumber);
 
-                    }
-                    else if (order.OrderType == OrderType.StopLossMarket)
+                foreach (var order in activeOrders)
+                {
+                    if (order.Execute(bar, barNumber))
                     {
-                        var position = order.Position;
-                        position.CloseAtMarket(barNumber, order.ExecutedPrice, order.SignalName);
+                        if (order.OrderType == OrderType.Limit)
+                        {
+                            var position = new PositionLab(barNumber, order.Order, security);
+                            order.Position = position;
+                        }
+                        else if (order.OrderType == OrderType.StopLossLimit)
+                        {
+                            var position = order.Position;
+                            position.CloseAtStop(barNumber, order.ExecutedPrice, order.SignalName);
+                        }
+                        else if (order.OrderType == OrderType.Market)
+                        {
+
+                        }
+                        else if (order.OrderType == OrderType.StopLossMarket)
+                        {
+                            var position = order.Position;
+                            position.CloseAtMarket(barNumber, order.ExecutedPrice, order.SignalName);
+                        }
                     }
                 }
             }
+            catch
+            {
+                
+            }            
         }
 
         public List<OrderToPositionMap> GetActiveOrders(int barNumber)
