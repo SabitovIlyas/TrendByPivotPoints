@@ -54,13 +54,13 @@ namespace TrendByPivotPointsOptimizator
         public void SetBackwardBarsAsTickerBars()
         {
             if (ForwardAnalysisResults.Any() && ForwardAnalysisResults.First().BackwardBars != null)
-                Ticker.Bars = ForwardAnalysisResults.First().BackwardBars;
+                Ticker.Bars = ForwardAnalysisResults.Last().BackwardBars;
         }
 
         public void SetForwardBarsAsTickerBars()
         {
             if (ForwardAnalysisResults.Any() && ForwardAnalysisResults.First().ForwardBars != null)
-                Ticker.Bars = ForwardAnalysisResults.First().ForwardBars;
+                Ticker.Bars = ForwardAnalysisResults.Last().ForwardBars;
         }
 
         public void UpdateName()

@@ -40,12 +40,12 @@ namespace TrendByPivotPointsOptimizator
             this.settings = settings;
             this.context = context;
             this.logger = logger;
-            this.optimizator = optimizator;
-            population = new List<ChromosomeDonchianChannel>();
+            this.optimizator = optimizator;            
         }
 
         public void Initialize()
         {
+            population = new List<ChromosomeDonchianChannel>();
             for (int i = 0; i < populationSize; i++)
             {                
                 var ticker = tickers[randomProvider.Next(tickers.Count)];
