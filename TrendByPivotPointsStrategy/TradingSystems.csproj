@@ -104,7 +104,7 @@
     <Compile Include="TradingPatterns\PatternPivotPoints_1l2g3.cs" />
     <Compile Include="TradingPatterns\PatternPivotPoints_1l2l3.cs" />
     <Compile Include="TradingSystem\TradingStrategy.cs" />
-    <Compile Include="TradingSystem\TradingSystemDonchian.cs" />
+    <Compile Include="TradingSystem\TradingSystemDonchianNewIntervals.cs" />
     <Compile Include="TradingSystem\TradingSystemEmasCrossingUpdateTrailStopLoss.cs" />
     <Compile Include="TradingSystem\TradingSystemPivotPointsEMA.cs" />
     <Compile Include="TradingSystem\TradingSystemPivotPointsEmaRtUpdate.cs" />
