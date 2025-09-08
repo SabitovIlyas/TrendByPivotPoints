@@ -26,7 +26,8 @@ namespace TradingSystems
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions;
+            var scaleContracts = 0.5;
+            var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions * scaleContracts;   //вынести в настраиваемый параметр
             if (riskValuePrcntCalc > riskValuePrcnt)
                 throw new System.Exception("Превышен уровень риска");
 
