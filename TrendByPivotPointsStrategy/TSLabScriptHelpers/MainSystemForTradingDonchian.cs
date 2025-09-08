@@ -27,11 +27,11 @@ namespace TradingSystems
             securityList.Add(this.securityFirst);
 
             var scaleContracts = 0.5;
-            var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions * scaleContracts;   //вынести в настраиваемый параметр
+            var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions;
             if (riskValuePrcntCalc > riskValuePrcnt)
                 throw new System.Exception("Превышен уровень риска");
 
-            riskValuePrcnt = kAtrForStopLoss;
+            riskValuePrcnt = kAtrForStopLoss * scaleContracts;   //вынести в настраиваемый параметр;
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
 
