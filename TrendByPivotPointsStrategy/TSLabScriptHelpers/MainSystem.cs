@@ -15,6 +15,7 @@ namespace TradingSystems
         protected int positionSide;
         protected double comission;
         protected double riskValuePrcnt;
+        protected double scaleContractsPrcnt;
         protected int isUSD;
 
         protected int shares;

@@ -30,7 +30,8 @@ namespace TradingSystems
             rateUSD = systemParameters.GetDouble("rateUSD");
             positionSide = systemParameters.GetInt("positionSide");
             comission = systemParameters.GetDouble("comission"); ;
-            riskValuePrcnt = systemParameters.GetDouble("riskValuePrcnt"); ;
+            riskValuePrcnt = systemParameters.GetDouble("riskValuePrcnt");
+            scaleContractsPrcnt = systemParameters.GetDouble("scaleContractsPrcnt");
             securityNumber = systemParameters.GetInt("securityNumber");
             instrumentsGroup = systemParameters.GetInt("instrumentsGroup");
             shares = systemParameters.GetInt("shares");

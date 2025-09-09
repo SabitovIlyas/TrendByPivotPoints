@@ -19,6 +19,7 @@ namespace TradingSystems
         public OptimProperty comission = new OptimProperty(0.565, 0.001, 100, 0.001);
         public OptimProperty mode = new OptimProperty(2, 0, 1, 1);
         public OptimProperty riskValuePrcnt = new OptimProperty(0.5, 0, 2, 0.5);
+        public OptimProperty scaleContractsPrcnt = new OptimProperty(100, 0, 100, 1);
         public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 1);
         public OptimProperty instrumentsGroup = new OptimProperty(0, 0, 3, 1);
         public OptimProperty isPaint = new OptimProperty(0, 0, 1, 1);
@@ -69,10 +70,11 @@ namespace TradingSystems
             systemParameters.Add("comission", comission);
 
             systemParameters.Add("riskValuePrcnt", riskValuePrcnt);
+            systemParameters.Add("scaleContractsPrcnt", scaleContractsPrcnt);
+            systemParameters.Add("isUSD", isUSD);            
             systemParameters.Add("securityNumber", securityNumber);
             systemParameters.Add("instrumentsGroup", instrumentsGroup);
-            systemParameters.Add("shares", shares);
-            systemParameters.Add("isUSD", isUSD);
+            systemParameters.Add("shares", shares);            
 
             try
             {

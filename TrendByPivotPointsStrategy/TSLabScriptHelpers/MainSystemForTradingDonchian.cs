@@ -26,12 +26,12 @@ namespace TradingSystems
             this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var scaleContracts = 0.5;
+            var scaleContracts = scaleContractsPrcnt / 100;
             var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions;
             if (riskValuePrcntCalc > riskValuePrcnt)
                 throw new System.Exception("Превышен уровень риска");
 
-            riskValuePrcnt = kAtrForStopLoss * scaleContracts;   //вынести в настраиваемый параметр;
+            riskValuePrcnt = kAtrForStopLoss * scaleContracts;
             var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
 
