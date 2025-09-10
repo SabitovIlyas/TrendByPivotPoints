@@ -52,6 +52,8 @@ namespace TrendByPivotPointsOptimizator
             List<ChromosomeDonchianChannel> bestPopulation = null;
             List<ChromosomeDonchianChannel> bestPopulationLast = null;
 
+            var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}.csv";
+            CreateTxtFile(resultFileName);
             try
             {
                 var context = new ContextLab();
@@ -118,9 +120,10 @@ namespace TrendByPivotPointsOptimizator
                     };
 
                     results.Add(tmp);
-                    AppendToTxtFile(tmp);
+                    AppendToTxtFile(tmp, resultFileName);
                 }
                 results.Add(tmpRes);
+                AppendToTxtFile(tmpRes, resultFileName);
 
                 var stopTime = DateTime.Now;
                 logger.Log("Стоп {0}", stopTime);
@@ -144,7 +147,7 @@ namespace TrendByPivotPointsOptimizator
 
             var t = bestPopulationLast.Last();
 
-            using (StreamWriter writer = new StreamWriter($"{t.Ticker.Name}_{t.Side}.csv"))
+            using (StreamWriter writer = new StreamWriter($"{t.Ticker.Name}_{t.Side}_params.csv"))
             {
                 // Запись заголовков столбцов                
                 writer.WriteLine($"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
@@ -163,11 +166,20 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
-        private void AppendToTxtFile(ForwardAnalysisResult tmp)
+        private void CreateTxtFile(string fileName)
         {
-            throw new NotImplementedException();
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                writer.WriteLine($"BackwardFitness;ForwardFitness");
+            }
+        }
 
-           
+        private void AppendToTxtFile(ForwardAnalysisResult result, string fileName)
+        {
+            using (StreamWriter writer = new StreamWriter(fileName, append: true))
+            {               
+                writer.WriteLine($"{result.BackwardFitness};{result.ForwardFitness}");                
+            }
         }
 
         private Settings CreateSettings(string fullFileName)
