@@ -1,6 +1,8 @@
 ﻿using PeparatorDataForSpreadTradingSystems;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -60,8 +62,25 @@ namespace TrendByPivotPointsOptimizator
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
                     optimizator, loggerNull);//50 //100
 
+                logger.Log("Старт генетического алгоритма");
+                logger.Log("Актуальная оптимизация!");
+                ga.IsLastBackwardTesting = true;
+                bestPopulationLast = ga.Run();
 
-                for (var period = 0; period < 10; period++)//10
+                foreach (var chromosome in bestPopulationLast)
+                    chromosome.ForwardAnalysisResults.First().BackwardFitness =
+                        chromosome.FitnessValue;
+
+                var sumResults = 0d;
+                foreach (var chromosome in bestPopulationLast)
+                    sumResults += chromosome.ForwardAnalysisResults.First().BackwardFitness;
+
+                var avgResults = sumResults / bestPopulationLast.Count;
+                var tmpRes = new ForwardAnalysisResult() { BackwardFitness = avgResults, };
+                PrintToTxtFile(bestPopulationLast);
+
+                ga.IsLastBackwardTesting = false;
+                for (var period = 0; period < 4; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
                     bestPopulation = ga.Run(period);
@@ -73,11 +92,9 @@ namespace TrendByPivotPointsOptimizator
                     foreach (var chromosome in bestPopulation)
                         chromosome.SetForwardBarsAsTickerBars();
 
-                    foreach (var chromosome in bestPopulation)
-                    {
+                    foreach (var chromosome in bestPopulation)                    
                         chromosome.FitnessDonchianChannel.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck:
-                            false);
-                    }                    
+                            false);                    
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.ForwardAnalysisResults.First().ForwardFitness =
@@ -94,43 +111,23 @@ namespace TrendByPivotPointsOptimizator
                     var avgResultsBackward = sumResultsBackward / bestPopulation.Count;
                     var avgResultsForward = sumResultsForward / bestPopulation.Count;
 
-                    results.Add(new ForwardAnalysisResult()
+                    var tmp = new ForwardAnalysisResult()
                     {
                         BackwardFitness = avgResultsBackward,
                         ForwardFitness = avgResultsForward
-                    });
+                    };
+
+                    results.Add(tmp);
+                    AppendToTxtFile(tmp);
                 }
+                results.Add(tmpRes);
 
-                //Финал!
-                logger.Log("Последний шаг!");
-                ga.IsLastBackwardTesting = true;
-                bestPopulationLast = ga.Run();
-
-                foreach (var chromosome in bestPopulationLast)
-                    chromosome.ForwardAnalysisResults.First().BackwardFitness =
-                        chromosome.FitnessValue;
-
-                var sumResults = 0d;
-                foreach (var chromosome in bestPopulationLast)
-                    sumResults += chromosome.ForwardAnalysisResults.First().BackwardFitness;
-
-                var avgResults = sumResults / bestPopulationLast.Count;
-
-                results.Add(new ForwardAnalysisResult()
-                {
-                    BackwardFitness = avgResults,
-                });
-                //////////////////////////////////////////////////////////////////////////////////////                
-
-                var isStrategyViable = ga.IsStrategyViable(results);
                 var stopTime = DateTime.Now;
                 logger.Log("Стоп {0}", stopTime);
 
                 var duration = stopTime-startTime;
                 logger.Log("Время выполнения {0}", duration);
-
-                logger.Log("Генетический алгоритм завершил работу. Результаты: {0}",
-                    isStrategyViable);
+                logger.Log("Генетический алгоритм завершил работу.");
             }
             catch (Exception e)
             {
@@ -138,6 +135,39 @@ namespace TrendByPivotPointsOptimizator
             }           
 
             Console.ReadLine();
+        }
+
+        private void PrintToTxtFile(List<ChromosomeDonchianChannel> bestPopulationLast)
+        {
+            if (bestPopulationLast == null || bestPopulationLast.Count == 0)
+                return;
+
+            var t = bestPopulationLast.Last();
+
+            using (StreamWriter writer = new StreamWriter($"{t.Ticker.Name}_{t.Side}.csv"))
+            {
+                // Запись заголовков столбцов                
+                writer.WriteLine($"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
+                    $"{nameof(t.TimeFrame)};{nameof(t.Side)};{nameof(t.Ticker.Name)};" +
+                    $"{nameof(t.FastDonchian)};{nameof(t.SlowDonchian)};{nameof(t.AtrPeriod)};" +
+                    $"{nameof(t.LimitOpenedPositions)};{nameof(t.KAtrForOpenPosition)};" +
+                    $"{nameof(t.KAtrForStopLoss)}");
+
+                foreach (var c in bestPopulationLast)
+                {
+                    // Запись строк с данными
+                    writer.WriteLine($"{c.FitnessValue};{c.DealsCount};{c.TimeFrame};{c.Side};" +
+                        $"{c.Ticker.Name};{c.FastDonchian};{c.SlowDonchian};{c.AtrPeriod};" +
+                        $"{c.LimitOpenedPositions};{c.KAtrForOpenPosition};{c.KAtrForStopLoss}");
+                }
+            }
+        }
+
+        private void AppendToTxtFile(ForwardAnalysisResult tmp)
+        {
+            throw new NotImplementedException();
+
+           
         }
 
         private Settings CreateSettings(string fullFileName)
