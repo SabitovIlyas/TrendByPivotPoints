@@ -54,8 +54,8 @@ namespace TrendByPivotPointsOptimizator
                 var sides = settings.Sides;
                 var side = sides[randomProvider.Next(sides.Count)];
 
-                var fastDonchian = randomProvider.Next(10, 208);              //9..208;
-                var slowDonchian = randomProvider.Next(fastDonchian + 1, 208);    // -//-
+                var fastDonchian = randomProvider.Next(10, 100);              //9..208;
+                var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-
                 var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
                 //var fastDonchian = randomProvider.Next(10, 11);              //9..208;
@@ -195,10 +195,10 @@ namespace TrendByPivotPointsOptimizator
             }
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.FastDonchian = randomProvider.Next(10, 208);                  //9..208;
+                chrom.FastDonchian = randomProvider.Next(10, 100);                  //9..208;
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian + 1, 208);  // -//-
+                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian, 100);  // -//-
 
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
