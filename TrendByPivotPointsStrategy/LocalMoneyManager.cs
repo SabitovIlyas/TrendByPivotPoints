@@ -7,7 +7,7 @@ namespace TradingSystems
         Currency currency;
         Account account;
         GlobalMoneyManager globalMoneyManager;
-        int shares = 1;
+        double shares = 1;
         public Logger Logger { get { return logger; } set { logger = value; } }
         private Logger logger = new NullLogger();
 
@@ -18,7 +18,7 @@ namespace TradingSystems
             this.currency = currency;
         }
 
-        public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency, int shares)
+        public LocalMoneyManager(GlobalMoneyManager globalMoneyManager, Account account, Currency currency, double shares)
         {
             this.globalMoneyManager = globalMoneyManager;
             this.account = account;
@@ -75,7 +75,7 @@ namespace TradingSystems
             }
 
             var contractsByRiskMoney = (int)(money / riskMoney);            
-            contractsByRiskMoney = contractsByRiskMoney / shares;
+            contractsByRiskMoney = (int)(contractsByRiskMoney / shares);
             if (contractsByRiskMoney == 0) contractsByRiskMoney = 1;
 
             message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity (Estimated Balance) и рискуемой суммой в одном контракте, равно {0} " +

@@ -18,7 +18,7 @@ namespace TradingSystems
         protected double scaleContractsPrcnt;
         protected int isUSD;
 
-        protected int shares;
+        protected double shares;
         protected Logger logger = new NullLogger();
         protected Account account;
         protected SystemParameters systemParameters;

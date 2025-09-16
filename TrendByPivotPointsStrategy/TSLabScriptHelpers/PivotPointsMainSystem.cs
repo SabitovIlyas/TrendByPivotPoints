@@ -34,7 +34,7 @@ namespace TradingSystems
             scaleContractsPrcnt = systemParameters.GetDouble("scaleContractsPrcnt");
             securityNumber = systemParameters.GetInt("securityNumber");
             instrumentsGroup = systemParameters.GetInt("instrumentsGroup");
-            shares = systemParameters.GetInt("shares");
+            shares = systemParameters.GetDouble("shares");
             isUSD = systemParameters.GetInt("isUSD");
         }
     }
