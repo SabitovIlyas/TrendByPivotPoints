@@ -121,6 +121,10 @@ namespace TrendByPivotPointsOptimizator
 
                     results.Add(tmp);
                     AppendToTxtFile(tmp, resultFileName);
+
+                    var bestPopulationFile = $"{tickers.First().Name}_{settings.Sides.First()}_Period_{period}.csv";
+                    CreateTxtFile(bestPopulationFile);
+                    PrintToTxtFile(bestPopulation);
                 }
                 results.Add(tmpRes);
                 AppendToTxtFile(tmpRes, resultFileName);
@@ -140,27 +144,27 @@ namespace TrendByPivotPointsOptimizator
             Console.ReadLine();
         }
 
-        private void PrintToTxtFile(List<ChromosomeDonchianChannel> bestPopulationLast)
+        private void PrintToTxtFile(List<ChromosomeDonchianChannel> population)
         {
-            if (bestPopulationLast == null || bestPopulationLast.Count == 0)
+            if (population == null || population.Count == 0)
                 return;
 
-            var t = bestPopulationLast.Last();
+            var t = population.Last();
 
             using (StreamWriter writer = new StreamWriter($"{t.Ticker.Name}_{t.Side}_params.csv"))
             {
                 // Запись заголовков столбцов                
                 writer.WriteLine($"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
                     $"{nameof(t.TimeFrame)};{nameof(t.Side)};{nameof(t.Ticker.Name)};" +
-                    $"{nameof(t.FastDonchian)};{nameof(t.SlowDonchian)};{nameof(t.AtrPeriod)};" +
+                    $"{nameof(t.SlowDonchian)};{nameof(t.FastDonchian)};{nameof(t.AtrPeriod)};" +
                     $"{nameof(t.LimitOpenedPositions)};{nameof(t.KAtrForOpenPosition)};" +
                     $"{nameof(t.KAtrForStopLoss)}");
 
-                foreach (var c in bestPopulationLast)
+                foreach (var c in population)
                 {
                     // Запись строк с данными
                     writer.WriteLine($"{c.FitnessValue};{c.DealsCount};{c.TimeFrame};{c.Side};" +
-                        $"{c.Ticker.Name};{c.FastDonchian};{c.SlowDonchian};{c.AtrPeriod};" +
+                        $"{c.Ticker.Name};{c.SlowDonchian};{c.FastDonchian};{c.AtrPeriod};" +
                         $"{c.LimitOpenedPositions};{c.KAtrForOpenPosition};{c.KAtrForStopLoss}");
                 }
             }
