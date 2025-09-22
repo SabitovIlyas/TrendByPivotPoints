@@ -124,7 +124,7 @@ namespace TrendByPivotPointsOptimizator
 
                     var bestPopulationFile = $"{tickers.First().Name}_{settings.Sides.First()}_Period_{period}.csv";
                     CreateTxtFile(bestPopulationFile);
-                    PrintToTxtFile(bestPopulation);
+                    PrintToTxtFile(bestPopulation, bestPopulationFile);
                 }
                 results.Add(tmpRes);
                 AppendToTxtFile(tmpRes, resultFileName);
@@ -144,14 +144,17 @@ namespace TrendByPivotPointsOptimizator
             Console.ReadLine();
         }
 
-        private void PrintToTxtFile(List<ChromosomeDonchianChannel> population)
+        private void PrintToTxtFile(List<ChromosomeDonchianChannel> population, string fileName ="")
         {
             if (population == null || population.Count == 0)
                 return;
 
             var t = population.Last();
 
-            using (StreamWriter writer = new StreamWriter($"{t.Ticker.Name}_{t.Side}_params.csv"))
+            if (fileName == "")
+                fileName= $"{t.Ticker.Name}_{t.Side}_params.csv";
+
+            using (StreamWriter writer = new StreamWriter(fileName))
             {
                 // Запись заголовков столбцов                
                 writer.WriteLine($"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
