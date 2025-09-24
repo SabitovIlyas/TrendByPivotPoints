@@ -63,9 +63,7 @@ namespace TradingSystems
                 var positionSide = (int)systemParameters.GetValue("positionSide");
                 var isUSD = (int)systemParameters.GetValue("isUSD");
                 rateUSD = (double)systemParameters.GetValue("rateUSD");
-                shares = (int)systemParameters.GetValue("shares");
-                contracts = (int)systemParameters.GetValue("contracts");
-                equity = (double)systemParameters.GetValue("equity");
+                shares = (int)systemParameters.GetValue("shares");                
                 riskValuePrcnt = (double)systemParameters.GetValue("riskValuePrcnt");
 
                 if (positionSide == 0)

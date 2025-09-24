@@ -51,16 +51,19 @@ namespace TrendByPivotPointsStarter
         {
             var systemParameters = new SystemParameters();
 
-            systemParameters.Add("slowDonchian", 50);
-            systemParameters.Add("fastDonchian", 20);
-            systemParameters.Add("kAtr", 2d);
-            systemParameters.Add("atrPeriod", 20);
+            systemParameters.Add("slowDonchian", 39);
+            systemParameters.Add("fastDonchian", 14);
+            systemParameters.Add("kAtrForOpenPosition", 0.5d);
+            systemParameters.Add("kAtrForStopLoss", 0.5d);            
+            systemParameters.Add("atrPeriod", 15);
 
-            systemParameters.Add("limitOpenedPositions", 4);
+            systemParameters.Add("limitOpenedPositions", 2);
             systemParameters.Add("isUSD", 1);
-            systemParameters.Add("rateUSD", 100d);
-            systemParameters.Add("positionSide", 0);
+            systemParameters.Add("rateUSD", 84d);
+            systemParameters.Add("positionSide", 1);
             systemParameters.Add("shares", 10);
+            systemParameters.Add("scaleContractsPrcnt", 100d);
+            systemParameters.Add("riskValuePrcnt", 100d);
 
             return systemParameters;
         }
