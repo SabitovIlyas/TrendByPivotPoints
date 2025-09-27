@@ -65,6 +65,8 @@ namespace TradingSystems
                 rateUSD = (double)systemParameters.GetValue("rateUSD");
                 shares = (int)systemParameters.GetValue("shares");                
                 riskValuePrcnt = (double)systemParameters.GetValue("riskValuePrcnt");
+                contracts = (int)systemParameters.GetValue("contracts");
+                equity = (double)systemParameters.GetValue("equity");
 
                 if (positionSide == 0)
                     this.positionSide = PositionSide.Long;

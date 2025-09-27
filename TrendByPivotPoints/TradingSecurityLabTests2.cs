@@ -63,9 +63,9 @@ namespace TradingSystems.Tests
             systemParameters.Add("rateUSD", 0d);
             systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", 1);
-
-            systemParameters.Add("equity", 100000d);
             systemParameters.Add("riskValuePrcnt", 100d); //реализовать и оттестировать в другом тесте
+
+            systemParameters.Add("equity", 100000d);            
             systemParameters.Add("contracts", 2);
 
             starter.SetParameters(systemParameters);

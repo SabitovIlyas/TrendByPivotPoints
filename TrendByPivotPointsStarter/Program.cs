@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 using TradingSystems;
 
@@ -25,7 +26,7 @@ namespace TrendByPivotPointsStarter
             var securityName = fileName.Split('.').First();
             var bars = converter.ConvertFileWithBarsToListOfBars();
 
-            var logger = new ConsoleLogger();            
+            var logger = new LoggerNull();
 
             try
             {
@@ -38,12 +39,43 @@ namespace TrendByPivotPointsStarter
                 var systemParameters = GetSystemParameters();
                 system.SetParameters(systemParameters);
                 system.Initialize();
-                system.Run();                
+
+                Console.WriteLine($"Еквити начальный: {system.Account.Equity}");
+
+                system.Run();
+
+                Console.WriteLine($"Еквити конечный: {system.Account.Equity}");
+                Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDown()}");
+
+                var deals = security.GetDeals();
+
+                Console.WriteLine($"Всего {deals.Count} сделок.");
+                var dNmbr = 0;
+                foreach (var d in deals)
+                {                    
+                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}");
+                    dNmbr++;
+                }
+
+                deals = security.GetMetaDeals();
+                Console.WriteLine($"Всего {deals.Count} метасделок.");
+                dNmbr = 0;
+                foreach (var d in deals)
+                {
+                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}");
+                    dNmbr++;
+                }
+
             }
             catch (Exception e)
             {
                 logger.Log(e.ToString());
             }
+
             Console.ReadLine();
         }
 
@@ -64,6 +96,8 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("shares", 10);
             systemParameters.Add("scaleContractsPrcnt", 100d);
             systemParameters.Add("riskValuePrcnt", 100d);
+            systemParameters.Add("contracts", 0);
+            systemParameters.Add("equity", 100000d);
 
             return systemParameters;
         }
