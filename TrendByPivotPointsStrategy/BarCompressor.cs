@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TSLab.DataSource;
 
 namespace TradingSystems
 {
@@ -62,5 +63,70 @@ namespace TradingSystems
         public List<Bar> To30Minute(List<Bar> bars) => CompressBars(bars, TimeSpan.FromMinutes(30));
         public List<Bar> ToHourly(List<Bar> bars) => CompressBars(bars, TimeSpan.FromHours(1));
         public List<Bar> ToDaily(List<Bar> bars) => CompressBars(bars, TimeSpan.FromDays(1));
+
+        public static List<Bar> CompressBars(List<Bar> bars, Interval timeframe)
+        {
+            var compressor = new BarCompressor();
+            var result = new List<Bar>();
+
+            switch (timeframe.Base)
+            {
+                case DataIntervals.MINUTE:
+                    {
+                        switch (timeframe.Value)
+                        {
+                            case 1:
+                                {
+                                    result = bars;
+                                    break;
+                                }
+
+                            case 5:
+                                {
+                                    result = compressor.To5Minute(bars);
+                                    break;
+                                }
+                            case 15:
+                                {
+                                    result = compressor.To15Minute(bars);
+                                    break;
+                                }
+                            case 30:
+                                {
+                                    result = compressor.To30Minute(bars);
+                                    break;
+                                }
+                            case 60:
+                                {
+                                    result = compressor.ToHourly(bars);
+                                    break;
+                                }
+                            default:
+                                {
+                                    throw new NotImplementedException();
+                                }
+                        }
+                        break;
+                    }
+                case DataIntervals.DAYS:
+                    {
+                        switch (timeframe.Value)
+                        {
+                            case 1:
+                                {
+                                    result = compressor.ToDaily(bars);
+                                    break;
+                                }
+                            default:
+                                {
+                                    throw new NotImplementedException();
+                                }
+                        }
+                        break;
+                    }
+            }
+
+            return result;
+        }
     }
 }

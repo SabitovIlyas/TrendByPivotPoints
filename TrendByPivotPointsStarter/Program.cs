@@ -5,6 +5,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 using TradingSystems;
+using TSLab.DataSource;
+using TSLab.Script.Handlers;
 
 namespace TrendByPivotPointsStarter
 {
@@ -25,6 +27,8 @@ namespace TrendByPivotPointsStarter
             var fileName = fullFileName.Split('\\').Last();
             var securityName = fileName.Split('.').First();
             var bars = converter.ConvertFileWithBarsToListOfBars();
+            var interval = new Interval(60, DataIntervals.MINUTE);
+            bars = BarCompressor.CompressBars(bars, interval);
 
             var logger = new LoggerNull();
 
@@ -34,7 +38,7 @@ namespace TrendByPivotPointsStarter
                 var security = new SecurityLab(securityName, Currency.USD, shares: 10,
                     5000, 4500, bars, logger);
 
-                var securities = new List<Security>() { security };
+                var securities = new List<TradingSystems.Security>() { security };
                 var system = new StarterDonchianTradingSystemLab(context, securities, logger);
                 var systemParameters = GetSystemParameters();
                 system.SetParameters(systemParameters);
@@ -59,16 +63,16 @@ namespace TrendByPivotPointsStarter
                     dNmbr++;
                 }
 
-                deals = security.GetMetaDeals();
-                Console.WriteLine($"Всего {deals.Count} метасделок.");
-                dNmbr = 0;
-                foreach (var d in deals)
-                {
-                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
-                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}");
-                    dNmbr++;
-                }
+                //deals = security.GetMetaDeals();
+                //Console.WriteLine($"Всего {deals.Count} метасделок.");
+                //dNmbr = 0;
+                //foreach (var d in deals)
+                //{
+                //    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                //        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                //        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}");
+                //    dNmbr++;
+                //}
 
             }
             catch (Exception e)
