@@ -9,7 +9,7 @@ namespace TrendByPivotPointsStarter
 {
     public class StarterDonchianTradingSystemLab : Starter
     {
-        private double kAtr;
+        private double kAtrForStopLoss;
         private int limitOpenedPositions;
         private List<NonTradingPeriod> nonTradingPeriods;
 
@@ -53,7 +53,8 @@ namespace TrendByPivotPointsStarter
             this.systemParameters = systemParameters;
             try
             {
-                base.SetParameters(systemParameters);                
+                base.SetParameters(systemParameters);
+                kAtrForStopLoss = (double)systemParameters.GetValue("kAtrForStopLoss");
                 limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");                
             }
             catch (KeyNotFoundException e)
@@ -77,6 +78,7 @@ namespace TrendByPivotPointsStarter
             ContractsManager contractsManager;
             if (contracts <= 0)
             {
+                riskValuePrcnt = kAtrForStopLoss;
                 var riskManager = new RiskManagerReal(Account, logger, riskValuePrcnt);
                 contractsManager = new ContractsManager(riskManager, Account, currency,
                 currencyConverter, shares, logger);

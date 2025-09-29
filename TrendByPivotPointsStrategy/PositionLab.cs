@@ -100,7 +100,8 @@ namespace TradingSystems
             var profit = converter.Difference(price, EntryPrice);
             var commissionEnter = GetTotalCommision(EntryPrice);
             var commissionExit = GetTotalCommision(price);
-            var result = (profit - commissionEnter - commissionExit) * Contracts;
+            var result = (profit - commissionEnter - commissionExit) * Contracts *
+                Security.Shares;
             return result;
         }
 
