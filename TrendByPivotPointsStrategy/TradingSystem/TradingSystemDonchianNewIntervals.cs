@@ -58,6 +58,10 @@ namespace TradingSystems
 
         public void Update(int barNumber)
         {
+            var nonTradingPeriod = Math.Max(slowDonchian, atrPeriod);
+            if (barNumber < nonTradingPeriod) 
+                return;
+
             try
             {                
                 this.barNumber = barNumber;
