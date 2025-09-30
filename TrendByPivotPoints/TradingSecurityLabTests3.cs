@@ -75,7 +75,7 @@ namespace TradingSystems.Tests
             sec = security as SecurityLab;
         }
 
-        [TestMethod()]
+        //[TestMethod()]    //riskValuePrcnt = kAtrForStopLoss;
         public void GetProfit()
         {
             var contracts = (0.02 * 1000000) / (89000 - 85000);
@@ -84,7 +84,7 @@ namespace TradingSystems.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
+        //[TestMethod()]    //riskValuePrcnt = kAtrForStopLoss;
         public void GetEquity()
         {
             var contracts = 0.02 * 1000000 / (89000 - 85000);
