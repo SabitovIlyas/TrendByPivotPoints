@@ -53,13 +53,13 @@ namespace TradingSystems
             string signalNameForClosePosition, string notes, Position position)
         {
             var activeOrders = GetActiveOrders(barNumber);
-            var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition);
+            var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition + notes);
 
             if (order != null && order.Price == stopPrice)
                 return;
 
             var closeOrder = new Order(barNumber, position.PositionSide, stopPrice, position.Contracts,
-                signalNameForClosePosition, OrderType.StopLossLimit);
+                signalNameForClosePosition + notes, OrderType.StopLossLimit);
             orders.Add(new OrderToPositionMap(closeOrder, position));
             
             if (order != null)
