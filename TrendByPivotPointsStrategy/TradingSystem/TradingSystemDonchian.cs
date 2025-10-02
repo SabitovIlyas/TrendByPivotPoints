@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using TSLab.Script;
-using SystemColor = System.Drawing.Color;
-using TSLab.Script.Helpers;
-using TSLab.Script.Handlers;
-using TSLab.DataSource;
+using System.Globalization;
 using System.Linq;
+using TSLab.DataSource;
+using TSLab.Script;
+using TSLab.Script.Handlers;
+using TSLab.Script.Helpers;
 using TSLab.Script.Optimization;
+using SystemColor = System.Drawing.Color;
 
 namespace TradingSystems
 {
@@ -32,12 +34,14 @@ namespace TradingSystems
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
         private double firstPositionEntryPrice;
+        private int digitsAfterPoint = 0;
 
         public TradingSystemDonchian(List<Security> securities,
             ContractsManager contractsManager, Indicators indicators, Context context,
             Logger logger, List<NonTradingPeriod> nonTradingPeriods = null):
             base(securities, contractsManager, indicators, context, logger, nonTradingPeriods)
-        {            
+        {
+            digitsAfterPoint = CountDecimalPlaces(security.Bars.First().Close);
         }                               
 
         private void BuyIfGreater(double price, int contracts, string notes)
@@ -78,11 +82,10 @@ namespace TradingSystems
             {
                 Log("{0} позиция не открыта.", converter.Long);
 
-                if (positionNumber == 0)
-                    fixedAtr = atr[barNumber];
-
+                if (positionNumber == 0)                                    
+                    fixedAtr = Math.Round(atr[barNumber], digitsAfterPoint);
+                
                 Log("Фиксированный ATR = {0}", fixedAtr);
-
                 Log("Вычисляем стоп-цену...");
                 stopPrice = GetStopPrice(notes);
 
@@ -133,6 +136,20 @@ namespace TradingSystems
                 if (positionNumber == 0)
                     firstPositionEntryPrice = position.EntryPrice;
             }
+        }
+
+        private int CountDecimalPlaces(double value)
+        {
+            string strValue = value.ToString();
+            var currentCulture = CultureInfo.CurrentCulture;            
+            char decimalSeparator = currentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+            int pointIndex = strValue.IndexOf(decimalSeparator);
+
+            if (pointIndex != -1)            
+                return strValue.Length - pointIndex - 1;            
+
+            return 0;
         }
 
         private int GetQtyUnits()

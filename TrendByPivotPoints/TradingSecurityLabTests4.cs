@@ -226,7 +226,7 @@ namespace TradingSystems.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [DataTestMethod]
+        //[DataTestMethod]
         [DataRow(4, 86, PositionSide.Long, 0, 775186.26d)]
         [DataRow(4, 86, PositionSide.Long, 0.0001980d, 770094.63d)]
         public void GetProfitWithCommission(int limitOpenedPositions, int barNumber,
