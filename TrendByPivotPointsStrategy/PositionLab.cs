@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace TradingSystems
 {
@@ -102,7 +105,9 @@ namespace TradingSystems
             var commissionExit = GetTotalCommision(price);
             var result = (profit - commissionEnter - commissionExit) * Contracts *
                 Security.Shares;
-            return result;
+
+            var d = CountDecimalPlaces(price);
+            return Math.Round(result,d);
         }
 
         private double GetTotalCommision(double price)
@@ -118,6 +123,20 @@ namespace TradingSystems
         public double GetProfit()
         {
             return GetProfit(Security.Bars.Count - 1);
+        }
+
+        private int CountDecimalPlaces(double value)
+        {
+            string strValue = value.ToString();
+            var currentCulture = CultureInfo.CurrentCulture;
+            char decimalSeparator = currentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+            int pointIndex = strValue.IndexOf(decimalSeparator);
+
+            if (pointIndex != -1)
+                return strValue.Length - pointIndex - 1;
+
+            return 0;
         }
     }
 }

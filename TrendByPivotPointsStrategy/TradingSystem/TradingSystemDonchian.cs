@@ -61,10 +61,12 @@ namespace TradingSystems
             if (IsPositionOpen(notes))
             {
                 var position = GetOpenedPosition(notes);
-                stopPriceAtr = converter.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);                
+                stopPriceAtr = converter.Minus(position.EntryPrice, Math.Round(kAtrForStopLoss * fixedAtr,
+                    digitsAfterPoint));
             }
             else
-                stopPriceAtr = converter.Minus(highest.ElementAt(barNumber), kAtrForStopLoss * fixedAtr);
+                stopPriceAtr = converter.Minus(highest.ElementAt(barNumber), Math.Round(kAtrForStopLoss *
+                    fixedAtr, digitsAfterPoint));
             var stopPriceDonchian = lowest.ElementAt(barNumber);
             if (kAtrForStopLoss > 0)
                 return converter.Maximum(stopPriceAtr, stopPriceDonchian);
@@ -113,7 +115,8 @@ namespace TradingSystems
                         openPositionPrice = firstPositionEntryPrice;
                 }
 
-                var price = converter.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
+                var price = converter.Plus(openPositionPrice, Math.Round(positionNumber * fixedAtr * kAtrForOpenPosition,
+                    digitsAfterPoint));
                 Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, converter.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
 
                 BuyIfGreater(price, contracts, notes);

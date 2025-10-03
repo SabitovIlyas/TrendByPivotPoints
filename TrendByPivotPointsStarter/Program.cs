@@ -44,11 +44,11 @@ namespace TrendByPivotPointsStarter
                 system.SetParameters(systemParameters);
                 system.Initialize();
 
-                Console.WriteLine($"Еквити начальный: {system.Account.Equity}");
+                Console.WriteLine($"Эквити начальный: {system.Account.Equity}");
 
                 system.Run();
 
-                Console.WriteLine($"Еквити конечный: {system.Account.Equity}");
+                Console.WriteLine($"Эквити конечный: {system.Account.Equity}");
                 Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDown()}");
 
                 var deals = security.GetDeals();
