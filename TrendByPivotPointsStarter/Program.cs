@@ -44,12 +44,13 @@ namespace TrendByPivotPointsStarter
                 system.SetParameters(systemParameters);
                 system.Initialize();
 
-                Console.WriteLine($"Эквити начальный: {system.Account.Equity}");
+                var equity = system.Account.Equity;
+                Console.WriteLine($"Эквити начальный: {equity}");
 
                 system.Run();
 
-                Console.WriteLine($"Эквити конечный: {system.Account.Equity}");
-                Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDown()}");
+                Console.WriteLine($"Эквити конечный: {equity}");
+                Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDown()}%");
 
                 var deals = security.GetDeals();
 
@@ -59,20 +60,24 @@ namespace TrendByPivotPointsStarter
                 {                    
                     Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
                         $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}");
+                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
+                        $" {equity}");
                     dNmbr++;
                 }
 
-                //deals = security.GetMetaDeals();
-                //Console.WriteLine($"Всего {deals.Count} метасделок.");
-                //dNmbr = 0;
-                //foreach (var d in deals)
-                //{
-                //    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
-                //        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                //        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}");
-                //    dNmbr++;
-                //}
+                deals = security.GetMetaDeals();
+                Console.WriteLine($"\r\nВсего {deals.Count} метасделок.");
+                dNmbr = 0;
+                foreach (var d in deals)
+                {
+                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                        $"{d.GetProfit()}, {equity}");
+                    dNmbr++;
+                }
+
+                Console.WriteLine($"\r\nПрибыль составила: " +
+                    $"{system.Account.Equity-system.Account.InitDeposit}.");
 
             }
             catch (Exception e)

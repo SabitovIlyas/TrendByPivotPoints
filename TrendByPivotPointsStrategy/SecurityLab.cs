@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using TSLab.DataSource;
 using TSLab.Script.Handlers;
 
 namespace TradingSystems
@@ -32,6 +34,7 @@ namespace TradingSystems
         private OrderToPositionMapping mapping;
         private Logger logger;
         private int constructorNumber;
+        private int digitsAfterPoint = 0;
 
         public SecurityLab(Currency currency, int shares, Logger logger, double commissionRate)
         {
@@ -105,7 +108,22 @@ namespace TradingSystems
                 LowPrices[i] = bar.Low;
                 i++;
             }
-            mapping = new OrderToPositionMapping(Bars, this, logger);            
+            mapping = new OrderToPositionMapping(Bars, this, logger);
+            digitsAfterPoint = CountDecimalPlaces(Bars.First().Close);
+        }
+
+        private int CountDecimalPlaces(double value)
+        {
+            string strValue = value.ToString();
+            var currentCulture = CultureInfo.CurrentCulture;
+            char decimalSeparator = currentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+            int pointIndex = strValue.IndexOf(decimalSeparator);
+
+            if (pointIndex != -1)
+                return strValue.Length - pointIndex - 1;
+
+            return 0;
         }
 
         public Bar LastBar
@@ -370,8 +388,8 @@ namespace TradingSystems
                 {
                     if (deal != deals.First())
                     {
-                        avrEntryPrice = sumEntryPrice / contracts;
-                        avrExitPrice = sumExitPrice / contracts;
+                        avrEntryPrice = Math.Round(sumEntryPrice / contracts, digitsAfterPoint);
+                        avrExitPrice = Math.Round(sumExitPrice / contracts, digitsAfterPoint);
                         metaDeal = new PositionLab(positionSide, this, profit,
                             barNumberOpenPosition, barNumberClosePosition, avrEntryPrice,
                             avrExitPrice, contracts);
@@ -403,8 +421,8 @@ namespace TradingSystems
                 }
             }
 
-            avrEntryPrice = sumEntryPrice / contracts;
-            avrExitPrice = sumExitPrice / contracts;
+            avrEntryPrice = Math.Round(sumEntryPrice / contracts, digitsAfterPoint);
+            avrExitPrice = Math.Round(sumExitPrice / contracts, digitsAfterPoint);
 
             if (deals.Count > 0)
             {

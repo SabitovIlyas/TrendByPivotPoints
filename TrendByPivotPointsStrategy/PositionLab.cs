@@ -10,32 +10,38 @@ namespace TradingSystems
         public int BarNumberOpenPosition { get; private set; } = int.MaxValue;
         public double EntryPrice { get; private set; } = double.MinValue;
         public double ExitPrice { get; private set; } = double.MinValue;
-        public PositionSide PositionSide => openOrder.PositionSide;
+        public PositionSide PositionSide => positionSide;
         public int Contracts { get; private set; } = 0;
-        public string SignalNameForOpenPosition => openOrder.SignalName;
+        public string SignalNameForOpenPosition => signalNameForOpenPosition;
         public string SignalNameForClosePosition { get; private set; }
         public Security Security { get; private set; }
         public int BarNumberClosePosition { get; set; } = int.MaxValue;   
 
         private Order openOrder;
         private Converter converter;
-        private double profit = double.MinValue;        
+        private double profit = double.MinValue;
+        private PositionSide positionSide;
+        private string signalNameForOpenPosition;
 
         public PositionLab(int barNumber, Order openOrder, Security security)
         {
+            positionSide = openOrder.PositionSide;
             BarNumberOpenPosition = barNumber;
             this.openOrder = openOrder;
             Security = security;
             converter = new Converter(isConverted: PositionSide != PositionSide.Long);
             EntryPrice = openOrder.Price;
             Contracts = openOrder.Contracts;
+            signalNameForOpenPosition = openOrder.SignalName;
         }
 
-        public PositionLab(int barNumber, PositionSide positionSide, Security security)
+        private PositionLab(int barNumber, PositionSide positionSide, Security security)
         {
             BarNumberOpenPosition = barNumber;            
             Security = security;
-            converter = new Converter(isConverted: positionSide != PositionSide.Long);            
+            converter = new Converter(isConverted: positionSide != PositionSide.Long);
+            this.positionSide = positionSide;
+            //signalNameForOpenPosition = openOrder.SignalName;
         }
 
         public PositionLab(PositionSide positionSide, Security security, double profit, 
@@ -43,12 +49,13 @@ namespace TradingSystems
             double averageExitPrice, int contracts) : this(barNumberOpenPosition, positionSide, 
                 security)
         {
-
             BarNumberClosePosition = barNumberClosePosition;
             this.profit = profit;
             EntryPrice = averageEntryPrice;
             ExitPrice = averageExitPrice;
             Contracts = contracts;
+            this.positionSide = positionSide;
+            //signalNameForOpenPosition = openOrder.SignalName;
         }
 
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition)
