@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using TSLab.Script;
-using SystemColor = System.Drawing.Color;
-using TSLab.Script.Helpers;
-using TSLab.Script.Handlers;
-using TSLab.DataSource;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using TSLab.DataSource;
+using TSLab.Script;
+using TSLab.Script.Handlers;
+using TSLab.Script.Helpers;
+using SystemColor = System.Drawing.Color;
 
 namespace TradingSystems
 {
@@ -45,6 +46,7 @@ namespace TradingSystems
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
         private double firstPositionEntryPrice;
+        private int digitsAfterPoint = 0;
 
         public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
@@ -54,6 +56,21 @@ namespace TradingSystems
             this.security = security;
             secCompressed = sec.CompressTo(60);
             this.positionSide = positionSide;
+            digitsAfterPoint = CountDecimalPlaces(security.GetBarClose(barNumber: 0));
+        }
+
+        private int CountDecimalPlaces(double value)
+        {
+            string strValue = value.ToString();
+            var currentCulture = CultureInfo.CurrentCulture;
+            char decimalSeparator = currentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+            int pointIndex = strValue.IndexOf(decimalSeparator);
+
+            if (pointIndex != -1)
+                return strValue.Length - pointIndex - 1;
+
+            return 0;
         }
 
         public void Update(int barNumber)
@@ -118,10 +135,10 @@ namespace TradingSystems
             if (IsPositionOpen(notes))
             {
                 var position = GetOpenedPosition(notes);
-                stopPriceAtr = convertable.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);
+                stopPriceAtr = convertable.Minus(position.EntryPrice, Math.Round(kAtrForStopLoss * fixedAtr, digitsAfterPoint));
             }
             else
-                stopPriceAtr = convertable.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
+                stopPriceAtr = convertable.Minus(highest[barNumber], Math.Round(kAtrForStopLoss * fixedAtr, digitsAfterPoint));
             var stopPriceDonchian = lowest[barNumber];
             return convertable.Maximum(stopPriceAtr, stopPriceDonchian);
         }
@@ -150,7 +167,7 @@ namespace TradingSystems
                 Log("{0} позиция не открыта.", convertable.Long);
 
                 if (positionNumber == 0)
-                    fixedAtr = atr[barNumber];
+                    fixedAtr = Math.Round(atr[barNumber], digitsAfterPoint);
 
                 Log("Фиксированный ATR = {0}", fixedAtr);
 
@@ -181,7 +198,8 @@ namespace TradingSystems
                         openPositionPrice = firstPositionEntryPrice;
                 }
 
-                var price = convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition);
+                var price = convertable.Plus(openPositionPrice, Math.Round(positionNumber * fixedAtr * kAtrForOpenPosition, 
+                    digitsAfterPoint));
                 Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, convertable.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
 
                 BuyIfGreater(price, contracts, notes);
