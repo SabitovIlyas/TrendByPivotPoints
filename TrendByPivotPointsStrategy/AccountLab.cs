@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using TSLab.Script.Handlers;
 
 namespace TradingSystems
 {
@@ -51,14 +54,36 @@ namespace TradingSystems
             base.Update(barNumber);
         }
 
+        public virtual double GetEquity()
+        {
+            var lastBarNumber = securities.First().Bars.Count - 1;
+            return GetEquity(lastBarNumber);
+        }
+
         public virtual double GetEquity(int barNumber)
         {
             var equity = initDeposit;
             foreach (var security in securities)
                 equity += ((SecurityLab)security).GetProfit(barNumber);
 
-            return equity;
+            var d = CountDecimalPlaces(securities.First().GetBarClose(barNumber));
+            return Math.Round(equity, d);
         }
+
+        private int CountDecimalPlaces(double value)
+        {
+            string strValue = value.ToString();
+            var currentCulture = CultureInfo.CurrentCulture;
+            char decimalSeparator = currentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+            int pointIndex = strValue.IndexOf(decimalSeparator);
+
+            if (pointIndex != -1)
+                return strValue.Length - pointIndex - 1;
+
+            return 0;
+        }      
+
         public double GetMaxDrawDown(int barNumber)
         {
             var maxCapital = initDeposit;
@@ -83,6 +108,16 @@ namespace TradingSystems
         {
             var lastBarNumber = securities.First().Bars.Count - 1;
             return GetMaxDrawDown(lastBarNumber);            
+        }
+
+        public virtual double GetRecoveryFactor()
+        {
+            var lastBarNumber = securities.First().Bars.Count - 1;
+            var maxDrawdown = GetMaxDrawDown(lastBarNumber);
+            var d = CountDecimalPlaces(securities.First().GetBarClose(lastBarNumber));
+            var result = Math.Round(securities.First().GetProfit() / GetMaxDrawDown(), d);
+
+            var result;
         }
     }
 }

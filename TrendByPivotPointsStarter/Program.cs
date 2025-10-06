@@ -44,6 +44,7 @@ namespace TrendByPivotPointsStarter
                 system.SetParameters(systemParameters);
                 system.Initialize();
 
+                var account = (AccountLab)system.Account;
                 var equity = system.Account.Equity;
                 Console.WriteLine($"Эквити начальный: {equity}");
 
@@ -57,11 +58,12 @@ namespace TrendByPivotPointsStarter
                 Console.WriteLine($"Всего {deals.Count} сделок.");
                 var dNmbr = 0;
                 foreach (var d in deals)
-                {                    
+                {
+                    var e = account.GetEquity(d.BarNumberClosePosition);
                     Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
                         $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
                         $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
-                        $" {equity}");
+                        $" {e}");
                     dNmbr++;
                 }
 
@@ -70,15 +72,19 @@ namespace TrendByPivotPointsStarter
                 dNmbr = 0;
                 foreach (var d in deals)
                 {
+                    var e = account.GetEquity(d.BarNumberClosePosition);
                     Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
                         $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                        $"{d.GetProfit()}, {equity}");
+                        $"{d.GetProfit()}, {e}");
                     dNmbr++;
                 }
-
+                var eq = account.GetEquity();
                 Console.WriteLine($"\r\nПрибыль составила: " +
-                    $"{system.Account.Equity-system.Account.InitDeposit}.");
+                    $"{security.GetProfit()}");
 
+                var rec = account.GetRecoveryFactor();
+                Console.WriteLine($"\r\nПрибыль составила: " +
+                    $"{rec}");
             }
             catch (Exception e)
             {
