@@ -25,6 +25,7 @@ namespace TradingSystems
         public double[] HighPrices { get; private set; }
         public double[] LowPrices { get; private set; }
         public double CommissionRate { get; }
+        public double RateUSD { get; set; } = 0;
 
         private Currency currency;
         private int shares;
@@ -290,7 +291,10 @@ namespace TradingSystems
         }
 
         public void Update(int barNumber)
-        {            
+        {
+            if (currency == Currency.USD && RateUSD == 0)
+                throw new Exception("Не задан RateUSD");
+
             mapping.Update(barNumber);            
         }
         
@@ -339,8 +343,8 @@ namespace TradingSystems
 
             foreach (var position in uniqueActivePositions)
                 profit += position.GetProfit(barNumber);
-
-            return profit;
+                        
+            return profit * RateUSD;
         }
 
         public List<Position> GetDeals(int barNumber)

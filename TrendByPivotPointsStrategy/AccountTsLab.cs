@@ -41,7 +41,7 @@ namespace TradingSystems
             this.logger = logger;            
         }
 
-        public override double GetMaxDrawDown()
+        public override double GetMaxDrawDownPrcnt()
         {
             throw new System.NotImplementedException();
         }

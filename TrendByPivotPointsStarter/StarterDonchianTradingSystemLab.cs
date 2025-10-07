@@ -108,7 +108,7 @@ namespace TrendByPivotPointsStarter
                 profit += sec.GetProfit();
             
             var security = securities.First();
-            var drawdown = Account.GetMaxDrawDown();
+            var drawdown = Account.GetMaxDrawDownPrcnt();
 
             var recoveryFactor = profit / drawdown;
             var deals = security.GetDeals();

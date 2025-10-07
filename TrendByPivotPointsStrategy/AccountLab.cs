@@ -15,6 +15,7 @@ namespace TradingSystems
 
         protected double initDeposit;
         protected double freeBalance;
+        private int decimalsAfterPoint;
 
         public AccountLab(double initDeposit, Currency currency, Logger logger)
         {
@@ -32,7 +33,9 @@ namespace TradingSystems
             this.currency = currency;
             this.securities = securities;
             this.logger = logger;
-        }        
+            var lastBarNumber = securities.First().Bars.Count - 1;
+            decimalsAfterPoint = CountDecimalPlaces(securities.First().GetBarClose(lastBarNumber)); ;
+        }
 
         public double GObying => throw new System.NotImplementedException();
 
@@ -84,7 +87,7 @@ namespace TradingSystems
             return 0;
         }      
 
-        public double GetMaxDrawDown(int barNumber)
+        public double GetMaxDrawDownPrcnt(int barNumber)
         {
             var maxCapital = initDeposit;
             var maxDrawdown = 0d;
@@ -104,20 +107,26 @@ namespace TradingSystems
             return maxDrawdown;
         }
 
-        public override double GetMaxDrawDown()
+        public override double GetMaxDrawDownPrcnt()
         {
             var lastBarNumber = securities.First().Bars.Count - 1;
-            return GetMaxDrawDown(lastBarNumber);            
+            var result = Math.Round(GetMaxDrawDownPrcnt(lastBarNumber), decimalsAfterPoint);
+            return result;
         }
 
         public virtual double GetRecoveryFactor()
         {
-            var lastBarNumber = securities.First().Bars.Count - 1;
-            var maxDrawdown = GetMaxDrawDown(lastBarNumber);
-            var d = CountDecimalPlaces(securities.First().GetBarClose(lastBarNumber));
-            var result = Math.Round(securities.First().GetProfit() / GetMaxDrawDown(), d);
+            var profit = GetProfitPrcnt();
+            var maxDrawdown = GetMaxDrawDownPrcnt();
+            var result = Math.Round(profit / maxDrawdown, decimalsAfterPoint);
+            return result;
+        }
 
-            var result;
+        public virtual double GetProfitPrcnt()
+        {
+            var profit = securities.First().GetProfit() / initDeposit * 100;
+            var result = Math.Round(profit, decimalsAfterPoint);
+            return result;
         }
     }
 }

@@ -147,7 +147,7 @@ namespace TrendByPivotPointsOptimizator
         private double CalcRecoeveryFactor(Security security, Account account)
         {
             var profit = security.GetProfit();            
-            var drawDown = account.GetMaxDrawDown();
+            var drawDown = account.GetMaxDrawDownPrcnt();
             
             var recoveryFactor = double.PositiveInfinity;
             if (drawDown != 0)
