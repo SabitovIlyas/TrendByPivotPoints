@@ -155,8 +155,8 @@ namespace CandlesGraphicsWinForm
                 Dock = DockStyle.Fill
             };
 
-            this.Controls.Add(plotView);
-        }   
+            Controls.Add(plotView);
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {

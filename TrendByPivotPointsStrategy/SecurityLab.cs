@@ -25,7 +25,7 @@ namespace TradingSystems
         public double[] HighPrices { get; private set; }
         public double[] LowPrices { get; private set; }
         public double CommissionRate { get; }
-        public double RateUSD { get; set; } = 0;
+        public double RateUSD { get; set; } = 1;
 
         private Currency currency;
         private int shares;
@@ -342,7 +342,7 @@ namespace TradingSystems
                     uniqueActivePositions.Add(position);
 
             foreach (var position in uniqueActivePositions)
-                profit += position.GetProfit(barNumber);
+                profit += position.GetProfit(barNumber);            
                         
             return profit * RateUSD;
         }
