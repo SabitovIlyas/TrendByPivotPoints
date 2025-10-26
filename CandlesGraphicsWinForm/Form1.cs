@@ -106,6 +106,35 @@ namespace CandlesGraphicsWinForm
                 new CandleStickData(new DateTime(2024,03,27,10,55,00),  6480,  6540,  6440,  6520,  31317),
             };
 
+            //var data = new List<CandleStickData>
+            //{
+            //    new CandleStickData(new DateTime(2025,11,01,10,00,00),90000,90000,90000,90000,1),
+            //    new CandleStickData(new DateTime(2025,11,02,10,00,00),80000,80000,80000,80000,1),
+            //    new CandleStickData(new DateTime(2025,11,03,10,00,00),81000,81000,81000,81000,1),
+            //    new CandleStickData(new DateTime(2025,11,04,10,00,00),82000,82000,82000,82000,1),
+            //    new CandleStickData(new DateTime(2025,11,05,10,00,00),83000,83000,83000,83000,1),
+            //    new CandleStickData(new DateTime(2025,11,06,10,00,00),84000,84000,84000,84000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,06,00),85000,85000,85000,85000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,07,00),86000,86000,86000,86000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,08,00),87000,87000,87000,87000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,09,00),88000,88000,88000,88000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,10,00),89000,89000,89000,89000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,11,00),90000,90000,90000,90000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,12,00),91000,91000,91000,91000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,13,00),92000,92000,92000,92000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,14,00),93000,93000,93000,93000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,15,00),94000,94000,94000,94000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,16,00),95000,95000,95000,95000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,17,00),94000,94000,94000,94000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,18,00),93000,93000,93000,93000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,19,00),92000,92000,92000,92000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,20,00),91000,91000,91000,91000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,21,00),90000,90000,90000,90000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,22,00),89000,89000,89000,89000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,23,00),88000,88000,88000,88000,1),
+            //    //new CandleStickData(new DateTime(2025,11,27,10,24,00),87000,87000,87000,87000,1)
+            //};
+
             // Добавляем серии японских свечей
             var candleStickSeries = new CandleStickSeries
             {
