@@ -27,6 +27,7 @@ namespace TrendByPivotPointsOptimizator
         private Optimizator optimizator;
         private Logger logger;
         private ForwardAnalysis forwardAnalysis;
+        private double neighborhoodPercentage = 0.05;
 
         public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate,
             IRandomProvider randomProvider, List<Ticker> tickers, Settings settings, Context context, Optimizator optimizator, Logger logger)
@@ -47,32 +48,38 @@ namespace TrendByPivotPointsOptimizator
         {
             population = new List<ChromosomeDonchianChannel>();
             for (int i = 0; i < populationSize; i++)
-            {                
-                var ticker = tickers[randomProvider.Next(tickers.Count)];
-                var tfs = settings.TimeFrames;
-                var timeFrame = tfs[randomProvider.Next(tfs.Count)];
-                var sides = settings.Sides;
-                var side = sides[randomProvider.Next(sides.Count)];
+            {
+                var isAdded = false;
+                while (!isAdded)
+                {
+                    var ticker = tickers[randomProvider.Next(tickers.Count)];
+                    var tfs = settings.TimeFrames;
+                    var timeFrame = tfs[randomProvider.Next(tfs.Count)];
+                    var sides = settings.Sides;
+                    var side = sides[randomProvider.Next(sides.Count)];
 
-                var fastDonchian = randomProvider.Next(10, 100);              //9..208;
-                var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-
-                var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                    var fastDonchian = randomProvider.Next(10, 100);              //9..208;
+                    var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-
+                    var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
-                //var fastDonchian = randomProvider.Next(10, 11);              //9..208;
-                //var slowDonchian = randomProvider.Next(12,13);    // -//-
-                //var atrPeriod = randomProvider.Next(2, 3);                  //1..25
+                    //var fastDonchian = randomProvider.Next(10, 11);              //9..208;
+                    //var slowDonchian = randomProvider.Next(12,13);    // -//-
+                    //var atrPeriod = randomProvider.Next(2, 3);                  //1..25
 
-                var limitOpenedPositions = randomProvider.Next(1, 5);
-                var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
-                var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+                    var limitOpenedPositions = randomProvider.Next(1, 5);
+                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
 
-                //var limitOpenedPositions = randomProvider.Next(3, 4);
-                //var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 2);
-                //var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 2);
+                    //var limitOpenedPositions = randomProvider.Next(3, 4);
+                    //var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 2);
+                    //var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 2);
 
-                population.Add(new ChromosomeDonchianChannel(ticker, timeFrame, side,
-                    fastDonchian,slowDonchian, atrPeriod, limitOpenedPositions,
-                    kAtrForOpenPosition, kAtrForStopLoss));
+                    var c = new ChromosomeDonchianChannel(ticker, timeFrame, side,
+                        fastDonchian, slowDonchian, atrPeriod, limitOpenedPositions,
+                        kAtrForOpenPosition, kAtrForStopLoss);
+
+                    isAdded = AddNeighbour(c, population, neighborhoodPercentage);
+                }                
             }
         }
 
@@ -233,70 +240,70 @@ namespace TrendByPivotPointsOptimizator
             chrom.UpdateName();
         }
             
-        public List<ChromosomeDonchianChannel> SelectBestNonNeighborChromosomes(List<ChromosomeDonchianChannel> population, 
-            int count = 30, double neighborhoodPercentage = 0.05)
+        public List<ChromosomeDonchianChannel> SelectBestNonNeighborChromosomes
+            (List<ChromosomeDonchianChannel> population, int count, 
+            double neighborhoodPercentage)
         {
             // Сортируем популяцию по убыванию фитнес-функции
             var sortedPopulation = population.OrderByDescending(c => c.FitnessValue).ToList();
 
             // Список для хранения выбранных хромосом
-            var selected = new List<ChromosomeDonchianChannel>();
-
-            // Множество для отслеживания окрестностей выбранных хромосом
-            var selectedNeighborhoods = new List<(int fastMin, int fastMax, 
-                int slowMin, int slowMax, int atrMin, int atrMax, PositionSide side,
-                Interval timeFrame, Ticker ticker, double kAtrForOpenPosition,
-                double kAtrForStopLoss, int limitOpenedPositions)>();
+            var selected = new List<ChromosomeDonchianChannel>();            
 
             foreach (var candidate in sortedPopulation)
             {
                 if (selected.Count >= count)
                     break;
 
-                bool isNeighbor = false;
-                int fastMin = (int)(candidate.FastDonchian * (1 - neighborhoodPercentage));
-                int fastMax = (int)(candidate.FastDonchian * (1 + neighborhoodPercentage));
-                int slowMin = (int)(candidate.SlowDonchian * (1 - neighborhoodPercentage));
-                int slowMax = (int)(candidate.SlowDonchian * (1 + neighborhoodPercentage));
-                int atrMin = (int)(candidate.AtrPeriod * (1 - neighborhoodPercentage));
-                int atrMax = (int)(candidate.AtrPeriod * (1 + neighborhoodPercentage));
-                var side = candidate.Side;
-                var timeFrame = candidate.TimeFrame;
-                var ticker = candidate.Ticker;
-                var kAtrForOpenPosition = candidate.KAtrForOpenPosition;
-                var kAtrForStopLoss = candidate.KAtrForStopLoss;
-                var limitOpenedPositions = candidate.LimitOpenedPositions;
-
-                foreach (var neighborhood in selectedNeighborhoods)
-                {
-                    if (candidate.FastDonchian >= neighborhood.fastMin &&
-                        candidate.FastDonchian <= neighborhood.fastMax &&
-                        candidate.SlowDonchian >= neighborhood.slowMin &&
-                        candidate.SlowDonchian <= neighborhood.slowMax &&
-                        candidate.AtrPeriod >= neighborhood.atrMin &&
-                        candidate.AtrPeriod <= neighborhood.atrMax &&
-                        candidate.Side == neighborhood.side &&
-                        candidate.TimeFrame.Base == neighborhood.timeFrame.Base &&
-                        candidate.TimeFrame.Value == neighborhood.timeFrame.Value &&
-                        candidate.Ticker.Name == neighborhood.ticker.Name &&
-                        candidate.KAtrForOpenPosition == neighborhood.kAtrForOpenPosition &&
-                        candidate.KAtrForStopLoss == neighborhood.kAtrForStopLoss &&
-                        candidate.LimitOpenedPositions == neighborhood.limitOpenedPositions)
-                    {
-                        isNeighbor = true;
-                        break;
-                    }
-                }
-
-                if (!isNeighbor)
-                {
-                    selected.Add(candidate);
-                    selectedNeighborhoods.Add((fastMin, fastMax, slowMin, slowMax, atrMin, atrMax, side,
-                        timeFrame, ticker, kAtrForOpenPosition, kAtrForStopLoss, limitOpenedPositions));
-                }
+                AddNeighbour(candidate, selected, neighborhoodPercentage);
             }
 
             return selected;
+        }
+
+        private bool AddNeighbour(ChromosomeDonchianChannel chromosome, 
+            List<ChromosomeDonchianChannel> population, double neighborhoodPercentage)
+        {
+            var isNeighBour = IsNeighBour(chromosome, population, neighborhoodPercentage);
+            if (!isNeighBour)            
+                population.Add(chromosome);
+            
+            return !isNeighBour;
+        }
+
+        private bool IsNeighBour(ChromosomeDonchianChannel chromosome,
+            List<ChromosomeDonchianChannel> population, double neighborhoodPercentage)
+        {            
+            int fastMin = (int)(chromosome.FastDonchian * (1 - neighborhoodPercentage));
+            int fastMax = (int)(chromosome.FastDonchian * (1 + neighborhoodPercentage));
+            int slowMin = (int)(chromosome.SlowDonchian * (1 - neighborhoodPercentage));
+            int slowMax = (int)(chromosome.SlowDonchian * (1 + neighborhoodPercentage));
+            int atrMin = (int)(chromosome.AtrPeriod * (1 - neighborhoodPercentage));
+            int atrMax = (int)(chromosome.AtrPeriod * (1 + neighborhoodPercentage));
+            var side = chromosome.Side;
+            var timeFrame = chromosome.TimeFrame;
+            var ticker = chromosome.Ticker;
+            var kAtrForOpenPosition = chromosome.KAtrForOpenPosition;
+            var kAtrForStopLoss = chromosome.KAtrForStopLoss;
+            var limitOpenedPositions = chromosome.LimitOpenedPositions;
+
+            foreach (var p in population)
+                if (p.FastDonchian >= fastMin &&
+                    p.FastDonchian <= fastMax &&
+                    p.SlowDonchian >= slowMin &&
+                    p.SlowDonchian <= slowMax &&
+                    p.AtrPeriod >= atrMin &&
+                    p.AtrPeriod <= atrMax &&
+                    p.Side == side &&
+                    p.TimeFrame.Base == timeFrame.Base &&
+                    p.TimeFrame.Value == timeFrame.Value &&
+                    p.Ticker.Name == ticker.Name &&
+                    p.KAtrForOpenPosition == kAtrForOpenPosition &&
+                    p.KAtrForStopLoss == kAtrForStopLoss &&
+                    p.LimitOpenedPositions == limitOpenedPositions)
+                    return true;
+
+            return false;
         }
 
         public List<ChromosomeDonchianChannel> Run(int period = 0)
@@ -308,10 +315,10 @@ namespace TrendByPivotPointsOptimizator
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
                 var qtyBestChromosomes = 30;                
-                var neighborhoodPercentage = 0.05;
 
-                // Элитизм: сохраняем лучшие хромосомы, исключая № соседних
-                var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, neighborhoodPercentage);
+                // Элитизм: сохраняем лучшие хромосомы, исключая соседних
+                var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 
+                    neighborhoodPercentage);
                 newPopulation.AddRange(best);
                          
                 // Создаем потомков
