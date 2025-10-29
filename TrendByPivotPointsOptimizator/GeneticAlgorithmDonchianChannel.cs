@@ -338,10 +338,11 @@ namespace TrendByPivotPointsOptimizator
                             parent1.LimitOpenedPositions, parent1.KAtrForOpenPosition, parent1.KAtrForStopLoss);
                     }
                     Mutate(child);
-                    newPopulation.Add(child);
+                    AddNeighbour(child, newPopulation, neighborhoodPercentage);                    
                 }
                 population = newPopulation;
             }
+
             Evaluate();
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(10).ToList();
