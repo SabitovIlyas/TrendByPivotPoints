@@ -314,7 +314,7 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine("Генерация № {0}\r\n", gen + 1);
                 Evaluate();
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
-                var qtyBestChromosomes = 30;                
+                var qtyBestChromosomes = 1;//30                
 
                 // Элитизм: сохраняем лучшие хромосомы, исключая соседних
                 var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 

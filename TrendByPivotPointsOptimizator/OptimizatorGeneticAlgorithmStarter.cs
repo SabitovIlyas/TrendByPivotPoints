@@ -60,7 +60,7 @@ namespace TrendByPivotPointsOptimizator
                 var randomProvider = new RandomProvider();
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100,
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 25, generations: 50,
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
                     optimizator, loggerNull);//50 //100
 
