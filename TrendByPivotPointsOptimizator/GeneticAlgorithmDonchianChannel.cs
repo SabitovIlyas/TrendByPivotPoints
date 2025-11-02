@@ -58,21 +58,22 @@ namespace TrendByPivotPointsOptimizator
                     var sides = settings.Sides;
                     var side = sides[randomProvider.Next(sides.Count)];
 
-                    var fastDonchian = randomProvider.Next(10, 100);              //9..208;
-                    var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-
-                    var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                    var fastDonchian = 26;
+                    //var fastDonchian = randomProvider.Next(10, 100);              //9..208;
+                    var slowDonchian = 70;
+                    //var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-                   
 
-                    //var fastDonchian = randomProvider.Next(10, 11);              //9..208;
-                    //var slowDonchian = randomProvider.Next(12,13);    // -//-
-                    //var atrPeriod = randomProvider.Next(2, 3);                  //1..25
+                    var atrPeriod = 11;
+                    //var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
-                    var limitOpenedPositions = randomProvider.Next(1, 5);
-                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
-                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+                    var limitOpenedPositions = 4;
+                    var kAtrForOpenPosition = 2;
+                    var kAtrForStopLoss = 0.5;
 
-                    //var limitOpenedPositions = randomProvider.Next(3, 4);
-                    //var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 2);
-                    //var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 2);
+                    //var limitOpenedPositions = randomProvider.Next(1, 5);
+                    //var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+                    //var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+
 
                     var c = new ChromosomeDonchianChannel(ticker, timeFrame, side,
                         fastDonchian, slowDonchian, atrPeriod, limitOpenedPositions,
@@ -132,12 +133,13 @@ namespace TrendByPivotPointsOptimizator
             systemParameters.Add("timeFrame", chrom.TimeFrame);//6
             systemParameters.Add("shares", ticker.Shares);
 
-            systemParameters.Add("equity", 1000000d);
+            systemParameters.Add("equity", 100000d);
             systemParameters.Add("riskValuePrcnt", 2d);
             systemParameters.Add("contracts", 0);
 
             var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, ticker.Bars,
                                 ticker.Logger, ticker.CommissionRate);
+            security.RateUSD = ticker.RateUSD;
 
             return new TradingSystemParameters()
             {

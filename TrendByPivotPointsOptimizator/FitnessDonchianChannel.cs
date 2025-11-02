@@ -12,7 +12,7 @@ namespace TrendByPivotPointsOptimizator
 {
     public class FitnessDonchianChannel
     {
-        public double NeighborhoodPercent { get; set; } = 0.01;
+        public double NeighborhoodPercent { get; set; } = 0.00;//0.01
         public int DealsCountCriteria { get; set; } = 30;        
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
@@ -71,7 +71,11 @@ namespace TrendByPivotPointsOptimizator
                         var starter = this.starter.GetClone();
                         var s = starter.GetSecurity();
                         if (s != null)
-                            starter.GetSecurity().Bars = chromosome.Ticker.Bars;
+                        {
+                            s.Bars = chromosome.Ticker.Bars;
+                            var sl = s as SecurityLab;
+                            sl.Initialize();    //не удалять! Очень важно! Связано с highiest, lowest
+                        }
                         var param = new TradingSystemParameters(trSysParams);
 
                         param.SystemParameters.SetValue("slowDonchian", i);
@@ -79,7 +83,10 @@ namespace TrendByPivotPointsOptimizator
                         param.SystemParameters.SetValue("atrPeriod", k);                        
                         SystemRun(starter, param);
 
-                        dealsCount = starter.GetSecurity().GetMetaDeals().Count;
+                        
+                        var metaDeals = s.GetMetaDeals();
+                        var bars = s.Bars;
+                        dealsCount = metaDeals.Count;
                         var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
                         if (double.IsNegativeInfinity(recoveryFactor))
                             return averageRecoveryFactor;
@@ -121,19 +128,19 @@ namespace TrendByPivotPointsOptimizator
 
             var nonTradingPeriods = new List<NonTradingPeriod>();
 
-            foreach (var deal in dealsForExclude)
-            {
-                var n = new NonTradingPeriod();
-                n.BarStart = deal.BarNumberOpenPosition - 1;
-                n.BarStop = deal.BarNumberClosePosition - 1;
-                nonTradingPeriods.Add(n);
-            }
-            var newSystem = system.GetClone();
-            newSystem.NonTradingPeriods = nonTradingPeriods;
+            //foreach (var deal in dealsForExclude)
+            //{
+            //    var n = new NonTradingPeriod();
+            //    n.BarStart = deal.BarNumberOpenPosition - 1;
+            //    n.BarStop = deal.BarNumberClosePosition - 1;
+            //    nonTradingPeriods.Add(n);
+            //}
+            //var newSystem = system.GetClone();
+            //newSystem.NonTradingPeriods = nonTradingPeriods;
 
-            SystemRun(newSystem, parameters);
+            //SystemRun(newSystem, parameters);
             recoveryFactor = CalcRecoeveryFactor(security, account);
-
+            deals = security.GetMetaDeals();
             return recoveryFactor;
         }
 
@@ -146,6 +153,9 @@ namespace TrendByPivotPointsOptimizator
 
         private double CalcRecoeveryFactor(Security security, Account account)
         {
+            var acc = (AccountLab)account;
+            return acc.GetRecoveryFactor();
+
             var profit = security.GetProfit();            
             var drawDown = account.GetMaxDrawDownPrcnt();
             

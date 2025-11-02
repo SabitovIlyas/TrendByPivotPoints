@@ -43,6 +43,8 @@ namespace TrendByPivotPointsOptimizator
             List<SecurityData> securitiesData = GetSecuritiesData(fullFileName);
 
             var loggerNull = new LoggerNull();
+            //var loggerNull = new LoggerTxtFile("log.txt");
+
             List<Ticker> tickers = CreateTickers(securitiesData, fullFileName, settings, loggerNull);
 
             var converter = ConverterTextDataToBar.Create(fullFileName);
@@ -60,7 +62,7 @@ namespace TrendByPivotPointsOptimizator
                 var randomProvider = new RandomProvider();
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 25, generations: 50,
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 1, generations: 1,
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
                     optimizator, loggerNull);//50 //100
 
@@ -82,7 +84,7 @@ namespace TrendByPivotPointsOptimizator
                 PrintToTxtFile(bestPopulationLast);
 
                 ga.IsLastBackwardTesting = false;
-                for (var period = 0; period < 4; period++)
+                for (var period = 0; period < 0; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
                     bestPopulation = ga.Run(period);

@@ -145,6 +145,10 @@ namespace TrendByPivotPointsOptimizator
 
             var forwardEnd = latestDate.AddDays(-forwardPeriodDays * Period);
             var forwardStart = forwardEnd.AddDays(-forwardPeriodDays + 1);
+
+            //var backwardEnd = new DateTime(2025, 08, 31);
+            //var backwardStart = new DateTime(2025, 03, 05);
+
             var backwardEnd = forwardStart.AddDays(-1);
             var backwardStart = backwardEnd.AddDays(-backwardPeriodDays + 1);
 

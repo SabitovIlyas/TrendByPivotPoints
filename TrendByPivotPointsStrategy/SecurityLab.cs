@@ -98,7 +98,7 @@ namespace TradingSystems
             constructorNumber = 4;
         }
 
-        private void Initialize()
+        public void Initialize()
         {
             HighPrices = new double[Bars.Count];
             LowPrices = new double[Bars.Count];
@@ -140,15 +140,35 @@ namespace TradingSystems
             switch (constructorNumber)
             {
                 case 0:
-                    return new SecurityLab(currency, shares, logger, CommissionRate);
+                    {
+                        var res = new SecurityLab(currency, shares, logger, CommissionRate);
+                        res.RateUSD = RateUSD;
+                        return res;                        
+                    }
                 case 1:
-                    return new SecurityLab(currency, shares, GObuying, GOselling, logger);
+                    {
+                        var res = new SecurityLab(currency, shares, GObuying, GOselling, logger);
+                        res.RateUSD = RateUSD;
+                        return res;                        
+                    }
                 case 2:
-                    return new SecurityLab(currency, shares, Bars, logger, CommissionRate);
+                    {
+                        var res = new SecurityLab(currency, shares, Bars, logger, CommissionRate);
+                        res.RateUSD = RateUSD;
+                        return res;                        
+                    }
                 case 3:
-                    return new SecurityLab(Name, currency, shares, GObuying, GOselling, Bars, logger);
+                    {
+                        var res = new SecurityLab(Name, currency, shares, GObuying, GOselling, Bars, logger);
+                        res.RateUSD = RateUSD;
+                        return res;                        
+                    }
                 case 4:
-                    return new SecurityLab(Name, currency, shares, Bars, logger, CommissionRate);
+                    {
+                        var res = new SecurityLab(Name, currency, shares, Bars, logger, CommissionRate);
+                        res.RateUSD = RateUSD;
+                        return res; 
+                    }
                 default:
                     throw new InvalidOperationException("Invalid constructorNumber for cloning.");
             }

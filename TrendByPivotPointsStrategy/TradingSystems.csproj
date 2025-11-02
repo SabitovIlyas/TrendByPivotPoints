@@ -86,6 +86,7 @@
     <Compile Include="Indicators\IndicatorsLab.cs" />
     <Compile Include="Indicators\IndicatorsTsLab.cs" />
     <Compile Include="ContextLab.cs" />
+    <Compile Include="Loggers\LoggerTxtFile.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="OrderToPositionMap.cs" />
     <Compile Include="OrderToPositionMapping.cs" />

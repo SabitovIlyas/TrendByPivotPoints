@@ -10,7 +10,7 @@ namespace TrendByPivotPointsStarter
 {
     class Program
     {
-        static double rateUSD = 84;
+        static double rateUSD = 100;
 
         [STAThread]
         static void Main(string[] args)
@@ -70,15 +70,15 @@ namespace TrendByPivotPointsStarter
                 Console.WriteLine();
 
                 var dNmbr = 0;
-                foreach (var d in deals)
-                {
-                    var e = account.GetEquity(d.BarNumberClosePosition);
-                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
-                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
-                        $" {e}");
-                    dNmbr++;
-                }
+                //foreach (var d in deals)
+                //{
+                //    var e = account.GetEquity(d.BarNumberClosePosition);
+                //    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                //        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                //        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
+                //        $" {e}");
+                //    dNmbr++;
+                //}
 
                 deals = security.GetMetaDeals();
                 Console.WriteLine($"\r\nВсего {deals.Count} метасделок.");
@@ -104,16 +104,16 @@ namespace TrendByPivotPointsStarter
         {
             var systemParameters = new SystemParameters();
 
-            systemParameters.Add("slowDonchian", 39);
-            systemParameters.Add("fastDonchian", 14);
-            systemParameters.Add("kAtrForOpenPosition", 0.5d);
+            systemParameters.Add("slowDonchian", 70);
+            systemParameters.Add("fastDonchian", 26);
+            systemParameters.Add("kAtrForOpenPosition", 2d);
             systemParameters.Add("kAtrForStopLoss", 0.5d);            
-            systemParameters.Add("atrPeriod", 15);
+            systemParameters.Add("atrPeriod", 11);
 
-            systemParameters.Add("limitOpenedPositions", 2);
+            systemParameters.Add("limitOpenedPositions", 4);
             systemParameters.Add("isUSD", 1);
             systemParameters.Add("rateUSD", rateUSD);
-            systemParameters.Add("positionSide", 1);
+            systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", 10);
             systemParameters.Add("scaleContractsPrcnt", 100d);
             systemParameters.Add("riskValuePrcnt", 100d);
