@@ -70,15 +70,15 @@ namespace TrendByPivotPointsStarter
                 Console.WriteLine();
 
                 var dNmbr = 0;
-                //foreach (var d in deals)
-                //{
-                //    var e = account.GetEquity(d.BarNumberClosePosition);
-                //    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
-                //        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                //        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
-                //        $" {e}");
-                //    dNmbr++;
-                //}
+                foreach (var d in deals)
+                {
+                    var e = account.GetEquity(d.BarNumberClosePosition);
+                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
+                        $" {e}");
+                    dNmbr++;
+                }
 
                 deals = security.GetMetaDeals();
                 Console.WriteLine($"\r\nВсего {deals.Count} метасделок.");

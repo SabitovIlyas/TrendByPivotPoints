@@ -30,7 +30,7 @@ namespace TradingSystems
             this.openOrder = openOrder;
             Security = security;
             converter = new Converter(isConverted: PositionSide != PositionSide.Long);
-            EntryPrice = openOrder.Price;
+            EntryPrice = openOrder.ExecutedPrice;
             Contracts = openOrder.Contracts;
             signalNameForOpenPosition = openOrder.SignalName;
         }

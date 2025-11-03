@@ -58,21 +58,21 @@ namespace TrendByPivotPointsOptimizator
                     var sides = settings.Sides;
                     var side = sides[randomProvider.Next(sides.Count)];
 
-                    var fastDonchian = 26;
-                    //var fastDonchian = randomProvider.Next(10, 100);              //9..208;
-                    var slowDonchian = 70;
-                    //var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-                   
+                    //var fastDonchian = 26;
+                    var fastDonchian = randomProvider.Next(10, 100);              //9..208;
+                    //var slowDonchian = 70;
+                    var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-                   
 
-                    var atrPeriod = 11;
-                    //var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                    //var atrPeriod = 11;
+                    var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
-                    var limitOpenedPositions = 4;
-                    var kAtrForOpenPosition = 2;
-                    var kAtrForStopLoss = 0.5;
+                    //var limitOpenedPositions = 4;
+                    //var kAtrForOpenPosition = 2;
+                    //var kAtrForStopLoss = 0.5;
 
-                    //var limitOpenedPositions = randomProvider.Next(1, 5);
-                    //var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
-                    //var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+                    var limitOpenedPositions = randomProvider.Next(1, 5);
+                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
 
 
                     var c = new ChromosomeDonchianChannel(ticker, timeFrame, side,

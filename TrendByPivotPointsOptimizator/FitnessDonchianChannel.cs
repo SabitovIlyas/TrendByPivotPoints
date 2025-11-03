@@ -12,7 +12,7 @@ namespace TrendByPivotPointsOptimizator
 {
     public class FitnessDonchianChannel
     {
-        public double NeighborhoodPercent { get; set; } = 0.00;//0.01
+        public double NeighborhoodPercent { get; set; } = 0.01;
         public int DealsCountCriteria { get; set; } = 30;        
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
@@ -107,7 +107,7 @@ namespace TrendByPivotPointsOptimizator
             if (sec != null)
                 dealsCount = sec.GetMetaDeals().Count;
 
-            averageRecoveryFactor = sumRecoveryFactor / counter;
+            averageRecoveryFactor = Math.Round(sumRecoveryFactor / counter, 2);
             return averageRecoveryFactor;
         }
 
@@ -128,19 +128,21 @@ namespace TrendByPivotPointsOptimizator
 
             var nonTradingPeriods = new List<NonTradingPeriod>();
 
-            //foreach (var deal in dealsForExclude)
-            //{
-            //    var n = new NonTradingPeriod();
-            //    n.BarStart = deal.BarNumberOpenPosition - 1;
-            //    n.BarStop = deal.BarNumberClosePosition - 1;
-            //    nonTradingPeriods.Add(n);
-            //}
-            //var newSystem = system.GetClone();
-            //newSystem.NonTradingPeriods = nonTradingPeriods;
+            foreach (var deal in dealsForExclude)
+            {
+                var n = new NonTradingPeriod();
+                n.BarStart = deal.BarNumberOpenPosition - 1;
+                n.BarStop = deal.BarNumberClosePosition - 1;
+                nonTradingPeriods.Add(n);
+            }
+            var newSystem = system.GetClone();
+            newSystem.NonTradingPeriods = nonTradingPeriods;
 
-            //SystemRun(newSystem, parameters);
-            recoveryFactor = CalcRecoeveryFactor(security, account);
-            deals = security.GetMetaDeals();
+            SystemRun(newSystem, parameters);
+            var nSec = newSystem.GetSecurity();
+            var acc = newSystem.Account;
+            recoveryFactor = CalcRecoeveryFactor(nSec, acc);
+            deals = nSec.GetMetaDeals();
             return recoveryFactor;
         }
 

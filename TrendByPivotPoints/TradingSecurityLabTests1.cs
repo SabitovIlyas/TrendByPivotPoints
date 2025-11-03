@@ -125,7 +125,7 @@ namespace TradingSystems.Tests
         [TestMethod()]
         public void GetProfit()
         {
-            double expected = 92000 - 89000;
+            double expected = 92000 - 90000;
             double actual = sec.GetProfit(barNumber: 13);
             Assert.AreEqual(expected, actual);
         }

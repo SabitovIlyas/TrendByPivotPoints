@@ -11,7 +11,7 @@ namespace TrendByPivotPointsStarter
     {
         private double kAtrForStopLoss;
         private int limitOpenedPositions;
-        private List<NonTradingPeriod> nonTradingPeriods;
+        //private List<NonTradingPeriod> nonTradingPeriods;
 
         public StarterDonchianTradingSystemLab(Context context, List<Security> securities,
             Logger logger, List<NonTradingPeriod> nonTradingPeriods = null)
@@ -19,7 +19,7 @@ namespace TrendByPivotPointsStarter
             this.context = context;
             this.securities = securities;
             this.logger = logger;
-            this.nonTradingPeriods = nonTradingPeriods;            
+            NonTradingPeriods = nonTradingPeriods;            
         }
 
         public StarterDonchianTradingSystemLab(StarterDonchianTradingSystemLab starter)
@@ -27,7 +27,7 @@ namespace TrendByPivotPointsStarter
             context = starter.context;
             securities = starter.securities;
             logger = starter.logger;
-            nonTradingPeriods = starter.nonTradingPeriods;
+            NonTradingPeriods = starter.NonTradingPeriods;
         }
 
         public StarterDonchianTradingSystemLab GetClone()
@@ -41,8 +41,8 @@ namespace TrendByPivotPointsStarter
             var logger = this.logger;
             var nonTradingPeriods = new List<NonTradingPeriod>();
 
-            if (this.nonTradingPeriods != null)
-                foreach (var period in this.nonTradingPeriods)
+            if (NonTradingPeriods != null)
+                foreach (var period in NonTradingPeriods)
                     nonTradingPeriods.Add(period);            
 
             return new StarterDonchianTradingSystemLab(context, securities, logger, nonTradingPeriods);
@@ -93,7 +93,7 @@ namespace TrendByPivotPointsStarter
 
             tradingSystems = new List<TradingSystem>();
             var tradingSystem = new TradingSystemDonchian(securities, contractsManager,
-                indicators, context, logger, nonTradingPeriods);
+                indicators, context, logger, NonTradingPeriods);
 
             tradingSystem.SetParameters(systemParameters);
             tradingSystem.Initialize();
