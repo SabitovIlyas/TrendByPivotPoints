@@ -157,7 +157,8 @@ namespace TradingSystems
         public List<OrderToPositionMap> GetClosedPositions(int barNumber)
         {
             var closedPositions = (from order in orders
-                                   where order.BarNumberClosePosition <= barNumber
+                                   where order.BarNumberClosePosition <= barNumber &&
+                                   order.BarNumberClosePosition < int.MaxValue
                                    select order).ToList();
 
             return closedPositions;

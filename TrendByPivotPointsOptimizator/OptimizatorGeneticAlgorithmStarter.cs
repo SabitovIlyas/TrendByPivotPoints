@@ -84,7 +84,7 @@ namespace TrendByPivotPointsOptimizator
                 PrintToTxtFile(bestPopulationLast);
 
                 ga.IsLastBackwardTesting = false;
-                for (var period = 0; period < 0; period++)
+                for (var period = 0; period < 4; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
                     bestPopulation = ga.Run(period);
