@@ -347,7 +347,7 @@ namespace TrendByPivotPointsOptimizator
 
             Evaluate();
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
-            return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(10).ToList();
+            return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(1).ToList();
         }
 
         private void PrepareChromosome(ChromosomeDonchianChannel chromosome, int period)
