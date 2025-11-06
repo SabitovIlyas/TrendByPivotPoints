@@ -76,7 +76,7 @@ namespace TradingSystems
         public void Update(int barNumber)
         {
             var nonTradingPeriod = Math.Max(slowDonchian, atrPeriod);
-            if (barNumber < nonTradingPeriod) 
+            if (barNumber < nonTradingPeriod - 1)
                 return;
 
             try
