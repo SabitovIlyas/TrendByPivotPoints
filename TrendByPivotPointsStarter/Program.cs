@@ -10,7 +10,7 @@ namespace TrendByPivotPointsStarter
 {
     class Program
     {
-        static double rateUSD = 80.2918d;
+        static double rateUSD = 1d;
 
         [STAThread]
         static void Main(string[] args)
@@ -35,7 +35,7 @@ namespace TrendByPivotPointsStarter
             try
             {
                 var context = new ContextLab();
-                var security = new SecurityLab(securityName, Currency.USD, shares: 10,
+                var security = new SecurityLab(securityName, Currency.USD, shares: 1,
                     5000, 4500, bars, logger);
                 security.RateUSD = rateUSD;
 
@@ -104,16 +104,16 @@ namespace TrendByPivotPointsStarter
         {
             var systemParameters = new SystemParameters();
 
-            systemParameters.Add("slowDonchian", 18);
-            systemParameters.Add("fastDonchian", 14);
+            systemParameters.Add("slowDonchian", 40);
+            systemParameters.Add("fastDonchian", 17);
             systemParameters.Add("kAtrForOpenPosition", 1d);
-            systemParameters.Add("kAtrForStopLoss", 2d);            
-            systemParameters.Add("atrPeriod", 5);
+            systemParameters.Add("kAtrForStopLoss", 1d);            
+            systemParameters.Add("atrPeriod", 8);
 
-            systemParameters.Add("limitOpenedPositions", 4);
-            systemParameters.Add("isUSD", 1);
+            systemParameters.Add("limitOpenedPositions", 1);
+            systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", rateUSD);
-            systemParameters.Add("positionSide", 0);
+            systemParameters.Add("positionSide", 1);
             systemParameters.Add("shares", 1);
             systemParameters.Add("scaleContractsPrcnt", 100d);
             systemParameters.Add("riskValuePrcnt", 100d);

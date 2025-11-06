@@ -58,17 +58,17 @@ namespace TrendByPivotPointsOptimizator
                     var sides = settings.Sides;
                     var side = sides[randomProvider.Next(sides.Count)];
 
-                    //var fastDonchian = 26;
+                    //var fastDonchian = 17;
                     var fastDonchian = randomProvider.Next(10, 100);              //9..208;
-                    //var slowDonchian = 70;
+                    //var slowDonchian = 40;
                     var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-                   
 
-                    //var atrPeriod = 11;
+                    //var atrPeriod = 8;
                     var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
-                    //var limitOpenedPositions = 4;
-                    //var kAtrForOpenPosition = 2;
-                    //var kAtrForStopLoss = 0.5;
+                    //var limitOpenedPositions = 1;
+                    //var kAtrForOpenPosition = 1;
+                    //var kAtrForStopLoss = 1;
 
                     var limitOpenedPositions = randomProvider.Next(1, 5);
                     var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);

@@ -110,7 +110,7 @@ namespace TradingSystems
         public override double GetMaxDrawDownPrcnt()
         {
             var lastBarNumber = securities.First().Bars.Count - 1;
-            var result = Math.Round(GetMaxDrawDownPrcnt(lastBarNumber), decimalsAfterPoint);
+            var result = Math.Round(GetMaxDrawDownPrcnt(lastBarNumber), 2);
             return result;
         }
 
@@ -118,14 +118,14 @@ namespace TradingSystems
         {
             var profit = GetProfitPrcnt();
             var maxDrawdown = GetMaxDrawDownPrcnt();
-            var result = Math.Round(profit / maxDrawdown, decimalsAfterPoint);
+            var result = Math.Round(profit / maxDrawdown, 2);
             return result;
         }
 
         public virtual double GetProfitPrcnt()
         {
             var profit = securities.First().GetProfit() / initDeposit * 100;
-            var result = Math.Round(profit, decimalsAfterPoint);
+            var result = Math.Round(profit, 2);
             return result;
         }
     }
