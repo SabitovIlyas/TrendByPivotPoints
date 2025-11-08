@@ -69,8 +69,8 @@ namespace TradingSystems
             foreach (var security in securities)
                 equity += ((SecurityLab)security).GetProfit(barNumber);
 
-            var d = CountDecimalPlaces(securities.First().GetBarClose(barNumber));
-            return Math.Round(equity, d);
+            //var d = CountDecimalPlaces(securities.First().GetBarClose(barNumber));
+            return Math.Round(equity, 2);
         }
 
         private int CountDecimalPlaces(double value)
@@ -124,6 +124,7 @@ namespace TradingSystems
 
         public virtual double GetProfitPrcnt()
         {
+            var pr = securities.First().GetProfit();
             var profit = securities.First().GetProfit() / initDeposit * 100;
             var result = Math.Round(profit, 2);
             return result;

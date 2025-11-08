@@ -10,7 +10,7 @@ namespace TrendByPivotPointsStarter
 {
     class Program
     {
-        static double rateUSD = 1d;
+        static double rateUSD = 80.2918d;
 
         [STAThread]
         static void Main(string[] args)
@@ -104,16 +104,16 @@ namespace TrendByPivotPointsStarter
         {
             var systemParameters = new SystemParameters();
 
-            systemParameters.Add("slowDonchian", 40);
-            systemParameters.Add("fastDonchian", 17);
-            systemParameters.Add("kAtrForOpenPosition", 1d);
-            systemParameters.Add("kAtrForStopLoss", 1d);            
-            systemParameters.Add("atrPeriod", 8);
+            systemParameters.Add("slowDonchian", 19);
+            systemParameters.Add("fastDonchian", 18);
+            systemParameters.Add("kAtrForOpenPosition", 0.5d);
+            systemParameters.Add("kAtrForStopLoss", 1.5d);            
+            systemParameters.Add("atrPeriod", 6);
 
-            systemParameters.Add("limitOpenedPositions", 1);
-            systemParameters.Add("isUSD", 0);
+            systemParameters.Add("limitOpenedPositions", 2);
+            systemParameters.Add("isUSD", 1);
             systemParameters.Add("rateUSD", rateUSD);
-            systemParameters.Add("positionSide", 1);
+            systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", 1);
             systemParameters.Add("scaleContractsPrcnt", 100d);
             systemParameters.Add("riskValuePrcnt", 100d);

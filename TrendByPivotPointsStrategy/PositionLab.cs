@@ -80,7 +80,7 @@ namespace TradingSystems
 
         public double GetProfit(int barNumber)
         {
-            if (profit != double.MinValue)
+             if (profit != double.MinValue)
                 return profit;
 
             if (barNumber >= BarNumberClosePosition)

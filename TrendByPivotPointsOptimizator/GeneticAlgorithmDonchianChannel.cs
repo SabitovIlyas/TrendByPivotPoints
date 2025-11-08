@@ -58,17 +58,17 @@ namespace TrendByPivotPointsOptimizator
                     var sides = settings.Sides;
                     var side = sides[randomProvider.Next(sides.Count)];
 
-                    //var fastDonchian = 17;
+                    //var fastDonchian = 18;
                     var fastDonchian = randomProvider.Next(10, 100);              //9..208;
-                    //var slowDonchian = 40;
+                    //var slowDonchian = 19;
                     var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-                   
 
-                    //var atrPeriod = 8;
+                    //var atrPeriod = 6;
                     var atrPeriod = randomProvider.Next(2, 25);                  //1..25
 
-                    //var limitOpenedPositions = 1;
-                    //var kAtrForOpenPosition = 1;
-                    //var kAtrForStopLoss = 1;
+                    //var limitOpenedPositions = 2;
+                    //var kAtrForOpenPosition = 0.5;
+                    //var kAtrForStopLoss = 1.5;
 
                     var limitOpenedPositions = randomProvider.Next(1, 5);
                     var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
@@ -84,7 +84,7 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
-        public void Evaluate(int period = 0)
+        public void Evaluate(int period)
         {
             var i = 0;
             foreach (var chromosome in population)
@@ -106,8 +106,6 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}. Количество сделок = " +
                     "{2}.\r\n",
                     chromosome.FitnessPassed, chromosome.FitnessValue, chromosome.DealsCount);
-                //var tmp = trSysParams.Security.GetDeals();
-                //var tmp1 = trSysParams.Security.GetMetaDeals();
             }
         }
 
@@ -212,15 +210,6 @@ namespace TrendByPivotPointsOptimizator
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
 
-            //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.FastDonchian = randomProvider.Next(10, 11);                  //9..208;
-
-            //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.SlowDonchian = randomProvider.Next(12, 13);  // -//-
-
-            //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.AtrPeriod = randomProvider.Next(2, 3);                      //1..25
-
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
 
@@ -229,15 +218,6 @@ namespace TrendByPivotPointsOptimizator
 
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
-
-            //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.LimitOpenedPositions = randomProvider.Next(3, 4);
-
-            //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 2);
-
-            //if (randomProvider.NextDouble() < mutationRate)
-            //    chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 2);
 
             chrom.UpdateName();
         }
@@ -308,15 +288,15 @@ namespace TrendByPivotPointsOptimizator
             return false;
         }
 
-        public List<ChromosomeDonchianChannel> Run(int period = 0)
+        public List<ChromosomeDonchianChannel> Run(int period)
         {
             Initialize();
             for (int gen = 0; gen < generations; gen++)
             {
                 Console.WriteLine("Генерация № {0}\r\n", gen + 1);
-                Evaluate();
+                Evaluate(period);
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
-                var qtyBestChromosomes = 1;//30                
+                var qtyBestChromosomes = 1;                
 
                 // Элитизм: сохраняем лучшие хромосомы, исключая соседних
                 var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 
@@ -345,7 +325,7 @@ namespace TrendByPivotPointsOptimizator
                 population = newPopulation;
             }
 
-            Evaluate();
+            Evaluate(period);
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(1).ToList();
         }

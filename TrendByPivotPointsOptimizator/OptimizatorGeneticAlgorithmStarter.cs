@@ -16,8 +16,6 @@ namespace TrendByPivotPointsOptimizator
 {
     public class OptimizatorGeneticAlgorithmStarter
     {
-        //Logger logger;
-
         public void Start()
         {
             var logger = new ConsoleLogger();
@@ -43,7 +41,6 @@ namespace TrendByPivotPointsOptimizator
             List<SecurityData> securitiesData = GetSecuritiesData(fullFileName);
 
             var loggerNull = new LoggerNull();
-            //var loggerNull = new LoggerTxtFile("log.txt");
 
             List<Ticker> tickers = CreateTickers(securitiesData, fullFileName, settings, loggerNull);
 
@@ -64,12 +61,12 @@ namespace TrendByPivotPointsOptimizator
                 var optimizator = Optimizator.Create();
                 var ga = new GeneticAlgorithmDonchianChannel(populationSize: 50, generations: 100,
                     crossoverRate: 0.8, mutationRate: 0.1, randomProvider, tickers, settings, context,
-                    optimizator, loggerNull);//50 //100 //27        //51
+                    optimizator, loggerNull);
 
                 logger.Log("Старт генетического алгоритма");
                 logger.Log("Актуальная оптимизация!");
                 ga.IsLastBackwardTesting = true;
-                bestPopulationLast = ga.Run();
+                bestPopulationLast = ga.Run(period: 0);
 
                 foreach (var chromosome in bestPopulationLast)
                     chromosome.ForwardAnalysisResults.First().BackwardFitness =
@@ -118,7 +115,11 @@ namespace TrendByPivotPointsOptimizator
                     var tmp = new ForwardAnalysisResult()
                     {
                         BackwardFitness = avgResultsBackward,
-                        ForwardFitness = avgResultsForward
+                        ForwardFitness = avgResultsForward,
+                        BackwardStart = bestPopulation.First().ForwardAnalysisResults.First().BackwardStart,
+                        BackwardEnd = bestPopulation.First().ForwardAnalysisResults.First().BackwardEnd,
+                        ForwardStart = bestPopulation.First().ForwardAnalysisResults.First().ForwardStart,
+                        ForwardEnd = bestPopulation.First().ForwardAnalysisResults.First().ForwardEnd,
                     };
 
                     results.Add(tmp);
@@ -179,15 +180,16 @@ namespace TrendByPivotPointsOptimizator
         {
             using (StreamWriter writer = new StreamWriter(fileName))
             {
-                writer.WriteLine($"BackwardFitness;ForwardFitness");
+                writer.WriteLine($"BackwardFitness;ForwardFitness;BackwardTestDates;ForwardTestDates;");
             }
         }
 
         private void AppendToTxtFile(ForwardAnalysisResult result, string fileName)
         {
             using (StreamWriter writer = new StreamWriter(fileName, append: true))
-            {               
-                writer.WriteLine($"{result.BackwardFitness};{result.ForwardFitness}");                
+            {
+                writer.WriteLine($"{result.BackwardFitness};{result.ForwardFitness};{result.BackwardStart}-{result.BackwardEnd};" +
+                    $"{result.ForwardStart} - {result.ForwardEnd}");
             }
         }
 
