@@ -116,11 +116,16 @@ namespace TrendByPivotPointsOptimizator
                     {
                         BackwardFitness = avgResultsBackward,
                         ForwardFitness = avgResultsForward,
-                        BackwardStart = bestPopulation.First().ForwardAnalysisResults.First().BackwardStart,
-                        BackwardEnd = bestPopulation.First().ForwardAnalysisResults.First().BackwardEnd,
-                        ForwardStart = bestPopulation.First().ForwardAnalysisResults.First().ForwardStart,
-                        ForwardEnd = bestPopulation.First().ForwardAnalysisResults.First().ForwardEnd,
+                        
                     };
+
+                    if (bestPopulation.Count > 0)
+                    {
+                        tmp.BackwardStart = bestPopulation.First().ForwardAnalysisResults.First().BackwardStart;
+                        tmp.BackwardEnd = bestPopulation.First().ForwardAnalysisResults.First().BackwardEnd;
+                        tmp.ForwardStart = bestPopulation.First().ForwardAnalysisResults.First().ForwardStart;
+                        tmp.ForwardEnd = bestPopulation.First().ForwardAnalysisResults.First().ForwardEnd;
+                    }
 
                     results.Add(tmp);
                     AppendToTxtFile(tmp, resultFileName);
