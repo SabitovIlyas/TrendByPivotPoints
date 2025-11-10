@@ -58,7 +58,7 @@ namespace TradingSystems.Tests
             systemParameters.Add("isUSD", 0);
             systemParameters.Add("rateUSD", 0d);
             systemParameters.Add("positionSide", pSide);
-            systemParameters.Add("shares", 1);
+            systemParameters.Add("shares", 1d);
 
             systemParameters.Add("equity", 1000000d);
             systemParameters.Add("riskValuePrcnt", 2d);
