@@ -17,7 +17,7 @@ namespace TradingSystems
         protected double comission;
         protected double riskValuePrcnt;
         protected Currency currency;
-        protected int shares;
+        protected double shares;
 
         protected Logger logger = new LoggerNull();
         protected SystemParameters systemParameters;
@@ -63,7 +63,7 @@ namespace TradingSystems
                 var positionSide = (int)systemParameters.GetValue("positionSide");
                 var isUSD = (int)systemParameters.GetValue("isUSD");
                 rateUSD = (double)systemParameters.GetValue("rateUSD");
-                shares = (int)systemParameters.GetValue("shares");                
+                shares = (double)systemParameters.GetValue("shares");                
                 riskValuePrcnt = (double)systemParameters.GetValue("riskValuePrcnt");
                 contracts = (int)systemParameters.GetValue("contracts");
                 equity = (double)systemParameters.GetValue("equity");

@@ -258,7 +258,7 @@ namespace TrendByPivotPointsOptimizator
                     var splStr = str.Split(';');
                     var name = splStr[0];
                     var currency = splStr[1];
-                    var shares = int.Parse(splStr[2]);
+                    var shares = double.Parse(splStr[2]);
                     var commissionRate = double.Parse(splStr[3]);
                     var isUSD = int.Parse(splStr[4]);
                     var rateUSD = double.Parse(splStr[5]);

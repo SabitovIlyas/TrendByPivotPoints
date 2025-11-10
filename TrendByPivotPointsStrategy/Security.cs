@@ -9,7 +9,7 @@ namespace TradingSystems
         Currency Currency { get; set; }
         double GObuying { get; }
         double GOselling { get; }
-        int Shares { get; set; }
+        double Shares { get; set; }
         double? SellDeposit { get; }
         double? StepPrice { get; }
         double? BuyDeposit { get; }

@@ -10,7 +10,7 @@ namespace TradingSystems
     public class SecurityLab : Security
     {
         public Currency Currency { get => currency; set { } }
-        public int Shares { get => shares; set { } }
+        public double Shares { get => shares; set { } }
         public List<Bar> Bars { get;  set; }
         public string Name { get; private set; }
         public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
@@ -28,7 +28,7 @@ namespace TradingSystems
         public double RateUSD { get; set; } = 1;
 
         private Currency currency;
-        private int shares;
+        private double shares;
         private List<Order> orders = new List<Order>();
         private Dictionary<Order, Position> ordersPositions = new Dictionary<Order, Position>();
         private List<Order> activeOrders = new List<Order>();
@@ -37,7 +37,7 @@ namespace TradingSystems
         private int constructorNumber;
         private int digitsAfterPoint = 0;
 
-        public SecurityLab(Currency currency, int shares, Logger logger, double commissionRate)
+        public SecurityLab(Currency currency, double shares, Logger logger, double commissionRate)
         {
             this.currency = currency;
             this.shares = shares;
@@ -46,7 +46,7 @@ namespace TradingSystems
             constructorNumber = 0;
         }
 
-        public SecurityLab(Currency currency, int shares,
+        public SecurityLab(Currency currency, double shares,
             double GObuying, double GOselling, Logger logger)
         {
             this.currency = currency;
@@ -57,7 +57,7 @@ namespace TradingSystems
             constructorNumber = 1;
         }
 
-        public SecurityLab(Currency currency, int shares, List<Bar> bars, Logger logger, 
+        public SecurityLab(Currency currency, double shares, List<Bar> bars, Logger logger, 
             double commissionRate)
         {
             if (bars != null || bars.Count > 0)
@@ -71,7 +71,7 @@ namespace TradingSystems
             constructorNumber = 2;
         }
 
-        public SecurityLab(string securityName, Currency currency, int shares,
+        public SecurityLab(string securityName, Currency currency, double shares,
             double GObuying, double GOselling, List<Bar> bars, Logger logger)
         {
             Name = securityName;
@@ -85,7 +85,7 @@ namespace TradingSystems
             constructorNumber = 3;
         }
 
-        public SecurityLab(string securityName, Currency currency, int shares, List<Bar> bars, 
+        public SecurityLab(string securityName, Currency currency, double shares, List<Bar> bars, 
             Logger logger, double commissionRate)
         {
             Name = securityName;

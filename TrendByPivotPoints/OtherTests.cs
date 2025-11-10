@@ -171,5 +171,19 @@ namespace TradingSystems.Tests
             Assert.AreEqual(expected1, actual1);
             Assert.AreEqual(expected2, actual2);
         }
+
+        [TestMethod()]
+        public void ConvertToInt_1()
+        {
+            int actual = (int)(1 / 0.02d);
+            Assert.AreEqual(50, actual);            
+        }
+
+        [TestMethod()]
+        public void ConvertToInt_2()
+        {
+            int actual = (int)(3 / 2);
+            Assert.AreEqual(1, actual);
+        }
     }
 }

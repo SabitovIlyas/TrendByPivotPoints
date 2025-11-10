@@ -34,26 +34,30 @@ namespace TrendByPivotPointsOptimizator
         public void SetUpChromosomeFitnessValue(bool isCriteriaPassedNeedToCheck = true)
         {
             IsCriteriaPassedNeedToCheck = isCriteriaPassedNeedToCheck;
-            chromosome.FitnessValue = CalcIsPassed();
+            chromosome.FitnessValue = CalcIsPassed(isCriteriaPassedNeedToCheck);
             chromosome.DealsCount = dealsCount;
         }
 
-        private double CalcIsPassed()
+        private double CalcIsPassed(bool isCriteriaPassedNeedToCheck)
         {
             var averageRecoveryFactor = double.NegativeInfinity;
+
+            var neighborhoodPercent = NeighborhoodPercent;
+            if (!isCriteriaPassedNeedToCheck)
+                neighborhoodPercent = 0;
 
             var sD = (int)trSysParams.SystemParameters.GetValue("slowDonchian");
             var fD = (int)trSysParams.SystemParameters.GetValue("fastDonchian");
             var atr = (int)trSysParams.SystemParameters.GetValue("atrPeriod");
 
-            var minSd = (int)Math.Round(sD - NeighborhoodPercent * sD, MidpointRounding.AwayFromZero);
-            var maxSd = (int)Math.Round(sD + NeighborhoodPercent * sD, MidpointRounding.AwayFromZero);
+            var minSd = (int)Math.Round(sD - neighborhoodPercent * sD, MidpointRounding.AwayFromZero);
+            var maxSd = (int)Math.Round(sD + neighborhoodPercent * sD, MidpointRounding.AwayFromZero);
 
-            var minFd = (int)Math.Round(fD - NeighborhoodPercent * fD, MidpointRounding.AwayFromZero);
-            var maxFd = (int)Math.Round(fD + NeighborhoodPercent * fD, MidpointRounding.AwayFromZero);
+            var minFd = (int)Math.Round(fD - neighborhoodPercent * fD, MidpointRounding.AwayFromZero);
+            var maxFd = (int)Math.Round(fD + neighborhoodPercent * fD, MidpointRounding.AwayFromZero);
 
-            var minAtr = (int)Math.Round(atr - NeighborhoodPercent * atr, MidpointRounding.AwayFromZero);
-            var maxAtr = (int)Math.Round(atr + NeighborhoodPercent * atr, MidpointRounding.AwayFromZero);
+            var minAtr = (int)Math.Round(atr - neighborhoodPercent * atr, MidpointRounding.AwayFromZero);
+            var maxAtr = (int)Math.Round(atr + neighborhoodPercent * atr, MidpointRounding.AwayFromZero);
 
             var counter = 0;
             var sumRecoveryFactor = 0d;
@@ -121,6 +125,9 @@ namespace TrendByPivotPointsOptimizator
             
             var isQtyDealsEnough = deals.Count >= DealsCountCriteria;
             if (IsCriteriaPassedNeedToCheck && !isQtyDealsEnough)
+                return recoveryFactor;
+
+            if (!IsCriteriaPassedNeedToCheck)
                 return recoveryFactor;
 
             var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * deals.Count, MidpointRounding.AwayFromZero);

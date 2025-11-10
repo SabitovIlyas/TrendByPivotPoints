@@ -10,7 +10,7 @@ namespace TradingSystems
         Currency currency;
         Account account;
         RiskManager riskManager;
-        int shares = 1;
+        double shares = 1;
 
         private Logger logger;
         private CurrencyConverter currencyConverter;
@@ -32,7 +32,7 @@ namespace TradingSystems
         }
 
         public ContractsManager(RiskManager riskManager, Account account, 
-            Currency currency, CurrencyConverter currencyConverter, int shares, 
+            Currency currency, CurrencyConverter currencyConverter, double shares, 
             Logger logger)
         {
             Initialize(riskManager, account, currencyConverter, logger);            
@@ -41,7 +41,7 @@ namespace TradingSystems
         }
 
         public ContractsManager(int contracts, Account account,
-            Currency currency, CurrencyConverter currencyConverter, int shares,
+            Currency currency, CurrencyConverter currencyConverter, double shares,
             Logger logger)
         {
             Initialize(riskManager, account, currencyConverter, logger);
@@ -108,7 +108,7 @@ namespace TradingSystems
             logger.Log(message);
 
             var contractsByRiskMoney = (int)(money / riskMoney);            
-            contractsByRiskMoney = contractsByRiskMoney / shares;
+            contractsByRiskMoney = (int)(contractsByRiskMoney / shares);
             if (contractsByRiskMoney == 0) contractsByRiskMoney = 1;
 
             message = string.Format("Вариант №1. Количество контрактов открываемой позиции, исходя из рискуемой суммой Equity (Estimated Balance) и рискуемой суммой в одном контракте, равно {0} " +

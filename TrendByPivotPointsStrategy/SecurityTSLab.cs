@@ -12,7 +12,7 @@ namespace TradingSystems
     {
         public string Name => security.ToString();
         public Currency Currency { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public double Shares { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public double GObuying => goBuying;
         public double GOselling => goSelling;
         public double[] HighPrices => highPrices;
