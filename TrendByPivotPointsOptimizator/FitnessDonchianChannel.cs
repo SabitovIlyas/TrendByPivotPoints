@@ -125,15 +125,18 @@ namespace TrendByPivotPointsOptimizator
             
             var isQtyDealsEnough = deals.Count >= DealsCountCriteria;
             if (IsCriteriaPassedNeedToCheck && !isQtyDealsEnough)
-                return recoveryFactor;
-
-            if (!IsCriteriaPassedNeedToCheck)
-                return recoveryFactor;
+                return recoveryFactor;           
 
             var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * deals.Count, MidpointRounding.AwayFromZero);
             var dealsForExclude = deals.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
 
             var nonTradingPeriods = new List<NonTradingPeriod>();
+
+            if (!IsCriteriaPassedNeedToCheck)
+            {
+                recoveryFactor = CalcRecoeveryFactor(system.GetSecurity(), system.Account);
+                return recoveryFactor;
+            }
 
             foreach (var deal in dealsForExclude)
             {
@@ -142,6 +145,7 @@ namespace TrendByPivotPointsOptimizator
                 n.BarStop = deal.BarNumberClosePosition - 1;
                 nonTradingPeriods.Add(n);
             }
+
             var newSystem = system.GetClone();
             newSystem.NonTradingPeriods = nonTradingPeriods;
 
