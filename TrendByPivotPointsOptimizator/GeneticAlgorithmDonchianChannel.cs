@@ -148,7 +148,7 @@ namespace TrendByPivotPointsOptimizator
 
         public ChromosomeDonchianChannel TournamentSelection()
         {
-            int tournamentSize = 3;
+            int tournamentSize = 4;
             ChromosomeDonchianChannel best = null;
             for (int i = 0; i < tournamentSize; i++)
             {
@@ -296,7 +296,7 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine("Генерация № {0}\r\n", gen + 1);
                 Evaluate(period);
                 List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
-                var qtyBestChromosomes = 1;                
+                var qtyBestChromosomes = 5;                
 
                 // Элитизм: сохраняем лучшие хромосомы, исключая соседних
                 var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 

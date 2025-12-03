@@ -59,8 +59,8 @@ namespace TrendByPivotPointsOptimizator
                 var randomProvider = new RandomProvider();
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 60, generations: 125,
-                    crossoverRate: 0.9, mutationRate: 0.2, randomProvider, tickers, settings, context,
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 120, generations: 300,
+                    crossoverRate: 0.85, mutationRate: 0.10, randomProvider, tickers, settings, context,
                     optimizator, loggerNull);
 
                 logger.Log("Старт генетического алгоритма");
@@ -81,7 +81,7 @@ namespace TrendByPivotPointsOptimizator
                 PrintToTxtFile(bestPopulationLast);
 
                 ga.IsLastBackwardTesting = false;
-                for (var period = 0; period < 10; period++)
+                for (var period = 0; period < 0; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
                     bestPopulation = ga.Run(period);
