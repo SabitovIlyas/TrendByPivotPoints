@@ -71,8 +71,8 @@ namespace TrendByPivotPointsOptimizator
                     //var kAtrForStopLoss = 1.5;
 
                     var limitOpenedPositions = randomProvider.Next(1, 5);
-                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
-                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 7);
+                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 7);
 
 
                     var c = new ChromosomeDonchianChannel(ticker, timeFrame, side,
@@ -214,10 +214,10 @@ namespace TrendByPivotPointsOptimizator
                 chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 5);
+                chrom.KAtrForOpenPosition = 0.5 * randomProvider.Next(1, 7);
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 5);
+                chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 7);
 
             chrom.UpdateName();
         }
