@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using TradingSystems;
 using TrendByPivotPointsStarter;
-using TSLab.DataSource;
 using Account = TradingSystems.Account;
 using Security = TradingSystems.Security;
 
@@ -168,15 +166,6 @@ namespace TrendByPivotPointsOptimizator
         {
             var acc = (AccountLab)account;
             return acc.GetRecoveryFactor();
-
-            var profit = security.GetProfit();            
-            var drawDown = account.GetMaxDrawDownPrcnt();
-            
-            var recoveryFactor = double.PositiveInfinity;
-            if (drawDown != 0)
-                recoveryFactor = profit / drawDown;
-
-            return recoveryFactor;
         }
     }
 }

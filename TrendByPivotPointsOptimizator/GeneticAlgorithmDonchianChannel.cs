@@ -28,6 +28,7 @@ namespace TrendByPivotPointsOptimizator
         private Logger logger;
         private ForwardAnalysis forwardAnalysis;
         private double neighborhoodPercentage = 0.05;
+        private int patience = 50;
 
         public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate,
             IRandomProvider randomProvider, List<Ticker> tickers, Settings settings, Context context, Optimizator optimizator, Logger logger)
@@ -98,11 +99,11 @@ namespace TrendByPivotPointsOptimizator
                     PrepareChromosome(chromosome, period);
                 chromosome.SetBackwardBarsAsTickerBars();            
 
-                var FitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
+                var fitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
 
                 Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
                     ++i, population.Count, chromosome.Name);
-                FitnessDonchianChannel.SetUpChromosomeFitnessValue();
+                fitnessDonchianChannel.SetUpChromosomeFitnessValue();
                 Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}. Количество сделок = " +
                     "{2}.\r\n",
                     chromosome.FitnessPassed, chromosome.FitnessValue, chromosome.DealsCount);
@@ -290,24 +291,26 @@ namespace TrendByPivotPointsOptimizator
 
         public List<ChromosomeDonchianChannel> Run(int period)
         {
+            var generationsWithoutImprovement = 0;
+            var bestFitnessEver = double.MinValue;
             Initialize();
             for (int gen = 0; gen < generations; gen++)
             {
                 Console.WriteLine("Генерация № {0}\r\n", gen + 1);
                 Evaluate(period);
-                List<ChromosomeDonchianChannel> newPopulation = new List<ChromosomeDonchianChannel>();
+                var newPopulation = new List<ChromosomeDonchianChannel>();
                 var qtyBestChromosomes = 5;                
 
                 // Элитизм: сохраняем лучшие хромосомы, исключая соседних
                 var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 
                     neighborhoodPercentage);
-                newPopulation.AddRange(best);
+                newPopulation.AddRange(best);                
                          
                 // Создаем потомков
                 while (newPopulation.Count < populationSize)
                 {
-                    ChromosomeDonchianChannel parent1 = TournamentSelection();
-                    ChromosomeDonchianChannel parent2 = TournamentSelection();
+                    var parent1 = TournamentSelection();
+                    var parent2 = TournamentSelection();
                     ChromosomeDonchianChannel child;
                     if (randomProvider.NextDouble() < crossoverRate)
                     {
@@ -323,6 +326,26 @@ namespace TrendByPivotPointsOptimizator
                     AddNeighbour(child, newPopulation, neighborhoodPercentage);                    
                 }
                 population = newPopulation;
+
+                var currentBest = newPopulation.First().FitnessValue;
+
+                if (currentBest > bestFitnessEver)
+                {
+                    bestFitnessEver = currentBest;
+                    generationsWithoutImprovement = 0;  // Сброс счётчика!
+                    Console.WriteLine($"Поколение {gen}: Новый рекорд = {currentBest}");
+                }
+                else
+                {
+                    generationsWithoutImprovement++;
+                }
+
+                if (generationsWithoutImprovement >= patience)
+                {
+                    Console.WriteLine($"\nEarly Stopping! Нет улучшений {patience} поколений.");
+                    Console.WriteLine($"Остановлено на поколении {gen}. Лучший фитнес: {bestFitnessEver}");
+                    break;
+                }
             }
 
             Evaluate(period);
