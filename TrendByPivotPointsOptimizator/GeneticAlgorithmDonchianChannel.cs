@@ -5,6 +5,7 @@ using System.Runtime.Remoting.Contexts;
 using TradingSystems;
 using TrendByPivotPointsStarter;
 using TSLab.DataSource;
+using TSLab.Script.Handlers.Options;
 using TSLab.Utils;
 using Context = TradingSystems.Context;
 using Security = TradingSystems.Security;
@@ -222,7 +223,37 @@ namespace TrendByPivotPointsOptimizator
 
             chrom.UpdateName();
         }
-            
+
+        private void GaussianMutate(Chromosome chrom)
+        {
+            if (randomProvider.NextDouble() < mutationRate)
+            {
+                // FastPeriod: ±20% от текущего значения, σ = 0.2
+                double sigma = 0.2;
+                double u = randomProvider.NextDouble();
+                double v = randomProvider.NextDouble();
+                double z = Math.Sqrt(-2.0 * Math.Log(u)) * Math.Cos(2.0 * Math.PI * v); // Box-Muller
+                int newFast = (int)(chrom.FastPeriod * (1 + sigma * z));
+                //newFast = Math.Clamp(newFast, 1, 50);
+                // Ручной Clamp — работает на любой версии .NET
+                newFast = Math.Max(1, Math.Min(newFast, 50));
+                chrom.FastPeriod = newFast;
+            }
+
+            if (randomProvider.NextDouble() < mutationRate)
+            {
+                double sigma = 0.2;
+                double u = randomProvider.NextDouble();
+                double v = randomProvider.NextDouble();
+                double z = Math.Sqrt(-2.0 * Math.Log(u)) * Math.Cos(2.0 * Math.PI * v);
+                int newSlow = (int)(chrom.SlowPeriod * (1 + sigma * z));
+                //newSlow = Math.Clamp(newSlow, chrom.FastPeriod + 1, 200);
+                // Ручной Clamp — работает на любой версии .NET
+                newSlow = Math.Max(chrom.FastPeriod + 1, Math.Min(newSlow, 200));
+                chrom.SlowPeriod = newSlow;
+            }
+        }
+
         public List<ChromosomeDonchianChannel> SelectBestNonNeighborChromosomes
             (List<ChromosomeDonchianChannel> population, int count, 
             double neighborhoodPercentage)
