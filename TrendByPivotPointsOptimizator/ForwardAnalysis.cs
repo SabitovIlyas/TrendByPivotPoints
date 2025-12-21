@@ -104,7 +104,6 @@ namespace TrendByPivotPointsOptimizator
             var sortedBars = chromosome.Ticker.Bars.OrderBy(b => b.Date).ToList();
             var latestDate = sortedBars.Last().Date;
 
-
             var forwardEnd = latestDate.AddDays(-forwardPeriodDays * Period);
             var forwardStart = forwardEnd.AddDays(-forwardPeriodDays + 1);
             var backwardEnd = forwardStart.AddDays(-1);

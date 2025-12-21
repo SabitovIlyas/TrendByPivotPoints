@@ -11,7 +11,7 @@ namespace TrendByPivotPointsOptimizator
     public class FitnessDonchianChannel
     {
         public double NeighborhoodPercent { get; set; } = 0.01;
-        public int DealsCountCriteria { get; set; } = 30;        
+        public int DealsCountCriteria { get; set; } = 0;        
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
