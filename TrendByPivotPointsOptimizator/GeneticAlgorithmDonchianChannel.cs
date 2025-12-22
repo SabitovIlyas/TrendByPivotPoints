@@ -189,7 +189,9 @@ namespace TrendByPivotPointsOptimizator
         public void Mutate(ChromosomeDonchianChannel chrom)
         {
             if (randomProvider.NextDouble() < mutationRate)
+            {            
                 chrom.Ticker = tickers[randomProvider.Next(tickers.Count)];
+            }
 
             if (randomProvider.NextDouble() < mutationRate)
             {
@@ -204,13 +206,24 @@ namespace TrendByPivotPointsOptimizator
             }
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.FastDonchian = randomProvider.Next(10, 100);                  //9..208;
+            {
+                var fastDonchian = GaussianMutate(chrom.FastDonchian);
+                fastDonchian = Math.Max(10, Math.Min(fastDonchian, 100));
+                chrom.FastDonchian = fastDonchian;                  //9..208;
+            }
+            if (randomProvider.NextDouble() < mutationRate)
+            {
+                var slowDonchian = GaussianMutate(chrom.SlowDonchian);
+                slowDonchian = Math.Max(chrom.FastDonchian, Math.Min(slowDonchian, 100));
+                chrom.SlowDonchian = slowDonchian;  // -//-                
+            }
 
             if (randomProvider.NextDouble() < mutationRate)
-                chrom.SlowDonchian = randomProvider.Next(chrom.FastDonchian, 100);  // -//-
-
-            if (randomProvider.NextDouble() < mutationRate)
-                chrom.AtrPeriod = randomProvider.Next(2, 25);                      //1..25
+            {
+                var atrPeriod = GaussianMutate(chrom.AtrPeriod);
+                atrPeriod = Math.Max(2, Math.Min(atrPeriod, 25));                
+                chrom.AtrPeriod = atrPeriod;  //1..25
+            }
 
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.LimitOpenedPositions = randomProvider.Next(1, 5);
@@ -224,34 +237,15 @@ namespace TrendByPivotPointsOptimizator
             chrom.UpdateName();
         }
 
-        private void GaussianMutate(Chromosome chrom)
+        private int GaussianMutate(int value)
         {
-            if (randomProvider.NextDouble() < mutationRate)
-            {
-                // FastPeriod: ±20% от текущего значения, σ = 0.2
-                double sigma = 0.2;
-                double u = randomProvider.NextDouble();
-                double v = randomProvider.NextDouble();
-                double z = Math.Sqrt(-2.0 * Math.Log(u)) * Math.Cos(2.0 * Math.PI * v); // Box-Muller
-                int newFast = (int)(chrom.FastPeriod * (1 + sigma * z));
-                //newFast = Math.Clamp(newFast, 1, 50);
-                // Ручной Clamp — работает на любой версии .NET
-                newFast = Math.Max(1, Math.Min(newFast, 50));
-                chrom.FastPeriod = newFast;
-            }
-
-            if (randomProvider.NextDouble() < mutationRate)
-            {
-                double sigma = 0.2;
-                double u = randomProvider.NextDouble();
-                double v = randomProvider.NextDouble();
-                double z = Math.Sqrt(-2.0 * Math.Log(u)) * Math.Cos(2.0 * Math.PI * v);
-                int newSlow = (int)(chrom.SlowPeriod * (1 + sigma * z));
-                //newSlow = Math.Clamp(newSlow, chrom.FastPeriod + 1, 200);
-                // Ручной Clamp — работает на любой версии .NET
-                newSlow = Math.Max(chrom.FastPeriod + 1, Math.Min(newSlow, 200));
-                chrom.SlowPeriod = newSlow;
-            }
+            //±20% от текущего значения, σ = 0.2
+            double sigma = 0.2;
+            double u = randomProvider.NextDouble();
+            double v = randomProvider.NextDouble();
+            double z = Math.Sqrt(-2.0 * Math.Log(u)) * Math.Cos(2.0 * Math.PI * v); // Box-Muller
+            int newValue = (int)(value * (1 + sigma * z));            
+            return newValue;
         }
 
         public List<ChromosomeDonchianChannel> SelectBestNonNeighborChromosomes
