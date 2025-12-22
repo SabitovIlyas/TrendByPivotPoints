@@ -318,10 +318,11 @@ namespace TrendByPivotPointsOptimizator
         {
             var generationsWithoutImprovement = 0;
             var bestFitnessEver = double.MinValue;
+            var isGenerationsWithoutImprovement = false;
+            int gen = 0;
             Initialize();
-            for (int gen = 0; gen < generations; gen++)
+            for (; gen < generations; gen++)
             {
-                Console.WriteLine("Генерация № {0}\r\n", gen + 1);
                 Evaluate(period);
                 var newPopulation = new List<ChromosomeDonchianChannel>();
                 var qtyBestChromosomes = 5;                
@@ -329,8 +330,10 @@ namespace TrendByPivotPointsOptimizator
                 // Элитизм: сохраняем лучшие хромосомы, исключая соседних
                 var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 
                     neighborhoodPercentage);
-                newPopulation.AddRange(best);                
-                         
+                newPopulation.AddRange(best);
+
+                Console.WriteLine("Генерация № {0}\r\n", gen + 1);
+
                 // Создаем потомков
                 while (newPopulation.Count < populationSize)
                 {
@@ -367,12 +370,17 @@ namespace TrendByPivotPointsOptimizator
 
                 if (generationsWithoutImprovement >= patience)
                 {
-                    Console.WriteLine($"\nEarly Stopping! Нет улучшений {patience} поколений.");
-                    Console.WriteLine($"Остановлено на поколении {gen}. Лучший фитнес: {bestFitnessEver}");
+                    isGenerationsWithoutImprovement = true;                    
                     break;
                 }
             }
 
+            if (isGenerationsWithoutImprovement)
+            {
+                Console.WriteLine($"\nEarly Stopping! Нет улучшений {patience} поколений.");
+                Console.WriteLine($"Остановлено на поколении {gen}. Лучший фитнес: {bestFitnessEver}");
+            }
+                
             Evaluate(period);
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(1).ToList();
