@@ -30,6 +30,7 @@ namespace TrendByPivotPointsOptimizator
         private ForwardAnalysis forwardAnalysis;
         private double neighborhoodPercentage = 0.05;
         private int patience = 50;
+        private ChromosomeDonchianChannel bestChromosome;
 
         public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate,
             IRandomProvider randomProvider, List<Ticker> tickers, Settings settings, Context context, Optimizator optimizator, Logger logger)
@@ -62,26 +63,41 @@ namespace TrendByPivotPointsOptimizator
 
                     //var fastDonchian = 18;
                     var fastDonchian = randomProvider.Next(10, 100);              //9..208;
+                    if (bestChromosome != null)
+                        fastDonchian = bestChromosome.FastDonchian;
+
                     //var slowDonchian = 19;
                     var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-                   
+                    if (bestChromosome != null)
+                        slowDonchian = bestChromosome.SlowDonchian;
 
                     //var atrPeriod = 6;
                     var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                    if (bestChromosome != null)
+                        atrPeriod = bestChromosome.AtrPeriod;
 
                     //var limitOpenedPositions = 2;
                     //var kAtrForOpenPosition = 0.5;
                     //var kAtrForStopLoss = 1.5;
 
                     var limitOpenedPositions = randomProvider.Next(1, 5);
-                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 7);
-                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 7);
+                    if (bestChromosome != null)
+                        limitOpenedPositions= bestChromosome.LimitOpenedPositions;
 
+                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 7);
+                    if (bestChromosome != null)
+                        kAtrForOpenPosition = bestChromosome.KAtrForOpenPosition;
+
+                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 7);
+                    if (bestChromosome != null)
+                        kAtrForStopLoss = bestChromosome.KAtrForStopLoss;
 
                     var c = new ChromosomeDonchianChannel(ticker, timeFrame, side,
                         fastDonchian, slowDonchian, atrPeriod, limitOpenedPositions,
                         kAtrForOpenPosition, kAtrForStopLoss);
 
                     isAdded = AddNeighbour(c, population, neighborhoodPercentage);
+                    bestChromosome = null;
                 }                
             }
         }
@@ -318,7 +334,8 @@ namespace TrendByPivotPointsOptimizator
             return false;
         }
 
-        public List<ChromosomeDonchianChannel> Run(int period)
+        public List<ChromosomeDonchianChannel> Run(int period,
+            ChromosomeDonchianChannel bestChromosome = null)
         {
             var generationsWithoutImprovement = 0;
             var bestFitnessEver = double.MinValue;
@@ -335,6 +352,25 @@ namespace TrendByPivotPointsOptimizator
                 var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 
                     neighborhoodPercentage);
                 newPopulation.AddRange(best);
+
+                var currentBest = newPopulation.First().FitnessValue;
+
+                if (currentBest > bestFitnessEver)
+                {
+                    bestFitnessEver = currentBest;
+                    generationsWithoutImprovement = 0;  // Сброс счётчика!
+                    Console.WriteLine($"Поколение {gen}: Новый рекорд = {currentBest}");
+                }
+                else
+                {
+                    generationsWithoutImprovement++;
+                }
+
+                if (generationsWithoutImprovement >= patience)
+                {
+                    isGenerationsWithoutImprovement = true;
+                    break;
+                }
 
                 Console.WriteLine("Генерация № {0}\r\n", gen + 1);
 
@@ -357,26 +393,7 @@ namespace TrendByPivotPointsOptimizator
                     Mutate(child);
                     AddNeighbour(child, newPopulation, neighborhoodPercentage);                    
                 }
-                population = newPopulation;
-
-                var currentBest = newPopulation.First().FitnessValue;
-
-                if (currentBest > bestFitnessEver)
-                {
-                    bestFitnessEver = currentBest;
-                    generationsWithoutImprovement = 0;  // Сброс счётчика!
-                    Console.WriteLine($"Поколение {gen}: Новый рекорд = {currentBest}");
-                }
-                else
-                {
-                    generationsWithoutImprovement++;
-                }
-
-                if (generationsWithoutImprovement >= patience)
-                {
-                    isGenerationsWithoutImprovement = true;                    
-                    break;
-                }
+                population = newPopulation;               
             }
 
             if (isGenerationsWithoutImprovement)
@@ -384,16 +401,19 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine($"\nEarly Stopping! Нет улучшений {patience} поколений.");
                 Console.WriteLine($"Остановлено на поколении {gen}. Лучший фитнес: {bestFitnessEver}");
             }
-                
-            Evaluate(period);
+            else
+            {
+                Evaluate(period);
+            }
+
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(1).ToList();
         }
 
         private void PrepareChromosome(ChromosomeDonchianChannel chromosome, int period)
         {
-            forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 30,
-                backwardPeriodDays: 180, forwardPeriodsCount: 10);
+            forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 730,
+                backwardPeriodDays: 730, forwardPeriodsCount: 10, shiftWindowDays: 30);
 
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();
@@ -403,7 +423,7 @@ namespace TrendByPivotPointsOptimizator
         private void PrepareChromosomeFinal(ChromosomeDonchianChannel chromosome, int period)
         {
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
-                backwardPeriodDays: 180, forwardPeriodsCount: 1);
+                backwardPeriodDays: 730, forwardPeriodsCount: 1, shiftWindowDays: 30);
 
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();

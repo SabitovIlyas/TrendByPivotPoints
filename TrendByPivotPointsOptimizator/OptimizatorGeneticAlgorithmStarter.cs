@@ -79,12 +79,13 @@ namespace TrendByPivotPointsOptimizator
                 var avgResults = sumResults / bestPopulationLast.Count;
                 var tmpRes = new ForwardAnalysisResult() { BackwardFitness = avgResults, };
                 PrintToTxtFile(bestPopulationLast);
+                var bestChromosome = bestPopulationLast.First();
 
                 ga.IsLastBackwardTesting = false;
                 for (var period = 0; period < 0; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
-                    bestPopulation = ga.Run(period);
+                    bestPopulation = ga.Run(period, bestChromosome);
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.ForwardAnalysisResults.First().BackwardFitness =

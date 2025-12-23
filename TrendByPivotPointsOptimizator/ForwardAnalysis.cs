@@ -14,6 +14,8 @@ namespace TrendByPivotPointsOptimizator
         private readonly int forwardPeriodDays;
         private readonly int backwardPeriodDays;
         private readonly int forwardPeriodsCount;
+        private readonly int shiftWindowDays;
+
         public int Period { get; set; } = 0;
 
         public ForwardAnalysis(Security security, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount)
@@ -34,11 +36,13 @@ namespace TrendByPivotPointsOptimizator
                 throw new ArgumentException("Backward period must be positive", nameof(backwardPeriodDays));
             if (forwardPeriodsCount <= 0)
                 throw new ArgumentException("Forward periods count must be positive", nameof(forwardPeriodsCount));
+            if (shiftWindowDays <= 0)
+                throw new ArgumentException("Shift window must be positive", nameof(shiftWindowDays));
 
             if (!security.Bars.Any())
                 throw new InvalidOperationException("Bars list is empty");
 
-            var totalRequiredDays = backwardPeriodDays + (forwardPeriodDays * forwardPeriodsCount);
+            var totalRequiredDays = backwardPeriodDays + forwardPeriodDays + shiftWindowDays * (forwardPeriodsCount - 1);
             var availableDays = (security.Bars.Max(b => b.Date) - security.Bars.Min(b => b.Date)).Days + 1;
 
             if (availableDays < totalRequiredDays)
@@ -46,12 +50,14 @@ namespace TrendByPivotPointsOptimizator
                     $"Insufficient data: available {availableDays} days, required {totalRequiredDays} days");
         }
 
-        public ForwardAnalysis(GeneticAlgorithmDonchianChannel genAlg, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount)
+        public ForwardAnalysis(GeneticAlgorithmDonchianChannel genAlg, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount,
+            int shiftWindowDays)
         {
             this.genAlg = genAlg;
             this.forwardPeriodDays = forwardPeriodDays;
             this.backwardPeriodDays = backwardPeriodDays;
-            this.forwardPeriodsCount = forwardPeriodsCount;                     
+            this.forwardPeriodsCount = forwardPeriodsCount;     
+            this.shiftWindowDays = shiftWindowDays;
         }       
 
         //Работает с датами! То что надо!
@@ -104,7 +110,7 @@ namespace TrendByPivotPointsOptimizator
             var sortedBars = chromosome.Ticker.Bars.OrderBy(b => b.Date).ToList();
             var latestDate = sortedBars.Last().Date;
 
-            var forwardEnd = latestDate.AddDays(-forwardPeriodDays * Period);
+            var forwardEnd = latestDate.AddDays(-shiftWindowDays * Period);
             var forwardStart = forwardEnd.AddDays(-forwardPeriodDays + 1);
             var backwardEnd = forwardStart.AddDays(-1);
             var backwardStart = backwardEnd.AddDays(-backwardPeriodDays + 1);
@@ -142,7 +148,7 @@ namespace TrendByPivotPointsOptimizator
             var latestDate = sortedBars.Last().Date;
 
 
-            var forwardEnd = latestDate.AddDays(-forwardPeriodDays * Period);
+            var forwardEnd = latestDate.AddDays(-shiftWindowDays * Period);
             var forwardStart = forwardEnd.AddDays(-forwardPeriodDays + 1);
 
             var backwardEnd = forwardStart.AddDays(-1);
