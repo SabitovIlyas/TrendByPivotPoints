@@ -413,7 +413,7 @@ namespace TrendByPivotPointsOptimizator
         private void PrepareChromosome(ChromosomeDonchianChannel chromosome, int period)
         {
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 730,
-                backwardPeriodDays: 730, forwardPeriodsCount: 8, shiftWindowDays: 30);
+                backwardPeriodDays: 730, forwardPeriodsCount: 10, shiftWindowDays: 30);
 
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();
