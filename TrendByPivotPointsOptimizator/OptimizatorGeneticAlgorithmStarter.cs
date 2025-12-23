@@ -326,7 +326,6 @@ namespace TrendByPivotPointsOptimizator
         {
             var converter = ConverterTextDataToBar.Create(fileName);
             var baseBars = converter.ConvertFileWithBarsToListOfBars();
-            //видимо, ошибка с сжатием баров. Надо оттестировать.
             var bars = CompressBars(baseBars, timeframe);
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,

@@ -91,20 +91,24 @@ namespace TrendByPivotPointsOptimizator
             var i = 0;
             foreach (var chromosome in population)
             {
-                var trSysParams = CreateTradingSystemParameters(chromosome);
-                var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
+                if (chromosome.FitnessValue == double.NaN)
+                {
+                    var trSysParams = CreateTradingSystemParameters(chromosome);
+                    var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
 
-                if(IsLastBackwardTesting)
-                    PrepareChromosomeFinal(chromosome, period);
-                else
-                    PrepareChromosome(chromosome, period);
-                chromosome.SetBackwardBarsAsTickerBars();            
+                    if (IsLastBackwardTesting)
+                        PrepareChromosomeFinal(chromosome, period);
+                    else
+                        PrepareChromosome(chromosome, period);
+                    chromosome.SetBackwardBarsAsTickerBars();
 
-                var fitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
-
+                    var fitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
+                    fitnessDonchianChannel.SetUpChromosomeFitnessValue();
+                }
+                
                 Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
                     ++i, population.Count, chromosome.Name);
-                fitnessDonchianChannel.SetUpChromosomeFitnessValue();
+                
                 Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}. Количество сделок = " +
                     "{2}.\r\n",
                     chromosome.FitnessPassed, chromosome.FitnessValue, chromosome.DealsCount);

@@ -21,7 +21,7 @@ namespace TrendByPivotPointsStarter
             openFileDialog.Title = "Выберите файлы с историческими данными";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-
+            var timeStart = DateTime.Now;
             var fullFileName = openFileDialog.FileName;
             var converter = ConverterTextDataToBar.Create(fullFileName);
             var fileName = fullFileName.Split('\\').Last();
@@ -96,7 +96,9 @@ namespace TrendByPivotPointsStarter
             {
                 logger.Log(e.ToString());
             }
-
+            var timeStop = DateTime.Now;
+            var duration = timeStop - timeStart;
+            Console.WriteLine(duration.TotalMilliseconds);
             Console.ReadLine();
         }
 
@@ -114,7 +116,7 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("isUSD", 1);
             systemParameters.Add("rateUSD", rateUSD);
             systemParameters.Add("positionSide", 0);
-            systemParameters.Add("shares", 1);
+            systemParameters.Add("shares", 1d);
             systemParameters.Add("scaleContractsPrcnt", 100d);
             systemParameters.Add("riskValuePrcnt", 100d);
             systemParameters.Add("contracts", 0);

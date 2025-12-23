@@ -185,5 +185,13 @@ namespace TradingSystems.Tests
             int actual = (int)(3 / 2);
             Assert.AreEqual(1, actual);
         }
+
+        [TestMethod()]
+        public void CompareWithNaN()
+        {
+            var expected = double.NaN;
+            var actual = double.NaN;
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

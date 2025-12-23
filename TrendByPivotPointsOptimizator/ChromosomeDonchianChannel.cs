@@ -9,8 +9,8 @@ namespace TrendByPivotPointsOptimizator
     public class ChromosomeDonchianChannel
     {
         public bool FitnessPassed { get { return !double.IsNegativeInfinity(FitnessValue); } }
-        public double FitnessValue { get; set; }
-        public int DealsCount { get; set; }
+        public double FitnessValue { get; set; } = double.NaN;
+        public int DealsCount { get; set; } = 0;
         public Ticker Ticker { get; set; }
         public Interval TimeFrame { get; set; }
         public PositionSide Side { get; set; }
