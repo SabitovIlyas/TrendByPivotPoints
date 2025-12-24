@@ -14,6 +14,9 @@ namespace TrendByPivotPointsOptimizator
         public DateTime ForwardEnd { get; set; }
         public List<Bar> BackwardBars { get; set; }
         public List<Bar> ForwardBars { get; set; }
-
+        public double BackwardProfit { get; set; }
+        public double ForwardProfit { get; set; }
+        public double BackwardProfitPrcnt { get; set; }
+        public double ForwardProfitPrcnt { get; set; }
     }
 }

@@ -32,8 +32,13 @@ namespace TrendByPivotPointsOptimizator
         public void SetUpChromosomeFitnessValue(bool isCriteriaPassedNeedToCheck = true)
         {
             IsCriteriaPassedNeedToCheck = isCriteriaPassedNeedToCheck;
-            chromosome.FitnessValue = CalcIsPassed(isCriteriaPassedNeedToCheck);
+            chromosome.FitnessValue = CalcIsPassed(isCriteriaPassedNeedToCheck);            
             chromosome.DealsCount = dealsCount;
+
+            var s = starter.GetSecurity() as SecurityLab;
+            var profit = s.GetProfit();
+            chromosome.Profit = profit;
+            chromosome.ProfitPrcnt = profit / starter.Account.InitDeposit * 100;
         }
 
         private double CalcIsPassed(bool isCriteriaPassedNeedToCheck)

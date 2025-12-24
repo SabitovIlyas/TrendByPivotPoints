@@ -78,6 +78,15 @@ namespace TrendByPivotPointsOptimizator
 
                 var avgResults = sumResults / bestPopulationLast.Count;
                 var tmpRes = new ForwardAnalysisResult() { BackwardFitness = avgResults, };
+
+                if (bestPopulationLast.Count > 0)
+                {
+                    tmpRes.BackwardStart = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardStart;
+                    tmpRes.BackwardEnd = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardEnd;
+                    tmpRes.BackwardProfit = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardProfit;
+                    tmpRes.BackwardProfitPrcnt = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardProfitPrcnt;
+                }
+
                 PrintToTxtFile(bestPopulationLast);
                 var bestChromosome = bestPopulationLast.First();
 
@@ -116,8 +125,7 @@ namespace TrendByPivotPointsOptimizator
                     var tmp = new ForwardAnalysisResult()
                     {
                         BackwardFitness = avgResultsBackward,
-                        ForwardFitness = avgResultsForward,
-                        
+                        ForwardFitness = avgResultsForward,                        
                     };
 
                     if (bestPopulation.Count > 0)
@@ -126,6 +134,10 @@ namespace TrendByPivotPointsOptimizator
                         tmp.BackwardEnd = bestPopulation.First().ForwardAnalysisResults.First().BackwardEnd;
                         tmp.ForwardStart = bestPopulation.First().ForwardAnalysisResults.First().ForwardStart;
                         tmp.ForwardEnd = bestPopulation.First().ForwardAnalysisResults.First().ForwardEnd;
+                        tmp.BackwardProfit = bestPopulation.First().ForwardAnalysisResults.First().BackwardProfit;
+                        tmp.ForwardProfit = bestPopulation.First().ForwardAnalysisResults.First().ForwardProfit;
+                        tmp.BackwardProfitPrcnt = bestPopulation.First().ForwardAnalysisResults.First().BackwardProfitPrcnt;
+                        tmp.ForwardProfitPrcnt = bestPopulation.First().ForwardAnalysisResults.First().ForwardProfitPrcnt;
                     }
 
                     results.Add(tmp);
@@ -170,14 +182,15 @@ namespace TrendByPivotPointsOptimizator
                     $"{nameof(t.TimeFrame)};{nameof(t.Side)};{nameof(t.Ticker.Name)};" +
                     $"{nameof(t.SlowDonchian)};{nameof(t.FastDonchian)};{nameof(t.AtrPeriod)};" +
                     $"{nameof(t.LimitOpenedPositions)};{nameof(t.KAtrForOpenPosition)};" +
-                    $"{nameof(t.KAtrForStopLoss)}");
+                    $"{nameof(t.KAtrForStopLoss)};{nameof(t.Profit)};{nameof(t.ProfitPrcnt)}");
 
                 foreach (var c in population)
                 {
                     // Запись строк с данными
                     writer.WriteLine($"{c.FitnessValue};{c.DealsCount};{c.TimeFrame};{c.Side};" +
                         $"{c.Ticker.Name};{c.SlowDonchian};{c.FastDonchian};{c.AtrPeriod};" +
-                        $"{c.LimitOpenedPositions};{c.KAtrForOpenPosition};{c.KAtrForStopLoss}");
+                        $"{c.LimitOpenedPositions};{c.KAtrForOpenPosition};{c.KAtrForStopLoss};" +
+                        $"{c.Profit};{c.ProfitPrcnt}");
                 }
             }
         }
@@ -186,7 +199,10 @@ namespace TrendByPivotPointsOptimizator
         {
             using (StreamWriter writer = new StreamWriter(fileName))
             {
-                writer.WriteLine($"BackwardFitness;ForwardFitness;BackwardTestDates;ForwardTestDates;");
+                writer.WriteLine($"BackwardFitness;ForwardFitness;" +
+                    $"BackwardProfit;ForwardProfit;" +
+                    $"BackwardProfitPrcnt;ForwardProfitPrcnt;" +
+                    $"BackwardTestDates;ForwardTestDates;");
             }
         }
 
@@ -194,7 +210,10 @@ namespace TrendByPivotPointsOptimizator
         {
             using (StreamWriter writer = new StreamWriter(fileName, append: true))
             {
-                writer.WriteLine($"{result.BackwardFitness};{result.ForwardFitness};{result.BackwardStart}-{result.BackwardEnd};" +
+                writer.WriteLine($"{result.BackwardFitness};{result.ForwardFitness};" +
+                    $"{result.BackwardProfit};{result.ForwardProfit};" +
+                    $"{result.BackwardProfitPrcnt};{result.ForwardProfitPrcnt};" +
+                    $"{result.BackwardStart}-{result.BackwardEnd};" +
                     $"{result.ForwardStart} - {result.ForwardEnd}");
             }
         }
