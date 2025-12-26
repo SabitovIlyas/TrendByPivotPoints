@@ -50,7 +50,7 @@ namespace TrendByPivotPointsOptimizatorTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullSecurity_ThrowsArgumentNullException()
         {
-            var analysis = new ForwardAnalysis(security: null, 30, 180, 10);
+            var analysis = new ForwardAnalysis(security: null, 30, 180, 10, 30);
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace TrendByPivotPointsOptimizatorTests
         public void Constructor_NegativeForwardPeriod_ThrowsArgumentException()
         {
             var security = CreateTestSecurity(DateTime.Now, 1000);
-            var analysis = new ForwardAnalysis(security, -30, 180, 10);
+            var analysis = new ForwardAnalysis(security, -30, 180, 10, 30);
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace TrendByPivotPointsOptimizatorTests
         public void Constructor_NegativeBackwardPeriod_ThrowsArgumentException()
         {
             var security = CreateTestSecurity(DateTime.Now, 1000);
-            var analysis = new ForwardAnalysis(security, 30, -180, 10);
+            var analysis = new ForwardAnalysis(security, 30, -180, 10, 30);
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace TrendByPivotPointsOptimizatorTests
         public void Constructor_NegativePeriodsCount_ThrowsArgumentException()
         {
             var security = CreateTestSecurity(DateTime.Now, 1000);
-            var analysis = new ForwardAnalysis(security, 30, 180, -10);
+            var analysis = new ForwardAnalysis(security, 30, 180, -10, 30);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace TrendByPivotPointsOptimizatorTests
         {
             var security = new SecurityLab(Currency.RUB, shares: 1, new List<Bar>(),
                 new LoggerNull(), commissionRate: 0);
-            var analysis = new ForwardAnalysis(security, 30, 180, 10);
+            var analysis = new ForwardAnalysis(security, 30, 180, 10, 30);
         }
 
         [TestMethod]
@@ -91,14 +91,14 @@ namespace TrendByPivotPointsOptimizatorTests
         public void Constructor_InsufficientData_ThrowsInvalidOperationException()
         {
             var security = CreateTestSecurity(DateTime.Now, 100); // Меньше, чем нужно (180 + 30*10 = 480 дней)
-            var analysis = new ForwardAnalysis(security, 30, 180, 10);
+            var analysis = new ForwardAnalysis(security, 30, 180, 10, 30);
         }
 
         [TestMethod]
         public void PerformAnalysis_ValidParameters_ReturnsCorrectNumberOfResults()
         {
             var security = CreateTestSecurity(DateTime.Now.AddDays(-1000), 1000);
-            var analysis = new ForwardAnalysis(security, 30, 180, 5);
+            var analysis = new ForwardAnalysis(security, 30, 180, 5, 30);
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);
             Assert.AreEqual(5, results.Count);
         }
@@ -108,7 +108,7 @@ namespace TrendByPivotPointsOptimizatorTests
         {
             var security = CreateTestSecurity(DateTime.Now.AddDays(-1000 + 1), 1000); //чтобы попал текущий день
             var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
-                backwardPeriodDays: 180, forwardPeriodsCount: 2);
+                backwardPeriodDays: 180, forwardPeriodsCount: 2, shiftWindowDays: 30);
 
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);
             var firstResult = results[0];
@@ -129,7 +129,7 @@ namespace TrendByPivotPointsOptimizatorTests
             //Я здесь
             var security = CreateTestSecurity(DateTime.Now, 1000);
             var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
-                backwardPeriodDays: 180, forwardPeriodsCount: 10);
+                backwardPeriodDays: 180, forwardPeriodsCount: 10, shiftWindowDays: 30);
 
             var result = analysis.IsStrategyViable(new List<ForwardAnalysisResult>());
 
@@ -141,7 +141,7 @@ namespace TrendByPivotPointsOptimizatorTests
         {
             var security = CreateTestSecurity(DateTime.Now, 1000);
             var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
-                backwardPeriodDays: 180, forwardPeriodsCount: 3);
+                backwardPeriodDays: 180, forwardPeriodsCount: 3, shiftWindowDays: 30);
 
             var results = new List<ForwardAnalysisResult>
         {
@@ -160,7 +160,7 @@ namespace TrendByPivotPointsOptimizatorTests
         {
             var security = CreateTestSecurity(DateTime.Now, 1000);
             var analysis = new ForwardAnalysis(security, forwardPeriodDays: 30,
-                backwardPeriodDays: 180, forwardPeriodsCount: 3);
+                backwardPeriodDays: 180, forwardPeriodsCount: 3, shiftWindowDays: 30);
 
             var results = new List<ForwardAnalysisResult>
         {
@@ -179,7 +179,7 @@ namespace TrendByPivotPointsOptimizatorTests
         public void PerformAnalysis_InsufficientHistoricalData_ThrowsInvalidOperationException()
         {
             var security = CreateTestSecurity(DateTime.Now.AddDays(-200), 200);
-            var analysis = new ForwardAnalysis(security, 30, 180, 10);
+            var analysis = new ForwardAnalysis(security, 30, 180, 10, 30);
 
             var results = analysis.PerformAnalysis(SimpleFitnessFunction);
         }

@@ -19,6 +19,7 @@ namespace TrendByPivotPointsOptimizator
         private StarterDonchianTradingSystemLab starter;
         private TradingSystemParameters trSysParams;
         private int dealsCount;
+        private Account account;
 
         public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
             StarterDonchianTradingSystemLab starter)
@@ -35,10 +36,9 @@ namespace TrendByPivotPointsOptimizator
             chromosome.FitnessValue = CalcIsPassed(isCriteriaPassedNeedToCheck);            
             chromosome.DealsCount = dealsCount;
 
-            var s = starter.GetSecurity() as SecurityLab;
-            var profit = s.GetProfit();
+            var profit = account.InitDeposit - account.Equity;
             chromosome.Profit = profit;
-            chromosome.ProfitPrcnt = profit / starter.Account.InitDeposit * 100;
+            chromosome.ProfitPrcnt = profit / account.InitDeposit * 100;
         }
 
         private double CalcIsPassed(bool isCriteriaPassedNeedToCheck)
@@ -106,7 +106,10 @@ namespace TrendByPivotPointsOptimizator
                             && ((int)trSysParams.SystemParameters.GetValue("atrPeriod") == k);
 
                         if (c)
+                        {
                             sec = starter.GetSecurity();
+                            account = starter.Account;
+                        }
                     }
                 }
             }

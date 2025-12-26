@@ -18,14 +18,26 @@ namespace TrendByPivotPointsOptimizator
 
         public int Period { get; set; } = 0;
 
-        public ForwardAnalysis(Security security, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount)
+        public ForwardAnalysis(Security security, int forwardPeriodDays, int backwardPeriodDays, 
+            int forwardPeriodsCount, int shiftWindowDays)
         {
             this.security = security ?? throw new ArgumentNullException(nameof(security));
             this.forwardPeriodDays = forwardPeriodDays;
             this.backwardPeriodDays = backwardPeriodDays;
             this.forwardPeriodsCount = forwardPeriodsCount;
+            this.shiftWindowDays = shiftWindowDays;
 
             ValidateParameters();
+        }
+
+        public ForwardAnalysis(GeneticAlgorithmDonchianChannel genAlg, int forwardPeriodDays, int backwardPeriodDays,
+            int forwardPeriodsCount, int shiftWindowDays)
+        {
+            this.genAlg = genAlg;
+            this.forwardPeriodDays = forwardPeriodDays;
+            this.backwardPeriodDays = backwardPeriodDays;
+            this.forwardPeriodsCount = forwardPeriodsCount;
+            this.shiftWindowDays = shiftWindowDays;
         }
 
         private void ValidateParameters()
@@ -50,15 +62,7 @@ namespace TrendByPivotPointsOptimizator
                     $"Insufficient data: available {availableDays} days, required {totalRequiredDays} days");
         }
 
-        public ForwardAnalysis(GeneticAlgorithmDonchianChannel genAlg, int forwardPeriodDays, int backwardPeriodDays, int forwardPeriodsCount,
-            int shiftWindowDays)
-        {
-            this.genAlg = genAlg;
-            this.forwardPeriodDays = forwardPeriodDays;
-            this.backwardPeriodDays = backwardPeriodDays;
-            this.forwardPeriodsCount = forwardPeriodsCount;     
-            this.shiftWindowDays = shiftWindowDays;
-        }       
+             
 
         //Работает с датами! То что надо!
         public List<ForwardAnalysisResult> PerformAnalysis(Func<List<Bar>, double> fitnessFunction)

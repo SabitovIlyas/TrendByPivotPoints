@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using TradingSystems;
@@ -28,9 +29,36 @@ namespace TrendByPivotPointsOptimizator
         private Optimizator optimizator;
         private Logger logger;
         private ForwardAnalysis forwardAnalysis;
-        private double neighborhoodPercentage = 0.05;
-        private int patience = 50;
+        private double neighborhoodPercentage = 0.00;  //0.05      
         private ChromosomeDonchianChannel bestChromosome;
+
+        private int patience = 50;
+        private double epsilon = 1e-6;
+        private const double MinNormalizedDiversity = 0.10;
+
+        private int minFastDonchian = 10;
+        private int maxFastDonchian = 99;
+        private int fastDonchianRange;
+
+        private int minSlowDonchian = 10;
+        private int maxSlowDonchian = 99;
+        private int slowDonchianRange;
+
+        private int minAtrPeriod = 2;
+        private int maxAtrPeriod = 24;
+        private int atrPeriodRange;
+
+        private int minLimitOpenedPositions = 1;
+        private int maxLimitOpenedPositions = 4;
+        private int limitOpenedPositionsRange;
+
+        private int minaKAtrForOpenPosition = 1;
+        private int maxKAtrForOpenPosition = 6;
+        private int kAtrForOpenPositionRange;
+
+        private int minKAtrForStopLoss = 1;
+        private int maxKAtrForStopLoss = 6;
+        private int kAtrForStopLossRange;
 
         public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate,
             IRandomProvider randomProvider, List<Ticker> tickers, Settings settings, Context context, Optimizator optimizator, Logger logger)
@@ -49,6 +77,13 @@ namespace TrendByPivotPointsOptimizator
 
         public void Initialize()
         {
+            fastDonchianRange = maxFastDonchian - minFastDonchian;
+            slowDonchianRange = maxSlowDonchian - minSlowDonchian;
+            atrPeriodRange = maxAtrPeriod - minAtrPeriod;
+            limitOpenedPositionsRange = maxLimitOpenedPositions - minLimitOpenedPositions;
+            kAtrForOpenPositionRange = maxKAtrForOpenPosition - minaKAtrForOpenPosition;
+            kAtrForStopLossRange = maxKAtrForStopLoss - minKAtrForStopLoss;
+
             population = new List<ChromosomeDonchianChannel>();
             for (int i = 0; i < populationSize; i++)
             {
@@ -62,17 +97,17 @@ namespace TrendByPivotPointsOptimizator
                     var side = sides[randomProvider.Next(sides.Count)];
 
                     //var fastDonchian = 18;
-                    var fastDonchian = randomProvider.Next(10, 100);              //9..208;
+                    var fastDonchian = randomProvider.Next(minFastDonchian, maxFastDonchian + 1);              //9..208;
                     if (bestChromosome != null)
                         fastDonchian = bestChromosome.FastDonchian;
 
                     //var slowDonchian = 19;
-                    var slowDonchian = randomProvider.Next(fastDonchian, 100);    // -//-                   
+                    var slowDonchian = randomProvider.Next(fastDonchian, maxSlowDonchian + 1);    // -//-                   
                     if (bestChromosome != null)
                         slowDonchian = bestChromosome.SlowDonchian;
 
                     //var atrPeriod = 6;
-                    var atrPeriod = randomProvider.Next(2, 25);                  //1..25
+                    var atrPeriod = randomProvider.Next(minAtrPeriod, maxAtrPeriod + 1);                  //1..25
                     if (bestChromosome != null)
                         atrPeriod = bestChromosome.AtrPeriod;
 
@@ -80,15 +115,18 @@ namespace TrendByPivotPointsOptimizator
                     //var kAtrForOpenPosition = 0.5;
                     //var kAtrForStopLoss = 1.5;
 
-                    var limitOpenedPositions = randomProvider.Next(1, 5);
+                    var limitOpenedPositions = randomProvider.Next(minLimitOpenedPositions, 
+                        maxLimitOpenedPositions + 1);
                     if (bestChromosome != null)
                         limitOpenedPositions= bestChromosome.LimitOpenedPositions;
 
-                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(1, 7);
+                    var kAtrForOpenPosition = 0.5 * randomProvider.Next(minaKAtrForOpenPosition,
+                        maxKAtrForOpenPosition + 1);
                     if (bestChromosome != null)
                         kAtrForOpenPosition = bestChromosome.KAtrForOpenPosition;
 
-                    var kAtrForStopLoss = 0.5 * randomProvider.Next(1, 7);
+                    var kAtrForStopLoss = 0.5 * randomProvider.Next(minKAtrForStopLoss,
+                        maxKAtrForStopLoss + 1);
                     if (bestChromosome != null)
                         kAtrForStopLoss = bestChromosome.KAtrForStopLoss;
 
@@ -292,7 +330,8 @@ namespace TrendByPivotPointsOptimizator
         private bool AddNeighbour(ChromosomeDonchianChannel chromosome, 
             List<ChromosomeDonchianChannel> population, double neighborhoodPercentage)
         {
-            var isNeighBour = IsNeighBour(chromosome, population, neighborhoodPercentage);
+            //выключил проверку соседей для ускорения. У меня есть early stopping по диверсити
+            var isNeighBour = false && IsNeighBour(chromosome, population, neighborhoodPercentage);
             if (!isNeighBour)            
                 population.Add(chromosome);
             
@@ -340,6 +379,8 @@ namespace TrendByPivotPointsOptimizator
             var generationsWithoutImprovement = 0;
             var bestFitnessEver = double.MinValue;
             var isGenerationsWithoutImprovement = false;
+            var isNormalizedDivercityBreaks = false;
+            var diversity=double.MaxValue;
             int gen = 0;
             Initialize();
             for (; gen < generations; gen++)
@@ -355,7 +396,7 @@ namespace TrendByPivotPointsOptimizator
 
                 var currentBest = newPopulation.First().FitnessValue;
 
-                if (currentBest > bestFitnessEver)
+                if (currentBest > bestFitnessEver + epsilon)
                 {
                     bestFitnessEver = currentBest;
                     generationsWithoutImprovement = 0;  // Сброс счётчика!
@@ -369,6 +410,15 @@ namespace TrendByPivotPointsOptimizator
                 if (generationsWithoutImprovement >= patience)
                 {
                     isGenerationsWithoutImprovement = true;
+                    break;
+                }
+
+                // Проверка разнообразия популяции
+                diversity = CalculatePopulationDiversity(population);
+                if (diversity < MinNormalizedDiversity)
+                {
+                    isNormalizedDivercityBreaks = true;
+                    //reason = $"Популяция сошлась (разнообразие = {diversity:F2} < {minDiversityThreshold})";
                     break;
                 }
 
@@ -401,13 +451,59 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine($"\nEarly Stopping! Нет улучшений {patience} поколений.");
                 Console.WriteLine($"Остановлено на поколении {gen + 1}. Лучший фитнес: {bestFitnessEver}");
             }
+            else if (isNormalizedDivercityBreaks)
+            {
+                Console.WriteLine($"\nEarly Stopping! Популяция сошлась: нормализованное разнообразие" +
+                    $" = {diversity} < {MinNormalizedDiversity}");
+                Console.WriteLine($"Остановлено на поколении {gen + 1}. Лучший фитнес: {bestFitnessEver}");
+            }
             else
             {
                 Evaluate(period);
             }
-
             var populationPasssed = population.Where(population => population.FitnessPassed == true);
             return populationPasssed.OrderByDescending(c => c.FitnessValue).Take(1).ToList();
+        }
+
+        private double CalculatePopulationDiversity(List<ChromosomeDonchianChannel> population)
+        {
+            if (population.Count < 2) return 0.0;
+
+            double sumNormalizedDistance = 0.0;
+            int pairCount = 0;
+
+            for (int i = 0; i < population.Count; i++)
+            {
+                for (int j = i + 1; j < population.Count; j++)
+                {
+                    // Нормализованное расстояние по каждому параметру (0..1)
+                    double normFast = Math.Abs(population[i].FastDonchian - 
+                        population[j].FastDonchian) / fastDonchianRange;
+                    double normSlow = Math.Abs(population[i].SlowDonchian -
+                        population[j].SlowDonchian) / slowDonchianRange;
+                    double normAtr = Math.Abs(population[i].AtrPeriod -
+                        population[j].AtrPeriod) / atrPeriodRange;
+                    double normLimit = Math.Abs(population[i].LimitOpenedPositions -
+                        population[j].LimitOpenedPositions) / limitOpenedPositionsRange;
+                    double normKAtrOpen = Math.Abs(population[i].KAtrForOpenPosition -
+                        population[j].KAtrForOpenPosition) / kAtrForOpenPositionRange;
+                    double normKAtrStopLoss = Math.Abs(population[i].KAtrForStopLoss -
+                        population[j].KAtrForStopLoss) / kAtrForStopLossRange;
+
+                    // Суммарное нормализованное расстояние (0..6)
+                    double normalizedDist = normFast + normSlow + normAtr + normLimit + 
+                        normKAtrOpen + normKAtrStopLoss;
+
+                    sumNormalizedDistance += normalizedDist;
+                    pairCount++;
+                }
+            }
+
+            // Среднее нормализованное расстояние (0..6)
+            double averageNormalized = sumNormalizedDistance / pairCount;
+
+            // Приводим к диапазону 0..1 для удобства сравнения с порогом
+            return averageNormalized / 6.0;
         }
 
         private void PrepareChromosome(ChromosomeDonchianChannel chromosome, int period)
