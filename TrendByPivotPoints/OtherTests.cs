@@ -190,8 +190,9 @@ namespace TradingSystems.Tests
         public void CompareWithNaN()
         {
             var expected = double.NaN;
-            var actual = double.NaN;
-            Assert.AreEqual(expected, actual);
+            var actual = double.NaN;            
+            Assert.IsTrue(expected.Equals(actual));
+            Assert.IsTrue(actual.Equals(expected));
         }
     }
 }

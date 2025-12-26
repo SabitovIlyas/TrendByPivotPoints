@@ -107,7 +107,7 @@ namespace TrendByPivotPointsOptimizator
             var i = 0;
             foreach (var chromosome in population)
             {
-                if (chromosome.FitnessValue == double.NaN)
+                if (chromosome.FitnessValue.Equals(double.NaN))
                 {
                     var trSysParams = CreateTradingSystemParameters(chromosome);
                     var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
@@ -359,7 +359,7 @@ namespace TrendByPivotPointsOptimizator
                 {
                     bestFitnessEver = currentBest;
                     generationsWithoutImprovement = 0;  // Сброс счётчика!
-                    Console.WriteLine($"Поколение {gen}: Новый рекорд = {currentBest}");
+                    Console.WriteLine($"Поколение {gen + 1}: Новый рекорд = {currentBest}");
                 }
                 else
                 {
@@ -399,7 +399,7 @@ namespace TrendByPivotPointsOptimizator
             if (isGenerationsWithoutImprovement)
             {
                 Console.WriteLine($"\nEarly Stopping! Нет улучшений {patience} поколений.");
-                Console.WriteLine($"Остановлено на поколении {gen}. Лучший фитнес: {bestFitnessEver}");
+                Console.WriteLine($"Остановлено на поколении {gen + 1}. Лучший фитнес: {bestFitnessEver}");
             }
             else
             {
