@@ -34,14 +34,14 @@ namespace TrendByPivotPointsOptimizator
 
         private int patience = 50;
         private double epsilon = 1e-6;
-        private const double MinNormalizedDiversity = 0.10;
+        private const double MinNormalizedDiversity = 0.03;
 
         private int minFastDonchian = 10;
-        private int maxFastDonchian = 99;
+        private int maxFastDonchian = 100;
         private int fastDonchianRange;
 
         private int minSlowDonchian = 10;
-        private int maxSlowDonchian = 99;
+        private int maxSlowDonchian = 200;
         private int slowDonchianRange;
 
         private int minAtrPeriod = 2;
@@ -137,6 +137,16 @@ namespace TrendByPivotPointsOptimizator
                     isAdded = AddNeighbour(c, population, neighborhoodPercentage);
                     bestChromosome = null;
                 }                
+            }
+
+            double diversity = CalculatePopulationDiversity(population);
+            Console.WriteLine($"Разнообразие после инициализации: {diversity:P1}");
+
+            // Вывод первых 10 особей для проверки
+            for (int i = 0; i < Math.Min(10, population.Count); i++)
+            {
+                var c = population[i];
+                Console.WriteLine($"Особь {i}: Fast={c.FastDonchian}, Slow={c.SlowDonchian}, ATR={c.AtrPeriod}, ...");
             }
         }
 
