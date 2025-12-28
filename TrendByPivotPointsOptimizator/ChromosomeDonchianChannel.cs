@@ -12,6 +12,8 @@ namespace TrendByPivotPointsOptimizator
         public double FitnessValue { get; set; } = double.NaN;
         public double Profit { get; set; } = double.NaN;
         public double ProfitPrcnt { get; set; } = double.NaN;
+        public double RecoveryFactor { get; set; } = double.NaN;
+        public double MaxDrawDown { get; set; } = double.NaN;
         public int DealsCount { get; set; } = 0;
         public Ticker Ticker { get; set; }
         public Interval TimeFrame { get; set; }

@@ -174,8 +174,10 @@ namespace TrendByPivotPointsOptimizator
                     ++i, population.Count, chromosome.Name);
 
                 Console.WriteLine("Фитнес-функция = {0}. Количество сделок = " +
-                    "{1}. Прибыль, р. = {2}. Прибыль, % = {3}.\r\n", chromosome.FitnessValue,
-                    chromosome.DealsCount, chromosome.Profit, chromosome.ProfitPrcnt);
+                    "{1}. Прибыль, р. = {2}. Прибыль, % = {3}. Максимальная просадка = {4}." +
+                    " Фактор восстановления = {5}\r\n", chromosome.FitnessValue,
+                    chromosome.DealsCount, chromosome.Profit, chromosome.ProfitPrcnt,
+                    chromosome.MaxDrawDown, chromosome.RecoveryFactor);
             }
         }
 

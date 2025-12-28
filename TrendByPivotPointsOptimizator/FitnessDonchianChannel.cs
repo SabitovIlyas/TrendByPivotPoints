@@ -38,7 +38,10 @@ namespace TrendByPivotPointsOptimizator
 
             var profit = account.InitDeposit - account.Equity;
             chromosome.Profit = profit;
-            chromosome.ProfitPrcnt = profit / account.InitDeposit * 100;
+            var acc = account as AccountLab;
+            chromosome.ProfitPrcnt = acc.GetProfitPrcnt();
+            chromosome.MaxDrawDown = acc.GetMaxDrawDownPrcnt();
+            chromosome.RecoveryFactor = acc.GetRecoveryFactor();
         }
 
         private double CalcIsPassed(bool isCriteriaPassedNeedToCheck)
@@ -140,7 +143,7 @@ namespace TrendByPivotPointsOptimizator
 
             if (!IsCriteriaPassedNeedToCheck)
             {
-                recoveryFactor = CalcRecoeveryFactor(system.GetSecurity(), system.Account);
+                recoveryFactor = CalcRecoveryFactor(system.GetSecurity(), system.Account);
                 return recoveryFactor;
             }
 
@@ -158,7 +161,7 @@ namespace TrendByPivotPointsOptimizator
             SystemRun(newSystem, parameters);
             var nSec = newSystem.GetSecurity();
             var acc = newSystem.Account;
-            recoveryFactor = CalcRecoeveryFactor(nSec, acc);
+            recoveryFactor = CalcRecoveryFactor(nSec, acc);
             deals = nSec.GetMetaDeals();
             return recoveryFactor;
         }
@@ -170,7 +173,7 @@ namespace TrendByPivotPointsOptimizator
             system.Run();
         }
 
-        private double CalcRecoeveryFactor(Security security, Account account)
+        private double CalcRecoveryFactor(Security security, Account account)
         {
             var acc = (AccountLab)account;
             return acc.GetRecoveryFactor();
