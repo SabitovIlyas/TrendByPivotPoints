@@ -172,10 +172,10 @@ namespace TrendByPivotPointsOptimizator
                 
                 Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
                     ++i, population.Count, chromosome.Name);
-                
-                Console.WriteLine("Функция удовлетворяет критерию? -{0}. Фитнес-функция = {1}. Количество сделок = " +
-                    "{2}.\r\n",
-                    chromosome.FitnessPassed, chromosome.FitnessValue, chromosome.DealsCount);
+
+                Console.WriteLine("Фитнес-функция = {0}. Количество сделок = " +
+                    "{1}. Прибыль, р. = {2}. Прибыль, % = {3}.\r\n", chromosome.FitnessValue,
+                    chromosome.DealsCount, chromosome.Profit, chromosome.ProfitPrcnt);
             }
         }
 
