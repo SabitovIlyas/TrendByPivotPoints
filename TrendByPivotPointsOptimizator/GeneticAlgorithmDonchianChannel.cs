@@ -41,7 +41,7 @@ namespace TrendByPivotPointsOptimizator
         private int fastDonchianRange;
 
         private int minSlowDonchian = 10;
-        private int maxSlowDonchian = 100;//200
+        private int maxSlowDonchian = 200;//200
         private int slowDonchianRange;
 
         private int minAtrPeriod = 2;
@@ -539,11 +539,11 @@ namespace TrendByPivotPointsOptimizator
 
         private void PrepareChromosomeFinal(ChromosomeDonchianChannel chromosome, int period)
         {
-            //forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
-            //    backwardPeriodDays: 730, forwardPeriodsCount: 1, shiftWindowDays: 30);
-
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
-                backwardPeriodDays: 180, forwardPeriodsCount: 1, shiftWindowDays: 30);
+                backwardPeriodDays: 730, forwardPeriodsCount: 1, shiftWindowDays: 30);
+
+            //forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
+            //    backwardPeriodDays: 180, forwardPeriodsCount: 1, shiftWindowDays: 30);
 
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();
