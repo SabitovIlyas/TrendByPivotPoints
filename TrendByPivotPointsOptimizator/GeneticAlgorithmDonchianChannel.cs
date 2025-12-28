@@ -33,8 +33,8 @@ namespace TrendByPivotPointsOptimizator
         private ChromosomeDonchianChannel bestChromosome;
 
         private int patience = 50;
-        private double epsilon = 1e-6;
-        private const double MinNormalizedDiversity = 0.03;
+        private double epsilon = 1e-5;
+        private const double MinNormalizedDiversity = 0.1;
 
         private int minFastDonchian = 10;
         private int maxFastDonchian = 100;
@@ -302,6 +302,13 @@ namespace TrendByPivotPointsOptimizator
             if (randomProvider.NextDouble() < mutationRate)
                 chrom.KAtrForStopLoss = 0.5 * randomProvider.Next(1, 7);
 
+            if (chrom.SlowDonchian < chrom.FastDonchian)
+            {
+                int temp = chrom.FastDonchian;
+                chrom.FastDonchian = chrom.SlowDonchian;
+                chrom.SlowDonchian = temp;
+            }
+
             chrom.UpdateName();
         }
 
@@ -423,14 +430,17 @@ namespace TrendByPivotPointsOptimizator
                     break;
                 }
 
-                // Проверка разнообразия популяции
-                diversity = CalculatePopulationDiversity(population);
-                if (diversity < MinNormalizedDiversity)
+                if (gen + 1 > 30)
                 {
-                    isNormalizedDivercityBreaks = true;
-                    //reason = $"Популяция сошлась (разнообразие = {diversity:F2} < {minDiversityThreshold})";
-                    break;
-                }
+                    // Проверка разнообразия популяции
+                    diversity = CalculatePopulationDiversity(population);
+                    if (diversity < MinNormalizedDiversity)
+                    {
+                        isNormalizedDivercityBreaks = true;
+                        //reason = $"Популяция сошлась (разнообразие = {diversity:F2} < {minDiversityThreshold})";
+                        break;
+                    }
+                }                
 
                 Console.WriteLine("Генерация № {0}\r\n", gen + 1);
 
@@ -487,17 +497,17 @@ namespace TrendByPivotPointsOptimizator
                 for (int j = i + 1; j < population.Count; j++)
                 {
                     // Нормализованное расстояние по каждому параметру (0..1)
-                    double normFast = Math.Abs(population[i].FastDonchian - 
+                    double normFast = (double)Math.Abs(population[i].FastDonchian - 
                         population[j].FastDonchian) / fastDonchianRange;
-                    double normSlow = Math.Abs(population[i].SlowDonchian -
+                    double normSlow = (double)Math.Abs(population[i].SlowDonchian -
                         population[j].SlowDonchian) / slowDonchianRange;
-                    double normAtr = Math.Abs(population[i].AtrPeriod -
+                    double normAtr = (double)Math.Abs(population[i].AtrPeriod -
                         population[j].AtrPeriod) / atrPeriodRange;
-                    double normLimit = Math.Abs(population[i].LimitOpenedPositions -
+                    double normLimit = (double)Math.Abs(population[i].LimitOpenedPositions -
                         population[j].LimitOpenedPositions) / limitOpenedPositionsRange;
-                    double normKAtrOpen = Math.Abs(population[i].KAtrForOpenPosition -
+                    double normKAtrOpen = (double)Math.Abs(population[i].KAtrForOpenPosition -
                         population[j].KAtrForOpenPosition) / kAtrForOpenPositionRange;
-                    double normKAtrStopLoss = Math.Abs(population[i].KAtrForStopLoss -
+                    double normKAtrStopLoss = (double)Math.Abs(population[i].KAtrForStopLoss -
                         population[j].KAtrForStopLoss) / kAtrForStopLossRange;
 
                     // Суммарное нормализованное расстояние (0..6)
@@ -521,6 +531,7 @@ namespace TrendByPivotPointsOptimizator
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 730,
                 backwardPeriodDays: 730, forwardPeriodsCount: 10, shiftWindowDays: 30);
 
+
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();
             forwardAnalysis.SetTradingPeriods(chromosome);         
@@ -528,8 +539,11 @@ namespace TrendByPivotPointsOptimizator
 
         private void PrepareChromosomeFinal(ChromosomeDonchianChannel chromosome, int period)
         {
+            //forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
+            //    backwardPeriodDays: 730, forwardPeriodsCount: 1, shiftWindowDays: 30);
+
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
-                backwardPeriodDays: 730, forwardPeriodsCount: 1, shiftWindowDays: 30);
+                backwardPeriodDays: 180, forwardPeriodsCount: 1, shiftWindowDays: 30);
 
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();

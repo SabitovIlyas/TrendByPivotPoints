@@ -11,7 +11,7 @@ namespace TrendByPivotPointsOptimizator
     public class FitnessDonchianChannel
     {
         public double NeighborhoodPercent { get; set; } = 0.01;
-        public int DealsCountCriteria { get; set; } = 0;        
+        public int DealsCountCriteria { get; set; } = 0;
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
@@ -21,7 +21,7 @@ namespace TrendByPivotPointsOptimizator
         private int dealsCount;
         private Account account;
 
-        public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome, 
+        public FitnessDonchianChannel(TradingSystemParameters trSysParams, ChromosomeDonchianChannel chromosome,
             StarterDonchianTradingSystemLab starter)
         {
             this.trSysParams = trSysParams;
@@ -29,11 +29,11 @@ namespace TrendByPivotPointsOptimizator
             this.starter = starter;
             chromosome.FitnessDonchianChannel = this;
         }
-        
+
         public void SetUpChromosomeFitnessValue(bool isCriteriaPassedNeedToCheck = true)
         {
             IsCriteriaPassedNeedToCheck = isCriteriaPassedNeedToCheck;
-            chromosome.FitnessValue = CalcIsPassed(isCriteriaPassedNeedToCheck);            
+            chromosome.FitnessValue = CalcIsPassed(isCriteriaPassedNeedToCheck);
             chromosome.DealsCount = dealsCount;
 
             var profit = account.InitDeposit - account.Equity;
@@ -82,15 +82,15 @@ namespace TrendByPivotPointsOptimizator
                             s.Bars = chromosome.Ticker.Bars;
                             var sl = s as SecurityLab;
                             sl.Initialize();    //не удалять! Очень важно! Связано с highiest, lowest
-                        }
+                        }                        
                         var param = new TradingSystemParameters(trSysParams);
 
                         param.SystemParameters.SetValue("slowDonchian", i);
                         param.SystemParameters.SetValue("fastDonchian", j);
-                        param.SystemParameters.SetValue("atrPeriod", k);                        
+                        param.SystemParameters.SetValue("atrPeriod", k);
                         SystemRun(starter, param);
 
-                        
+
                         var metaDeals = s.GetMetaDeals();
                         var bars = s.Bars;
                         dealsCount = metaDeals.Count;
@@ -115,8 +115,8 @@ namespace TrendByPivotPointsOptimizator
             }
 
             if (sec != null)
-                dealsCount = sec.GetMetaDeals().Count;
-
+                dealsCount = sec.GetMetaDeals().Count;         
+            
             averageRecoveryFactor = Math.Round(sumRecoveryFactor / counter, 2);
             return averageRecoveryFactor;
         }
