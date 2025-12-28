@@ -41,7 +41,7 @@ namespace TrendByPivotPointsOptimizator
         private int fastDonchianRange;
 
         private int minSlowDonchian = 10;
-        private int maxSlowDonchian = 200;
+        private int maxSlowDonchian = 100;//200
         private int slowDonchianRange;
 
         private int minAtrPeriod = 2;
