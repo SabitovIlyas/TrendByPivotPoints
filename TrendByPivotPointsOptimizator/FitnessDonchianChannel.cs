@@ -10,9 +10,9 @@ namespace TrendByPivotPointsOptimizator
 {
     public class FitnessDonchianChannel
     {
-        public double NeighborhoodPercent { get; set; } = 0.01;
+        public double NeighborhoodPercent { get; set; } = 0.00;//0.01
         public int DealsCountCriteria { get; set; } = 0;
-        public double PrcntDealForExclude { get; set; } = 0.05;
+        public double PrcntDealForExclude { get; set; } = 0.05;//0.05
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
         private ChromosomeDonchianChannel chromosome;
