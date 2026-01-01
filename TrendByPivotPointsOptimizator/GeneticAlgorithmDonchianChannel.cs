@@ -432,7 +432,7 @@ namespace TrendByPivotPointsOptimizator
                     break;
                 }
 
-                if (gen + 1 > 30)
+                if (gen + 1 > 0)    //30
                 {
                     // Проверка разнообразия популяции
                     diversity = CalculatePopulationDiversity(population);
