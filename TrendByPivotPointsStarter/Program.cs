@@ -11,6 +11,7 @@ namespace TrendByPivotPointsStarter
     class Program
     {
         static double rateUSD = 80.2918d;
+        static double shares = 10;
 
         [STAThread]
         static void Main(string[] args)
@@ -35,7 +36,7 @@ namespace TrendByPivotPointsStarter
             try
             {
                 var context = new ContextLab();
-                var security = new SecurityLab(securityName, Currency.USD, shares: 1,
+                var security = new SecurityLab(securityName, Currency.USD, shares,
                     5000, 4500, bars, logger);
                 security.RateUSD = rateUSD;
 
@@ -55,6 +56,9 @@ namespace TrendByPivotPointsStarter
 
                 var profit = securities.First().GetProfit();
                 Console.WriteLine($"Прибыль составила: {profit}");
+                profit = account.Equity - account.InitDeposit;
+                Console.WriteLine($"Прибыль составила: {profit}");
+
                 Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDownPrcnt()}%");
 
                 var profitPrcnt = account.GetProfitPrcnt();
@@ -116,7 +120,7 @@ namespace TrendByPivotPointsStarter
             systemParameters.Add("isUSD", 1);
             systemParameters.Add("rateUSD", rateUSD);
             systemParameters.Add("positionSide", 0);
-            systemParameters.Add("shares", 1d);
+            systemParameters.Add("shares", shares);
             systemParameters.Add("scaleContractsPrcnt", 100d);
             systemParameters.Add("riskValuePrcnt", 100d);
             systemParameters.Add("contracts", 0);

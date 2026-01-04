@@ -36,7 +36,7 @@ namespace TrendByPivotPointsOptimizator
             chromosome.FitnessValue = CalcIsPassed(isCriteriaPassedNeedToCheck);
             chromosome.DealsCount = dealsCount;
 
-            var profit = account.InitDeposit - account.Equity;
+            var profit = account.Equity - account.InitDeposit;
             chromosome.Profit = profit;
             var acc = account as AccountLab;
             chromosome.ProfitPrcnt = acc.GetProfitPrcnt();
@@ -97,7 +97,11 @@ namespace TrendByPivotPointsOptimizator
                         var metaDeals = s.GetMetaDeals();
                         var bars = s.Bars;
                         dealsCount = metaDeals.Count;
-                        var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
+                        
+                        var temp = starter.Account as AccountLab;
+                        var recoveryFactor = temp.GetRecoveryFactor();
+
+                        //var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
                         if (double.IsNegativeInfinity(recoveryFactor))
                             return averageRecoveryFactor;
 
