@@ -406,7 +406,7 @@ namespace TrendByPivotPointsOptimizator
             {
                 Evaluate(period);
                 var newPopulation = new List<ChromosomeDonchianChannel>();
-                var qtyBestChromosomes = 5;                
+                var qtyBestChromosomes = 20;                
 
                 // Элитизм: сохраняем лучшие хромосомы, исключая соседних
                 var best = SelectBestNonNeighborChromosomes(population, count: qtyBestChromosomes, 
