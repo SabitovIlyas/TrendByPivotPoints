@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using TradingSystems;
 
 namespace TrendByPivotPoints.Tests
@@ -13,9 +14,12 @@ namespace TrendByPivotPoints.Tests
         public void TestInitialize()
         {
             var logger = new LoggerNull();
-            var security = new SecurityLab(currency: Currency.RUB, shares: 1, logger, commissionRate: 0);
-            account = new AccountFake(initDeposit: 1000.0, baseCurrency: Currency.RUB, logger: logger);
-            riskManagerReal = new RiskManagerReal(account, logger, riskValuePrcnt: 5.00); ;
+            var bar = new Bar() { Close = 100 };
+            var security = new SecurityLab(currency: Currency.RUB, shares: 1, new List<Bar> { bar},
+                logger, commissionRate: 0);
+            account = new AccountFake(initDeposit: 1000.0, baseCurrency: Currency.RUB,
+                new List<Security> { security }, logger: logger);
+            riskManagerReal = new RiskManagerReal(account, logger, riskValuePrcnt: 5.00);
         }
 
         [TestMethod()]

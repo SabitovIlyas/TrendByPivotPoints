@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using TradingSystems;
 
 namespace TrendByPivotPoints.Tests
@@ -12,14 +13,20 @@ namespace TrendByPivotPoints.Tests
         Logger logger = new LoggerNull();
         Currency baseCurrency = Currency.RUB;
         CurrencyConverter currencyConverter;
+        List<Bar> bars;
 
         [TestInitialize]
         public void TestInitialize()
         {
             var currencyBalance = 50000;
             var estimatedBalance = 1000000;
-            var security = new SecurityLab(currency: Currency.RUB, shares: 1, logger, commissionRate: 0);
-            account = new AccountFake(initDeposit: estimatedBalance, baseCurrency: Currency.RUB, logger: logger);
+            var bar = new Bar() { Close = 100 };
+            bars = new List<Bar>() { bar };
+            var security = new SecurityLab(currency: Currency.RUB, shares: 1, bars, logger, 
+                commissionRate: 0);
+
+            account = new AccountFake(initDeposit: estimatedBalance, baseCurrency: Currency.RUB, 
+                new List<Security> { security }, logger: logger);
 
             currencyConverter = new CurrencyConverter(baseCurrency);
             account.GObying = 4500;
@@ -42,7 +49,8 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.RUB;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
+            var security = new SecurityLab(securityName: "Si", currency, shares: 1, GObuying: 4500,
+                GOselling: 4000, bars, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 11;
@@ -61,8 +69,9 @@ namespace TrendByPivotPoints.Tests
             var stopPrice = 60000;
             var position = PositionSide.Long;
             var currency = Currency.RUB;
-            
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
+                        
+            var security = new SecurityLab(securityName:"Si", currency, shares: 1, GObuying: 4500, 
+                GOselling: 4000, bars, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 5;
@@ -82,7 +91,8 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.RUB;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
+            var security = new SecurityLab(securityName: "Si", currency, shares: 1, GObuying: 4500, 
+                GOselling: 4000, bars, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);            
             
             var expected = 0;
@@ -102,7 +112,8 @@ namespace TrendByPivotPoints.Tests
             var position = PositionSide.Long;
             var currency = Currency.RUB;
 
-            var security = new SecurityLab(currency, shares: 1, GObuying: 4500, GOselling: 4000, logger);
+            var security = new SecurityLab(securityName: "Si", currency, shares: 1, GObuying: 4500,
+                GOselling: 4000, bars, logger);
             contractsManager = new ContractsManager(riskManager, account, currency, currencyConverter, logger);
             
             var expected = 0;

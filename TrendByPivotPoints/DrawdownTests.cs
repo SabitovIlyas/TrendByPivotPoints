@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace TradingSystems.Tests
 {
@@ -50,7 +51,13 @@ namespace TradingSystems.Tests
         public void GetDrawdownTest()
         {          
             double expected = 37.5d;
-            var account = new AccountFake(initDeposit: 100000, Currency.RUB, new LoggerNull());
+            var logger = new LoggerNull();
+            var bar = new Bar() { Close = 100 };            
+            var security = new SecurityLab(currency: Currency.RUB, shares: 1, new List<Bar> { bar },
+                logger, commissionRate: 0);
+
+            var account = new AccountFake(initDeposit: 100000, Currency.RUB,
+                new List<Security> { security }, logger);
             account.EquityHistory = equityHistory;
             var actual = account.GetMaxDrawDownPrcnt(barNumber: equityHistory.Length);
             Assert.AreEqual(expected, actual);            

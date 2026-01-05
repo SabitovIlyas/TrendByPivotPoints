@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TSLab.Script;
 
 namespace TradingSystems
@@ -9,7 +10,8 @@ namespace TradingSystems
         public new double FreeBalance { get { return base.FreeBalance; } set { freeBalance = value; } }
         public override double InitDeposit => base.InitDeposit;
         public override double Equity => base.Equity;
-        public AccountFake(double initDeposit, Currency baseCurrency, Logger logger) : base(initDeposit, baseCurrency, logger)
+        public AccountFake(double initDeposit, Currency baseCurrency, List<Security> securities, 
+            Logger logger) : base(initDeposit, baseCurrency, securities, logger)
         {
         }       
 

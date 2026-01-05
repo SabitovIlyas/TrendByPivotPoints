@@ -16,15 +16,7 @@ namespace TradingSystems
         protected double initDeposit;
         protected double freeBalance;
         private int decimalsAfterPoint;
-
-        public AccountLab(double initDeposit, Currency currency, Logger logger)
-        {
-            this.initDeposit = initDeposit;
-            equity = initDeposit;
-            freeBalance = initDeposit;
-            this.currency = currency;            
-            this.logger = logger;
-        }
+       
         public AccountLab(double initDeposit, Currency currency, List<Security> securities, Logger logger)
         {
             this.initDeposit = initDeposit;
@@ -33,8 +25,9 @@ namespace TradingSystems
             this.currency = currency;
             this.securities = securities;
             this.logger = logger;
-            var lastBarNumber = securities.First().Bars.Count - 1;
-            decimalsAfterPoint = CountDecimalPlaces(securities.First().GetBarClose(lastBarNumber)); ;
+            var security = securities.First();
+            var lastBarNumber = security.Bars.Count - 1;
+            decimalsAfterPoint = CountDecimalPlaces(security.GetBarClose(lastBarNumber)); ;
         }
 
         public double GObying => throw new System.NotImplementedException();
