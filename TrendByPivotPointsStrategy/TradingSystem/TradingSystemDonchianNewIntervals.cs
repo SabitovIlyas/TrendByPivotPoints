@@ -56,7 +56,7 @@ namespace TradingSystems
             this.security = security;
             secCompressed = sec.CompressTo(60);
             this.positionSide = positionSide;
-            digitsAfterPoint = CountDecimalPlaces(security.GetBarClose(barNumber: 0));
+            digitsAfterPoint = CountDecimalPlaces(security.LastBar.Close);
         }
 
         private int CountDecimalPlaces(double value)
