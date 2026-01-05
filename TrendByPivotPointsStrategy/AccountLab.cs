@@ -9,7 +9,7 @@ namespace TradingSystems
     public class AccountLab : Account
     {
         public override double InitDeposit => initDeposit;
-        public override double Equity => equity;
+        public override double Equity => GetEquity();
 
         public override double FreeBalance => freeBalance;
 

@@ -335,9 +335,15 @@ namespace TradingSystems
 
             return o;
         }
+        
+        private List<double> profitCacheX = new List<double>();
+        private int profitCacheXIndex = 0;
 
         public double GetProfit(int barNumber)
         {
+            if (barNumber < profitCacheXIndex)
+                return profitCacheX[barNumber];
+
             var profit = 0d;
 
             var closedPositionsMap = mapping.GetClosedPositions(barNumber);
@@ -364,7 +370,15 @@ namespace TradingSystems
             foreach (var position in uniqueActivePositions)
                 profit += position.GetProfit(barNumber);            
                         
-            return profit * RateUSD;
+            profit = profit * RateUSD;
+
+            if (profitCacheXIndex == barNumber)
+            {
+                profitCacheX.Add(profit);
+                profitCacheXIndex++;
+            }
+
+            return profit;
         }
 
         public List<Position> GetDeals(int barNumber)
