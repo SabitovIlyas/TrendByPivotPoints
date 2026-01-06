@@ -45,8 +45,7 @@ namespace TrendByPivotPointsOptimizator
             LimitOpenedPositions = limitOpenedPositions;
             KAtrForOpenPosition = kAtrForOpenPosition;
             KAtrForStopLoss = kAtrForStopLoss;
-            //IsUSD = isUSD;
-            //RateUSD = rateUSD;
+
             UpdateName();
         }
 
@@ -82,6 +81,11 @@ namespace TrendByPivotPointsOptimizator
                 nameof(FastDonchian), FastDonchian, nameof(SlowDonchian), SlowDonchian, nameof(AtrPeriod),
                 AtrPeriod, nameof(LimitOpenedPositions), LimitOpenedPositions, nameof(KAtrForOpenPosition),
                 KAtrForOpenPosition, nameof(KAtrForStopLoss), KAtrForStopLoss);
+        }
+
+        public override int GetHashCode()
+        {            
+            return base.GetHashCode();
         }
     }
 }

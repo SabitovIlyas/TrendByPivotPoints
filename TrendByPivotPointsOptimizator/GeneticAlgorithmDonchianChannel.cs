@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using TradingSystems;
 using TrendByPivotPointsStarter;
-using TSLab.DataSource;
-using TSLab.Script.Handlers.Options;
-using TSLab.Utils;
 using Context = TradingSystems.Context;
 using Security = TradingSystems.Security;
 
@@ -59,6 +54,8 @@ namespace TrendByPivotPointsOptimizator
         private int minKAtrForStopLoss = 1;
         private int maxKAtrForStopLoss = 6;
         private int kAtrForStopLossRange;
+        private readonly Dictionary<string, ChromosomeDonchianChannel> chromosomeCache =
+    new Dictionary<string, ChromosomeDonchianChannel>();
 
         public GeneticAlgorithmDonchianChannel(int populationSize, int generations, double crossoverRate, double mutationRate,
             IRandomProvider randomProvider, List<Ticker> tickers, Settings settings, Context context, Optimizator optimizator, Logger logger)
@@ -151,25 +148,45 @@ namespace TrendByPivotPointsOptimizator
         }
 
         public void Evaluate(int period)
-        {
-            var i = 0;
+        {        
+            var chromosomesForRemove = new List<ChromosomeDonchianChannel>();
+            var chromosomesForAdd = new List<ChromosomeDonchianChannel>();
             foreach (var chromosome in population)
             {
                 if (chromosome.FitnessValue.Equals(double.NaN))
                 {
-                    var trSysParams = CreateTradingSystemParameters(chromosome);
-                    var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
-
-                    if (IsLastBackwardTesting)
-                        PrepareChromosomeFinal(chromosome, period);
+                    var key = chromosome.Name;
+                    if (chromosomeCache.TryGetValue(key, out ChromosomeDonchianChannel cached))
+                    {
+                        chromosomesForRemove.Add(chromosome);
+                        chromosomesForAdd.Add(cached);
+                    }
                     else
-                        PrepareChromosome(chromosome, period);
-                    chromosome.SetBackwardBarsAsTickerBars();
+                    {
+                        var trSysParams = CreateTradingSystemParameters(chromosome);
+                        var system = new StarterDonchianTradingSystemLab(context, new List<Security>() { trSysParams.Security }, logger);
 
-                    var fitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
-                    fitnessDonchianChannel.SetUpChromosomeFitnessValue();
-                }
-                
+                        if (IsLastBackwardTesting)
+                            PrepareChromosomeFinal(chromosome, period);
+                        else
+                            PrepareChromosome(chromosome, period);
+                        chromosome.SetBackwardBarsAsTickerBars();
+
+                        var fitnessDonchianChannel = new FitnessDonchianChannel(trSysParams, chromosome, system);
+                        fitnessDonchianChannel.SetUpChromosomeFitnessValue();
+                        chromosomeCache[key] = chromosome;
+                    }
+                }                
+            }
+
+            foreach (var chromosome in chromosomesForRemove)
+                population.Remove(chromosome);
+            foreach (var chromosome in chromosomesForAdd)
+                population.Add(chromosome);
+
+            var i = 0;
+            foreach (var chromosome in population)
+            {
                 Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
                     ++i, population.Count, chromosome.Name);
 
@@ -401,6 +418,7 @@ namespace TrendByPivotPointsOptimizator
             var isNormalizedDivercityBreaks = false;
             var diversity=double.MaxValue;
             int gen = 0;
+            chromosomeCache.Clear();
             Initialize();
             for (; gen < generations; gen++)
             {
