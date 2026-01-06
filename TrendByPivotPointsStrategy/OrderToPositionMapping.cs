@@ -122,19 +122,19 @@ namespace TradingSystems
 
         public List<OrderToPositionMap> GetActiveOrders(int barNumber)
         {
-            if(barNumber < activeOrdersCacheIndex)
-                return activeOrdersCache[barNumber];
+            //if(barNumber < activeOrdersCacheIndex)
+            //    return activeOrdersCache[barNumber];
 
             var activeOrders = (from order in orders
                                 where order.BarNumber <= barNumber
                                 && barNumber < order.BarNumberSinceOrderIsNotActive
                                 select order).ToList();
 
-            if (activeOrdersCacheIndex == barNumber)
-            {
-                activeOrdersCache.Add(activeOrders);
-                //activeOrdersCacheIndex++;
-            }
+            //if (activeOrdersCacheIndex == barNumber)
+            //{
+            //    //activeOrdersCache.Add(activeOrders);
+            //    //activeOrdersCacheIndex++;
+            //}
 
             return activeOrders;
         }
@@ -145,19 +145,19 @@ namespace TradingSystems
 
         public List<OrderToPositionMap> GetActivePositions(int barNumber)
         {
-            if (barNumber < activePositionsCacheIndex)
-                return activePositionsCache[barNumber];
+            //if (barNumber < activePositionsCacheIndex)
+            //    return activePositionsCache[barNumber];
 
             var activePositions = (from order in orders
                                 where order.BarNumberOpenPosition <= barNumber
                                 && barNumber < order.BarNumberClosePosition
                                 select order).ToList();
 
-            if (activePositionsCacheIndex == barNumber)
-            {
-                activePositionsCache.Add(activePositions);
-                //activePositionsCacheIndex++;
-            }
+            //if (activePositionsCacheIndex == barNumber)
+            //{
+            //    //activePositionsCache.Add(activePositions);
+            //    //activePositionsCacheIndex++;
+            //}
 
             return activePositions;
         }
@@ -168,18 +168,18 @@ namespace TradingSystems
 
         public List<OrderToPositionMap> GetOrders(int barNumber)
         {
-            if (barNumber < ordersCacheIndex)
-                return ordersCache[barNumber];
+            //if (barNumber < ordersCacheIndex)
+            //    return ordersCache[barNumber];
 
             var orders = (from order in this.orders
                                 where order.BarNumber <= barNumber                                
                                 select order).ToList();
 
-            if (ordersCacheIndex == barNumber)
-            {
-                ordersCache.Add(orders);
-                //ordersCacheIndex++;
-            }
+            //if (ordersCacheIndex == barNumber)
+            //{
+            //    //ordersCache.Add(orders);
+            //    //ordersCacheIndex++;
+            //}
 
             return orders;
         }
@@ -190,18 +190,18 @@ namespace TradingSystems
 
         public List<OrderToPositionMap> GetPositions(int barNumber)
         {
-            if (barNumber < positionsCacheIndex)
-                return positionsCache[barNumber];
+            //if (barNumber < positionsCacheIndex)
+            //    return positionsCache[barNumber];
 
             var positions = (from order in orders
                                    where order.BarNumberOpenPosition <= barNumber                                   
                                    select order).ToList();
 
-            if (positionsCacheIndex == barNumber)
-            {
-                positionsCache.Add(positions);
-                //positionsCacheIndex++;
-            }
+            //if (positionsCacheIndex == barNumber)
+            //{
+            //    //positionsCache.Add(positions);
+            //    //positionsCacheIndex++;
+            //}
 
             return positions;
         }
@@ -212,19 +212,19 @@ namespace TradingSystems
 
         public List<OrderToPositionMap> GetClosedPositions(int barNumber)
         {
-            if (barNumber < closedPositionsCacheIndex)
-                return closedPositionsCache[barNumber];
+            //if (barNumber < closedPositionsCacheIndex)
+            //    return closedPositionsCache[barNumber];
 
             var closedPositions = (from order in orders
                                    where order.BarNumberClosePosition <= barNumber &&
                                    order.BarNumberClosePosition < int.MaxValue
                                    select order).ToList();
 
-            if (closedPositionsCacheIndex == barNumber)
-            {
-                closedPositionsCache.Add(closedPositions);
-                //closedPositionsCacheIndex++;
-            }
+            //if (closedPositionsCacheIndex == barNumber)
+            //{
+            //    closedPositionsCache.Add(closedPositions);
+            //    //closedPositionsCacheIndex++;
+            //}
 
             return closedPositions;
         }

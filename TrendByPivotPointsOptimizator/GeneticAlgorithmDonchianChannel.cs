@@ -151,8 +151,11 @@ namespace TrendByPivotPointsOptimizator
         {        
             var chromosomesForRemove = new List<ChromosomeDonchianChannel>();
             var chromosomesForAdd = new List<ChromosomeDonchianChannel>();
+
+            var i = 0;
             foreach (var chromosome in population)
             {
+                Console.WriteLine("\r\nХромосома №{0} из {1}.\r\n", ++i, population.Count);
                 if (chromosome.FitnessValue.Equals(double.NaN))
                 {
                     var key = chromosome.Name;
@@ -184,7 +187,7 @@ namespace TrendByPivotPointsOptimizator
             foreach (var chromosome in chromosomesForAdd)
                 population.Add(chromosome);
 
-            var i = 0;
+            i = 0;
             foreach (var chromosome in population)
             {
                 Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}.\r\n\r\nХромосома: {2}",
