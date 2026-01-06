@@ -41,7 +41,7 @@ namespace TradingSystems
             Logger logger, List<NonTradingPeriod> nonTradingPeriods = null):
             base(securities, contractsManager, indicators, context, logger, nonTradingPeriods)
         {
-            digitsAfterPoint = CountDecimalPlaces(security.Bars.First().Close);
+            digitsAfterPoint = CountDecimalPlaces(security.Bars.Last().Close);
         }                               
 
         private void BuyIfGreater(double price, int contracts, string notes)
