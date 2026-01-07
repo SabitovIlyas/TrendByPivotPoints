@@ -161,6 +161,7 @@ namespace TrendByPivotPointsOptimizator
                     var key = chromosome.Name;
                     if (chromosomeCache.TryGetValue(key, out ChromosomeDonchianChannel cached))
                     {
+                        Console.WriteLine("Взяли хромосому из кэша");
                         chromosomesForRemove.Add(chromosome);
                         chromosomesForAdd.Add(cached);
                     }
@@ -421,6 +422,7 @@ namespace TrendByPivotPointsOptimizator
             var isNormalizedDivercityBreaks = false;
             var diversity=double.MaxValue;
             int gen = 0;
+            this.bestChromosome = bestChromosome;
             chromosomeCache.Clear();
             Initialize();
             for (; gen < generations; gen++)

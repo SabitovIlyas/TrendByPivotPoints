@@ -116,13 +116,13 @@ namespace TradingSystems
             }            
         }
 
-        private List<List<OrderToPositionMap>> activeOrdersCache = new
-            List<List<OrderToPositionMap>>();
-        private int activeOrdersCacheIndex = 0;
+        //private List<List<OrderToPositionMap>> activeOrdersCache = new
+        //    List<List<OrderToPositionMap>>();
+        //private int activeOrdersCacheIndex = 0;
 
         public List<OrderToPositionMap> GetActiveOrders(int barNumber)
         {
-            //if(barNumber < activeOrdersCacheIndex)
+            //if (barNumber < activeOrdersCacheIndex)
             //    return activeOrdersCache[barNumber];
 
             var activeOrders = (from order in orders
@@ -132,21 +132,28 @@ namespace TradingSystems
 
             //if (activeOrdersCacheIndex == barNumber)
             //{
-            //    //activeOrdersCache.Add(activeOrders);
-            //    //activeOrdersCacheIndex++;
+            //    activeOrdersCache.Add(activeOrders);
+            //    activeOrdersCacheIndex++;
             //}
 
             return activeOrders;
         }
 
-        private List<List<OrderToPositionMap>> activePositionsCache = new
-            List<List<OrderToPositionMap>>();
-        private int activePositionsCacheIndex = 0;
+        //private List<List<OrderToPositionMap>> activePositionsCache = new
+        //    List<List<OrderToPositionMap>>();
+        //private int activePositionsCacheIndex = 0;
+
+        //private Dictionary<int,List<OrderToPositionMap>> activePositionsCacheX = new
+        //    Dictionary<int,List<OrderToPositionMap>>();
+        //private int activePositionsCacheXIndex = 0;
 
         public List<OrderToPositionMap> GetActivePositions(int barNumber)
         {
             //if (barNumber < activePositionsCacheIndex)
             //    return activePositionsCache[barNumber];
+
+            //if (activePositionsCacheX.TryGetValue(barNumber, out List<OrderToPositionMap> cached))             
+            //    return cached;                       
 
             var activePositions = (from order in orders
                                 where order.BarNumberOpenPosition <= barNumber
@@ -155,16 +162,17 @@ namespace TradingSystems
 
             //if (activePositionsCacheIndex == barNumber)
             //{
-            //    //activePositionsCache.Add(activePositions);
-            //    //activePositionsCacheIndex++;
+            //    activePositionsCache.Add(activePositions);
+            //    activePositionsCacheIndex++;
             //}
 
+            //activePositionsCacheX[barNumber] = activePositions;
             return activePositions;
         }
 
-        private List<List<OrderToPositionMap>> ordersCache = new
-            List<List<OrderToPositionMap>>();
-        private int ordersCacheIndex = 0;
+        //private List<List<OrderToPositionMap>> ordersCache = new
+        //    List<List<OrderToPositionMap>>();
+        //private int ordersCacheIndex = 0;
 
         public List<OrderToPositionMap> GetOrders(int barNumber)
         {
@@ -177,16 +185,16 @@ namespace TradingSystems
 
             //if (ordersCacheIndex == barNumber)
             //{
-            //    //ordersCache.Add(orders);
-            //    //ordersCacheIndex++;
+            //    ordersCache.Add(orders);
+            //    ordersCacheIndex++;
             //}
 
             return orders;
         }
 
-        private List<List<OrderToPositionMap>> positionsCache = new
-            List<List<OrderToPositionMap>>();
-        private int positionsCacheIndex = 0;
+        //private List<List<OrderToPositionMap>> positionsCache = new
+        //    List<List<OrderToPositionMap>>();
+        //private int positionsCacheIndex = 0;
 
         public List<OrderToPositionMap> GetPositions(int barNumber)
         {
@@ -199,16 +207,16 @@ namespace TradingSystems
 
             //if (positionsCacheIndex == barNumber)
             //{
-            //    //positionsCache.Add(positions);
-            //    //positionsCacheIndex++;
+            //    positionsCache.Add(positions);
+            //    positionsCacheIndex++;
             //}
 
             return positions;
         }
 
-        private List<List<OrderToPositionMap>> closedPositionsCache = new 
-            List<List<OrderToPositionMap>>();
-        private int closedPositionsCacheIndex = 0;
+        //private List<List<OrderToPositionMap>> closedPositionsCache = new 
+        //    List<List<OrderToPositionMap>>();
+        //private int closedPositionsCacheIndex = 0;
 
         public List<OrderToPositionMap> GetClosedPositions(int barNumber)
         {
@@ -223,7 +231,7 @@ namespace TradingSystems
             //if (closedPositionsCacheIndex == barNumber)
             //{
             //    closedPositionsCache.Add(closedPositions);
-            //    //closedPositionsCacheIndex++;
+            //    closedPositionsCacheIndex++;
             //}
 
             return closedPositions;

@@ -91,7 +91,7 @@ namespace TrendByPivotPointsOptimizator
                 var bestChromosome = bestPopulationLast.First();
 
                 ga.IsLastBackwardTesting = false;
-                for (var period = 0; period < 0; period++)
+                for (var period = 0; period < 10; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
                     bestPopulation = ga.Run(period, bestChromosome);
