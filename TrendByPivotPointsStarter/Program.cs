@@ -10,8 +10,8 @@ namespace TrendByPivotPointsStarter
 {
     class Program
     {
-        static double rateUSD = 80.2918d;
-        static double shares = 10;
+        static double rateUSD = 1;   //80.2918
+        static double shares = 1;  //10
 
         [STAThread]
         static void Main(string[] args)
@@ -32,77 +32,74 @@ namespace TrendByPivotPointsStarter
             bars = BarCompressor.CompressBars(bars, interval);
 
             var logger = new LoggerNull();
-            for (int i = 0; i < 1000; i++)
+            try
             {
-                try
+                var context = new ContextLab();
+                var security = new SecurityLab(securityName, Currency.USD, shares,
+                    5000, 4500, bars, logger);
+                security.RateUSD = rateUSD;
+
+                var securities = new List<TradingSystems.Security>() { security };
+                var system = new StarterDonchianTradingSystemLab(context, securities, logger);
+                var systemParameters = GetSystemParameters();
+                system.SetParameters(systemParameters);
+                system.Initialize();
+
+                var account = (AccountLab)system.Account;
+                var equity = system.Account.Equity;
+
+                Console.WriteLine();
+                Console.WriteLine($"Эквити начальный: {equity}");
+
+                system.Run();
+
+                var profit = securities.First().GetProfit();
+                Console.WriteLine($"Прибыль составила: {profit}");
+                profit = account.Equity - account.InitDeposit;
+                Console.WriteLine($"Прибыль составила: {profit}");
+
+                Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDownPrcnt()}%");
+
+                var profitPrcnt = account.GetProfitPrcnt();
+                Console.WriteLine($"Прибыль составила: {profitPrcnt}%");
+
+                var rec = account.GetRecoveryFactor();
+                Console.WriteLine($"Фактор воcстановления составил: {rec}");
+
+                var deals = security.GetDeals();
+
+                Console.WriteLine();
+                Console.WriteLine($"Всего {deals.Count} сделок.");
+                Console.WriteLine();
+
+                var dNmbr = 0;
+                foreach (var d in deals)
                 {
-                    var context = new ContextLab();
-                    var security = new SecurityLab(securityName, Currency.USD, shares,
-                        5000, 4500, bars, logger);
-                    security.RateUSD = rateUSD;
-
-                    var securities = new List<TradingSystems.Security>() { security };
-                    var system = new StarterDonchianTradingSystemLab(context, securities, logger);
-                    var systemParameters = GetSystemParameters();
-                    system.SetParameters(systemParameters);
-                    system.Initialize();
-
-                    var account = (AccountLab)system.Account;
-                    var equity = system.Account.Equity;
-
-                    Console.WriteLine();
-                    Console.WriteLine($"Эквити начальный: {equity}");
-
-                    system.Run();
-
-                    var profit = securities.First().GetProfit();
-                    Console.WriteLine($"Прибыль составила: {profit}");
-                    profit = account.Equity - account.InitDeposit;
-                    Console.WriteLine($"Прибыль составила: {profit}");
-
-                    Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDownPrcnt()}%");
-
-                    var profitPrcnt = account.GetProfitPrcnt();
-                    Console.WriteLine($"Прибыль составила: {profitPrcnt}%");
-
-                    var rec = account.GetRecoveryFactor();
-                    Console.WriteLine($"Фактор воcстановления составил: {rec}");
-
-                    var deals = security.GetDeals();
-
-                    Console.WriteLine();
-                    Console.WriteLine($"Всего {deals.Count} сделок.");
-                    Console.WriteLine();
-
-                    var dNmbr = 0;
-                    foreach (var d in deals)
-                    {
-                        var e = account.GetEquity(d.BarNumberClosePosition);
-                        Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
-                            $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                            $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
-                            $" {e}");
-                        dNmbr++;
-                    }
-
-                    deals = security.GetMetaDeals();
-                    Console.WriteLine($"\r\nВсего {deals.Count} метасделок.");
-                    dNmbr = 0;
-                    foreach (var d in deals)
-                    {
-                        var e = account.GetEquity(d.BarNumberClosePosition);
-                        Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
-                            $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
-                            $"{d.GetProfit()}, {e}");
-                        dNmbr++;
-                    }
+                    var e = account.GetEquity(d.BarNumberClosePosition);
+                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                        $"{d.GetProfit()}, {d.SignalNameForOpenPosition}, {d.SignalNameForClosePosition}," +
+                        $" {e}");
+                    dNmbr++;
                 }
-                catch (Exception e)
+
+                deals = security.GetMetaDeals();
+                Console.WriteLine($"\r\nВсего {deals.Count} метасделок.");
+                dNmbr = 0;
+                foreach (var d in deals)
                 {
-                    logger.Log(e.ToString());
+                    var e = account.GetEquity(d.BarNumberClosePosition);
+                    Console.WriteLine($"Deal № {dNmbr}, {d.PositionSide}, {d.BarNumberOpenPosition}, " +
+                        $"{d.BarNumberClosePosition}, {d.EntryPrice}, {d.ExitPrice}, {d.Contracts}, " +
+                        $"{d.GetProfit()}, {e}");
+                    dNmbr++;
                 }
             }
-            
+            catch (Exception e)
+            {
+                logger.Log(e.ToString());
+            }
+
             var timeStop = DateTime.Now;
             var duration = timeStop - timeStart;
             Console.WriteLine(duration.TotalMilliseconds);
@@ -113,14 +110,14 @@ namespace TrendByPivotPointsStarter
         {
             var systemParameters = new SystemParameters();
 
-            systemParameters.Add("slowDonchian", 19);
-            systemParameters.Add("fastDonchian", 18);
-            systemParameters.Add("kAtrForOpenPosition", 0.5d);
-            systemParameters.Add("kAtrForStopLoss", 1.5d);            
-            systemParameters.Add("atrPeriod", 6);
+            systemParameters.Add("slowDonchian", 81);   //19
+            systemParameters.Add("fastDonchian", 78);   //18
+            systemParameters.Add("kAtrForOpenPosition", 1d);  //0.5
+            systemParameters.Add("kAtrForStopLoss", 0.5d);  //1.5
+            systemParameters.Add("atrPeriod", 14);   //6
 
-            systemParameters.Add("limitOpenedPositions", 2);
-            systemParameters.Add("isUSD", 1);
+            systemParameters.Add("limitOpenedPositions", 4);    //2
+            systemParameters.Add("isUSD", 1);   //1
             systemParameters.Add("rateUSD", rateUSD);
             systemParameters.Add("positionSide", 0);
             systemParameters.Add("shares", shares);

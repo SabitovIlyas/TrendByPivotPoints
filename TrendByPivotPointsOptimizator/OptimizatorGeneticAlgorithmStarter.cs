@@ -1,4 +1,5 @@
-﻿using PeparatorDataForSpreadTradingSystems;
+﻿using Newtonsoft.Json;
+using PeparatorDataForSpreadTradingSystems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,7 +35,7 @@ namespace TrendByPivotPointsOptimizator
 
             openFileDialog.Title = "Выберите файл с инструментами";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
-                return;
+                return;           
 
             fullFileName = openFileDialog.FileName;
 
@@ -48,8 +49,18 @@ namespace TrendByPivotPointsOptimizator
             var fileName = fullFileName.Split('\\').Last();
             var securityName = fileName.Split('.').First();
             var results = new List<ForwardAnalysisResult>();
+
             List<ChromosomeDonchianChannel> bestPopulation = null;
             List<ChromosomeDonchianChannel> bestPopulationLast = null;
+            ChromosomeDonchianChannel bestChromosome = null;
+            SurogateChromosome bestSurogateChromosome = null;
+
+            openFileDialog.Title = "Выберите файл с инструментами";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                fullFileName = openFileDialog.FileName;                
+                bestSurogateChromosome = CreateBestChromosome(fullFileName);
+            }
 
             var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}.csv";
             CreateTxtFile(resultFileName);
@@ -59,14 +70,14 @@ namespace TrendByPivotPointsOptimizator
                 var randomProvider = new RandomProvider();
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 100, generations: 300,
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 1, generations: 0,
                     crossoverRate: 0.85, mutationRate: 0.10, randomProvider, tickers, settings, context,
                     optimizator, loggerNull);
 
                 logger.Log("Старт генетического алгоритма");
                 logger.Log("Актуальная оптимизация!");
                 ga.IsLastBackwardTesting = true;
-                bestPopulationLast = ga.Run(period: 0);
+                bestPopulationLast = ga.Run(period: 0, bestSurogateChromosome);
 
                 foreach (var chromosome in bestPopulationLast)
                     chromosome.ForwardAnalysisResults.First().BackwardFitness =
@@ -88,10 +99,10 @@ namespace TrendByPivotPointsOptimizator
                 }
 
                 PrintToTxtFile(bestPopulationLast);
-                var bestChromosome = bestPopulationLast.First();
+                bestChromosome = bestPopulationLast.First();
 
                 ga.IsLastBackwardTesting = false;
-                for (var period = 0; period < 10; period++)
+                for (var period = 0; period < 0; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
                     bestPopulation = ga.Run(period, bestChromosome);
@@ -163,6 +174,13 @@ namespace TrendByPivotPointsOptimizator
             }           
 
             Console.ReadLine();
+        }
+
+        private SurogateChromosome CreateBestChromosome(string fullFileName)
+        {
+            var file = File.ReadAllText(fullFileName);
+            var serializer = new JsonSerializer();
+            return serializer.Deserialize<SurogateChromosome>(new JsonTextReader(new StringReader(file)));                        
         }
 
         private void PrintToTxtFile(List<ChromosomeDonchianChannel> population, string fileName ="")

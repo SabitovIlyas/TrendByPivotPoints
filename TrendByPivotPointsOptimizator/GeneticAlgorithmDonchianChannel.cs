@@ -26,6 +26,7 @@ namespace TrendByPivotPointsOptimizator
         private ForwardAnalysis forwardAnalysis;
         private double neighborhoodPercentage = 0.00;  //0.05      
         private ChromosomeDonchianChannel bestChromosome;
+        private SurogateChromosome surogateChromosome;
 
         private int patience = 50;
         private double epsilon = 1e-5;
@@ -95,36 +96,48 @@ namespace TrendByPivotPointsOptimizator
 
                     //var fastDonchian = 18;
                     var fastDonchian = randomProvider.Next(minFastDonchian, maxFastDonchian + 1);              //9..208;
-                    if (bestChromosome != null)
+                    if (surogateChromosome != null)
+                        fastDonchian = surogateChromosome.FastDonchian;
+                    else if (bestChromosome != null)
                         fastDonchian = bestChromosome.FastDonchian;
 
                     //var slowDonchian = 19;
                     var slowDonchian = randomProvider.Next(fastDonchian, maxSlowDonchian + 1);    // -//-                   
-                    if (bestChromosome != null)
+                    if (surogateChromosome != null)
+                        slowDonchian = surogateChromosome.SlowDonchian;
+                    else if (bestChromosome != null)
                         slowDonchian = bestChromosome.SlowDonchian;
 
                     //var atrPeriod = 6;
                     var atrPeriod = randomProvider.Next(minAtrPeriod, maxAtrPeriod + 1);                  //1..25
-                    if (bestChromosome != null)
-                        atrPeriod = bestChromosome.AtrPeriod;
+                    if (surogateChromosome != null)
+                        atrPeriod = surogateChromosome.AtrPeriod;
+                    else if (bestChromosome != null)
+                        atrPeriod = bestChromosome.AtrPeriod;                    
 
                     //var limitOpenedPositions = 2;
                     //var kAtrForOpenPosition = 0.5;
                     //var kAtrForStopLoss = 1.5;
 
-                    var limitOpenedPositions = randomProvider.Next(minLimitOpenedPositions, 
-                        maxLimitOpenedPositions + 1);
-                    if (bestChromosome != null)
-                        limitOpenedPositions= bestChromosome.LimitOpenedPositions;
+                    var limitOpenedPositions = randomProvider.Next(minLimitOpenedPositions,
+                            maxLimitOpenedPositions + 1);
+                    if (surogateChromosome != null)
+                        limitOpenedPositions = surogateChromosome.LimitOpenedPositions;
+                    else if (bestChromosome != null)
+                        limitOpenedPositions = bestChromosome.LimitOpenedPositions;
 
                     var kAtrForOpenPosition = 0.5 * randomProvider.Next(minaKAtrForOpenPosition,
                         maxKAtrForOpenPosition + 1);
-                    if (bestChromosome != null)
+                    if (surogateChromosome != null)
+                        kAtrForOpenPosition = surogateChromosome.KAtrForOpenPosition;
+                    else if (bestChromosome != null)
                         kAtrForOpenPosition = bestChromosome.KAtrForOpenPosition;
 
                     var kAtrForStopLoss = 0.5 * randomProvider.Next(minKAtrForStopLoss,
                         maxKAtrForStopLoss + 1);
-                    if (bestChromosome != null)
+                    if (surogateChromosome != null)
+                        kAtrForStopLoss = surogateChromosome.KAtrForStopLoss;
+                    else if (bestChromosome != null)
                         kAtrForStopLoss = bestChromosome.KAtrForStopLoss;
 
                     var c = new ChromosomeDonchianChannel(ticker, timeFrame, side,
@@ -132,6 +145,7 @@ namespace TrendByPivotPointsOptimizator
                         kAtrForOpenPosition, kAtrForStopLoss);
 
                     isAdded = AddNeighbour(c, population, neighborhoodPercentage);
+                    surogateChromosome = null;
                     bestChromosome = null;
                 }                
             }
@@ -411,6 +425,12 @@ namespace TrendByPivotPointsOptimizator
                     return true;
 
             return false;
+        }
+        public List<ChromosomeDonchianChannel> Run(int period,
+            SurogateChromosome bestSurogateChromosome)
+        {
+            surogateChromosome = bestSurogateChromosome;
+            return Run(period);
         }
 
         public List<ChromosomeDonchianChannel> Run(int period,

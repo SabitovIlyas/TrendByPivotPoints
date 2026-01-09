@@ -87,6 +87,7 @@
     <Compile Include="RandomProvider.cs" />
     <Compile Include="SecurityData.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SurogateChromosome.cs" />
     <Compile Include="Ticker.cs" />
     <Compile Include="TradingSystemParameters.cs" />
   </ItemGroup>
