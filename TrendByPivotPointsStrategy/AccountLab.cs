@@ -10,6 +10,7 @@ namespace TradingSystems
         private ISecurity sec;
         private double equity;
         Logger logger = new NullLogger();
+        int barNumber;
 
         public Logger Logger
         {
@@ -40,6 +41,14 @@ namespace TradingSystems
             {
                 if (sec == null)
                     return 0;
+                var positions = sec.Positions;
+
+                var totalProfit = 0d;
+                foreach(var position in positions)                
+                    totalProfit += position.GetAccumulatedProfit(barNumber);                
+
+                return InitDeposit + totalProfit;
+
                 return equity;
             }
         }        
@@ -84,6 +93,7 @@ namespace TradingSystems
 
         public void Update(int barNumber)
         {
+            this.barNumber = barNumber;
             foreach(var security in securities)
             {
                 if (lastLongPositionsClosed.TryGetValue(security, out Position lastLongPositionClosedPrevious))
