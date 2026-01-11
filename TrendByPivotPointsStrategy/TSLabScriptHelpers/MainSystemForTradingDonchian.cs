@@ -95,7 +95,7 @@ namespace TradingSystems
                     account.Update(i);
                     tradingSystem.Update(i);                    
                 }
-            }
+            }            
         }
 
         public void Paint(IContext ctx, ISecurity sec)
