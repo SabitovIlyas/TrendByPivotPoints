@@ -93,8 +93,8 @@ namespace TradingSystems
             {
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    tradingSystem.Update(i);
                     account.Update(i);
+                    tradingSystem.Update(i);                    
                 }
             }
         }
