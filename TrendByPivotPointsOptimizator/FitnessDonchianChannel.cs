@@ -97,13 +97,13 @@ namespace TrendByPivotPointsOptimizator
                         var metaDeals = s.GetMetaDeals();
                         var bars = s.Bars;
                         dealsCount = metaDeals.Count;
-                        
-                        //var temp = starter.Account as AccountLab;
-                        //var recoveryFactor = temp.GetRecoveryFactor();
 
-                        var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
-                        if (double.IsNegativeInfinity(recoveryFactor))
-                            return averageRecoveryFactor;
+                        var temp = starter.Account as AccountLab;
+                        var recoveryFactor = temp.GetRecoveryFactor();
+
+                        //var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
+                        //if (double.IsNegativeInfinity(recoveryFactor))
+                        //    return averageRecoveryFactor;
 
                         counter++;
                         sumRecoveryFactor += recoveryFactor;

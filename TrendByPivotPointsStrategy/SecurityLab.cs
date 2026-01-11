@@ -375,7 +375,7 @@ namespace TradingSystems
             if (profitCacheXIndex == barNumber)
             {
                 profitCacheX.Add(profit);
-                profitCacheXIndex++;
+                //profitCacheXIndex++;
             }
 
             return profit;

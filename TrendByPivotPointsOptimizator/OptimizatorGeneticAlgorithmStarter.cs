@@ -70,7 +70,7 @@ namespace TrendByPivotPointsOptimizator
                 var randomProvider = new RandomProvider();
 
                 var optimizator = Optimizator.Create();
-                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 1, generations: 0,
+                var ga = new GeneticAlgorithmDonchianChannel(populationSize: 1, generations: 1,
                     crossoverRate: 0.85, mutationRate: 0.10, randomProvider, tickers, settings, context,
                     optimizator, loggerNull);
 
@@ -102,7 +102,7 @@ namespace TrendByPivotPointsOptimizator
                 bestChromosome = bestPopulationLast.First();
 
                 ga.IsLastBackwardTesting = false;
-                for (var period = 0; period < 0; period++)
+                for (var period = 5; period < 5; period++)
                 {
                     logger.Log("Период № {0}", period + 1);
                     bestPopulation = ga.Run(period, bestChromosome);

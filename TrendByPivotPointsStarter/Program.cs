@@ -30,7 +30,7 @@ namespace TrendByPivotPointsStarter
             var bars = converter.ConvertFileWithBarsToListOfBars();
             var interval = new Interval(60, DataIntervals.MINUTE);
             bars = BarCompressor.CompressBars(bars, interval);
-
+            bars = bars.GetRange(0, 219);
             var logger = new LoggerNull();
             try
             {
