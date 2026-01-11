@@ -9,11 +9,10 @@ namespace TradingSystems
     public class AccountLab : Account
     {
         public override double InitDeposit => initDeposit;
-        public override double Equity => equity;
+        public override double Equity => GetEquity(barNumber);
 
         public override double FreeBalance => freeBalance;
 
-        protected double initDeposit;
         protected double freeBalance;
         private int decimalsAfterPoint;
        
@@ -54,16 +53,6 @@ namespace TradingSystems
         {
             var lastBarNumber = securities.First().Bars.Count - 1;
             return GetEquity(lastBarNumber);
-        }
-
-        public virtual double GetEquity(int barNumber)
-        {
-            var equity = initDeposit;
-            foreach (var security in securities)
-                equity += ((SecurityLab)security).GetProfit(barNumber);
-
-            //var d = CountDecimalPlaces(securities.First().GetBarClose(barNumber));
-            return Math.Round(equity, 2);
         }
 
         private int CountDecimalPlaces(double value)

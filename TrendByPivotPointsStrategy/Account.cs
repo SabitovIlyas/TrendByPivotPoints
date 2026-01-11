@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TradingSystems
 {
@@ -14,9 +15,13 @@ namespace TradingSystems
         protected Dictionary<Security, Position> lastLongPositionsClosed = new Dictionary<Security, Position>();
         protected Dictionary<Security, Position> lastShortPositionsClosed = new Dictionary<Security, Position>();        
         protected Currency currency;
+        protected int barNumber;
+
+        protected double initDeposit;
 
         public virtual void Update(int barNumber)
         {
+            this.barNumber = barNumber;
             foreach (var security in securities)
             {                
                 if (lastLongPositionsClosed.TryGetValue(security, out Position lastLongPositionClosedPrevious))
@@ -76,6 +81,15 @@ namespace TradingSystems
         }
 
         public abstract double GetMaxDrawDownPrcnt();        
+
+        public virtual double GetEquity(int barNumber)
+        {
+            var equity = initDeposit;
+            foreach (var security in securities)
+                equity += ((SecurityLab)security).GetProfit(barNumber);
+
+            return Math.Round(equity, 2);
+        }
         
     }
 }

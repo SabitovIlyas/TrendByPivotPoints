@@ -22,7 +22,7 @@ namespace TradingSystems
             {
                 if (Security == null)
                     return 0;
-                return equity;
+                return GetEquity(barNumber);  //
             }
         }        
 
