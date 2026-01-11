@@ -55,7 +55,7 @@ namespace TrendByPivotPointsStarter
 
                 var profit = securities.First().GetProfit();
                 Console.WriteLine($"Прибыль составила: {profit}");
-                profit = account.Equity - account.InitDeposit;
+                profit = account.GetTotalEquity() - account.InitDeposit;
                 Console.WriteLine($"Прибыль составила: {profit}");
 
                 Console.WriteLine($"Максимальная просадка: {system.Account.GetMaxDrawDownPrcnt()}%");
@@ -94,11 +94,17 @@ namespace TrendByPivotPointsStarter
                         $"{d.GetProfit()}, {e}");
                     dNmbr++;
                 }
+                Console.WriteLine();
+                for (var i = 0; i < bars.Count; i++)
+                {
+                    Console.WriteLine("Эквити = {0}, номер бара № {1}",
+                        account.GetEquity(i), i);
+                }
             }
             catch (Exception e)
             {
                 logger.Log(e.ToString());
-            }
+            }            
 
             var timeStop = DateTime.Now;
             var duration = timeStop - timeStart;

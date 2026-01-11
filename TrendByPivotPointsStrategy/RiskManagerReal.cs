@@ -22,7 +22,7 @@ namespace TradingSystems
         public double GetMoneyForDeal()
         {
             logger.Log("Получаем средства для совершения сделки...");
-            var equity = Equity;
+            var equity = account.Equity;
             var moneyForDeal = riskValue * Equity;
             var message = string.Format("Equity = {0}; риск в % от Equity = {1}; рискуем следующей суммой: {2}", Equity, riskValue * 100, moneyForDeal);
             logger.Log(message);

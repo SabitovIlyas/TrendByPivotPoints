@@ -9,7 +9,7 @@ namespace TradingSystems
     public class AccountLab : Account
     {
         public override double InitDeposit => initDeposit;
-        public override double Equity => GetEquity();
+        public override double Equity => equity;
 
         public override double FreeBalance => freeBalance;
 
@@ -50,7 +50,7 @@ namespace TradingSystems
             base.Update(barNumber);
         }
 
-        public virtual double GetEquity()
+        public virtual double GetTotalEquity()
         {
             var lastBarNumber = securities.First().Bars.Count - 1;
             return GetEquity(lastBarNumber);
