@@ -98,12 +98,12 @@ namespace TrendByPivotPointsOptimizator
                         var bars = s.Bars;
                         dealsCount = metaDeals.Count;
 
-                        var temp = starter.Account as AccountLab;
-                        var recoveryFactor = temp.GetRecoveryFactor();
+                        //var temp = starter.Account as AccountLab;
+                        //var recoveryFactor = temp.GetRecoveryFactor();
 
-                        //var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
-                        //if (double.IsNegativeInfinity(recoveryFactor))
-                        //    return averageRecoveryFactor;
+                        var recoveryFactor = CheckCriteriaPassed(starter, param, starter.Account);
+                        if (double.IsNegativeInfinity(recoveryFactor))
+                            return averageRecoveryFactor;
 
                         counter++;
                         sumRecoveryFactor += recoveryFactor;
@@ -140,8 +140,11 @@ namespace TrendByPivotPointsOptimizator
             if (IsCriteriaPassedNeedToCheck && !isQtyDealsEnough)
                 return recoveryFactor;           
 
-            var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * deals.Count, MidpointRounding.AwayFromZero);
-            var dealsForExclude = deals.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
+            //var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * deals.Count, MidpointRounding.AwayFromZero);
+            var dealsForExclude = deals.Where(d => d.GetProfit() > 0).ToList();
+            var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * dealsForExclude.Count, MidpointRounding.AwayFromZero);
+            dealsForExclude = dealsForExclude.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
+            //var dealsForExclude = deals.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
 
             var nonTradingPeriods = new List<NonTradingPeriod>();
 

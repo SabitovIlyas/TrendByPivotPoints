@@ -30,7 +30,7 @@ namespace TrendByPivotPointsOptimizator
 
         private int patience = 50;
         private double epsilon = 1e-5;
-        private const double MinNormalizedDiversity = 0.1;
+        private const double MinNormalizedDiversity = 0.05;
 
         private int minFastDonchian = 10;
         private int maxFastDonchian = 100;
@@ -573,8 +573,8 @@ namespace TrendByPivotPointsOptimizator
 
         private void PrepareChromosome(ChromosomeDonchianChannel chromosome, int period)
         {
-            forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 730,
-                backwardPeriodDays: 730, forwardPeriodsCount: 10, shiftWindowDays: 30);
+            forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 1460,
+                backwardPeriodDays: 1460, forwardPeriodsCount: 10, shiftWindowDays: 30);
 
 
             forwardAnalysis.Period = period;
@@ -585,7 +585,7 @@ namespace TrendByPivotPointsOptimizator
         private void PrepareChromosomeFinal(ChromosomeDonchianChannel chromosome, int period)
         {
             forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
-                backwardPeriodDays: 730, forwardPeriodsCount: 1, shiftWindowDays: 30);
+                backwardPeriodDays: 1460, forwardPeriodsCount: 1, shiftWindowDays: 30);
 
             //forwardAnalysis = new ForwardAnalysis(genAlg: this, forwardPeriodDays: 0,
             //    backwardPeriodDays: 180, forwardPeriodsCount: 1, shiftWindowDays: 30);
