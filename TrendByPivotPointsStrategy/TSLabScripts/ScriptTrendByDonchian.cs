@@ -34,7 +34,7 @@ namespace TradingSystems
 
             var logger = new LoggerSystem(context);
             PivotPointsMainSystem system;
-
+            
             switch ((int)mode)
             {
                 case 0:

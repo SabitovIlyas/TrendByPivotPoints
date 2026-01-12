@@ -40,12 +40,31 @@ namespace TradingSystems
             get
             {
                 if (sec == null)
-                    return 0;
+                    return 0;                
+
                 var positions = sec.Positions;
 
                 var totalProfit = 0d;
-                foreach(var position in positions)                
-                    totalProfit += position.GetAccumulatedProfit(barNumber);                
+                foreach (var position in positions)
+                {                    
+                    if (!position.IsActive)
+                    {
+                        totalProfit += (double)position.ProfitPerTrade;
+                    }
+                    else
+                    {
+                        if (position.IsLong)
+                        {
+                            var profit = sec.Bars[barNumber].Close - position.AverageEntryPrice;
+                            totalProfit += profit;
+                        }
+                        else
+                        {
+                            var profit = position.AverageEntryPrice - sec.Bars[barNumber].Close;
+                            totalProfit += profit;
+                        }                            
+                    }                        
+                }
 
                 return InitDeposit + totalProfit;
 
