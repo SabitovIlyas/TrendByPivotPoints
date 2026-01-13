@@ -30,7 +30,7 @@ namespace TrendByPivotPointsOptimizator
 
         private int patience = 50;
         private double epsilon = 1e-5;
-        private const double MinNormalizedDiversity = 0.05;
+        private const double MinNormalizedDiversity = 0.1;
 
         private int minFastDonchian = 10;
         private int maxFastDonchian = 100;
@@ -209,7 +209,7 @@ namespace TrendByPivotPointsOptimizator
                     ++i, population.Count, chromosome.Name);
 
                 Console.WriteLine("Фитнес-функция = {0}. Количество сделок = " +
-                    "{1}. Прибыль, р. = {2}. Прибыль, % = {3}. Максимальная просадка = {4}." +
+                    "{1}. Прибыль, р. = {2}. Прибыль, % = {3}. Максимальная просадка, % = {4}." +
                     " Фактор восстановления = {5}\r\n", chromosome.FitnessValue,
                     chromosome.DealsCount, chromosome.Profit, chromosome.ProfitPrcnt,
                     chromosome.MaxDrawDown, chromosome.RecoveryFactor);
@@ -440,7 +440,7 @@ namespace TrendByPivotPointsOptimizator
             var bestFitnessEver = double.MinValue;
             var isGenerationsWithoutImprovement = false;
             var isNormalizedDivercityBreaks = false;
-            var diversity=double.MaxValue;
+            var diversity = double.MaxValue;
             int gen = 0;
             this.bestChromosome = bestChromosome;
             chromosomeCache.Clear();
@@ -467,7 +467,11 @@ namespace TrendByPivotPointsOptimizator
                 else
                 {
                     generationsWithoutImprovement++;
+                    Console.WriteLine($"Поколение {gen + 1}:");                    
                 }
+
+                //double diversity = CalculatePopulationDiversity(population);
+                //Console.WriteLine($"Разнообразие после инициализации: {diversity:P1}");
 
                 if (generationsWithoutImprovement >= patience)
                 {
@@ -484,6 +488,10 @@ namespace TrendByPivotPointsOptimizator
                         isNormalizedDivercityBreaks = true;
                         //reason = $"Популяция сошлась (разнообразие = {diversity:F2} < {minDiversityThreshold})";
                         break;
+                    }
+                    else
+                    {                        
+                        Console.WriteLine($"Текущее разнообразие: {diversity:P1}");
                     }
                 }                
 

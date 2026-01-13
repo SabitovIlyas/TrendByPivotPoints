@@ -142,7 +142,7 @@ namespace TrendByPivotPointsOptimizator
 
             //var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * deals.Count, MidpointRounding.AwayFromZero);
             var dealsForExclude = deals.Where(d => d.GetProfit() > 0).ToList();
-            var qtyDealForExclude = (int)Math.Round(PrcntDealForExclude * dealsForExclude.Count, MidpointRounding.AwayFromZero);
+            var qtyDealForExclude = (int)Math.Ceiling(PrcntDealForExclude * dealsForExclude.Count);
             dealsForExclude = dealsForExclude.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
             //var dealsForExclude = deals.OrderByDescending(d => d.GetProfit()).Take(qtyDealForExclude).ToList();
 

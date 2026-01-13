@@ -194,5 +194,20 @@ namespace TradingSystems.Tests
             Assert.IsTrue(expected.Equals(actual));
             Assert.IsTrue(actual.Equals(expected));
         }
+
+        [TestMethod()]
+        public void MidpointRoundingAwayFromZeroTest()
+        {
+            var expected1 = 1;
+            var PrcntDealForExclude = 0.05d;
+            var dealsForExcludeCount = 9;
+            var actual1 = (int)Math.Ceiling(PrcntDealForExclude * dealsForExcludeCount);
+            Assert.AreEqual(expected1, actual1);
+
+            var expected2 = 2;            
+            dealsForExcludeCount = 21;
+            var actual2 = (int)Math.Ceiling(PrcntDealForExclude * dealsForExcludeCount);
+            Assert.AreEqual(expected2, actual2);
+        }
     }
 }
