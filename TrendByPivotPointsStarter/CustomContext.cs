@@ -53,6 +53,8 @@ namespace TrendByPivotPointsStarter
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
 
+        public IDictionary<string, string> ScriptResultsString => throw new NotImplementedException();
+
         public void AddUnremovableInteractiveObjectId(string id)
         {
             throw new NotImplementedException();
