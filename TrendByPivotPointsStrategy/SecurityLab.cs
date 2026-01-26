@@ -350,12 +350,13 @@ namespace TradingSystems
             var closedPositions = (from position in closedPositionsMap
                              select position.Position).ToList();
 
-            var uniqueClosedPositions = new List<Position>();
+            //var uniqueClosedPositions = new List<Position>();
+            var uniqueClosedPositions1 = new HashSet<Position>();
             foreach (var position in closedPositions)            
-                if (!uniqueClosedPositions.Contains(position))
-                    uniqueClosedPositions.Add(position);            
+                if (!uniqueClosedPositions1.Contains(position))
+                    uniqueClosedPositions1.Add(position);            
             
-            foreach (var position in uniqueClosedPositions)            
+            foreach (var position in uniqueClosedPositions1)            
                 profit += position.GetProfit(barNumber);
 
             var activePositionsMap = mapping.GetActivePositions(barNumber);

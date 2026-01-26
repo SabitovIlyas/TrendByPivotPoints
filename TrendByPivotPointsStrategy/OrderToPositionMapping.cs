@@ -214,25 +214,25 @@ namespace TradingSystems
             return positions;
         }
 
-        //private List<List<OrderToPositionMap>> closedPositionsCache = new 
-        //    List<List<OrderToPositionMap>>();
-        //private int closedPositionsCacheIndex = 0;
+        private List<List<OrderToPositionMap>> closedPositionsCache = new 
+            List<List<OrderToPositionMap>>();
+        private int closedPositionsCacheIndex = 0;
 
         public List<OrderToPositionMap> GetClosedPositions(int barNumber)
         {
-            //if (barNumber < closedPositionsCacheIndex)
-            //    return closedPositionsCache[barNumber];
+            if (barNumber < closedPositionsCacheIndex)
+                return closedPositionsCache[barNumber];
 
             var closedPositions = (from order in orders
                                    where order.BarNumberClosePosition <= barNumber &&
                                    order.BarNumberClosePosition < int.MaxValue
                                    select order).ToList();
 
-            //if (closedPositionsCacheIndex == barNumber)
-            //{
-            //    closedPositionsCache.Add(closedPositions);
-            //    closedPositionsCacheIndex++;
-            //}
+            if (closedPositionsCacheIndex == barNumber)
+            {
+                closedPositionsCache.Add(closedPositions);
+                closedPositionsCacheIndex++;
+            }
 
             return closedPositions;
         }
