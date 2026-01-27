@@ -77,7 +77,9 @@ namespace TradingSystems
 
         }
 
-        public void Update(int barNumber)
+        private HashSet<OrderToPositionMap> closedPositions = new HashSet<OrderToPositionMap>();
+
+        public void Update(int barNumber)//скорее всего, мне придётся реализовать работу всех связанных классов таким образом, что номер бара должен обновлять классы только вперёд. Нужен какой-то внутренний индекс, что ли. Это ускорит работу многих методов.
         {
             try
             {
@@ -100,12 +102,14 @@ namespace TradingSystems
                         }
                         else if (order.OrderType == OrderType.Market)
                         {
-
+                            throw new NotImplementedException();
                         }
                         else if (order.OrderType == OrderType.StopLossMarket)
                         {
                             var position = order.Position;
                             position.CloseAtMarket(barNumber, order.ExecutedPrice, order.SignalName);
+                            if (!closedPositions.Contains(order))
+                                closedPositions.Add(order);
                         }
                     }
                 }
@@ -115,7 +119,7 @@ namespace TradingSystems
                 
             }            
         }
-
+        #region temp
         //private List<List<OrderToPositionMap>> activeOrdersCache = new
         //    List<List<OrderToPositionMap>>();
         //private int activeOrdersCacheIndex = 0;
@@ -214,12 +218,14 @@ namespace TradingSystems
             return positions;
         }
 
+        #endregion
         private List<List<OrderToPositionMap>> closedPositionsCache = new 
             List<List<OrderToPositionMap>>();
         private int closedPositionsCacheIndex = 0;
 
         public List<OrderToPositionMap> GetClosedPositions(int barNumber)
         {
+            return this.closedPositions.ToList();
             if (barNumber < closedPositionsCacheIndex)
                 return closedPositionsCache[barNumber];
 
