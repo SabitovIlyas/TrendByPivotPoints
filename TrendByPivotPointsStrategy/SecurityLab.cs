@@ -310,12 +310,15 @@ namespace TradingSystems
                 position);
         }
 
+        private List<double> profits = new List<double>();
+
         public void Update(int barNumber)
         {
             if (currency == Currency.USD && RateUSD == 0)
                 throw new Exception("Не задан RateUSD");
 
-            mapping.Update(barNumber);            
+            mapping.Update(barNumber);
+            profits.Add(GetProfit(barNumber));
         }
         
         public List<Order> GetActiveOrders(int barNumber)
@@ -341,8 +344,11 @@ namespace TradingSystems
 
         public double GetProfit(int barNumber)
         {
-            if (barNumber < profitCacheXIndex)
-                return profitCacheX[barNumber];
+            if (profits.Count > barNumber)
+                return profits[barNumber];
+
+            //if (barNumber < profitCacheXIndex)
+            //    return profitCacheX[barNumber];
 
             var profit = 0d;
 
@@ -373,11 +379,11 @@ namespace TradingSystems
                         
             profit = profit * RateUSD;
 
-            if (profitCacheXIndex == barNumber)
-            {
-                profitCacheX.Add(profit);
-                //profitCacheXIndex++;
-            }
+            //if (profitCacheXIndex == barNumber)
+            //{
+            //    profitCacheX.Add(profit);
+            //    profitCacheXIndex++;
+            //}
 
             return profit;
         }

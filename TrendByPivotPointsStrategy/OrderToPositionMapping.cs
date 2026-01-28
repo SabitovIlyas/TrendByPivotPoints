@@ -77,6 +77,7 @@ namespace TradingSystems
 
         }
 
+        private HashSet<OrderToPositionMap> activePositions = new HashSet<OrderToPositionMap>();
         private HashSet<OrderToPositionMap> closedPositions = new HashSet<OrderToPositionMap>();
 
         public void Update(int barNumber)//скорее всего, мне придётся реализовать работу всех связанных классов таким образом, что номер бара должен обновлять классы только вперёд. Нужен какой-то внутренний индекс, что ли. Это ускорит работу многих методов.
@@ -94,11 +95,18 @@ namespace TradingSystems
                         {
                             var position = new PositionLab(barNumber, order.Order, security);
                             order.Position = position;
+                            if (!activePositions.Contains(order))
+                                activePositions.Add(order);
                         }
                         else if (order.OrderType == OrderType.StopLossLimit)
                         {
                             var position = order.Position;
                             position.CloseAtStop(barNumber, order.ExecutedPrice, order.SignalName);
+                            if (!closedPositions.Contains(order))
+                            {
+                                closedPositions.Add(order);
+                                activePositions.Remove(order);
+                            }
                         }
                         else if (order.OrderType == OrderType.Market)
                         {
@@ -109,7 +117,10 @@ namespace TradingSystems
                             var position = order.Position;
                             position.CloseAtMarket(barNumber, order.ExecutedPrice, order.SignalName);
                             if (!closedPositions.Contains(order))
+                            {                                
                                 closedPositions.Add(order);
+                                activePositions.Remove(order);
+                            }
                         }
                     }
                 }
@@ -153,6 +164,7 @@ namespace TradingSystems
 
         public List<OrderToPositionMap> GetActivePositions(int barNumber)
         {
+            return this.activePositions.ToList();
             //if (barNumber < activePositionsCacheIndex)
             //    return activePositionsCache[barNumber];
 
