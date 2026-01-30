@@ -13,7 +13,7 @@ namespace TradingSystems
         public double Shares { get => shares; set { } }
         public List<Bar> Bars { get;  set; }
         public string Name { get; private set; }
-        public int BarNumber { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public int BarNumber { get; set; } = -1;
         public double? SellDeposit => 4500;
         public double? StepPrice => 1;
         public double? BuyDeposit => 4400;
@@ -316,6 +316,12 @@ namespace TradingSystems
         {
             if (currency == Currency.USD && RateUSD == 0)
                 throw new Exception("Не задан RateUSD");
+
+            if (BarNumber + 1 == barNumber)
+                BarNumber = barNumber;
+            else
+                throw new NotImplementedException("Обновление BarNumber должно идти " +
+                    "инкрементно на 1 бар");
 
             mapping.Update(barNumber);
             profits.Add(GetProfit(barNumber));
