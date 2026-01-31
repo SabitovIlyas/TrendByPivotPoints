@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script.Handlers;
+using TSLab.Utils;
 
 namespace TradingSystems
 {
@@ -113,7 +114,8 @@ namespace TradingSystems
                             if (!closedPositions.Contains(order))
                             {
                                 closedPositions.Add(order);
-                                activePositions.Remove(order);
+                                var o = activePositions.Find(p => p.Position == order.Position);
+                                activePositions.Remove(o);
                             }
                         }
                         else if (order.OrderType == OrderType.Market)

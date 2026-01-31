@@ -10,14 +10,14 @@ namespace TradingSystems.Tests
     public class TradingSecurityLabTests4
     {   
         [DataTestMethod]
-        //[DataRow(2, 10, PositionSide.Long, 1)]
-        //[DataRow(2, 15, PositionSide.Long, 2)]
-        //[DataRow(3, 15, PositionSide.Long, 3)]
-        //[DataRow(4, 15, PositionSide.Long, 4)]
+        [DataRow(2, 10, PositionSide.Long, 1)]
+        [DataRow(2, 15, PositionSide.Long, 2)]
+        [DataRow(3, 15, PositionSide.Long, 3)]
+        [DataRow(4, 15, PositionSide.Long, 4)]
         [DataRow(4, 86, PositionSide.Long, 8)]
-        //[DataRow(4, 86, PositionSide.Short, 4)]
-        //[DataRow(1, 86, PositionSide.Short, 1)]
-        //[DataRow(2, 86, PositionSide.Short, 2)]
+        [DataRow(4, 86, PositionSide.Short, 4)]
+        [DataRow(1, 86, PositionSide.Short, 1)]
+        [DataRow(2, 86, PositionSide.Short, 2)]
         public void GetDealsTest(int limitOpenedPositions, int barNumber, 
             PositionSide positionSide, int expected)
         {
