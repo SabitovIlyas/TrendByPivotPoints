@@ -1,18 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TSLab.Script.Handlers;
 using TSLab.Utils;
 
 namespace TradingSystems
 {
     public class OrderToPositionMapping
     {
-        private List<OrderToPositionMap> orders = new List<OrderToPositionMap>();
+        private List<OrderToPositionMap> maps = new List<OrderToPositionMap>();
+        public List<OrderToPositionMap> activeOrders = new List<OrderToPositionMap>();
+
         private List<Bar> bars;
         public Security security;
         private Logger logger;
         private int barNumber;
+
+        private HashSet<OrderToPositionMap> activePositions = new HashSet<OrderToPositionMap>();
+        private HashSet<OrderToPositionMap> closedPositions = new HashSet<OrderToPositionMap>();
+        private HashSet<OrderToPositionMap> positions = new HashSet<OrderToPositionMap>();
+
+        private List<List<OrderToPositionMap>> activePositionsPerBarNumber = new
+            List<List<OrderToPositionMap>>();
+        private List<List<OrderToPositionMap>> closedPositionsPerBarNumber = new
+            List<List<OrderToPositionMap>>();
+        private List<List<OrderToPositionMap>> positionsPerBarNumber = new
+            List<List<OrderToPositionMap>>();
+        private List<List<OrderToPositionMap>> ordersPerBarNumber = new
+            List<List<OrderToPositionMap>>();
+        private List<List<OrderToPositionMap>> activeOrdersPerBarNumber = new
+            List<List<OrderToPositionMap>>();
+
 
         public OrderToPositionMapping(List<Bar> bars, Security security, Logger logger)
         {
@@ -29,15 +46,22 @@ namespace TradingSystems
             var converter = new Converter(isConverted);
             var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
 
-            var maps = orders.FindAll(p => p.SignalName == signalNameForOpenPosition);
+            //var maps = activeOrders.FindAll(p => p.SignalName == signalNameForOpenPosition);
+            //foreach (var m in maps)
+            //    m.Order.Cancel(barNumber);
 
-            foreach (var m in  maps)
-                m.Order.Cancel(barNumber);
+            var o = activeOrders.Find(p => p.SignalName == signalNameForOpenPosition);
+            if (o != null)
+            {
+                o.Order.Cancel(barNumber);
+                activeOrders.Remove(o);
+            }
 
             var order = new Order(barNumber, positionSide, entryPricePlanned, contracts,
                   signalNameForOpenPosition);
             var map = new OrderToPositionMap(order);
-            orders.Add(map);        
+            maps.Add(map);
+            activeOrders.Add(map);
         }
 
         protected void Log(string text, params object[] args)
@@ -62,10 +86,11 @@ namespace TradingSystems
 
             var closeOrder = new Order(barNumber, position.PositionSide, stopPrice, position.Contracts,
                 signalNameForClosePosition + notes, OrderType.StopLossLimit);
-            orders.Add(new OrderToPositionMap(closeOrder, position));
+            maps.Add(new OrderToPositionMap(closeOrder, position));
             
             if (order != null)
                 order.Order.Cancel(barNumber);
+            activeOrders.Remove(order);
         }
 
         public void CreateOpenMarketOrder(int barNumber, int contracts, double entryPricePlanned,
@@ -76,25 +101,15 @@ namespace TradingSystems
         public void CreateCloseMarketOrder(int barNumber, double stopPrice,
         string signalNameForClosePosition, string notes, Position position)
         {
-
-        }
-
-        private HashSet<OrderToPositionMap> activePositions = new HashSet<OrderToPositionMap>();
-        private HashSet<OrderToPositionMap> closedPositions = new HashSet<OrderToPositionMap>();
-
-        private List<List<OrderToPositionMap>> activePositionsPerBarNumber = new
-            List<List<OrderToPositionMap>>();
-
-        private List<List<OrderToPositionMap>> closedPositionsPerBarNumber = new
-            List<List<OrderToPositionMap>>();
+        }        
 
         public void Update(int barNumber)//скорее всего, мне придётся реализовать работу всех связанных классов таким образом, что номер бара должен обновлять классы только вперёд. Нужен какой-то внутренний индекс, что ли. Это ускорит работу многих методов.
         {
             try
             {
-                var bar = bars[barNumber];
-                var activeOrders = GetActiveOrders(barNumber);
                 this.barNumber = barNumber;
+                var bar = bars[barNumber];
+                var activeOrders = GetActiveOrders(barNumber);                
 
                 foreach (var order in activeOrders)
                 {
@@ -104,6 +119,9 @@ namespace TradingSystems
                         {
                             var position = new PositionLab(barNumber, order.Order, security);
                             order.Position = position;
+
+                            if (!positions.Contains(order))
+                                positions.Add(order);
                             if (!activePositions.Contains(order))
                                 activePositions.Add(order);
                         }
@@ -135,152 +153,82 @@ namespace TradingSystems
                     }
                 }
 
+
+
                 var cPos = new List<OrderToPositionMap>();
-                foreach (var pos in closedPositions)                
-                    cPos.Add(pos);                
+                foreach (var p in closedPositions)                
+                    cPos.Add(p);                
                 closedPositionsPerBarNumber.Add(cPos);
 
                 var aPos = new List<OrderToPositionMap>();
-                foreach (var pos in activePositions)
-                    aPos.Add(pos);
+                foreach (var p in activePositions)
+                    aPos.Add(p);
                 activePositionsPerBarNumber.Add(aPos);
+
+                var pos = new List<OrderToPositionMap>();
+                foreach (var p in positions)
+                    pos.Add(p);
+                positionsPerBarNumber.Add(pos);
+
+                var orders = new List<OrderToPositionMap>();
+                foreach (var m in maps)
+                    orders.Add(m);
+                ordersPerBarNumber.Add(orders);
+
+                var aO = new List<OrderToPositionMap>();
+                foreach (var o in activeOrders)
+                    aO.Add(o);
+                activeOrdersPerBarNumber.Add(aO);
             }
             catch
-            {
-                
+            {                
             }            
-        }
-        #region temp
-        //private List<List<OrderToPositionMap>> activeOrdersCache = new
-        //    List<List<OrderToPositionMap>>();
-        //private int activeOrdersCacheIndex = 0;
+        }       
 
         public List<OrderToPositionMap> GetActiveOrders(int barNumber)
         {
-            //if (barNumber < activeOrdersCacheIndex)
-            //    return activeOrdersCache[barNumber];
+            //if (barNumber == this.barNumber)
+            //    return activeOrders;
+            //else
+            //    return activeOrdersPerBarNumber[barNumber];
 
-            var activeOrders = (from order in orders
+            var activeOrders = (from order in maps
                                 where order.BarNumber <= barNumber
                                 && barNumber < order.BarNumberSinceOrderIsNotActive
                                 select order).ToList();
-
-            //if (activeOrdersCacheIndex == barNumber)
-            //{
-            //    activeOrdersCache.Add(activeOrders);
-            //    activeOrdersCacheIndex++;
-            //}
-
             return activeOrders;
-        }
+        }      
 
-        //private List<List<OrderToPositionMap>> activePositionsCache = new
-        //    List<List<OrderToPositionMap>>();
-        //private int activePositionsCacheIndex = 0;
-
-        //private Dictionary<int,List<OrderToPositionMap>> activePositionsCacheX = new
-        //    Dictionary<int,List<OrderToPositionMap>>();
-        //private int activePositionsCacheXIndex = 0;
-
-        public List<OrderToPositionMap> GetActivePositions(int barNumber)
+        public List<OrderToPositionMap> GetActivePositions(int barNumber)//!
         {
             if (barNumber == this.barNumber)
-                return this.activePositions.ToList();
+                return activePositions.ToList();
             else
-                return activePositionsPerBarNumber[barNumber];
+                return activePositionsPerBarNumber[barNumber];            
+        }       
 
-            //if (barNumber < activePositionsCacheIndex)
-            //    return activePositionsCache[barNumber];
-
-            //if (activePositionsCacheX.TryGetValue(barNumber, out List<OrderToPositionMap> cached))             
-            //    return cached;                       
-
-            var activePositions = (from order in orders
-                                where order.BarNumberOpenPosition <= barNumber
-                                && barNumber < order.BarNumberClosePosition
-                                select order).ToList();
-
-            //if (activePositionsCacheIndex == barNumber)
-            //{
-            //    activePositionsCache.Add(activePositions);
-            //    activePositionsCacheIndex++;
-            //}
-
-            //activePositionsCacheX[barNumber] = activePositions;
-            return activePositions;
-        }
-
-        //private List<List<OrderToPositionMap>> ordersCache = new
-        //    List<List<OrderToPositionMap>>();
-        //private int ordersCacheIndex = 0;
-
-        public List<OrderToPositionMap> GetOrders(int barNumber)
-        {
-            //if (barNumber < ordersCacheIndex)
-            //    return ordersCache[barNumber];
-
-            var orders = (from order in this.orders
-                                where order.BarNumber <= barNumber                                
-                                select order).ToList();
-
-            //if (ordersCacheIndex == barNumber)
-            //{
-            //    ordersCache.Add(orders);
-            //    ordersCacheIndex++;
-            //}
-
-            return orders;
-        }
-
-        //private List<List<OrderToPositionMap>> positionsCache = new
-        //    List<List<OrderToPositionMap>>();
-        //private int positionsCacheIndex = 0;
-
-        public List<OrderToPositionMap> GetPositions(int barNumber)
-        {
-            //if (barNumber < positionsCacheIndex)
-            //    return positionsCache[barNumber];
-
-            var positions = (from order in orders
-                                   where order.BarNumberOpenPosition <= barNumber                                   
-                                   select order).ToList();
-
-            //if (positionsCacheIndex == barNumber)
-            //{
-            //    positionsCache.Add(positions);
-            //    positionsCacheIndex++;
-            //}
-
-            return positions;
-        }
-
-        #endregion
-        private List<List<OrderToPositionMap>> closedPositionsCache = new 
-            List<List<OrderToPositionMap>>();
-        private int closedPositionsCacheIndex = 0;
-
-        public List<OrderToPositionMap> GetClosedPositions(int barNumber)
+        public List<OrderToPositionMap> GetOrders(int barNumber)//!
         {
             if (barNumber == this.barNumber)
-                return this.closedPositions.ToList();
+                return maps;
             else
-                return closedPositionsPerBarNumber[barNumber];
+                return ordersPerBarNumber[barNumber];
+        }        
 
-            if (barNumber < closedPositionsCacheIndex)
-                return closedPositionsCache[barNumber];
+        public List<OrderToPositionMap> GetPositions(int barNumber)//!
+        {
+            if (barNumber == this.barNumber)
+                return positions.ToList();
+            else
+                return positionsPerBarNumber[barNumber];
+        }       
 
-            var closedPositions = (from order in orders
-                                   where order.BarNumberClosePosition <= barNumber &&
-                                   order.BarNumberClosePosition < int.MaxValue
-                                   select order).ToList();
-
-            if (closedPositionsCacheIndex == barNumber)
-            {
-                closedPositionsCache.Add(closedPositions);
-                closedPositionsCacheIndex++;
-            }
-
-            return closedPositions;
+        public List<OrderToPositionMap> GetClosedPositions(int barNumber)//!
+        {
+            if (barNumber == this.barNumber)
+                return closedPositions.ToList();
+            else
+                return closedPositionsPerBarNumber[barNumber];            
         }
     }
 }

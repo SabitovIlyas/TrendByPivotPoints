@@ -34,7 +34,7 @@ namespace TradingSystems
             }
         }
 
-        public double  ExecutedPrice
+        public double ExecutedPrice
         {
             get
             {

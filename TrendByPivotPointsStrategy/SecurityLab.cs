@@ -489,7 +489,8 @@ namespace TradingSystems
         {
             var orders = GetActiveOrders(barNumber);
             foreach (var order in orders)            
-                order.Cancel(barNumber);            
+                order.Cancel(barNumber);
+            mapping.activeOrders.Clear();
         }
 
         public double GetProfit()
