@@ -81,46 +81,47 @@ namespace TradingSystems.Tests
             Assert.IsNotNull(position);
         }
 
-        [TestMethod()]
-        public void GetOrdersByBarsTest()
-        {
-            var orders = sec.GetOrders(barNumber: 9);
-            Assert.IsTrue(orders.Count == 0);
+        //Очень затратно хранить ссылки на все ордера, которые существуют на каждом баре
+        //[TestMethod()]
+        //public void GetOrdersByBarsTest()
+        //{
+        //    var orders = sec.GetOrders(barNumber: 9);
+        //    Assert.IsTrue(orders.Count == 0);
 
-            orders = sec.GetOrders(barNumber: 10);
-            Assert.IsTrue(orders.Count == 1);
-            Assert.IsTrue(orders[0].Price == 90000);
+        //    orders = sec.GetOrders(barNumber: 10);
+        //    Assert.IsTrue(orders.Count == 1);
+        //    Assert.IsTrue(orders[0].Price == 90000);
 
-            orders = sec.GetOrders(barNumber: 11);
-            Assert.IsTrue(orders.Count == 2);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
+        //    orders = sec.GetOrders(barNumber: 11);
+        //    Assert.IsTrue(orders.Count == 2);
+        //    Assert.IsTrue(orders[0].Price == 90000);
+        //    Assert.IsTrue(orders[1].Price == 89000);
 
-            orders = sec.GetOrders(barNumber: 12);
-            Assert.IsTrue(orders.Count == 3);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
-            Assert.IsTrue(orders[2].Price == 86000);
+        //    orders = sec.GetOrders(barNumber: 12);
+        //    Assert.IsTrue(orders.Count == 3);
+        //    Assert.IsTrue(orders[0].Price == 90000);
+        //    Assert.IsTrue(orders[1].Price == 89000);
+        //    Assert.IsTrue(orders[2].Price == 86000);
 
-            orders = sec.GetOrders(barNumber: 13);
-            Assert.IsTrue(orders.Count == 4);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
-            Assert.IsTrue(orders[2].Price == 86000);
-            Assert.IsTrue(orders[3].Price == 87000);
+        //    orders = sec.GetOrders(barNumber: 13);
+        //    Assert.IsTrue(orders.Count == 4);
+        //    Assert.IsTrue(orders[0].Price == 90000);
+        //    Assert.IsTrue(orders[1].Price == 89000);
+        //    Assert.IsTrue(orders[2].Price == 86000);
+        //    Assert.IsTrue(orders[3].Price == 87000);
 
-            orders = sec.GetOrders(barNumber: 18);
-            Assert.IsTrue(orders.Count == 9);
-            Assert.IsTrue(orders[0].Price == 90000);
-            Assert.IsTrue(orders[1].Price == 89000);
-            Assert.IsTrue(orders[2].Price == 86000);
-            Assert.IsTrue(orders[3].Price == 87000);
-            Assert.IsTrue(orders[4].Price == 88000);
-            Assert.IsTrue(orders[5].Price == 89000);
-            Assert.IsTrue(orders[6].Price == 90000);
-            Assert.IsTrue(orders[7].Price == 91000);
-            Assert.IsTrue(orders[8].Price == 92000);
-        }
+        //    orders = sec.GetOrders(barNumber: 18);
+        //    Assert.IsTrue(orders.Count == 9);
+        //    Assert.IsTrue(orders[0].Price == 90000);
+        //    Assert.IsTrue(orders[1].Price == 89000);
+        //    Assert.IsTrue(orders[2].Price == 86000);
+        //    Assert.IsTrue(orders[3].Price == 87000);
+        //    Assert.IsTrue(orders[4].Price == 88000);
+        //    Assert.IsTrue(orders[5].Price == 89000);
+        //    Assert.IsTrue(orders[6].Price == 90000);
+        //    Assert.IsTrue(orders[7].Price == 91000);
+        //    Assert.IsTrue(orders[8].Price == 92000);
+        //}
 
         [TestMethod()]
         public void GetProfit()

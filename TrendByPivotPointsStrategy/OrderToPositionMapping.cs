@@ -25,10 +25,10 @@ namespace TradingSystems
             List<List<OrderToPositionMap>>();
         private List<List<OrderToPositionMap>> positionsPerBarNumber = new
             List<List<OrderToPositionMap>>();
-        private List<List<OrderToPositionMap>> ordersPerBarNumber = new
-            List<List<OrderToPositionMap>>();
-        private List<List<OrderToPositionMap>> activeOrdersPerBarNumber = new
-            List<List<OrderToPositionMap>>();
+        //private List<List<OrderToPositionMap>> ordersPerBarNumber = new
+            //List<List<OrderToPositionMap>>();
+        //private List<List<OrderToPositionMap>> activeOrdersPerBarNumber = new
+        //    List<List<OrderToPositionMap>>();
 
 
         public OrderToPositionMapping(List<Bar> bars, Security security, Logger logger)
@@ -170,15 +170,15 @@ namespace TradingSystems
                     pos.Add(p);
                 positionsPerBarNumber.Add(pos);
 
-                var orders = new List<OrderToPositionMap>();
-                foreach (var m in maps)
-                    orders.Add(m);
-                ordersPerBarNumber.Add(orders);
+                //var orders = new List<OrderToPositionMap>();
+                //foreach (var m in maps)
+                //    orders.Add(m);
+                //ordersPerBarNumber.Add(orders);
 
-                var aO = new List<OrderToPositionMap>();
-                foreach (var o in activeOrders)
-                    aO.Add(o);
-                activeOrdersPerBarNumber.Add(aO);
+                //var aO = new List<OrderToPositionMap>();
+                //foreach (var o in activeOrders)
+                //    aO.Add(o);
+                //activeOrdersPerBarNumber.Add(aO);
             }
             catch
             {                
@@ -212,7 +212,7 @@ namespace TradingSystems
             if (barNumber == this.barNumber)
                 return maps;
             else
-                return ordersPerBarNumber[barNumber];
+                throw new Exception("Не реализовал, так как комп не вывозит");
         }        
 
         public List<OrderToPositionMap> GetPositions(int barNumber)//!
