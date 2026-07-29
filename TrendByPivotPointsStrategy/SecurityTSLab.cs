@@ -446,6 +446,31 @@ namespace TradingSystems
                 positions.BuyIfGreater(barNumber, contracts, price, signalNameForOpenPosition);
         }
 
+        public void BuyAtMarket(int barNumber, int contracts, string signalNameForOpenPosition, bool isConverted = false)
+        {
+            var positions = security.Positions;
+
+            if (!isConverted)
+                positions.BuyAtMarket(barNumber, contracts, signalNameForOpenPosition, notes: string.Empty);
+            else
+                positions.SellAtMarket(barNumber, contracts, signalNameForOpenPosition, notes: string.Empty);
+        }
+
+        public void SellAtMarket(int barNumber, int contracts, string signalNameForOpenPosition, bool isConverted = false)
+        {
+            var positions = security.Positions;
+
+            if (!isConverted)
+                positions.SellAtMarket(barNumber, contracts, signalNameForOpenPosition, notes: string.Empty);
+            else
+                positions.BuyAtMarket(barNumber, contracts, signalNameForOpenPosition, notes: string.Empty);
+        }
+
+        public void CloseAtMarket(int barNumber, string signalNameForClosePosition, string notes, Position position)
+        {
+            position.CloseAtMarket(barNumber, signalNameForClosePosition);
+        }
+
         public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, PositionLab positionLab, out Order closeOrder)
         {
             throw new NotImplementedException();

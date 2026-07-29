@@ -93,15 +93,45 @@ namespace TradingSystems
             activeOrders.Remove(order);
         }
 
-        public void CreateOpenMarketOrder(int barNumber, int contracts, double entryPricePlanned,
+        public void CreateOpenMarketOrder(int barNumber, int contracts,
             string signalNameForOpenPosition, bool isConverted)
         {
+            Log("Создаём рыночный ордер для открытия позиции. {0} = {1};", nameof(barNumber),
+                barNumber);
+            var positionSide = isConverted ? PositionSide.Short : PositionSide.Long;
+
+            var o = activeOrders.Find(p => p.SignalName == signalNameForOpenPosition);
+            if (o != null)
+            {
+                o.Order.Cancel(barNumber);
+                activeOrders.Remove(o);
+            }
+
+            var order = new Order(barNumber, positionSide, double.NaN, contracts,
+                signalNameForOpenPosition, OrderType.Market);
+            var map = new OrderToPositionMap(order);
+            maps.Add(map);
+            activeOrders.Add(map);
         }
 
-        public void CreateCloseMarketOrder(int barNumber, double stopPrice,
-        string signalNameForClosePosition, string notes, Position position)
+        public void CreateCloseMarketOrder(int barNumber,
+            string signalNameForClosePosition, string notes, Position position)
         {
-        }        
+            var activeOrders = GetActiveOrders(barNumber);
+            var order = activeOrders.Find(p => p.SignalName == signalNameForClosePosition + notes);
+            if (order != null)
+                return;
+
+            //Отменяем прочие закрывающие ордера этой позиции (например, стоп-лосс),
+            //иначе позиция может закрыться дважды.
+            foreach (var o in activeOrders)
+                if (o.Position == position)
+                    o.Order.Cancel(barNumber);
+
+            var closeOrder = new Order(barNumber, position.PositionSide, double.NaN,
+                position.Contracts, signalNameForClosePosition + notes, OrderType.StopLossMarket);
+            maps.Add(new OrderToPositionMap(closeOrder, position));
+        }
 
         public void Update(int barNumber)//скорее всего, мне придётся реализовать работу всех связанных классов таким образом, что номер бара должен обновлять классы только вперёд. Нужен какой-то внутренний индекс, что ли. Это ускорит работу многих методов.
         {
@@ -115,7 +145,7 @@ namespace TradingSystems
                 {
                     if (order.Execute(bar, barNumber))
                     {
-                        if (order.OrderType == OrderType.Limit)
+                        if (order.OrderType == OrderType.Limit || order.OrderType == OrderType.Market)
                         {
                             var position = new PositionLab(barNumber, order.Order, security);
                             order.Position = position;
@@ -136,18 +166,15 @@ namespace TradingSystems
                                 activePositions.Remove(o);
                             }
                         }
-                        else if (order.OrderType == OrderType.Market)
-                        {
-                            throw new NotImplementedException();
-                        }
                         else if (order.OrderType == OrderType.StopLossMarket)
                         {
                             var position = order.Position;
                             position.CloseAtMarket(barNumber, order.ExecutedPrice, order.SignalName);
                             if (!closedPositions.Contains(order))
-                            {                                
+                            {
                                 closedPositions.Add(order);
-                                activePositions.Remove(order);
+                                var o = activePositions.Find(p => p.Position == order.Position);
+                                activePositions.Remove(o);
                             }
                         }
                     }

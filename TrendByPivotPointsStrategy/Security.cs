@@ -37,8 +37,13 @@ namespace TradingSystems
         void BuyIfGreater(int barNumber, int contracts, double price,
             string signalName, bool isConverted = false);
         void SellIfLess(int barNumber, int contracts, double price,
-            string signalName, bool isConverted = false);        
+            string signalName, bool isConverted = false);
+        void BuyAtMarket(int barNumber, int contracts, string signalName,
+            bool isConverted = false);
+        void SellAtMarket(int barNumber, int contracts, string signalName,
+            bool isConverted = false);
         void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, string notes, Position position);
+        void CloseAtMarket(int barNumber, string signalNameForClosePosition, string notes, Position position);
         void CancelAllOrders(int barNumber);
         double GetProfit(int barNumber);
         double GetProfit();

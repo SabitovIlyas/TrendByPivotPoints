@@ -29,9 +29,6 @@ namespace TradingSystems
 
         private Currency currency;
         private double shares;
-        private List<Order> orders = new List<Order>();
-        private Dictionary<Order, Position> ordersPositions = new Dictionary<Order, Position>();
-        private List<Order> activeOrders = new List<Order>();
         private OrderToPositionMapping mapping;
         private Logger logger;
         private int constructorNumber;
@@ -293,20 +290,30 @@ namespace TradingSystems
                 isConverted: true);
         }
 
-        public void CloseAtMarket(int barNumber, string signalNameForClosePosition,
-            PositionLab position, out Order closeOrder)//r
+        public void BuyAtMarket(int barNumber, int contracts,
+            string signalNameForOpenPosition, bool isConverted = false)
         {
-            closeOrder = new Order(barNumber, position.PositionSide, double.NaN,
-                position.Contracts, signalNameForClosePosition, OrderType.Market);
-            orders.Add(closeOrder);
-            ordersPositions.Add(closeOrder, position);
-            activeOrders.Add(closeOrder);
+            mapping.CreateOpenMarketOrder(barNumber, contracts, signalNameForOpenPosition,
+                isConverted);
         }
-       
-        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition, 
+
+        public void SellAtMarket(int barNumber, int contracts,
+            string signalNameForOpenPosition, bool isConverted = false)
+        {
+            BuyAtMarket(barNumber, contracts, signalNameForOpenPosition, isConverted: true);
+        }
+
+        public void CloseAtMarket(int barNumber, string signalNameForClosePosition,
             string notes, Position position)
         {
-            mapping.CreateCloseLimitOrder(barNumber, stopPrice, signalNameForClosePosition, notes, 
+            mapping.CreateCloseMarketOrder(barNumber, signalNameForClosePosition, notes,
+                position);
+        }
+
+        public void CloseAtStop(int barNumber, double stopPrice, string signalNameForClosePosition,
+            string notes, Position position)
+        {
+            mapping.CreateCloseLimitOrder(barNumber, stopPrice, signalNameForClosePosition, notes,
                 position);
         }
 
