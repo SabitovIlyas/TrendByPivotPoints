@@ -25,6 +25,27 @@ namespace TrendByPivotPointsOptimizator
         public virtual void Repair(Dictionary<string, double> genes) { }
 
         /// <summary>
+        /// Переопределяет диапазоны поиска параметров значениями из файла настроек
+        /// (строки «Range:имя:мин:макс:шаг»). Незнакомые имена игнорируются.
+        /// </summary>
+        public void ApplyRangeOverrides(Settings settings)
+        {
+            if (settings.ParameterRanges == null || settings.ParameterRanges.Count == 0)
+                return;
+
+            var parameters = Parameters;
+            for (var i = 0; i < parameters.Count; i++)
+            {
+                if (settings.ParameterRanges.TryGetValue(parameters[i].Name,
+                    out ParameterRange range))
+                {
+                    parameters[i] = new ParameterDescriptor(parameters[i].Name,
+                        range.Min, range.Max, range.Step, parameters[i].IsInteger);
+                }
+            }
+        }
+
+        /// <summary>
         /// Собирает SystemParameters для стартера из генов хромосомы и общих настроек.
         /// </summary>
         public virtual SystemParameters CreateSystemParameters(Dictionary<string, double> genes,

@@ -36,5 +36,22 @@ namespace TrendByPivotPointsOptimizator
         //Счёт
         public double Equity = 100000;
         public double RiskValuePrcnt = 2;
+
+        //Пути к файлам данных: если заданы, оптимизатор не спрашивает их диалогами
+        public string SecuritiesFile = string.Empty;
+        public string SeedGenesFile = string.Empty;
+
+        //Переопределение диапазонов поиска параметров стратегии
+        //(строки вида «Range:имя:мин:макс:шаг»)
+        public Dictionary<string, ParameterRange> ParameterRanges =
+            new Dictionary<string, ParameterRange>();
+    }
+
+    /// <summary>Диапазон поиска одного параметра: минимум, максимум, шаг.</summary>
+    public class ParameterRange
+    {
+        public double Min;
+        public double Max;
+        public double Step;
     }
 }

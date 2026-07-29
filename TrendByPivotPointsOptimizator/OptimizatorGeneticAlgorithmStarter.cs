@@ -39,7 +39,7 @@ namespace TrendByPivotPointsOptimizator
 
             //Если в настройках указана стратегия — работаем через универсальный
             //оптимизатор; иначе — прежний путь Дончиана.
-            var definition = CreateStrategyDefinition(settings);
+            var definition = CreateStrategyDefinitionWithOverrides(settings);
             if (definition != null)
             {
                 StartUniversal(settings, definition, openFileDialog, logger, startTime);
@@ -214,27 +214,83 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
+        private StrategyDefinition CreateStrategyDefinitionWithOverrides(Settings settings)
+        {
+            var definition = CreateStrategyDefinition(settings);
+            definition?.ApplyRangeOverrides(settings);
+            return definition;
+        }
+
         //Оптимизация через универсальный генетический алгоритм: стратегия и все
-        //параметры задаются файлом настроек, хардкода нет. Здесь — только диалоги
-        //выбора файлов, вся работа в StartUniversalCore.
+        //параметры задаются файлом настроек, хардкода нет. Диалоги показываются
+        //только если пути к файлам не заданы в настройках; вся работа —
+        //в StartUniversalCore.
         private void StartUniversal(Settings settings, StrategyDefinition definition,
             OpenFileDialog openFileDialog, Logger logger, DateTime startTime)
         {
-            openFileDialog.Title = "Выберите файл с инструментами";
-            if (openFileDialog.ShowDialog() != DialogResult.OK)
-                return;
+            var securitiesFileName = settings.SecuritiesFile;
+            if (string.IsNullOrEmpty(securitiesFileName) || !File.Exists(securitiesFileName))
+            {
+                openFileDialog.Title = "Выберите файл с инструментами";
+                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                    return;
 
-            var securitiesFileName = openFileDialog.FileName;
+                securitiesFileName = openFileDialog.FileName;
+            }
 
             Dictionary<string, double> seedGenes = null;
-            openFileDialog.Title = "Выберите файл с лучшей хромосомой (необязательно)";
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-                seedGenes = LoadSeedGenes(openFileDialog.FileName);
+            if (!string.IsNullOrEmpty(settings.SeedGenesFile) &&
+                File.Exists(settings.SeedGenesFile))
+            {
+                seedGenes = LoadSeedGenes(settings.SeedGenesFile);
+            }
+            else
+            {
+                openFileDialog.Title = "Выберите файл с лучшей хромосомой (необязательно)";
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    seedGenes = LoadSeedGenes(openFileDialog.FileName);
+            }
 
             StartUniversalCore(settings, definition, securitiesFileName, seedGenes, logger,
                 startTime);
 
             Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Полностью неинтерактивный запуск по файлу настроек: стратегия, диапазоны
+        /// и пути к данным берутся из файла. Используется при запуске из
+        /// Менеджера проектов (путь к файлу настроек — аргумент командной строки).
+        /// </summary>
+        public void StartFromSettingsFile(string settingsFileName)
+        {
+            var logger = new ConsoleLogger();
+            var startTime = DateTime.Now;
+            logger.Log("Старт! {0}\r\n", startTime);
+
+            var settings = CreateSettings(settingsFileName);
+            var definition = CreateStrategyDefinitionWithOverrides(settings);
+            if (definition == null)
+            {
+                logger.Log("В файле настроек не указана стратегия (строка Strategy:).");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(settings.SecuritiesFile) ||
+                !File.Exists(settings.SecuritiesFile))
+            {
+                logger.Log("Не найден файл с инструментами (строка SecuritiesFile): {0}",
+                    settings.SecuritiesFile);
+                return;
+            }
+
+            Dictionary<string, double> seedGenes = null;
+            if (!string.IsNullOrEmpty(settings.SeedGenesFile) &&
+                File.Exists(settings.SeedGenesFile))
+                seedGenes = LoadSeedGenes(settings.SeedGenesFile);
+
+            StartUniversalCore(settings, definition, settings.SecuritiesFile, seedGenes,
+                logger, startTime);
         }
 
         /// <summary>
@@ -547,6 +603,21 @@ namespace TrendByPivotPointsOptimizator
                     case "ShiftWindowDays": settings.ShiftWindowDays = int.Parse(value); break;
                     case "Equity": settings.Equity = ParseDouble(value); break;
                     case "RiskValuePrcnt": settings.RiskValuePrcnt = ParseDouble(value); break;
+                    case "SecuritiesFile": settings.SecuritiesFile = value; break;
+                    case "SeedGenesFile": settings.SeedGenesFile = value; break;
+                    case "Range":
+                        //Формат: Range:имя:мин:макс:шаг
+                        var parts = value.Split(':');
+                        if (parts.Length == 4)
+                            settings.ParameterRanges[parts[0].Trim()] = new ParameterRange()
+                            {
+                                Min = ParseDouble(parts[1]),
+                                Max = ParseDouble(parts[2]),
+                                Step = ParseDouble(parts[3]),
+                            };
+                        else
+                            Console.WriteLine("Неверный формат диапазона: " + line);
+                        break;
                 }
             }
             catch (FormatException)

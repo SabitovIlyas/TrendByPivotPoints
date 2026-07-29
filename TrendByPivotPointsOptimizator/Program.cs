@@ -16,6 +16,16 @@ namespace TrendByPivotPointsOptimizator
         [STAThread]
         static void Main(string[] args)
         {
+            //Запуск с путём к файлу настроек аргументом — полностью без диалогов
+            //(так оптимизатор запускает Менеджер проектов).
+            if (args != null && args.Length > 0)
+            {
+                new OptimizatorGeneticAlgorithmStarter().StartFromSettingsFile(args[0]);
+                Console.WriteLine("Нажмите Enter для выхода.");
+                Console.ReadLine();
+                return;
+            }
+
             Console.WriteLine("Введите номер примера использования");
             useCase = int.Parse(Console.ReadLine());
             switch (useCase)
