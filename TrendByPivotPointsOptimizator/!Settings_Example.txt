@@ -1,0 +1,31 @@
+PositionSide:Long
+TimeFrames:60min
+Strategy:MeanReversion
+Seed:42
+PopulationSize:100
+Generations:300
+CrossoverRate:0.85
+MutationRate:0.10
+Patience:50
+BackwardDays:1460
+ForwardDays:1460
+ForwardPeriodsCount:10
+ShiftWindowDays:30
+Equity:100000
+RiskValuePrcnt:2
+
+# Пример файла настроек оптимизатора. Строки, начинающиеся не с ключа, игнорируются.
+#
+# PositionSide: Long или Short (сторона торговли)
+# TimeFrames: 01min, 05min, 15min, 30min, 60min или 1d
+# Strategy: имя стратегии для универсального оптимизатора:
+#     MeanReversion      - возврат к среднему (RSI + SMA-фильтр + ATR-стоп)
+#     DonchianUniversal  - прорыв канала Дончиана через универсальный путь
+#   Если строка Strategy отсутствует - работает прежний оптимизатор Дончиана.
+# Seed: сид генератора случайных чисел; убрать строку - случайный запуск.
+# PopulationSize/Generations/CrossoverRate/MutationRate/Patience: параметры
+#   генетического алгоритма (умолчания: 100/300/0.85/0.10/50).
+# BackwardDays/ForwardDays: окна бэктеста и форвардного теста в днях (1460/1460).
+# ForwardPeriodsCount: количество форвардных периодов (10).
+# ShiftWindowDays: смещение окна между периодами в днях (30).
+# Equity: стартовый капитал (100000). RiskValuePrcnt: риск на сделку, % (2).

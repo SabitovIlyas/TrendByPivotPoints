@@ -192,7 +192,7 @@ namespace TrendByPivotPointsOptimizator
         }
 
         /// <summary>Фабрика описаний стратегий по имени из файла настроек.</summary>
-        private StrategyDefinition CreateStrategyDefinition(string strategyName)
+        public StrategyDefinition CreateStrategyDefinition(string strategyName)
         {
             if (string.IsNullOrEmpty(strategyName))
                 return null;
@@ -211,26 +211,42 @@ namespace TrendByPivotPointsOptimizator
         }
 
         //Оптимизация через универсальный генетический алгоритм: стратегия и все
-        //параметры задаются файлом настроек, хардкода нет.
+        //параметры задаются файлом настроек, хардкода нет. Здесь — только диалоги
+        //выбора файлов, вся работа в StartUniversalCore.
         private void StartUniversal(Settings settings, StrategyDefinition definition,
             OpenFileDialog openFileDialog, Logger logger, DateTime startTime)
         {
-            logger.Log("Стратегия: {0}", definition.Name);
-
             openFileDialog.Title = "Выберите файл с инструментами";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            var fullFileName = openFileDialog.FileName;
-
-            var securitiesData = GetSecuritiesData(fullFileName);
-            var loggerNull = new LoggerNull();
-            var tickers = CreateTickers(securitiesData, fullFileName, settings, loggerNull);
+            var securitiesFileName = openFileDialog.FileName;
 
             Dictionary<string, double> seedGenes = null;
             openFileDialog.Title = "Выберите файл с лучшей хромосомой (необязательно)";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
                 seedGenes = LoadSeedGenes(openFileDialog.FileName);
+
+            StartUniversalCore(settings, definition, securitiesFileName, seedGenes, logger,
+                startTime);
+
+            Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Ядро универсальной оптимизации без пользовательского интерфейса —
+        /// пригодно для автоматизированных запусков.
+        /// </summary>
+        public void StartUniversalCore(Settings settings, StrategyDefinition definition,
+            string securitiesFileName, Dictionary<string, double> seedGenes, Logger logger,
+            DateTime startTime)
+        {
+            logger.Log("Стратегия: {0}", definition.Name);
+
+            var securitiesData = GetSecuritiesData(securitiesFileName);
+            var loggerNull = new LoggerNull();
+            var tickers = CreateTickers(securitiesData, securitiesFileName, settings,
+                loggerNull);
 
             var results = new List<ForwardAnalysisResult>();
             var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}_" +
@@ -348,8 +364,6 @@ namespace TrendByPivotPointsOptimizator
             {
                 logger.Log(e.ToString());
             }
-
-            Console.ReadLine();
         }
 
         //Затравочные гены: JSON-словарь «имя параметра — значение».
@@ -454,7 +468,7 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
-        private Settings CreateSettings(string fullFileName)
+        public Settings CreateSettings(string fullFileName)
         {
             var settings = new Settings();
             var sides = new List<PositionSide>();
