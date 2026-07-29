@@ -37,6 +37,15 @@ namespace TrendByPivotPointsOptimizator
 
             var settings = CreateSettings(fullFileName);
 
+            //Если в настройках указана стратегия — работаем через универсальный
+            //оптимизатор; иначе — прежний путь Дончиана.
+            var definition = CreateStrategyDefinition(settings.Strategy);
+            if (definition != null)
+            {
+                StartUniversal(settings, definition, openFileDialog, logger, startTime);
+                return;
+            }
+
             openFileDialog.Title = "Выберите файл с инструментами";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;           
@@ -182,6 +191,209 @@ namespace TrendByPivotPointsOptimizator
             Console.ReadLine();
         }
 
+        /// <summary>Фабрика описаний стратегий по имени из файла настроек.</summary>
+        private StrategyDefinition CreateStrategyDefinition(string strategyName)
+        {
+            if (string.IsNullOrEmpty(strategyName))
+                return null;
+
+            switch (strategyName.Trim().ToLowerInvariant())
+            {
+                case "meanreversion":
+                    return new MeanReversionStrategyDefinition();
+                case "donchian":
+                case "donchianuniversal":
+                    return new DonchianStrategyDefinition();
+                default:
+                    throw new Exception("Неизвестная стратегия в файле настроек: " +
+                        strategyName);
+            }
+        }
+
+        //Оптимизация через универсальный генетический алгоритм: стратегия и все
+        //параметры задаются файлом настроек, хардкода нет.
+        private void StartUniversal(Settings settings, StrategyDefinition definition,
+            OpenFileDialog openFileDialog, Logger logger, DateTime startTime)
+        {
+            logger.Log("Стратегия: {0}", definition.Name);
+
+            openFileDialog.Title = "Выберите файл с инструментами";
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            var fullFileName = openFileDialog.FileName;
+
+            var securitiesData = GetSecuritiesData(fullFileName);
+            var loggerNull = new LoggerNull();
+            var tickers = CreateTickers(securitiesData, fullFileName, settings, loggerNull);
+
+            Dictionary<string, double> seedGenes = null;
+            openFileDialog.Title = "Выберите файл с лучшей хромосомой (необязательно)";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+                seedGenes = LoadSeedGenes(openFileDialog.FileName);
+
+            var results = new List<ForwardAnalysisResult>();
+            var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}_" +
+                $"{definition.Name}.csv";
+            CreateTxtFile(resultFileName);
+
+            try
+            {
+                var context = new ContextLab();
+                var effectiveSeed = settings.Seed ?? seed;
+                var randomProvider = effectiveSeed.HasValue
+                    ? new RandomProvider(effectiveSeed.Value)
+                    : new RandomProvider();
+
+                var ga = new GeneticAlgorithmUniversal(settings.PopulationSize,
+                    settings.Generations, settings.CrossoverRate, settings.MutationRate,
+                    randomProvider, tickers, settings, context, definition, loggerNull);
+
+                logger.Log("Старт генетического алгоритма");
+                logger.Log("Актуальная оптимизация!");
+                ga.IsLastBackwardTesting = true;
+                var bestPopulationLast = ga.Run(period: 0, seedGenes);
+
+                foreach (var chromosome in bestPopulationLast)
+                    chromosome.ForwardAnalysisResults.First().BackwardFitness =
+                        chromosome.FitnessValue;
+
+                var sumResults = 0d;
+                foreach (var chromosome in bestPopulationLast)
+                    sumResults += chromosome.ForwardAnalysisResults.First().BackwardFitness;
+
+                var avgResults = sumResults / bestPopulationLast.Count;
+                var tmpRes = new ForwardAnalysisResult() { BackwardFitness = avgResults, };
+
+                if (bestPopulationLast.Count > 0)
+                {
+                    tmpRes.BackwardStart = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardStart;
+                    tmpRes.BackwardEnd = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardEnd;
+                    tmpRes.BackwardProfit = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardProfit;
+                    tmpRes.BackwardProfitPrcnt = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardProfitPrcnt;
+                }
+
+                PrintToTxtFile(bestPopulationLast, definition);
+                var bestChromosome = bestPopulationLast.First();
+
+                ga.IsLastBackwardTesting = false;
+                for (var period = 0; period < settings.ForwardPeriodsCount; period++)
+                {
+                    logger.Log("Период № {0}", period + 1);
+                    var bestPopulation = ga.Run(period, bestChromosome.Genes);
+
+                    foreach (var chromosome in bestPopulation)
+                        chromosome.ForwardAnalysisResults.First().BackwardFitness =
+                            chromosome.FitnessValue;
+
+                    foreach (var chromosome in bestPopulation)
+                        chromosome.SetForwardBarsAsTickerBars();
+
+                    foreach (var chromosome in bestPopulation)
+                        chromosome.Fitness.SetUpChromosomeFitnessValue(
+                            isCriteriaPassedNeedToCheck: false);
+
+                    foreach (var chromosome in bestPopulation)
+                        chromosome.ForwardAnalysisResults.First().ForwardFitness =
+                            chromosome.FitnessValue;
+
+                    var sumResultsBackward = 0d;
+                    var sumResultsForward = 0d;
+                    foreach (var chromosome in bestPopulation)
+                    {
+                        sumResultsBackward += chromosome.ForwardAnalysisResults.First().BackwardFitness;
+                        sumResultsForward += chromosome.ForwardAnalysisResults.First().ForwardFitness;
+                    }
+
+                    var avgResultsBackward = sumResultsBackward / bestPopulation.Count;
+                    var avgResultsForward = sumResultsForward / bestPopulation.Count;
+
+                    var tmp = new ForwardAnalysisResult()
+                    {
+                        BackwardFitness = avgResultsBackward,
+                        ForwardFitness = avgResultsForward,
+                    };
+
+                    if (bestPopulation.Count > 0)
+                    {
+                        tmp.BackwardStart = bestPopulation.First().ForwardAnalysisResults.First().BackwardStart;
+                        tmp.BackwardEnd = bestPopulation.First().ForwardAnalysisResults.First().BackwardEnd;
+                        tmp.ForwardStart = bestPopulation.First().ForwardAnalysisResults.First().ForwardStart;
+                        tmp.ForwardEnd = bestPopulation.First().ForwardAnalysisResults.First().ForwardEnd;
+                        tmp.BackwardProfit = bestPopulation.First().ForwardAnalysisResults.First().BackwardProfit;
+                        tmp.ForwardProfit = bestPopulation.First().ForwardAnalysisResults.First().ForwardProfit;
+                        tmp.BackwardProfitPrcnt = bestPopulation.First().ForwardAnalysisResults.First().BackwardProfitPrcnt;
+                        tmp.ForwardProfitPrcnt = bestPopulation.First().ForwardAnalysisResults.First().ForwardProfitPrcnt;
+                    }
+
+                    results.Add(tmp);
+                    AppendToTxtFile(tmp, resultFileName);
+
+                    var bestPopulationFile = $"{tickers.First().Name}_" +
+                        $"{settings.Sides.First()}_{definition.Name}_Period_{period}.csv";
+                    CreateTxtFile(bestPopulationFile);
+                    PrintToTxtFile(bestPopulation, definition, bestPopulationFile);
+                }
+                results.Add(tmpRes);
+                AppendToTxtFile(tmpRes, resultFileName);
+
+                var stopTime = DateTime.Now;
+                logger.Log("Стоп {0}", stopTime);
+
+                var duration = stopTime - startTime;
+                logger.Log("Время выполнения {0}", duration);
+                logger.Log("Генетический алгоритм завершил работу.");
+            }
+            catch (Exception e)
+            {
+                logger.Log(e.ToString());
+            }
+
+            Console.ReadLine();
+        }
+
+        //Затравочные гены: JSON-словарь «имя параметра — значение».
+        private Dictionary<string, double> LoadSeedGenes(string fullFileName)
+        {
+            var file = File.ReadAllText(fullFileName);
+            var serializer = new JsonSerializer();
+            return serializer.Deserialize<Dictionary<string, double>>(
+                new JsonTextReader(new StringReader(file)));
+        }
+
+        private void PrintToTxtFile(List<ChromosomeUniversal> population,
+            StrategyDefinition definition, string fileName = "")
+        {
+            if (population == null || population.Count == 0)
+                return;
+
+            var t = population.Last();
+
+            if (fileName == "")
+                fileName = $"{t.Ticker.Name}_{t.Side}_{definition.Name}_params.csv";
+
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                //Заголовки: общие колонки + имена параметров стратегии
+                var header = $"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
+                    $"{nameof(t.TimeFrame)};{nameof(t.Side)};{nameof(t.Ticker.Name)}";
+                foreach (var descriptor in definition.Parameters)
+                    header += ";" + descriptor.Name;
+                header += $";{nameof(t.Profit)};{nameof(t.ProfitPrcnt)}";
+                writer.WriteLine(header);
+
+                foreach (var c in population)
+                {
+                    var line = $"{c.FitnessValue};{c.DealsCount};{c.TimeFrame};{c.Side};" +
+                        $"{c.Ticker.Name}";
+                    foreach (var descriptor in definition.Parameters)
+                        line += ";" + c.Genes[descriptor.Name];
+                    line += $";{c.Profit};{c.ProfitPrcnt}";
+                    writer.WriteLine(line);
+                }
+            }
+        }
+
         private SurogateChromosome CreateBestChromosome(string fullFileName)
         {
             var file = File.ReadAllText(fullFileName);
@@ -244,6 +456,7 @@ namespace TrendByPivotPointsOptimizator
 
         private Settings CreateSettings(string fullFileName)
         {
+            var settings = new Settings();
             var sides = new List<PositionSide>();
             var timeFrames = new List<Interval>();
 
@@ -275,6 +488,8 @@ namespace TrendByPivotPointsOptimizator
                         timeFrames.Add(new Interval(60, DataIntervals.MINUTE));
                     if (str.Contains("1d"))
                         timeFrames.Add(new Interval(1, DataIntervals.DAYS));
+
+                    ParseSettingsKeyValue(str, settings);
                 }
             }
             catch (Exception ex)
@@ -282,7 +497,50 @@ namespace TrendByPivotPointsOptimizator
                 Console.WriteLine(ex.Message);
             }
 
-            return new Settings() { Sides = sides, TimeFrames = timeFrames };
+            settings.Sides = sides;
+            settings.TimeFrames = timeFrames;
+            return settings;
+        }
+
+        //Разбор строк вида «Ключ:Значение»; неизвестные ключи игнорируются.
+        private void ParseSettingsKeyValue(string line, Settings settings)
+        {
+            var separatorIndex = line.IndexOf(':');
+            if (separatorIndex <= 0)
+                return;
+
+            var key = line.Substring(0, separatorIndex).Trim();
+            var value = line.Substring(separatorIndex + 1).Trim();
+
+            try
+            {
+                switch (key)
+                {
+                    case "Strategy": settings.Strategy = value; break;
+                    case "Seed": settings.Seed = int.Parse(value); break;
+                    case "PopulationSize": settings.PopulationSize = int.Parse(value); break;
+                    case "Generations": settings.Generations = int.Parse(value); break;
+                    case "CrossoverRate": settings.CrossoverRate = ParseDouble(value); break;
+                    case "MutationRate": settings.MutationRate = ParseDouble(value); break;
+                    case "Patience": settings.Patience = int.Parse(value); break;
+                    case "BackwardDays": settings.BackwardDays = int.Parse(value); break;
+                    case "ForwardDays": settings.ForwardDays = int.Parse(value); break;
+                    case "ForwardPeriodsCount": settings.ForwardPeriodsCount = int.Parse(value); break;
+                    case "ShiftWindowDays": settings.ShiftWindowDays = int.Parse(value); break;
+                    case "Equity": settings.Equity = ParseDouble(value); break;
+                    case "RiskValuePrcnt": settings.RiskValuePrcnt = ParseDouble(value); break;
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Не удалось разобрать строку настроек: " + line);
+            }
+        }
+
+        private double ParseDouble(string value)
+        {
+            return double.Parse(value.Replace(',', '.'),
+                System.Globalization.CultureInfo.InvariantCulture);
         }
 
         private List<SecurityData> GetSecuritiesData(string fullFileName)

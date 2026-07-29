@@ -84,6 +84,14 @@
     <Compile Include="AverageValueCombinationDecoratorsDescendingComparer.cs" />
     <Compile Include="Chromosome.cs" />
     <Compile Include="ChromosomeDonchianChannel.cs" />
+    <Compile Include="ChromosomeUniversal.cs" />
+    <Compile Include="DonchianStrategyDefinition.cs" />
+    <Compile Include="FitnessUniversal.cs" />
+    <Compile Include="GeneticAlgorithmUniversal.cs" />
+    <Compile Include="IOptimizableChromosome.cs" />
+    <Compile Include="MeanReversionStrategyDefinition.cs" />
+    <Compile Include="ParameterDescriptor.cs" />
+    <Compile Include="StrategyDefinition.cs" />
     <Compile Include="Combination.cs" />
     <Compile Include="CombinationDecorator.cs" />
     <Compile Include="AverageValueCombinationsAscendingComparer.cs" />

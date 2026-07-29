@@ -6,7 +6,7 @@ using TSLab.DataSource;
 
 namespace TrendByPivotPointsOptimizator
 {
-    public class ChromosomeDonchianChannel
+    public class ChromosomeDonchianChannel : IOptimizableChromosome
     {
         public bool FitnessPassed { get { return !double.IsNegativeInfinity(FitnessValue); } }
         public double FitnessValue { get; set; } = double.NaN;

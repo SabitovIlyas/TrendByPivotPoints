@@ -108,7 +108,7 @@ namespace TrendByPivotPointsOptimizator
             return results;
         }
 
-        public void SetTradingPeriods(ChromosomeDonchianChannel chromosome)
+        public void SetTradingPeriods(IOptimizableChromosome chromosome)
         {
             var results = new List<ForwardAnalysisResult>();            
             var sortedBars = chromosome.Ticker.Bars.OrderBy(b => b.Date).ToList();
@@ -145,7 +145,7 @@ namespace TrendByPivotPointsOptimizator
             chromosome.ForwardAnalysisResults.Add(result);          
         }
 
-        public void SetTradingPeriodsFinal(ChromosomeDonchianChannel chromosome)
+        public void SetTradingPeriodsFinal(IOptimizableChromosome chromosome)
         {
             var results = new List<ForwardAnalysisResult>();
             var sortedBars = chromosome.Ticker.Bars.OrderBy(b => b.Date).ToList();

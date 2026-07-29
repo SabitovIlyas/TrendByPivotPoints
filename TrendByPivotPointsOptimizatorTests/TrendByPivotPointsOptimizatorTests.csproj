@@ -98,6 +98,7 @@
     <Compile Include="ForwardAnalysisAndGeneticAlgorithmTests.cs" />
     <Compile Include="ForwardAnalysisTests.cs" />
     <Compile Include="GeneticAlgorithmTests.cs" />
+    <Compile Include="GeneticAlgorithmUniversalTests.cs" />
     <Compile Include="MatrixCreatorTests.cs" />
     <Compile Include="OptimizatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
