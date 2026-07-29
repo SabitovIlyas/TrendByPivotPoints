@@ -42,40 +42,25 @@ namespace PeparatorDataForSpreadTradingSystems
 
         public List<Bar> ConvertFileWithBarsToListOfBars()
         {
-            string line;
             var bars = new List<Bar>();
-            try
+
+            string[] listStrings;
+            if (StringLines.Length > 0)
             {
-                string[] listStrings = new string[0];
-                
-                if (StringLines.Length > 0)
-                {
-                    listStrings = StringLines;
-                }
-                else
-                {
-                    //var p = System.IO.Directory.GetCurrentDirectory();
-                    if (!System.IO.File.Exists(FullFileName))
-                        throw new Exception("Файл не найден!");
-
-                    listStrings = System.IO.File.ReadAllLines(FullFileName);
-
-                    if (listStrings == null)
-                        throw new Exception("Файл пустой!");
-                }
-                
-                foreach (string str in listStrings)
-                {
-                    line = str;
-                    if (!string.IsNullOrEmpty(str) &&!(str.Contains('<')||str.Contains('>')))
-                    {
-                        bars.Add(Convert(str));
-                    }
-                }
+                listStrings = StringLines;
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex.Message);
+                if (!System.IO.File.Exists(FullFileName))
+                    throw new System.IO.FileNotFoundException("Файл не найден!", FullFileName);
+
+                listStrings = System.IO.File.ReadAllLines(FullFileName);
+            }
+
+            foreach (string str in listStrings)
+            {
+                if (!string.IsNullOrEmpty(str) && !(str.Contains('<') || str.Contains('>')))
+                    bars.Add(Convert(str));
             }
 
             return bars;
