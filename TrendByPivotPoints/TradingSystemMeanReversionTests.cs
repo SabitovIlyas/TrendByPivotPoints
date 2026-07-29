@@ -152,7 +152,9 @@ namespace TradingSystems.Tests
         public void OpensShort_OnRsiSpikeInDowntrend()
         {
             var bars = CreateDowntrendWithSpike();
-            //Слабый дрейф вверх: RSI' (зеркальный) остаётся низким, шорт не закрывается.
+            //Вход в шорт: RSI выше порога 50 после выброса, закрытие ниже SMA.
+            //Слабый дрейф вверх: RSI остаётся высоким, пересечения порога выхода
+            //сверху вниз нет — шорт не закрывается.
             AddBar(bars, 108, 110, 107, 109);
             AddBar(bars, 109, 111, 108, 110);
             AddBar(bars, 110, 112, 109, 111);

@@ -35,11 +35,11 @@ namespace TrendByPivotPointsOptimizator.Tests
             return bars;
         }
 
-        private Settings CreateTestSettings()
+        private Settings CreateTestSettings(PositionSide side = PositionSide.Long)
         {
             return new Settings
             {
-                Sides = new List<PositionSide>() { PositionSide.Long },
+                Sides = new List<PositionSide>() { side },
                 TimeFrames = new List<Interval>() { new Interval(60, DataIntervals.MINUTE) },
                 PopulationSize = 8,
                 Generations = 2,
@@ -50,13 +50,14 @@ namespace TrendByPivotPointsOptimizator.Tests
             };
         }
 
-        private List<ChromosomeUniversal> RunGa(StrategyDefinition definition, int seed)
+        private List<ChromosomeUniversal> RunGa(StrategyDefinition definition, int seed,
+            PositionSide side = PositionSide.Long)
         {
             var bars = CreateBars(days: 90);
             var logger = new LoggerNull();
             var ticker = new Ticker("TEST", Currency.RUB, 1, bars, logger,
                 commissionRate: 0, isUSD: false, rateUSD: 1);
-            var settings = CreateTestSettings();
+            var settings = CreateTestSettings(side);
             var context = new ContextLab();
             var randomProvider = new RandomProvider(seed);
 
@@ -71,8 +72,8 @@ namespace TrendByPivotPointsOptimizator.Tests
         [TestMethod()]
         public void SameSeed_ProducesIdenticalResult_MeanReversion()
         {
-            var first = RunGa(new MeanReversionStrategyDefinition(), seed: 42);
-            var second = RunGa(new MeanReversionStrategyDefinition(), seed: 42);
+            var first = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long), seed: 42);
+            var second = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long), seed: 42);
 
             Assert.IsTrue(first.Any(), "Оптимизатор не вернул ни одной хромосомы.");
             Assert.AreEqual(first.First().Name, second.First().Name);
@@ -83,8 +84,8 @@ namespace TrendByPivotPointsOptimizator.Tests
         [TestMethod()]
         public void DifferentSeeds_BothProduceResult_MeanReversion()
         {
-            var first = RunGa(new MeanReversionStrategyDefinition(), seed: 42);
-            var second = RunGa(new MeanReversionStrategyDefinition(), seed: 43);
+            var first = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long), seed: 42);
+            var second = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long), seed: 43);
 
             Assert.IsTrue(first.Any());
             Assert.IsTrue(second.Any());
@@ -99,9 +100,25 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void ShortSide_UsesShortRanges()
+        {
+            //Для шорта пороги RSI ищутся в собственных диапазонах:
+            //вход [50;95], выход [5;50] — независимо от лонга.
+            var definition = new MeanReversionStrategyDefinition(PositionSide.Short);
+            var best = RunGa(definition, seed: 42, side: PositionSide.Short);
+
+            Assert.IsTrue(best.Any(), "Оптимизатор не вернул ни одной хромосомы.");
+            var genes = best.First().Genes;
+            Assert.IsTrue(genes["rsiEntryLevel"] >= 50 && genes["rsiEntryLevel"] <= 95,
+                "rsiEntryLevel шорта вне диапазона [50; 95]: " + genes["rsiEntryLevel"]);
+            Assert.IsTrue(genes["rsiExitLevel"] >= 5 && genes["rsiExitLevel"] <= 50,
+                "rsiExitLevel шорта вне диапазона [5; 50]: " + genes["rsiExitLevel"]);
+        }
+
+        [TestMethod()]
         public void GeneValues_StayWithinDescriptorBounds()
         {
-            var definition = new MeanReversionStrategyDefinition();
+            var definition = new MeanReversionStrategyDefinition(PositionSide.Long);
             var best = RunGa(definition, seed: 7);
 
             Assert.IsTrue(best.Any());

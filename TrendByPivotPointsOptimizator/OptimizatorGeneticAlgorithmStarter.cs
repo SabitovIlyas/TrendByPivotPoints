@@ -39,7 +39,7 @@ namespace TrendByPivotPointsOptimizator
 
             //Если в настройках указана стратегия — работаем через универсальный
             //оптимизатор; иначе — прежний путь Дончиана.
-            var definition = CreateStrategyDefinition(settings.Strategy);
+            var definition = CreateStrategyDefinition(settings);
             if (definition != null)
             {
                 StartUniversal(settings, definition, openFileDialog, logger, startTime);
@@ -191,16 +191,20 @@ namespace TrendByPivotPointsOptimizator
             Console.ReadLine();
         }
 
-        /// <summary>Фабрика описаний стратегий по имени из файла настроек.</summary>
-        public StrategyDefinition CreateStrategyDefinition(string strategyName)
+        /// <summary>Фабрика описаний стратегий по настройкам (имя + сторона торговли).</summary>
+        public StrategyDefinition CreateStrategyDefinition(Settings settings)
         {
+            var strategyName = settings.Strategy;
             if (string.IsNullOrEmpty(strategyName))
                 return null;
 
             switch (strategyName.Trim().ToLowerInvariant())
             {
                 case "meanreversion":
-                    return new MeanReversionStrategyDefinition();
+                    if (settings.Sides == null || settings.Sides.Count != 1)
+                        throw new Exception("Стратегия MeanReversion торгует только одну " +
+                            "сторону: укажите в настройках ровно один PositionSide.");
+                    return new MeanReversionStrategyDefinition(settings.Sides.First());
                 case "donchian":
                 case "donchianuniversal":
                     return new DonchianStrategyDefinition();

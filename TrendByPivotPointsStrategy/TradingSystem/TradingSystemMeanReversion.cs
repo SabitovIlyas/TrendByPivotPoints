@@ -12,9 +12,10 @@ namespace TradingSystems
     /// Стратегия возврата к среднему: вход по экстремуму RSI с фильтром тренда по SMA,
     /// выход по обратному пересечению RSI либо по ATR-стопу. Все сигналы считаются по
     /// закрытому бару, ордера исполняются на открытии следующего бара.
-    /// Инстанс торгует одну сторону (positionSide). Для шорта условия применяются к
-    /// зеркальному RSI' = 100 − RSI, поэтому используется одна пара порогов
-    /// rsiEntryLevel/rsiExitLevel на обе стороны.
+    /// Робот торгует только одну сторону (positionSide); у каждой стороны свои,
+    /// никак не связанные пороги rsiEntryLevel/rsiExitLevel:
+    /// лонг — вход при RSI ниже уровня, выход при пересечении уровня снизу вверх;
+    /// шорт — вход при RSI выше уровня, выход при пересечении уровня сверху вниз.
     /// </summary>
     public class TradingSystemMeanReversion : TradingSystem
     {
@@ -90,16 +91,6 @@ namespace TradingSystems
             atr = Series.AverageTrueRange(candles, atrPeriod);
         }
 
-        //Зеркальный RSI: для лонга — сам RSI, для шорта — 100 − RSI. Благодаря этому
-        //условия входа и выхода записываются одинаково для обеих сторон.
-        private double GetMirroredRsi(IList<double> rsi, int barNumber)
-        {
-            var value = rsi[barNumber];
-            if (positionSide == PositionSide.Short)
-                return 100 - value;
-            return value;
-        }
-
         protected override void CheckPositionOpenLongCase(int positionNumber)
         {
             var notes = " Вход №" + (positionNumber + 1);
@@ -115,12 +106,20 @@ namespace TradingSystems
             Log("бар № {0}. Позиция не открыта. Проверяем условия входа.", barNumber);
 
             var close = security.GetBarClose(barNumber);
-            var rsi = GetMirroredRsi(rsiEntry, barNumber);
+            var rsi = rsiEntry[barNumber];
 
-            var isRsiExtreme = rsi < rsiEntryLevel;
+            //Лонг: RSI ниже порога (перепроданность); шорт: RSI выше порога
+            //(перекупленность). Пороги сторон независимы.
+            bool isRsiExtreme;
+            if (positionSide == PositionSide.Long)
+                isRsiExtreme = rsi < rsiEntryLevel;
+            else
+                isRsiExtreme = rsi > rsiEntryLevel;
+
+            //Фильтр тренда: лонг — закрытие выше SMA, шорт — ниже (через converter).
             var isTrendFilterPassed = converter.IsGreater(close, sma[barNumber]);
 
-            Log("RSI' = {0} (порог {1}); закрытие {2} {3} SMA = {4}", rsi, rsiEntryLevel,
+            Log("RSI = {0} (порог {1}); закрытие {2} {3} SMA = {4}", rsi, rsiEntryLevel,
                 close, converter.Above, sma[barNumber]);
 
             if (!isRsiExtreme || !isTrendFilterPassed)
@@ -158,15 +157,21 @@ namespace TradingSystems
         {
             var position = GetOpenedPosition(notes);
 
-            //Выход по RSI: пересечение порога снизу вверх (в зеркальных координатах).
-            var rsiPrevious = GetMirroredRsi(rsiExit, barNumber - 1);
-            var rsiCurrent = GetMirroredRsi(rsiExit, barNumber);
-            var isRsiCrossedExitLevel = rsiPrevious < rsiExitLevel &&
-                rsiCurrent >= rsiExitLevel;
+            //Выход по RSI: лонг — пересечение порога снизу вверх,
+            //шорт — пересечение порога сверху вниз.
+            var rsiPrevious = rsiExit[barNumber - 1];
+            var rsiCurrent = rsiExit[barNumber];
+            bool isRsiCrossedExitLevel;
+            if (positionSide == PositionSide.Long)
+                isRsiCrossedExitLevel = rsiPrevious < rsiExitLevel &&
+                    rsiCurrent >= rsiExitLevel;
+            else
+                isRsiCrossedExitLevel = rsiPrevious > rsiExitLevel &&
+                    rsiCurrent <= rsiExitLevel;
 
             if (isRsiCrossedExitLevel)
             {
-                Log("RSI' пересёк порог выхода {0} снизу вверх ({1} -> {2}). Закрываем " +
+                Log("RSI пересёк порог выхода {0} ({1} -> {2}). Закрываем " +
                     "позицию по рынку.", rsiExitLevel, rsiPrevious, rsiCurrent);
                 security.CloseAtMarket(barNumber + 1, signalNameForClosePosition,
                     " Выход №1 RSI", position);
