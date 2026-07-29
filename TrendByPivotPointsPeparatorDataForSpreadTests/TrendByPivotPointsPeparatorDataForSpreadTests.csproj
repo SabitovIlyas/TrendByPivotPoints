@@ -84,6 +84,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SPFB.BR-3.23_230101_230131.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\TrendByPivotPointsPeparatorDataForSpread\TrendByPivotPointsPeparatorDataForSpread.csproj">
       <Project>{02A019BE-BD8F-4DCB-AC8F-69BF74827F47}</Project>
       <Name>TrendByPivotPointsPeparatorDataForSpread</Name>

@@ -26,11 +26,14 @@ namespace PeparatorDataForSpreadTradingSystems.Tests
         }
 
         [TestMethod()]
-        public void ConvertFileWithBarsToListOfBarsTest() 
+        public void ConvertFileWithBarsToListOfBarsTest()
         {
             var expected = 7201;
-            var converter = ConverterTextDataToBar.Create("SPFB.BR-3.23_230101_230131.txt");
-            
+            var fileName = Path.Combine(
+                Path.GetDirectoryName(typeof(ConverterTextDataToBarTests).Assembly.Location),
+                "SPFB.BR-3.23_230101_230131.txt");
+            var converter = ConverterTextDataToBar.Create(fileName);
+
             var bars = converter.ConvertFileWithBarsToListOfBars();
             var actual = bars.Count();
             Assert.AreEqual(expected, actual);
