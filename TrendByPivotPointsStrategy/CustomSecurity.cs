@@ -12,6 +12,8 @@ namespace TradingSystems
     {
         FinInfo finInfo;
         IReadOnlyList<IDataBar> bars;
+        public DateTime SessionBegin { get; set; }
+        public DateTime SessionEnd { get; set; }
 
         public static CustomSecurity Create(IReadOnlyList<IDataBar> bars)
         {
@@ -117,9 +119,10 @@ namespace TradingSystems
         public bool IsDisposed => throw new NotImplementedException();
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
-        public DateTime SessionBegin {  get; set; }
 
-        public DateTime SessionEnd { get; set; }
+        public IDataSource DataSource => throw new NotImplementedException();
+
+        public ICostPoint CostPoint => throw new NotImplementedException();
 
         public void Attach()
         {

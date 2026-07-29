@@ -78,6 +78,10 @@ namespace TradingSystems.Tests
 
         public DateTime SessionEnd => throw new NotImplementedException();
 
+        public IDataSource DataSource => throw new NotImplementedException();
+
+        public ICostPoint CostPoint => throw new NotImplementedException();
+
         public void Attach()
         {
             throw new NotImplementedException();

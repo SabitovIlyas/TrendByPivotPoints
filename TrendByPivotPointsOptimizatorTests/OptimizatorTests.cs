@@ -2,6 +2,7 @@
 using TrendByPivotPointsOptimizator;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,9 +89,13 @@ namespace TrendByPivotPointsOptimizator.Tests
 
         [TestMethod()]
         public void CompressBarsTest()
-        {            
-            var converter = ConverterTextDataToBar.Create("Si.txt");
+        {
+            var fileName = Path.Combine(
+                Path.GetDirectoryName(typeof(OptimizatorTests).Assembly.Location), "Si.txt");
+            var converter = ConverterTextDataToBar.Create(fileName);
             var baseBars = converter.ConvertFileWithBarsToListOfBars();
+            Assert.IsTrue(baseBars.Any(), string.Format("Не удалось прочитать минутные бары из файла \"{0}\".", fileName));
+
             var timeframe = new Interval(15, DataIntervals.MINUTE);
             var expectedFirstBarDateTime = new DateTime(2024, 01, 03, 9, 0, 0);
             var expectedSecondBarDateTime = new DateTime(2024, 01, 03, 9, 15, 0);

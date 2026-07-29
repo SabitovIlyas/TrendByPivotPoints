@@ -7,9 +7,10 @@ namespace TradingSystems
 {
     public class StarterDonchianTradingSystemTsLab : Starter
     {
-        private double kAtr;
+        private double kAtrForStopLoss;
         private double limitOpenedPositions;
-        IContext ctx;        
+        private double scaleContractsPrcnt = 100;
+        IContext ctx;
 
         public StarterDonchianTradingSystemTsLab(IContext ctx, ISecurity[] securities,
             Logger logger)
@@ -23,8 +24,11 @@ namespace TradingSystems
         }
 
         public override void SetParameters(SystemParameters systemParameters)
-        {            
+        {
             base.SetParameters(systemParameters);
+            kAtrForStopLoss = (double)systemParameters.GetValue("kAtrForStopLoss");
+            limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
+            scaleContractsPrcnt = (double)systemParameters.GetValue("scaleContractsPrcnt");
         }
 
         public override void Initialize()
@@ -42,7 +46,8 @@ namespace TradingSystems
             this.securityFirst = new SecurityTSLab(securityFirst);
             securityList.Add(this.securityFirst);
             
-            var riskValuePrcntCalc = kAtr * limitOpenedPositions;
+            var scaleContracts = scaleContractsPrcnt / 100;
+            var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions;
             if (riskValuePrcntCalc > riskValuePrcnt)
                 throw new System.Exception("Превышен уровень риска");
                         
@@ -52,7 +57,7 @@ namespace TradingSystems
             ContractsManager contractsManager;
             if (contracts <= 0)
             {
-                riskValuePrcnt = kAtr;
+                riskValuePrcnt = kAtrForStopLoss * scaleContracts;
                 var riskManager = new RiskManagerReal(Account, logger, riskValuePrcnt);
                 contractsManager = new ContractsManager(riskManager, Account, currency,
                 currencyConverter, shares, logger);

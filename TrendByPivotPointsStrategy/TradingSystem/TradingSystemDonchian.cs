@@ -75,6 +75,13 @@ namespace TradingSystems
 
         protected override void CheckPositionOpenLongCase(int positionNumber)
         {
+            var recalcReasons = context.LastRecalcReasons();
+            if (recalcReasons.Any(x => x.Name == EventKind.OrderCanceled.ToString()))
+                Log("Внеочередной пересчёт из-за отмены ордера!");
+
+            if (recalcReasons.Any(x => x.Name == EventKind.OrderRejected.ToString()))
+                Log("Внеочередной пересчёт из-за отклонения ордера!");
+
             Log("бар № {0}. Открыта ли {1} позиция?", barNumber, converter.Long);
             double stopPrice;
 
@@ -96,11 +103,11 @@ namespace TradingSystems
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)
-                {                    
+                {
                     Log("Торгуем в режиме реального времени, поэтому количество контрактов установим в количестве {0}", contracts);
                 }
                 else
-                {                 
+                {
                     Log("Торгуем в лаборатории.");
                 }
 
@@ -122,12 +129,19 @@ namespace TradingSystems
                 BuyIfGreater(price, contracts, notes);
 
                 Log("Отправляем ордер.", converter.Long);
+
+                if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
+                {
+                    var sleepTimeInSec = 4;
+                    Log("Ждём {0} сек.", sleepTimeInSec);
+                    System.Threading.Thread.Sleep(sleepTimeInSec * 1000);
+                }
             }
 
             else
             {
                 var reasons = context.LastRecalcReasons();
-                if (reasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))                
+                if (reasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
                     Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
 
                 var position = GetOpenedPosition(notes);
@@ -135,7 +149,7 @@ namespace TradingSystems
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 security.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition, notes, position);
-                
+
                 if (positionNumber == 0)
                     firstPositionEntryPrice = position.EntryPrice;
             }
@@ -172,11 +186,11 @@ namespace TradingSystems
 
         public void SetParameters(SystemParameters systemParameters)
         {
-            slowDonchian = (int)systemParameters.GetValue("slowDonchian");            
+            slowDonchian = (int)systemParameters.GetValue("slowDonchian");
             fastDonchian = (int)systemParameters.GetValue("fastDonchian");
             kAtrForStopLoss = (double)systemParameters.GetValue("kAtrForStopLoss");
             kAtrForOpenPosition = (double)systemParameters.GetValue("kAtrForOpenPosition");
-            atrPeriod = (int)systemParameters.GetValue("atrPeriod");           
+            atrPeriod = (int)systemParameters.GetValue("atrPeriod");
             limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
             var pSide = (int)systemParameters.GetValue("positionSide");
 

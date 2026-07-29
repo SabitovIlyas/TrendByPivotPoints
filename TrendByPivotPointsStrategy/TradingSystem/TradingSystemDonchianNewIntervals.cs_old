@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using TSLab.Script;
-using SystemColor = System.Drawing.Color;
-using Security = TradingSystems.Security;
-using Converter = TradingSystems.Converter;
-using Account = TradingSystems.Account;
-using TSLab.Script.Helpers;
-using TSLab.Script.Handlers;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using TSLab.DataSource;
-using TradingSystems;
+using TSLab.Script;
+using TSLab.Script.Handlers;
+using TSLab.Script.Helpers;
+using SystemColor = System.Drawing.Color;
 
-namespace TrendByPivotPointsStarter
+namespace TradingSystems
 {
-    public class SampleTradingStrategy : TradingSystem
+    public class TradingSystemDonchian : TradingStrategy
     {
         public IContext Ctx { get; set; }
         public Logger Logger { get; set; } = new NullLogger();
         public PositionSide PositionSide { get { return positionSide; } }
 
-        private ContractsManager localMoneyManager;
+        private LocalMoneyManager localMoneyManager;
         private ISecurity sec;
         private ISecurity secCompressed;
         private Security security;
@@ -46,21 +45,42 @@ namespace TrendByPivotPointsStarter
         private int limitOpenedPositions = 10;
         private double kAtrForOpenPosition = 0.5;
         private double openPositionPrice;
+        private double firstPositionEntryPrice;
+        private int digitsAfterPoint = 0;
 
-        public SampleTradingStrategy(ContractsManager localMoneyManager, Account account, Security security, PositionSide positionSide)
+        public TradingSystemDonchian(LocalMoneyManager localMoneyManager, Account account, Security security, PositionSide positionSide)
         {
             this.localMoneyManager = localMoneyManager;
-            var securityTSLab = security as SecurityTSLab;
+            var securityTSLab = security as SecurityTSlab;
             sec = securityTSLab.security;
             this.security = security;
-            secCompressed = sec.CompressTo(Interval.D1);
+            secCompressed = sec.CompressTo(60);
             this.positionSide = positionSide;
+            digitsAfterPoint = CountDecimalPlaces(security.LastBar.Close);
+        }
+
+        private int CountDecimalPlaces(double value)
+        {
+            string strValue = value.ToString();
+            var currentCulture = CultureInfo.CurrentCulture;
+            char decimalSeparator = currentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+            int pointIndex = strValue.IndexOf(decimalSeparator);
+
+            if (pointIndex != -1)
+                return strValue.Length - pointIndex - 1;
+
+            return 0;
         }
 
         public void Update(int barNumber)
         {
+            var nonTradingPeriod = Math.Max(slowDonchian, atrPeriod);
+            if (barNumber < nonTradingPeriod - 1)
+                return;
+
             try
-            {
+            {                
                 this.barNumber = barNumber;
                 security.BarNumber = barNumber;
 
@@ -115,22 +135,28 @@ namespace TrendByPivotPointsStarter
             if (IsPositionOpen(notes))
             {
                 var position = GetOpenedPosition(notes);
-                stopPriceAtr = convertable.Minus(position.EntryPrice, kAtrForStopLoss * fixedAtr);
+                stopPriceAtr = convertable.Minus(position.EntryPrice, Math.Round(kAtrForStopLoss * fixedAtr, digitsAfterPoint));
             }
             else
-                stopPriceAtr = convertable.Minus(highest[barNumber], kAtrForStopLoss * fixedAtr);
+                stopPriceAtr = convertable.Minus(highest[barNumber], Math.Round(kAtrForStopLoss * fixedAtr, digitsAfterPoint));
             var stopPriceDonchian = lowest[barNumber];
             return convertable.Maximum(stopPriceAtr, stopPriceDonchian);
         }
 
         public void CheckPositionOpenLongCase()
         {
-            for (var i = 0; i < limitOpenedPositions; i++)
+            for (var i = 0; i < limitOpenedPositions; i++)           
                 CheckPositionOpenLongCase(i);
         }
 
         private void CheckPositionOpenLongCase(int positionNumber)
         {
+            if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.OrderCanceled.ToString()))
+                Log("Внеочередной пересчёт из-за отмены ордера!");
+
+            if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.OrderRejected.ToString()))
+                Log("Внеочередной пересчёт из-за отклонения ордера!");
+
             Log("бар № {0}. Открыта ли {1} позиция?", barNumber, convertable.Long);
             double stopPrice;
 
@@ -141,13 +167,15 @@ namespace TrendByPivotPointsStarter
                 Log("{0} позиция не открыта.", convertable.Long);
 
                 if (positionNumber == 0)
-                    fixedAtr = atr[barNumber];
+                    fixedAtr = Math.Round(atr[barNumber], digitsAfterPoint);
+
+                Log("Фиксированный ATR = {0}", fixedAtr);
 
                 Log("Вычисляем стоп-цену...");
                 stopPrice = GetStopPrice(notes);
 
                 Log("Определяем количество контрактов...");
-                var contracts = localMoneyManager.GetQntContracts(security, highest[barNumber], stopPrice, positionSide);
+                var contracts = localMoneyManager.GetQntContracts(highest[barNumber], stopPrice, positionSide);
 
                 Log("Торгуем в лаборатории или в режиме реального времени?");
                 if (security.IsRealTimeTrading)
@@ -160,21 +188,72 @@ namespace TrendByPivotPointsStarter
                 }
 
                 if (positionNumber == 0)
+                {
                     openPositionPrice = highest[barNumber];
+                    firstPositionEntryPrice = 0;
+                }
+                else
+                {
+                    if (firstPositionEntryPrice != 0)
+                        openPositionPrice = firstPositionEntryPrice;
+                }
 
-                BuyIfGreater(convertable.Plus(openPositionPrice, positionNumber * fixedAtr * kAtrForOpenPosition), contracts, notes);
+                var price = convertable.Plus(openPositionPrice, Math.Round(positionNumber * fixedAtr * kAtrForOpenPosition, 
+                    digitsAfterPoint));
+                Log("Рассчитаем цену для открытия позиции, исходя из следующих данных: {0} {1} {2} * {3} * {4} = {5}", openPositionPrice, convertable.SymbolPlus, positionNumber, fixedAtr, kAtrForOpenPosition, price);
 
+                BuyIfGreater(price, contracts, notes);
                 Log("Отправляем ордер.", convertable.Long);
+
+                if (security.IsRealTimeTrading && security.IsRealTimeActualBar(barNumber))
+                {
+                    var sleepTimeInSec = 4;
+                    Log("Ждём {0} сек.", sleepTimeInSec);
+                    System.Threading.Thread.Sleep(sleepTimeInSec * 1000);
+                }
             }
 
             else
             {
+                if (Ctx.Runtime.LastRecalcReasons.Any(x => x.Name == EventKind.PositionOpening.ToString()))
+                    Log("Внеочередной пересчёт по открытию позиции! Надо выставлять стоп-лосс!");
+
                 var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", convertable.Long);
                 stopPrice = GetStopPrice(notes);
                 notes = " Выход №" + (positionNumber + 1);
                 position.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition + notes);
+                if (positionNumber == 0)
+                    firstPositionEntryPrice = position.EntryPrice;
             }
+        }
+
+        private void UpdateFileWithExchangeData()
+        {
+            Log("Попробую записать информацию в текстовый файл.");
+
+            var folder = @"C:\Users\Ильяс\Documents\Трейдинг\Обмен между скриптами\";            
+            var path = Path.Combine(folder, name);
+            StreamWriter sw = new StreamWriter(path, true);
+
+            var units = GetQtyUnits();
+            sw.WriteLine("{0};{1};{2};{3}", tradingSystemDescription, security.Name, positionSide, units);
+            sw.Close();
+        }
+
+        private int GetQtyUnits()
+        {
+            var units = 0;
+            for (var i = limitOpenedPositions; i > 0; i--)
+            {                
+                var notes = " Вход №" + i;
+                if (IsPositionOpen(notes))
+                {
+                    units = i;
+                    break;
+                }
+            }
+            return units;
         }
 
         public void SetParameters(SystemParameters systemParameters)
@@ -184,12 +263,10 @@ namespace TrendByPivotPointsStarter
             kAtrForStopLoss = systemParameters.GetDouble("kAtrForStopLoss");
             kAtrForOpenPosition = systemParameters.GetDouble("kAtrForOpenPosition");
             atrPeriod = systemParameters.GetInt("atrPeriod");
-            limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");
+            limitOpenedPositions = systemParameters.GetInt("limitOpenedPositions");            
 
-            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; " +
-                "kAtrForStopLoss: {2}; kAtrForOpenPosition: {3}; atrPeriod: {4}", 
-                slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
-            tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}", name, parametersCombination, security.Name, positionSide);
+            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
+            tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
 
         public void CalculateIndicators()
@@ -218,14 +295,14 @@ namespace TrendByPivotPointsStarter
 
             highest = secCompressed.Decompress(highest);
             lowest = secCompressed.Decompress(lowest);
-            atr = secCompressed.Decompress(atr);
+            atr = secCompressed.Decompress(atr);           
         }
 
         public void Paint(Context context)
         {
             if (Ctx.IsOptimization)
-                return;
-
+                return;           
+            
             var pane = Ctx.CreatePane("Первая панель", 50, true);
             var colorTSlab1 = new Color(SystemColor.Blue.ToArgb());
             var colorTSlab2 = new Color(SystemColor.Green.ToArgb());
@@ -235,7 +312,7 @@ namespace TrendByPivotPointsStarter
             pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);
 
-            pane = Ctx.CreatePane("Вторая панель", 50, true);
+            pane = Ctx.CreatePane("Вторая панель", 50, true);            
             pane.AddList(sec.ToString(), sec, CandleStyles.BAR_CANDLE, colorTSlab1, PaneSides.RIGHT);
             pane.AddList("Highest", highest, ListStyles.LINE, colorTSlab2, LineStyles.SOLID, PaneSides.RIGHT);
             pane.AddList("Lowest", lowest, ListStyles.LINE, colorTSlab3, LineStyles.SOLID, PaneSides.RIGHT);

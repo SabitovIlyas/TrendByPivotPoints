@@ -2,49 +2,64 @@
 using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.Script.Realtime;
 
 namespace TradingSystems
 {
-    public class MainSystemForOptimization : PivotPointsStarter
+    public class MainSystemForTradingDonchian : PivotPointsMainSystem
     {
-        Security securityFirst;
-        IContext ctx;
+        private IContext ctx;
+        private double kAtrForStopLoss;
+        private double kAtrForOpenPosition;
+        private double limitOpenedPositions;
 
         public override void Initialize(ISecurity[] securities, IContext ctx)
-        {            
+        {
             var logger = Logger;
             var securityFirst = securities.First();
             if (IsLaboratory(securityFirst))
-                account = new AccountTsLab(securityFirst);
+                account = new AccountLab(securityFirst);
             else
-                account = new AccountTsLabRt(securityFirst);
+                account = new AccountReal(securityFirst);
 
             var securityList = new List<Security>();
 
-            this.securityFirst = new SecurityTSLab(securityFirst);
+            this.securityFirst = new SecurityTSlab(securityFirst);
             securityList.Add(this.securityFirst);
 
-            var globalMoneyManager = new RiskManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
+            var scaleContracts = scaleContractsPrcnt / 100;
+            var riskValuePrcntCalc = kAtrForStopLoss * limitOpenedPositions;
+            if (riskValuePrcntCalc > riskValuePrcnt)
+                throw new System.Exception("Превышен уровень риска");
+
+            riskValuePrcnt = kAtrForStopLoss * scaleContracts;
+            var globalMoneyManager = new GlobalMoneyManagerReal(account, riskValuePrcnt: this.riskValuePrcnt);
             globalMoneyManager.Logger = logger;
-            var localMoneyManagerRuble = new ContractsManager(globalMoneyManager, account, Currency.Ruble, shares);
-                        
-            tradingSystems = new List<TradingSystem>();
+
+            Currency currency;
+            if (isUSD == 0)
+                currency = Currency.Ruble;
+            else
+                currency = Currency.USD;
+
+            account.Rate = rateUSD;
+            var localMoneyManagerRuble = new LocalMoneyManager(globalMoneyManager, account, currency, shares);
+
+            tradingSystems = new List<TradingStrategy>();
 
             double totalComission;
             AbsolutCommission absoluteComission;
-            TradingSystem ts;
-                        
-            ts = new TradingSystemPivotPointsEmaRtUpdateTrailStopLoss(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
+            TradingStrategy ts;
+
+            ts = new TradingSystemDonchian(localMoneyManagerRuble, account, this.securityFirst, (PositionSide)((int)positionSide));//si-5min            
             localMoneyManagerRuble.Logger = logger;
             ts.Logger = logger;
             tradingSystems.Add(ts);
             ts.Initialize(ctx);
-            ts.SetParameters(rightLocalSide, pivotPointBreakDownSide, EmaPeriodSide);
+            ts.SetParameters(systemParameters);
 
-            totalComission = comission * 2;            
+            totalComission = comission * 2;
             absoluteComission = new AbsolutCommission() { Commission = totalComission };
-            absoluteComission.Execute(securities[0]);            
+            absoluteComission.Execute(securities[0]);
             securities[0].Commission = CalculateCommission;
 
             account.Logger = logger;
@@ -77,25 +92,17 @@ namespace TradingSystems
             {
                 foreach (var tradingSystem in tradingSystems)
                 {
-                    tradingSystem.Update(i);
                     account.Update(i);
+                    tradingSystem.Update(i);                    
                 }
-            }
+            }            
         }
-
-        
 
         public void Paint(IContext ctx, ISecurity sec)
         {
             var firstTradingSystem = tradingSystems.First();
-            firstTradingSystem.Paint(context);            
-        }
-
-        private bool IsLaboratory(ISecurity security)
-        {
-            var realTimeSecurity = security as ISecurityRt;
-            return realTimeSecurity == null;
-        }
+            firstTradingSystem.Paint(context);
+        }        
 
         private bool IsLastBarClosed()
         {
@@ -104,6 +111,14 @@ namespace TradingSystems
         private bool IsRealTimeTrading()
         {
             return securityFirst.IsRealTimeTrading;
-        }        
+        }
+
+        public override void SetParameters(SystemParameters systemParameters)
+        {
+            kAtrForStopLoss = systemParameters.GetDouble("kAtrForStopLoss");
+            kAtrForOpenPosition = systemParameters.GetDouble("kAtrForOpenPosition");
+            limitOpenedPositions = systemParameters.GetDouble("limitOpenedPositions");
+            base.SetParameters(systemParameters);
+        }
     }
 }

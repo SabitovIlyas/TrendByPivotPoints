@@ -53,6 +53,8 @@ namespace TrendByPivotPointsStarter
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
 
+        public IDictionary<string, string> ScriptResultsString => throw new NotImplementedException();
+
         public void AddUnremovableInteractiveObjectId(string id)
         {
             throw new NotImplementedException();
@@ -234,6 +236,11 @@ namespace TrendByPivotPointsStarter
         }
 
         public ISecurity GetData(string handlerName, string[] parameters, CacheObjectMaker<ISecurity> maker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDataGridPane CreateDataGridPane(string name, string title, int displayIndexValueX, string formatValueX, string headerValueX, bool isVisibleValueX, TextAlignment textAlignmentValueX, int? widthValueX, int displayIndexDateTime, string formatDateTime, string headerDateTime, bool isVisibleDateTime, TextAlignment textAlignmentDateTime, int? widthDateTime, bool addToTop = false, int countLastValues = 0)
         {
             throw new NotImplementedException();
         }

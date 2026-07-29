@@ -12,7 +12,8 @@ namespace TradingSystems
     {        
         public OptimProperty slowDonchian = new OptimProperty(55, 20, 60, 1);
         public OptimProperty fastDonchian = new OptimProperty(20, 10, 20, 1);
-        public OptimProperty kAtr = new OptimProperty(2, 1, 2, 0.5);
+        public OptimProperty kAtrForOpenPosition = new OptimProperty(2, 1, 2, 0.5);
+        public OptimProperty kAtrForStopLoss = new OptimProperty(2, 1, 2, 0.5);
         public OptimProperty atrPeriod = new OptimProperty(20, 14, 20, 1);
 
         public OptimProperty limitOpenedPositions = new OptimProperty(2, 1, 4, 1);
@@ -22,6 +23,7 @@ namespace TradingSystems
 
         public OptimProperty mode = new OptimProperty(2, 0, 1, 1);
         public OptimProperty riskValuePrcnt = new OptimProperty(0.5, 0, 2, 0.5);
+        public OptimProperty scaleContractsPrcnt = new OptimProperty(100, 0, 100, 1);
         public OptimProperty securityNumber = new OptimProperty(0, 0, 1, 1);
         public OptimProperty instrumentsGroup = new OptimProperty(0, 0, 3, 1);
 
@@ -37,7 +39,7 @@ namespace TradingSystems
             if ((int)fastDonchian > (int)slowDonchian)
                 return;
 
-            Logger logger = new TsLabLogger(context);            
+            Logger logger;
 
             if ((int)isLoggerOn == 1)
                 logger = new TsLabLogger(context);
@@ -68,7 +70,8 @@ namespace TradingSystems
             
             systemParameters.Add("slowDonchian", (int)slowDonchian);
             systemParameters.Add("fastDonchian", (int)fastDonchian);
-            systemParameters.Add("kAtr", (double)kAtr);
+            systemParameters.Add("kAtrForOpenPosition", (double)kAtrForOpenPosition);
+            systemParameters.Add("kAtrForStopLoss", (double)kAtrForStopLoss);
             systemParameters.Add("atrPeriod", (int)atrPeriod);
 
             systemParameters.Add("limitOpenedPositions", (int)limitOpenedPositions);
@@ -77,9 +80,10 @@ namespace TradingSystems
             systemParameters.Add("comission", (double)comission);
 
             systemParameters.Add("riskValuePrcnt", (double)riskValuePrcnt);
+            systemParameters.Add("scaleContractsPrcnt", (double)scaleContractsPrcnt);
             systemParameters.Add("securityNumber", (int)securityNumber);
             systemParameters.Add("instrumentsGroup", (int)instrumentsGroup);
-            systemParameters.Add("shares", (int)shares);
+            systemParameters.Add("shares", (double)shares);
 
             systemParameters.Add("isUSD", (int)isUSD);
             systemParameters.Add("contracts", (int)contracts);

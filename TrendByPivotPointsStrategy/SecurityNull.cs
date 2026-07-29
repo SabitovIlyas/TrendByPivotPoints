@@ -9,6 +9,9 @@ namespace TradingSystems
 {
     public class SecurityNull : ISecurity
     {
+        public DateTime SessionBegin { get; set; }
+        public DateTime SessionEnd { get; set; }
+
         IReadOnlyList<IDataBar> bars = new ReadAndAddList<DataBar>();
         public string Symbol => throw new NotImplementedException();
 
@@ -68,9 +71,9 @@ namespace TradingSystems
 
         public bool IsDisposedOrDisposing => throw new NotImplementedException();
 
-        public DateTime SessionBegin { get; set; }
+        public IDataSource DataSource => throw new NotImplementedException();
 
-        public DateTime SessionEnd { get; set; }
+        public ICostPoint CostPoint => throw new NotImplementedException();
 
         public void Attach()
         {
