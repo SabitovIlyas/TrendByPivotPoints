@@ -58,7 +58,7 @@ namespace ProjectsManager
                 Name = "Optimizator",
                 CsprojPath = @"TrendByPivotPointsOptimizator\TrendByPivotPointsOptimizator.csproj",
                 AssemblyName = "TrendByPivotPointsOptimizator",
-                Description = "Оптимизатор параметров стратегии: перебор комбинаций, генетический алгоритм, форвард-анализ. Для больших данных собирайте с платформой x64.",
+                Description = "Оптимизатор параметров стратегий: генетический алгоритм, форвард-анализ. Настройка и запуск — кнопка «Оптимизатор…». Для больших данных собирайте с платформой x64.",
                 DefaultEncodingIndex = 1
             });
             projects.Add(new ConsoleProject
@@ -146,6 +146,7 @@ namespace ProjectsManager
             stopButton = CreateButton(buttonsFlow, "Остановить", (s, e) => StopSelected());
             clearButton = CreateButton(buttonsFlow, "Очистить вывод", (s, e) => ClearSelected());
             folderButton = CreateButton(buttonsFlow, "Открыть папку", (s, e) => OpenSelectedFolder());
+            CreateButton(buttonsFlow, "Оптимизатор…", (s, e) => OpenOptimizatorSettings());
 
             var argsPanel = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0) };
             var argsLabel = new Label { Text = "Аргументы:", AutoSize = true, Location = new Point(3, 7) };
@@ -457,6 +458,32 @@ namespace ProjectsManager
                 project.Pending.Clear();
             }
             outputBox.Clear();
+        }
+
+        //Настройки оптимизатора: конфигурирование стратегии и генетического
+        //алгоритма из GUI; «Сохранить и запустить» передаёт файл настроек
+        //оптимизатору аргументом — диалоги ему не нужны.
+        private void OpenOptimizatorSettings()
+        {
+            using var form = new OptimizatorSettingsForm();
+            if (form.ShowDialog(this) != DialogResult.OK || !form.RunRequested)
+                return;
+
+            var project = projects.FirstOrDefault(p =>
+                p.AssemblyName == "TrendByPivotPointsOptimizator");
+            if (project == null)
+                return;
+
+            project.Item.Selected = true;
+            if (project.IsBusy)
+            {
+                AppendToProject(project, "Оптимизатор уже запущен — остановите его перед новым запуском.\r\n");
+                return;
+            }
+
+            project.Args = "\"" + form.SettingsFilePath + "\"";
+            argsBox.Text = project.Args;
+            RunSelected();
         }
 
         private void OpenSelectedFolder()
