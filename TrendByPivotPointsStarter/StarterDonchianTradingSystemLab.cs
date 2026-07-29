@@ -48,6 +48,11 @@ namespace TrendByPivotPointsStarter
             return new StarterDonchianTradingSystemLab(context, securities, logger, nonTradingPeriods);
         }
 
+        public override Starter CloneStarter()
+        {
+            return GetClone();
+        }
+
         public override void SetParameters(SystemParameters systemParameters)
         {
             this.systemParameters = systemParameters;

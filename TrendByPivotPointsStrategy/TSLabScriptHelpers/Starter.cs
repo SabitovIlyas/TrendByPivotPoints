@@ -88,6 +88,13 @@ namespace TradingSystems
 
         public virtual void PrintResults() { }
 
+        //Клон стартера с клонированными инструментами — нужен оптимизатору,
+        //чтобы прогонять один набор параметров на чистом состоянии.
+        public virtual Starter CloneStarter()
+        {
+            throw new NotImplementedException();
+        }
+
         public Security GetSecurity()
         {
             return securities.First();

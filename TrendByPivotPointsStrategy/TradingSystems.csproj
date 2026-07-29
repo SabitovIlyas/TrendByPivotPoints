@@ -151,6 +151,7 @@
     <Compile Include="TradingSystem\NonTradingPeriod.cs" />
     <Compile Include="TradingSystem\TradingSystem.cs" />
     <Compile Include="TradingSystem\TradingSystemDonchian.cs" />
+    <Compile Include="TradingSystem\TradingSystemMeanReversion.cs" />
     <None Include="TradingSystem\TradingSystemDonchianNewIntervals.cs_old" />
     <None Include="TradingSystem\TradingSystemEmasCrossingUpdateTrailStopLoss.cs_old" />
     <None Include="TradingSystem\TradingSystemPivotPointsEMA.cs_old" />

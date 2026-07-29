@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="CustomContext.cs" />
     <Compile Include="StarterDonchianTradingSystemLab.cs" />
+    <Compile Include="StarterMeanReversionTradingSystemLab.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LabStarterSMATradingSystem.cs" />
