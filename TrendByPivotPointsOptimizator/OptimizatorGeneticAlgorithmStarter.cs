@@ -17,6 +17,10 @@ namespace TrendByPivotPointsOptimizator
 {
     public class OptimizatorGeneticAlgorithmStarter
     {
+        // Сид генератора случайных чисел. null — случайный запуск (боевой режим).
+        // Задайте число, чтобы прогоны стали воспроизводимыми (отладка, регрессии).
+        private int? seed = null;
+
         public void Start()
         {
             var logger = new ConsoleLogger();
@@ -67,7 +71,9 @@ namespace TrendByPivotPointsOptimizator
             try
             {
                 var context = new ContextLab();
-                var randomProvider = new RandomProvider();
+                var randomProvider = seed.HasValue
+                    ? new RandomProvider(seed.Value)
+                    : new RandomProvider();
 
                 var optimizator = Optimizator.Create();
                 var ga = new GeneticAlgorithmDonchianChannel(populationSize: 100, generations: 300,
