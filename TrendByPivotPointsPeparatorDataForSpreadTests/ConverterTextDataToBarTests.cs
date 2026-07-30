@@ -40,6 +40,44 @@ namespace PeparatorDataForSpreadTradingSystems.Tests
         }
 
         [TestMethod()]
+        public void ConvertFileWithBarsToListOfBars_SkipsBarsOlderThanGivenDate()
+        {
+            var fileName = GetTestFileName();
+            var converter = ConverterTextDataToBar.Create(fileName);
+
+            var allBars = converter.ConvertFileWithBarsToListOfBars();
+            var fromDate = new DateTime(2023, 01, 20);
+            var bars = converter.ConvertFileWithBarsToListOfBars(fromDate);
+
+            //Пропуск строк не меняет сами бары — это тот же хвост списка.
+            var expected = allBars.Where(b => b.Date >= fromDate).ToList();
+            Assert.AreEqual(expected.Count, bars.Count);
+            Assert.IsTrue(bars.Count > 0);
+            Assert.IsTrue(bars.Count < allBars.Count);
+
+            for (var i = 0; i < expected.Count; i++)
+                Assert.AreEqual(expected[i], bars[i]);
+        }
+
+        [TestMethod()]
+        public void GetLastBarDate_ReturnsDateOfLastBarInFile()
+        {
+            var fileName = GetTestFileName();
+            var converter = ConverterTextDataToBar.Create(fileName);
+
+            var expected = converter.ConvertFileWithBarsToListOfBars().Last().Date;
+
+            Assert.AreEqual(expected, converter.GetLastBarDate());
+        }
+
+        private string GetTestFileName()
+        {
+            return Path.Combine(
+                Path.GetDirectoryName(typeof(ConverterTextDataToBarTests).Assembly.Location),
+                "SPFB.BR-3.23_230101_230131.txt");
+        }
+
+        [TestMethod()]
         public void SpreadCreateTest()
         {
             var bars1 = new List<Bar>

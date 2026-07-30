@@ -30,6 +30,7 @@ namespace ProjectsManager
         private NumericUpDown shiftWindowBox;
         private NumericUpDown equityBox;
         private NumericUpDown riskBox;
+        private CheckBox trimHistoryBox;
         private TextBox securitiesFileBox;
         private TextBox seedGenesFileBox;
         private TextBox settingsFileBox;
@@ -87,7 +88,7 @@ namespace ProjectsManager
             shiftWindowBox = AddNumeric(table, "Смещение окна, дней:", 1, 36500, 30);
             equityBox = AddNumeric(table, "Стартовый капитал:", 1, 1000000000, 100000);
             riskBox = AddNumeric(table, "Риск на сделку, %:", 0.01m, 100, 2, 2, 0.5m);
-            AddPlaceholder(table);
+            trimHistoryBox = AddCheckBox(table, "Обрезать лишнюю историю:", true);
 
             strategyCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
             sideCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
@@ -221,10 +222,17 @@ namespace ProjectsManager
             return box;
         }
 
-        private void AddPlaceholder(TableLayoutPanel table)
+        private CheckBox AddCheckBox(TableLayoutPanel table, string title, bool isChecked)
         {
-            table.Controls.Add(new Label { Text = string.Empty });
-            table.Controls.Add(new Label { Text = string.Empty });
+            table.Controls.Add(new Label { Text = title, AutoSize = true, Margin = new Padding(3, 9, 0, 0) });
+            var box = new CheckBox
+            {
+                Checked = isChecked,
+                AutoSize = true,
+                Margin = new Padding(3, 8, 12, 0)
+            };
+            table.Controls.Add(box);
+            return box;
         }
 
         private TextBox AddFileRow(TableLayoutPanel table, string title, Action browse)
@@ -290,6 +298,14 @@ namespace ProjectsManager
         private static double ParseDouble(string value) =>
             double.Parse(value.Trim().Replace(',', '.'), CultureInfo.InvariantCulture);
 
+        //Логический флаг настроек пишется как «1»/«0», но читаем и «true»/«false».
+        private static bool IsTrue(string value)
+        {
+            var trimmed = value.Trim();
+            return trimmed == "1" ||
+                trimmed.Equals("true", StringComparison.OrdinalIgnoreCase);
+        }
+
         //-------------------- Сохранение --------------------
 
         private void SaveAndClose(bool run)
@@ -341,6 +357,7 @@ namespace ProjectsManager
             builder.AppendLine("ForwardDays:" + forwardDaysBox.Value);
             builder.AppendLine("ForwardPeriodsCount:" + forwardPeriodsBox.Value);
             builder.AppendLine("ShiftWindowDays:" + shiftWindowBox.Value);
+            builder.AppendLine("TrimHistory:" + (trimHistoryBox.Checked ? "1" : "0"));
             builder.AppendLine("Equity:" + equityBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("RiskValuePrcnt:" + riskBox.Value.ToString(CultureInfo.InvariantCulture));
 
@@ -406,6 +423,7 @@ namespace ProjectsManager
                         case "ForwardDays": SetValue(forwardDaysBox, value); break;
                         case "ForwardPeriodsCount": SetValue(forwardPeriodsBox, value); break;
                         case "ShiftWindowDays": SetValue(shiftWindowBox, value); break;
+                        case "TrimHistory": trimHistoryBox.Checked = IsTrue(value); break;
                         case "Equity": SetValue(equityBox, value); break;
                         case "RiskValuePrcnt": SetValue(riskBox, value); break;
                         case "SecuritiesFile": securitiesFileBox.Text = value; break;

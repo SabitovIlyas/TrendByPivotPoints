@@ -306,7 +306,7 @@ namespace TrendByPivotPointsOptimizator
             var securitiesData = GetSecuritiesData(securitiesFileName);
             var loggerNull = new LoggerNull();
             var tickers = CreateTickers(securitiesData, securitiesFileName, settings,
-                loggerNull);
+                loggerNull, settings.TrimHistory, logger);
 
             var results = new List<ForwardAnalysisResult>();
             var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}_" +
@@ -605,6 +605,7 @@ namespace TrendByPivotPointsOptimizator
                     case "RiskValuePrcnt": settings.RiskValuePrcnt = ParseDouble(value); break;
                     case "SecuritiesFile": settings.SecuritiesFile = value; break;
                     case "SeedGenesFile": settings.SeedGenesFile = value; break;
+                    case "TrimHistory": settings.TrimHistory = ParseBool(value); break;
                     case "Range":
                         //Формат: Range:имя:мин:макс:шаг
                         var parts = value.Split(':');
@@ -630,6 +631,18 @@ namespace TrendByPivotPointsOptimizator
         {
             return double.Parse(value.Replace(',', '.'),
                 System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        //Логический флаг настроек: принимаем и «1/0», и «true/false».
+        private bool ParseBool(string value)
+        {
+            var trimmed = value.Trim();
+            if (trimmed == "1")
+                return true;
+            if (trimmed == "0")
+                return false;
+
+            return bool.Parse(trimmed);
         }
 
         private List<SecurityData> GetSecuritiesData(string fullFileName)
@@ -685,7 +698,8 @@ namespace TrendByPivotPointsOptimizator
         }
 
         private List<Ticker> CreateTickers(List<SecurityData> securitiesData, string fullFileName,
-            Settings settings, Logger logger)
+            Settings settings, Logger logger, bool trimHistory = false,
+            Logger reportLogger = null)
         {
             var result = new List<Ticker>();
 
@@ -703,7 +717,8 @@ namespace TrendByPivotPointsOptimizator
                             path += fileNameSplitted[i] + "\\";
                         var fileName = path + securityName + ".txt";
 
-                        var ticker = CreateTicker(fileName, data, timeFrame, logger);
+                        var ticker = CreateTicker(fileName, data, timeFrame, logger,
+                            trimHistory ? settings : null, reportLogger);
 
                         result.Add(ticker);
                     }
@@ -713,16 +728,60 @@ namespace TrendByPivotPointsOptimizator
             return result;
         }
 
-        private Ticker CreateTicker(string fileName, SecurityData data, Interval timeframe, Logger logger)
+        private Ticker CreateTicker(string fileName, SecurityData data, Interval timeframe,
+            Logger logger, Settings settingsForTrimming = null, Logger reportLogger = null)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
-            var baseBars = converter.ConvertFileWithBarsToListOfBars();
+            var baseBars = ReadBars(converter, settingsForTrimming);
             var bars = CompressBars(baseBars, timeframe);
+
+            if (settingsForTrimming != null)
+                bars = TrimHistory(bars, settingsForTrimming, data.Name, reportLogger);
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,
                 logger, data.CommissionRate, data.IsUSD, data.RateUSD);
 
             return ticker;
+        }
+
+        //Читаем только ту часть файла, которая может понадобиться тестированию:
+        //разбор лишних лет — самая долгая часть загрузки минутных данных.
+        //Режем по границе суток, чтобы при сжатии в таймфрейм не получить неполный
+        //первый бар: сетка сжатия привязана к абсолютному времени, а не к первому бару.
+        private List<Bar> ReadBars(ConverterTextDataToBar converter, Settings settingsForTrimming)
+        {
+            if (settingsForTrimming == null)
+                return converter.ConvertFileWithBarsToListOfBars();
+
+            var lastBarDate = converter.GetLastBarDate();
+            if (lastBarDate == null)
+                return converter.ConvertFileWithBarsToListOfBars();
+
+            var daysBack = HistoryTrimmer.GetRequiredDays(settingsForTrimming) - 1;
+            if (daysBack >= (lastBarDate.Value - DateTime.MinValue).TotalDays)
+                return converter.ConvertFileWithBarsToListOfBars();
+
+            var earliestRequiredDate = lastBarDate.Value.AddDays(-daysBack).Date;
+
+            return converter.ConvertFileWithBarsToListOfBars(earliestRequiredDate);
+        }
+
+        //Обрезка истории до окон тестирования: файл котировок можно подавать
+        //целиком, вручную готовить его не нужно.
+        private List<Bar> TrimHistory(List<Bar> bars, Settings settings, string securityName,
+            Logger reportLogger)
+        {
+            if (bars == null || bars.Count == 0)
+                return bars;
+
+            var trimmedBars = HistoryTrimmer.Trim(bars, settings);
+            if (reportLogger != null && trimmedBars.Count > 0)
+                reportLogger.Log("{0}: для тестирования нужно {1} дней — взяли {2} баров " +
+                    "с {3:dd.MM.yyyy} по {4:dd.MM.yyyy}, более старую историю не читали.",
+                    securityName, HistoryTrimmer.GetRequiredDays(settings),
+                    trimmedBars.Count, trimmedBars.First().Date, trimmedBars.Last().Date);
+
+            return trimmedBars;
         }
 
         public List<Bar> CompressBars(List<Bar> bars, Interval timeframe)

@@ -99,6 +99,7 @@
     <Compile Include="ForwardAnalysisTests.cs" />
     <Compile Include="GeneticAlgorithmTests.cs" />
     <Compile Include="GeneticAlgorithmUniversalTests.cs" />
+    <Compile Include="HistoryTrimmerTests.cs" />
     <Compile Include="SettingsParsingTests.cs" />
     <Compile Include="MatrixCreatorTests.cs" />
     <Compile Include="OptimizatorTests.cs" />

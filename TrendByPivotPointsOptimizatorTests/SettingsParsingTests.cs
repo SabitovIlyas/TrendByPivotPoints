@@ -26,6 +26,7 @@ namespace TrendByPivotPointsOptimizator.Tests
                 "ForwardDays:180",
                 "ForwardPeriodsCount:5",
                 "ShiftWindowDays:15",
+                "TrimHistory:0",
                 "Equity:200000",
                 "RiskValuePrcnt:1.5",
                 @"SecuritiesFile:C:\Данные\!Securities_Si.txt",
@@ -51,6 +52,7 @@ namespace TrendByPivotPointsOptimizator.Tests
                 Assert.AreEqual(180, settings.ForwardDays);
                 Assert.AreEqual(5, settings.ForwardPeriodsCount);
                 Assert.AreEqual(15, settings.ShiftWindowDays);
+                Assert.IsFalse(settings.TrimHistory);
                 Assert.AreEqual(200000, settings.Equity);
                 Assert.AreEqual(1.5, settings.RiskValuePrcnt);
                 Assert.AreEqual(@"C:\Данные\!Securities_Si.txt", settings.SecuritiesFile);

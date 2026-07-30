@@ -33,6 +33,10 @@ namespace TrendByPivotPointsOptimizator
         public int ForwardPeriodsCount = 10;
         public int ShiftWindowDays = 30;
 
+        /// <summary>Отрезать историю, которая не попадает ни в одно окно тестирования.
+        /// Позволяет подавать файл котировок целиком, не обрезая его вручную.</summary>
+        public bool TrimHistory = true;
+
         //Счёт
         public double Equity = 100000;
         public double RiskValuePrcnt = 2;

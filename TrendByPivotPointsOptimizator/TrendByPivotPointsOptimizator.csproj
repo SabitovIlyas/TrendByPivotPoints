@@ -88,6 +88,7 @@
     <Compile Include="DonchianStrategyDefinition.cs" />
     <Compile Include="FitnessUniversal.cs" />
     <Compile Include="GeneticAlgorithmUniversal.cs" />
+    <Compile Include="HistoryTrimmer.cs" />
     <Compile Include="IOptimizableChromosome.cs" />
     <Compile Include="MeanReversionStrategyDefinition.cs" />
     <Compile Include="ParameterDescriptor.cs" />
