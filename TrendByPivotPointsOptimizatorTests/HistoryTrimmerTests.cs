@@ -75,6 +75,39 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void GetReadFromDate_StepsBackBeyondWindowStart()
+        {
+            var settings = CreateSettings();
+            var lastBarDate = new DateTime(2026, 5, 29, 23, 0, 0);
+
+            var earliestRequiredDate = HistoryTrimmer.GetEarliestRequiredDate(lastBarDate,
+                settings);
+            var readFromDate = HistoryTrimmer.GetReadFromDate(lastBarDate, settings);
+
+            //Читаем с запасом и с полуночи: начало окна может попасть на выходные или
+            //длинные праздники, а резать сутки посередине нельзя из-за сжатия баров.
+            Assert.IsTrue(readFromDate < earliestRequiredDate);
+            Assert.AreEqual(readFromDate.Date, readFromDate);
+            Assert.AreEqual(earliestRequiredDate.AddDays(-HistoryTrimmer.ExtraDaysToRead).Date,
+                readFromDate);
+        }
+
+        [TestMethod()]
+        public void Trim_KeepsAllBarsWhenNothingIsLeftOfWindowStart()
+        {
+            //История начинается уже после начала самого раннего окна: обрезать нечего,
+            //иначе ForwardAnalysis сочтёт, что данных не хватает.
+            var bars = CreateBars(1000);
+            var settings = CreateSettings();
+            var earliestRequiredDate = HistoryTrimmer.GetEarliestRequiredDate(bars, settings);
+            var barsAfterWindowStart = bars.Where(b => b.Date > earliestRequiredDate).ToList();
+
+            var trimmed = HistoryTrimmer.Trim(barsAfterWindowStart, settings);
+
+            Assert.AreEqual(barsAfterWindowStart.Count, trimmed.Count);
+        }
+
+        [TestMethod()]
         public void Trim_KeepsAllBarsWhenHistoryIsShorterThanWindows()
         {
             var bars = CreateBars(50);

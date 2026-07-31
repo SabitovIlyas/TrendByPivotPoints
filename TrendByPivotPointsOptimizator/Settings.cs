@@ -27,6 +27,13 @@ namespace TrendByPivotPointsOptimizator
         public double MutationRate = 0.10;
         public int Patience = 50;
 
+        /// <summary>Сколько случайных особей соревнуются за право стать родителем.</summary>
+        public int TournamentSize = 4;
+
+        /// <summary>Порог разнообразия популяции: ниже него оптимизация
+        /// останавливается, потому что особи стали почти одинаковыми.</summary>
+        public double MinDiversity = 0.1;
+
         //Окна бэктеста и форвардного анализа, в днях
         public int BackwardDays = 1460;
         public int ForwardDays = 1460;
@@ -44,6 +51,10 @@ namespace TrendByPivotPointsOptimizator
         //Пути к файлам данных: если заданы, оптимизатор не спрашивает их диалогами
         public string SecuritiesFile = string.Empty;
         public string SeedGenesFile = string.Empty;
+
+        /// <summary>Файл журнала прогона; пустое значение — имя с датой и временем
+        /// в рабочей папке оптимизатора.</summary>
+        public string LogFile = string.Empty;
 
         //Переопределение диапазонов поиска параметров стратегии
         //(строки вида «Range:имя:мин:макс:шаг»)

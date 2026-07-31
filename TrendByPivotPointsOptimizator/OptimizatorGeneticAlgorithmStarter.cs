@@ -264,33 +264,108 @@ namespace TrendByPivotPointsOptimizator
         /// </summary>
         public void StartFromSettingsFile(string settingsFileName)
         {
-            var logger = new ConsoleLogger();
             var startTime = DateTime.Now;
-            logger.Log("Старт! {0}\r\n", startTime);
-
             var settings = CreateSettings(settingsFileName);
-            var definition = CreateStrategyDefinitionWithOverrides(settings);
-            if (definition == null)
+            var logger = CreateLogger(settings, startTime);
+
+            logger.Log("Старт! {0}\r\n", startTime);
+            logger.Log("Файл настроек: {0}", settingsFileName);
+
+            try
             {
-                logger.Log("В файле настроек не указана стратегия (строка Strategy:).");
-                return;
-            }
+                var definition = CreateStrategyDefinitionWithOverrides(settings);
+                if (definition == null)
+                    throw new Exception("В файле настроек не указана стратегия " +
+                        "(строка Strategy:).");
 
-            if (string.IsNullOrEmpty(settings.SecuritiesFile) ||
-                !File.Exists(settings.SecuritiesFile))
+                if (string.IsNullOrEmpty(settings.SecuritiesFile))
+                    throw new Exception("В файле настроек не задан файл с описанием " +
+                        "инструментов (строка SecuritiesFile:).");
+
+                if (!File.Exists(settings.SecuritiesFile))
+                    throw new Exception("Не найден файл с описанием инструментов: " +
+                        settings.SecuritiesFile);
+
+                LogSettings(settings, definition, logger);
+
+                Dictionary<string, double> seedGenes = null;
+                if (string.IsNullOrEmpty(settings.SeedGenesFile))
+                    logger.Log("Затравочная хромосома не задана — стартовая популяция " +
+                        "будет полностью случайной.");
+                else if (!File.Exists(settings.SeedGenesFile))
+                    throw new Exception("Не найден файл затравочной хромосомы: " +
+                        settings.SeedGenesFile + ". Уберите строку SeedGenesFile из " +
+                        "настроек, если затравка не нужна.");
+                else
+                {
+                    seedGenes = LoadSeedGenes(settings.SeedGenesFile);
+                    logger.Log("Затравочная хромосома: {0}", settings.SeedGenesFile);
+                }
+
+                StartUniversalCore(settings, definition, settings.SecuritiesFile, seedGenes,
+                    logger, startTime);
+            }
+            catch (Exception ex)
             {
-                logger.Log("Не найден файл с инструментами (строка SecuritiesFile): {0}",
-                    settings.SecuritiesFile);
-                return;
+                logger.Log("\r\nОптимизатор остановлен из-за ошибки:\r\n{0}", ex.ToString());
             }
+        }
 
-            Dictionary<string, double> seedGenes = null;
-            if (!string.IsNullOrEmpty(settings.SeedGenesFile) &&
-                File.Exists(settings.SeedGenesFile))
-                seedGenes = LoadSeedGenes(settings.SeedGenesFile);
+        //Журнал ведём и в консоль, и в файл: прогон идёт часами, консоль к разбору
+        //полётов уже не сохранить.
+        private Logger CreateLogger(Settings settings, DateTime startTime)
+        {
+            var consoleLogger = new ConsoleLogger();
 
-            StartUniversalCore(settings, definition, settings.SecuritiesFile, seedGenes,
-                logger, startTime);
+            var logFileName = settings.LogFile;
+            if (string.IsNullOrEmpty(logFileName))
+                logFileName = string.Format("Optimizator_{0:yyyy-MM-dd_HH-mm-ss}.log",
+                    startTime);
+
+            try
+            {
+                var fullLogFileName = Path.GetFullPath(logFileName);
+                var directory = Path.GetDirectoryName(fullLogFileName);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+
+                consoleLogger.Log("Журнал прогона: {0}", fullLogFileName);
+                return new LoggerCombined(consoleLogger, new LoggerTxtFile(fullLogFileName));
+            }
+            catch (Exception ex)
+            {
+                consoleLogger.Log("Не удалось создать файл журнала «{0}»: {1}. " +
+                    "Продолжаем без него.", logFileName, ex.Message);
+                return consoleLogger;
+            }
+        }
+
+        //Полный слепок настроек в журнале: по нему потом видно, чем именно был
+        //запущен прогон.
+        private void LogSettings(Settings settings, StrategyDefinition definition,
+            Logger logger)
+        {
+            logger.Log("Стратегия: {0}", definition.Name);
+            logger.Log("Стороны: {0}", string.Join(", ", settings.Sides));
+            logger.Log("Таймфреймы: {0}", settings.TimeFrames.Count);
+            logger.Log("Сид: {0}", settings.Seed.HasValue
+                ? settings.Seed.Value.ToString() : "случайный");
+            logger.Log("Популяция {0}, поколений {1}, кроссовер {2}, мутация {3}, " +
+                "терпение {4}, турнир {5}, минимальное разнообразие {6}",
+                settings.PopulationSize, settings.Generations, settings.CrossoverRate,
+                settings.MutationRate, settings.Patience, settings.TournamentSize,
+                settings.MinDiversity);
+            logger.Log("Окна: бэктест {0} дней, форвард {1} дней, периодов {2}, " +
+                "смещение {3} дней", settings.BackwardDays, settings.ForwardDays,
+                settings.ForwardPeriodsCount, settings.ShiftWindowDays);
+            logger.Log("Капитал {0}, риск на сделку {1} %", settings.Equity,
+                settings.RiskValuePrcnt);
+            logger.Log("Файл с описанием инструментов: {0}", settings.SecuritiesFile);
+
+            logger.Log("Диапазоны поиска параметров:");
+            foreach (var descriptor in definition.Parameters)
+                logger.Log("    {0}: от {1} до {2}, шаг {3}", descriptor.Name,
+                    descriptor.Min, descriptor.Max, descriptor.Step);
         }
 
         /// <summary>
@@ -301,12 +376,22 @@ namespace TrendByPivotPointsOptimizator
             string securitiesFileName, Dictionary<string, double> seedGenes, Logger logger,
             DateTime startTime)
         {
-            logger.Log("Стратегия: {0}", definition.Name);
+            if (settings.Sides == null || settings.Sides.Count == 0)
+                throw new Exception("В файле настроек не указана сторона торговли " +
+                    "(строка PositionSide: Long или Short).");
+
+            if (settings.TimeFrames == null || settings.TimeFrames.Count == 0)
+                throw new Exception("В файле настроек не указан таймфрейм " +
+                    "(строка TimeFrames: 01min, 05min, 15min, 30min, 60min или 1d).");
 
             var securitiesData = GetSecuritiesData(securitiesFileName);
             var loggerNull = new LoggerNull();
             var tickers = CreateTickers(securitiesData, securitiesFileName, settings,
                 loggerNull, settings.TrimHistory, logger);
+
+            if (tickers.Count == 0)
+                throw new Exception("Не удалось загрузить ни одного инструмента из файла " +
+                    securitiesFileName);
 
             var results = new List<ForwardAnalysisResult>();
             var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}_" +
@@ -422,7 +507,7 @@ namespace TrendByPivotPointsOptimizator
             }
             catch (Exception e)
             {
-                logger.Log(e.ToString());
+                logger.Log("\r\nОшибка во время оптимизации:\r\n{0}", e.ToString());
             }
         }
 
@@ -597,6 +682,8 @@ namespace TrendByPivotPointsOptimizator
                     case "CrossoverRate": settings.CrossoverRate = ParseDouble(value); break;
                     case "MutationRate": settings.MutationRate = ParseDouble(value); break;
                     case "Patience": settings.Patience = int.Parse(value); break;
+                    case "TournamentSize": settings.TournamentSize = int.Parse(value); break;
+                    case "MinDiversity": settings.MinDiversity = ParseDouble(value); break;
                     case "BackwardDays": settings.BackwardDays = int.Parse(value); break;
                     case "ForwardDays": settings.ForwardDays = int.Parse(value); break;
                     case "ForwardPeriodsCount": settings.ForwardPeriodsCount = int.Parse(value); break;
@@ -605,6 +692,7 @@ namespace TrendByPivotPointsOptimizator
                     case "RiskValuePrcnt": settings.RiskValuePrcnt = ParseDouble(value); break;
                     case "SecuritiesFile": settings.SecuritiesFile = value; break;
                     case "SeedGenesFile": settings.SeedGenesFile = value; break;
+                    case "LogFile": settings.LogFile = value; break;
                     case "TrimHistory": settings.TrimHistory = ParseBool(value); break;
                     case "Range":
                         //Формат: Range:имя:мин:макс:шаг
@@ -645,43 +733,58 @@ namespace TrendByPivotPointsOptimizator
             return bool.Parse(trimmed);
         }
 
-        private List<SecurityData> GetSecuritiesData(string fullFileName)
+        //Файл с описанием инструментов: строки вида
+        //«Имя;Валюта;Лотов;Комиссия;ТоргуетсяВUSD;КурсUSD».
+        //Ошибки здесь раньше молча проглатывались, и оптимизатор падал позже и в
+        //другом месте — теперь разбор строгий и сообщает, что именно не так.
+        public List<SecurityData> GetSecuritiesData(string fullFileName)
         {
             var result = new List<SecurityData>();
-            try
+
+            if (!System.IO.File.Exists(fullFileName))
+                throw new Exception("Файл с описанием инструментов не найден: " +
+                    fullFileName);
+
+            var listStrings = System.IO.File.ReadAllLines(fullFileName);
+            var lineNumber = 0;
+
+            foreach (var str in listStrings)
             {
-                if (!System.IO.File.Exists(fullFileName))
-                    throw new Exception("Файл не найден!");
+                lineNumber++;
+                if (string.IsNullOrWhiteSpace(str))
+                    continue;
 
-                string[] listStrings = System.IO.File.ReadAllLines(fullFileName);
+                var splStr = str.Split(';');
+                if (splStr.Length < 6)
+                    throw new Exception(string.Format(
+                        "Файл с описанием инструментов «{0}», строка {1}: ожидались шесть " +
+                        "полей через «;» — Имя;Валюта;Лотов;Комиссия;ТоргуетсяВUSD;КурсUSD, " +
+                        "а получено {2}. Строка: «{3}». Возможно, вместо файла с описанием " +
+                        "инструментов (!Securities_*.txt) указан файл с котировками.",
+                        fullFileName, lineNumber, splStr.Length, str));
 
-                if (listStrings == null)
-                    throw new Exception("Файл пустой!");
-                foreach (var str in listStrings)
+                try
                 {
-                    var splStr = str.Split(';');
-                    var name = splStr[0];
-                    var currency = splStr[1];
-                    var shares = double.Parse(splStr[2]);
-                    var commissionRate = double.Parse(splStr[3]);
-                    var isUSD = int.Parse(splStr[4]);
-                    var rateUSD = double.Parse(splStr[5]);
-
                     result.Add(new SecurityData()
                     {
-                        Name = name,
-                        Currency = GetCurrency(currency),
-                        Shares = shares,
-                        CommissionRate = commissionRate,
-                        IsUSD = isUSD == 1,
-                        RateUSD = rateUSD,
+                        Name = splStr[0],
+                        Currency = GetCurrency(splStr[1]),
+                        Shares = double.Parse(splStr[2]),
+                        CommissionRate = double.Parse(splStr[3]),
+                        IsUSD = int.Parse(splStr[4]) == 1,
+                        RateUSD = double.Parse(splStr[5]),
                     });
                 }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format(
+                        "Файл с описанием инструментов «{0}», строка {1}: не удалось " +
+                        "разобрать «{2}». {3}", fullFileName, lineNumber, str, ex.Message));
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+
+            if (result.Count == 0)
+                throw new Exception("Файл с описанием инструментов пуст: " + fullFileName);
 
             return result;
         }
@@ -732,11 +835,22 @@ namespace TrendByPivotPointsOptimizator
             Logger logger, Settings settingsForTrimming = null, Logger reportLogger = null)
         {
             var converter = ConverterTextDataToBar.Create(fileName);
-            var baseBars = ReadBars(converter, settingsForTrimming);
-            var bars = CompressBars(baseBars, timeframe);
+            var bars = CompressBars(ReadBars(converter, settingsForTrimming), timeframe);
 
             if (settingsForTrimming != null)
+            {
+                //Подстраховка: если слева от начала окна не осталось ни одного бара
+                //(запаса не хватило на длинные праздники), читаем файл целиком —
+                //иначе ForwardAnalysis сочтёт историю недостаточной.
+                if (bars.Count > 0 && bars.First().Date >
+                    HistoryTrimmer.GetEarliestRequiredDate(bars, settingsForTrimming))
+                {
+                    bars = CompressBars(converter.ConvertFileWithBarsToListOfBars(),
+                        timeframe);
+                }
+
                 bars = TrimHistory(bars, settingsForTrimming, data.Name, reportLogger);
+            }
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,
                 logger, data.CommissionRate, data.IsUSD, data.RateUSD);
@@ -757,13 +871,13 @@ namespace TrendByPivotPointsOptimizator
             if (lastBarDate == null)
                 return converter.ConvertFileWithBarsToListOfBars();
 
-            var daysBack = HistoryTrimmer.GetRequiredDays(settingsForTrimming) - 1;
+            var daysBack = HistoryTrimmer.GetRequiredDays(settingsForTrimming) - 1 +
+                HistoryTrimmer.ExtraDaysToRead;
             if (daysBack >= (lastBarDate.Value - DateTime.MinValue).TotalDays)
                 return converter.ConvertFileWithBarsToListOfBars();
 
-            var earliestRequiredDate = lastBarDate.Value.AddDays(-daysBack).Date;
-
-            return converter.ConvertFileWithBarsToListOfBars(earliestRequiredDate);
+            return converter.ConvertFileWithBarsToListOfBars(
+                HistoryTrimmer.GetReadFromDate(lastBarDate.Value, settingsForTrimming));
         }
 
         //Обрезка истории до окон тестирования: файл котировок можно подавать

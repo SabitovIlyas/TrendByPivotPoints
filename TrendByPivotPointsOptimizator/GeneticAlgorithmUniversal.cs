@@ -31,8 +31,9 @@ namespace TrendByPivotPointsOptimizator
         private readonly Logger logger;
 
         private readonly int patience;
+        private readonly int tournamentSize;
+        private readonly double minNormalizedDiversity;
         private readonly double epsilon = 1e-5;
-        private const double MinNormalizedDiversity = 0.1;
 
         private Dictionary<string, double> seedGenes;
         private ForwardAnalysis forwardAnalysis;
@@ -56,6 +57,8 @@ namespace TrendByPivotPointsOptimizator
             this.definition = definition;
             this.logger = logger;
             patience = settings.Patience;
+            tournamentSize = settings.TournamentSize;
+            minNormalizedDiversity = settings.MinDiversity;
         }
 
         public List<ChromosomeUniversal> Run(int period,
@@ -102,7 +105,7 @@ namespace TrendByPivotPointsOptimizator
                 }
 
                 var diversity = CalculatePopulationDiversity(population);
-                if (diversity < MinNormalizedDiversity)
+                if (diversity < minNormalizedDiversity)
                 {
                     isNormalizedDiversityBreaks = true;
                     break;
@@ -262,7 +265,6 @@ namespace TrendByPivotPointsOptimizator
 
         public ChromosomeUniversal TournamentSelection()
         {
-            int tournamentSize = 4;
             ChromosomeUniversal best = null;
             for (int i = 0; i < tournamentSize; i++)
             {

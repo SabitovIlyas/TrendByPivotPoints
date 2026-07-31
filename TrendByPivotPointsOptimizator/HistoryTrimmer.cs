@@ -25,14 +25,38 @@ namespace TrendByPivotPointsOptimizator
         }
 
         /// <summary>
+        /// Запас в днях, на который читаем историю глубже начала самого раннего окна.
+        /// Нужен, чтобы слева от границы окна гарантированно оказался хотя бы один
+        /// бар: само начало окна может попасть на выходные или длинные праздники,
+        /// когда торгов нет.
+        /// </summary>
+        public const int ExtraDaysToRead = 30;
+
+        /// <summary>
         /// Самая ранняя дата, которая может понадобиться: начало бэктеста самого
         /// старого форвардного периода. Считается от последнего бара истории —
         /// именно от него ForwardAnalysis отсчитывает все окна.
         /// </summary>
         public static DateTime GetEarliestRequiredDate(List<Bar> bars, Settings settings)
         {
-            var latestDate = bars.Max(b => b.Date);
-            return latestDate.AddDays(-(GetRequiredDays(settings) - 1));
+            return GetEarliestRequiredDate(bars.Max(b => b.Date), settings);
+        }
+
+        public static DateTime GetEarliestRequiredDate(DateTime lastBarDate, Settings settings)
+        {
+            return lastBarDate.AddDays(-(GetRequiredDays(settings) - 1));
+        }
+
+        /// <summary>
+        /// С какой даты читать файл котировок: начало самого раннего окна минус запас
+        /// на нерабочие дни, округлённое вниз до суток. Округление до суток
+        /// обязательно: сетка сжатия баров привязана к абсолютному времени, и обрезка
+        /// внутри суток дала бы неполный первый бар таймфрейма.
+        /// </summary>
+        public static DateTime GetReadFromDate(DateTime lastBarDate, Settings settings)
+        {
+            return GetEarliestRequiredDate(lastBarDate, settings)
+                .AddDays(-ExtraDaysToRead).Date;
         }
 
         /// <summary>

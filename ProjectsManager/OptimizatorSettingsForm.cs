@@ -30,9 +30,12 @@ namespace ProjectsManager
         private NumericUpDown shiftWindowBox;
         private NumericUpDown equityBox;
         private NumericUpDown riskBox;
+        private NumericUpDown tournamentBox;
+        private NumericUpDown minDiversityBox;
         private CheckBox trimHistoryBox;
         private TextBox securitiesFileBox;
         private TextBox seedGenesFileBox;
+        private TextBox logFileBox;
         private TextBox settingsFileBox;
         private DataGridView rangesGrid;
         private bool loadingUi;
@@ -51,8 +54,8 @@ namespace ProjectsManager
         private void CreateUi()
         {
             Text = "Настройки оптимизатора";
-            Width = 780;
-            Height = 760;
+            Width = 820;
+            Height = 840;
             StartPosition = FormStartPosition.CenterParent;
             Font = new Font("Segoe UI", 9f);
             MinimizeBox = false;
@@ -60,7 +63,7 @@ namespace ProjectsManager
             var table = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 250,
+                Height = 290,
                 ColumnCount = 4,
                 Padding = new Padding(8, 8, 8, 0)
             };
@@ -90,13 +93,16 @@ namespace ProjectsManager
             riskBox = AddNumeric(table, "Риск на сделку, %:", 0.01m, 100, 2, 2, 0.5m);
             trimHistoryBox = AddCheckBox(table, "Обрезать лишнюю историю:", true);
 
+            tournamentBox = AddNumeric(table, "Размер турнира:", 2, 1000, 4);
+            minDiversityBox = AddNumeric(table, "Мин. разнообразие:", 0, 1, 0.10m, 2, 0.05m);
+
             strategyCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
             sideCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
 
             var filesTable = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 100,
+                Height = 135,
                 ColumnCount = 3,
                 Padding = new Padding(8, 0, 8, 0)
             };
@@ -104,10 +110,12 @@ namespace ProjectsManager
             filesTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
             filesTable.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 40f));
 
-            securitiesFileBox = AddFileRow(filesTable, "Файл с инструментами:",
-                () => BrowseOpen(securitiesFileBox, "Текстовые файлы|*.txt|Все файлы|*.*"));
-            seedGenesFileBox = AddFileRow(filesTable, "Затравочная хромосома (JSON):",
+            securitiesFileBox = AddFileRow(filesTable, "Описание инструментов (!Securities_*.txt):",
+                () => BrowseOpen(securitiesFileBox, "Описание инструментов|!Securities*.txt|Текстовые файлы|*.txt|Все файлы|*.*"));
+            seedGenesFileBox = AddFileRow(filesTable, "Затравочная хромосома (необязательно):",
                 () => BrowseOpen(seedGenesFileBox, "JSON|*.json|Все файлы|*.*"));
+            logFileBox = AddFileRow(filesTable, "Журнал прогона (необязательно):",
+                () => BrowseSaveFile(logFileBox, "Журнал|*.log|Текстовые файлы|*.txt|Все файлы|*.*"));
             settingsFileBox = AddFileRow(filesTable, "Файл настроек (куда сохранить):",
                 BrowseSettingsFile);
 
@@ -246,6 +254,15 @@ namespace ProjectsManager
             return box;
         }
 
+        private void BrowseSaveFile(TextBox target, string filter)
+        {
+            using var dialog = new SaveFileDialog { Filter = filter, OverwritePrompt = false };
+            if (target.Text.Trim().Length > 0)
+                dialog.FileName = target.Text.Trim();
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+                target.Text = dialog.FileName;
+        }
+
         private void BrowseOpen(TextBox target, string filter)
         {
             using var dialog = new OpenFileDialog { Filter = filter };
@@ -353,6 +370,8 @@ namespace ProjectsManager
             builder.AppendLine("CrossoverRate:" + crossoverBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("MutationRate:" + mutationBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("Patience:" + patienceBox.Value);
+            builder.AppendLine("TournamentSize:" + tournamentBox.Value);
+            builder.AppendLine("MinDiversity:" + minDiversityBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("BackwardDays:" + backwardDaysBox.Value);
             builder.AppendLine("ForwardDays:" + forwardDaysBox.Value);
             builder.AppendLine("ForwardPeriodsCount:" + forwardPeriodsBox.Value);
@@ -365,6 +384,8 @@ namespace ProjectsManager
                 builder.AppendLine("SecuritiesFile:" + securitiesFileBox.Text.Trim());
             if (seedGenesFileBox.Text.Trim().Length > 0)
                 builder.AppendLine("SeedGenesFile:" + seedGenesFileBox.Text.Trim());
+            if (logFileBox.Text.Trim().Length > 0)
+                builder.AppendLine("LogFile:" + logFileBox.Text.Trim());
 
             foreach (DataGridViewRow row in rangesGrid.Rows)
             {
@@ -419,6 +440,8 @@ namespace ProjectsManager
                         case "CrossoverRate": SetValue(crossoverBox, value); break;
                         case "MutationRate": SetValue(mutationBox, value); break;
                         case "Patience": SetValue(patienceBox, value); break;
+                        case "TournamentSize": SetValue(tournamentBox, value); break;
+                        case "MinDiversity": SetValue(minDiversityBox, value); break;
                         case "BackwardDays": SetValue(backwardDaysBox, value); break;
                         case "ForwardDays": SetValue(forwardDaysBox, value); break;
                         case "ForwardPeriodsCount": SetValue(forwardPeriodsBox, value); break;
@@ -428,6 +451,7 @@ namespace ProjectsManager
                         case "RiskValuePrcnt": SetValue(riskBox, value); break;
                         case "SecuritiesFile": securitiesFileBox.Text = value; break;
                         case "SeedGenesFile": seedGenesFileBox.Text = value; break;
+                        case "LogFile": logFileBox.Text = value; break;
                         case "Range":
                             var parts = value.Split(':');
                             if (parts.Length == 4)

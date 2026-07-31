@@ -22,6 +22,9 @@ namespace TrendByPivotPointsOptimizator.Tests
                 "CrossoverRate:0.9",
                 "MutationRate:0,15",
                 "Patience:25",
+                "TournamentSize:6",
+                "MinDiversity:0,05",
+                @"LogFile:C:\Данные\run.log",
                 "BackwardDays:730",
                 "ForwardDays:180",
                 "ForwardPeriodsCount:5",
@@ -48,6 +51,9 @@ namespace TrendByPivotPointsOptimizator.Tests
                 Assert.AreEqual(0.9, settings.CrossoverRate);
                 Assert.AreEqual(0.15, settings.MutationRate);   //запятая тоже понимается
                 Assert.AreEqual(25, settings.Patience);
+                Assert.AreEqual(6, settings.TournamentSize);
+                Assert.AreEqual(0.05, settings.MinDiversity);
+                Assert.AreEqual(@"C:\Данные\run.log", settings.LogFile);
                 Assert.AreEqual(730, settings.BackwardDays);
                 Assert.AreEqual(180, settings.ForwardDays);
                 Assert.AreEqual(5, settings.ForwardPeriodsCount);
