@@ -355,6 +355,9 @@ namespace TrendByPivotPointsOptimizator
                 settings.PopulationSize, settings.Generations, settings.CrossoverRate,
                 settings.MutationRate, settings.Patience, settings.TournamentSize,
                 settings.MinDiversity);
+            logger.Log("Элита: {0:P0} популяции — {1} особей переходят в следующее " +
+                "поколение без пересчёта", settings.EliteFraction,
+                GeneticAlgorithmUniversal.GetEliteCount(settings));
             logger.Log("Окна: бэктест {0} дней, форвард {1} дней, периодов {2}, " +
                 "смещение {3} дней", settings.BackwardDays, settings.ForwardDays,
                 settings.ForwardPeriodsCount, settings.ShiftWindowDays);
@@ -408,7 +411,8 @@ namespace TrendByPivotPointsOptimizator
 
                 var ga = new GeneticAlgorithmUniversal(settings.PopulationSize,
                     settings.Generations, settings.CrossoverRate, settings.MutationRate,
-                    randomProvider, tickers, settings, context, definition, loggerNull);
+                    randomProvider, tickers, settings, context, definition, loggerNull,
+                    logger);
 
                 logger.Log("Старт генетического алгоритма");
                 logger.Log("Актуальная оптимизация!");
@@ -684,6 +688,7 @@ namespace TrendByPivotPointsOptimizator
                     case "Patience": settings.Patience = int.Parse(value); break;
                     case "TournamentSize": settings.TournamentSize = int.Parse(value); break;
                     case "MinDiversity": settings.MinDiversity = ParseDouble(value); break;
+                    case "EliteFraction": settings.EliteFraction = ParseDouble(value); break;
                     case "BackwardDays": settings.BackwardDays = int.Parse(value); break;
                     case "ForwardDays": settings.ForwardDays = int.Parse(value); break;
                     case "ForwardPeriodsCount": settings.ForwardPeriodsCount = int.Parse(value); break;

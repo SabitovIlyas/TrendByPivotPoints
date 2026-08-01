@@ -32,6 +32,7 @@ namespace ProjectsManager
         private NumericUpDown riskBox;
         private NumericUpDown tournamentBox;
         private NumericUpDown minDiversityBox;
+        private NumericUpDown eliteFractionBox;
         private CheckBox trimHistoryBox;
         private TextBox securitiesFileBox;
         private TextBox seedGenesFileBox;
@@ -95,6 +96,7 @@ namespace ProjectsManager
 
             tournamentBox = AddNumeric(table, "Размер турнира:", 2, 1000, 4);
             minDiversityBox = AddNumeric(table, "Мин. разнообразие:", 0, 1, 0.10m, 2, 0.05m);
+            eliteFractionBox = AddNumeric(table, "Доля элиты:", 0, 1, 0.20m, 2, 0.05m);
 
             strategyCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
             sideCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
@@ -372,6 +374,7 @@ namespace ProjectsManager
             builder.AppendLine("Patience:" + patienceBox.Value);
             builder.AppendLine("TournamentSize:" + tournamentBox.Value);
             builder.AppendLine("MinDiversity:" + minDiversityBox.Value.ToString(CultureInfo.InvariantCulture));
+            builder.AppendLine("EliteFraction:" + eliteFractionBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("BackwardDays:" + backwardDaysBox.Value);
             builder.AppendLine("ForwardDays:" + forwardDaysBox.Value);
             builder.AppendLine("ForwardPeriodsCount:" + forwardPeriodsBox.Value);
@@ -442,6 +445,7 @@ namespace ProjectsManager
                         case "Patience": SetValue(patienceBox, value); break;
                         case "TournamentSize": SetValue(tournamentBox, value); break;
                         case "MinDiversity": SetValue(minDiversityBox, value); break;
+                        case "EliteFraction": SetValue(eliteFractionBox, value); break;
                         case "BackwardDays": SetValue(backwardDaysBox, value); break;
                         case "ForwardDays": SetValue(forwardDaysBox, value); break;
                         case "ForwardPeriodsCount": SetValue(forwardPeriodsBox, value); break;

@@ -50,8 +50,24 @@ namespace TrendByPivotPointsOptimizator.Tests
             };
         }
 
+        //Журнал, который запоминает строки, чтобы проверить вывод прогона.
+        private class LoggerMemory : Logger
+        {
+            public readonly List<string> Lines = new List<string>();
+
+            public override void Log(string text)
+            {
+                Lines.Add(text);
+            }
+
+            public override void Log(string text, params object[] args)
+            {
+                Lines.Add(string.Format(text, args));
+            }
+        }
+
         private List<ChromosomeUniversal> RunGa(StrategyDefinition definition, int seed,
-            PositionSide side = PositionSide.Long)
+            PositionSide side = PositionSide.Long, Logger runLogger = null)
         {
             var bars = CreateBars(days: 90);
             var logger = new LoggerNull();
@@ -64,7 +80,7 @@ namespace TrendByPivotPointsOptimizator.Tests
             var ga = new GeneticAlgorithmUniversal(settings.PopulationSize,
                 settings.Generations, crossoverRate: 0.85, mutationRate: 0.10,
                 randomProvider, new List<Ticker>() { ticker }, settings, context,
-                definition, logger);
+                definition, logger, runLogger ?? new LoggerNull());
             ga.IsLastBackwardTesting = true;
             return ga.Run(period: 0);
         }
@@ -113,6 +129,42 @@ namespace TrendByPivotPointsOptimizator.Tests
                 "rsiEntryLevel шорта вне диапазона [50; 95]: " + genes["rsiEntryLevel"]);
             Assert.IsTrue(genes["rsiExitLevel"] >= 5 && genes["rsiExitLevel"] <= 50,
                 "rsiExitLevel шорта вне диапазона [5; 50]: " + genes["rsiExitLevel"]);
+        }
+
+        [TestMethod()]
+        public void EliteCount_IsFractionOfPopulation()
+        {
+            Assert.AreEqual(20, GeneticAlgorithmUniversal.GetEliteCount(100, 0.2));
+            Assert.AreEqual(10, GeneticAlgorithmUniversal.GetEliteCount(50, 0.2));
+            Assert.AreEqual(5, GeneticAlgorithmUniversal.GetEliteCount(100, 0.05));
+
+            //Хотя бы одна особь переносится всегда, даже при нулевой доле.
+            Assert.AreEqual(1, GeneticAlgorithmUniversal.GetEliteCount(100, 0));
+            Assert.AreEqual(1, GeneticAlgorithmUniversal.GetEliteCount(10, 0.01));
+
+            //И не больше всей популяции.
+            Assert.AreEqual(10, GeneticAlgorithmUniversal.GetEliteCount(10, 1.5));
+        }
+
+        [TestMethod()]
+        public void Run_LogsDiversityForEveryGeneration()
+        {
+            var runLogger = new LoggerMemory();
+            RunGa(new MeanReversionStrategyDefinition(PositionSide.Long), seed: 42,
+                runLogger: runLogger);
+
+            var initialization = runLogger.Lines.Count(l =>
+                l.StartsWith("Разнообразие после инициализации:"));
+            Assert.AreEqual(1, initialization,
+                "Разнообразие стартовой популяции не попало в журнал прогона.");
+
+            //Настройки теста: 2 поколения, значит две строки с разнообразием и порогом.
+            var generations = runLogger.Lines.Count(l =>
+                l.StartsWith("Поколение ") && l.Contains("Разнообразие =") &&
+                l.Contains("порог остановки") && l.Contains("Поколений без улучшения:"));
+            Assert.AreEqual(2, generations,
+                "В журнале нет разнообразия по поколениям:\r\n" +
+                string.Join("\r\n", runLogger.Lines));
         }
 
         [TestMethod()]

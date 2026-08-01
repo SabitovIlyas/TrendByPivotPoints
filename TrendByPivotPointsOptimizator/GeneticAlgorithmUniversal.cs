@@ -29,10 +29,12 @@ namespace TrendByPivotPointsOptimizator
         private readonly Context context;
         private readonly StrategyDefinition definition;
         private readonly Logger logger;
+        private readonly Logger runLogger;
 
         private readonly int patience;
         private readonly int tournamentSize;
         private readonly double minNormalizedDiversity;
+        private readonly double eliteFraction;
         private readonly double epsilon = 1e-5;
 
         private Dictionary<string, double> seedGenes;
@@ -41,10 +43,14 @@ namespace TrendByPivotPointsOptimizator
         private readonly Dictionary<string, ChromosomeUniversal> chromosomeCache =
             new Dictionary<string, ChromosomeUniversal>();
 
+        /// <param name="logger">Журнал торговой системы: его стратегия глушит на
+        /// исторических барах, поэтому ход оптимизации в него писать нельзя.</param>
+        /// <param name="runLogger">Журнал прогона (консоль + файл). Если не задан,
+        /// пишем только в консоль, как раньше.</param>
         public GeneticAlgorithmUniversal(int populationSize, int generations,
             double crossoverRate, double mutationRate, IRandomProvider randomProvider,
             List<Ticker> tickers, Settings settings, Context context,
-            StrategyDefinition definition, Logger logger)
+            StrategyDefinition definition, Logger logger, Logger runLogger = null)
         {
             this.populationSize = populationSize;
             this.generations = generations;
@@ -56,9 +62,11 @@ namespace TrendByPivotPointsOptimizator
             this.context = context;
             this.definition = definition;
             this.logger = logger;
+            this.runLogger = runLogger ?? new ConsoleLogger();
             patience = settings.Patience;
             tournamentSize = settings.TournamentSize;
             minNormalizedDiversity = settings.MinDiversity;
+            eliteFraction = settings.EliteFraction;
         }
 
         public List<ChromosomeUniversal> Run(int period,
@@ -70,6 +78,7 @@ namespace TrendByPivotPointsOptimizator
             var bestFitnessEver = double.MinValue;
             var isGenerationsWithoutImprovement = false;
             var isNormalizedDiversityBreaks = false;
+            var lastDiversity = 0d;
             int gen = 0;
 
             chromosomeCache.Clear();
@@ -79,23 +88,26 @@ namespace TrendByPivotPointsOptimizator
             {
                 Evaluate(period);
                 var newPopulation = new List<ChromosomeUniversal>();
-                var qtyBestChromosomes = Math.Min(20, populationSize);
+                var qtyBestChromosomes = GetEliteCount();
 
                 //Элитизм: лучшие хромосомы переходят в следующее поколение.
                 var best = SelectBestChromosomes(population, qtyBestChromosomes);
                 newPopulation.AddRange(best);
 
+                var diversity = CalculatePopulationDiversity(population);
                 var currentBest = newPopulation.First().FitnessValue;
                 if (currentBest > bestFitnessEver + epsilon)
                 {
                     bestFitnessEver = currentBest;
                     generationsWithoutImprovement = 0;
-                    Console.WriteLine($"Поколение {gen + 1}: Новый рекорд = {currentBest}");
+                    runLogger.Log($"Поколение {gen + 1}: новый рекорд = {currentBest}. " +
+                        DescribeConvergence(diversity, generationsWithoutImprovement));
                 }
                 else
                 {
                     generationsWithoutImprovement++;
-                    Console.WriteLine($"Поколение {gen + 1}:");
+                    runLogger.Log($"Поколение {gen + 1}: рекорд прежний = {bestFitnessEver}. " +
+                        DescribeConvergence(diversity, generationsWithoutImprovement));
                 }
 
                 if (generationsWithoutImprovement >= patience)
@@ -104,9 +116,9 @@ namespace TrendByPivotPointsOptimizator
                     break;
                 }
 
-                var diversity = CalculatePopulationDiversity(population);
                 if (diversity < minNormalizedDiversity)
                 {
+                    lastDiversity = diversity;
                     isNormalizedDiversityBreaks = true;
                     break;
                 }
@@ -130,11 +142,16 @@ namespace TrendByPivotPointsOptimizator
             }
 
             if (isGenerationsWithoutImprovement)
-                Console.WriteLine($"Остановка: {patience} поколений без улучшения.");
+                runLogger.Log($"Остановка на поколении {gen + 1}: " +
+                    $"{patience} поколений без улучшения.");
             else if (isNormalizedDiversityBreaks)
-                Console.WriteLine("Остановка: разнообразие популяции упало ниже порога.");
+                runLogger.Log($"Остановка на поколении {gen + 1}: разнообразие популяции " +
+                    $"{lastDiversity:P1} упало ниже порога {minNormalizedDiversity:P1}.");
             else
+            {
+                runLogger.Log($"Пройдены все {generations} поколений.");
                 Evaluate(period);
+            }
 
             return population.Where(c => c.FitnessPassed)
                 .OrderByDescending(c => c.FitnessValue).Take(1).ToList();
@@ -169,7 +186,8 @@ namespace TrendByPivotPointsOptimizator
             }
 
             var diversity = CalculatePopulationDiversity(population);
-            Console.WriteLine($"Разнообразие после инициализации: {diversity:P1}");
+            runLogger.Log($"Разнообразие после инициализации: {diversity:P1} " +
+                $"(порог остановки {minNormalizedDiversity:P1}).");
         }
 
         public void Evaluate(int period)
@@ -180,14 +198,14 @@ namespace TrendByPivotPointsOptimizator
             var i = 0;
             foreach (var chromosome in population)
             {
-                Console.WriteLine("\r\nХромосома №{0} из {1}.\r\n", ++i, population.Count);
+                runLogger.Log("\r\nХромосома №{0} из {1}.\r\n", ++i, population.Count);
                 if (!chromosome.FitnessValue.Equals(double.NaN))
                     continue;
 
                 var key = chromosome.Name;
                 if (chromosomeCache.TryGetValue(key, out ChromosomeUniversal cached))
                 {
-                    Console.WriteLine("Взяли хромосому из кэша");
+                    runLogger.Log("Взяли хромосому из кэша");
                     chromosomesForRemove.Add(chromosome);
                     chromosomesForAdd.Add(cached);
                 }
@@ -217,9 +235,9 @@ namespace TrendByPivotPointsOptimizator
             i = 0;
             foreach (var chromosome in population)
             {
-                Console.WriteLine("Расчёт фитнес-функции для {0} хромосомы из {1}." +
+                runLogger.Log("Расчёт фитнес-функции для {0} хромосомы из {1}." +
                     "\r\n\r\nХромосома: {2}", ++i, population.Count, chromosome.Name);
-                Console.WriteLine("Фитнес-функция = {0}. Количество сделок = {1}. " +
+                runLogger.Log("Фитнес-функция = {0}. Количество сделок = {1}. " +
                     "Прибыль, р. = {2}. Прибыль, % = {3}. Максимальная просадка, % = {4}. " +
                     "Фактор восстановления = {5}\r\n", chromosome.FitnessValue,
                     chromosome.DealsCount, chromosome.Profit, chromosome.ProfitPrcnt,
@@ -354,6 +372,39 @@ namespace TrendByPivotPointsOptimizator
             List<ChromosomeUniversal> population, int count)
         {
             return population.OrderByDescending(c => c.FitnessValue).Take(count).ToList();
+        }
+
+        /// <summary>
+        /// Сколько лучших особей переходят в следующее поколение без изменений.
+        /// Считается долей от популяции, но не меньше одной особи и не больше всей
+        /// популяции — иначе новым потомкам не осталось бы места.
+        /// </summary>
+        public int GetEliteCount()
+        {
+            return GetEliteCount(populationSize, eliteFraction);
+        }
+
+        public static int GetEliteCount(Settings settings)
+        {
+            return GetEliteCount(settings.PopulationSize, settings.EliteFraction);
+        }
+
+        public static int GetEliteCount(int populationSize, double eliteFraction)
+        {
+            var count = (int)Math.Round(populationSize * eliteFraction,
+                MidpointRounding.AwayFromZero);
+            return Math.Max(1, Math.Min(populationSize, count));
+        }
+
+        /// <summary>
+        /// Строка о том, насколько мы близко к сходимости: текущее разнообразие
+        /// популяции против порога остановки и счётчик поколений без улучшения
+        /// против терпения. Прогон закончится, когда сработает любое из двух.
+        /// </summary>
+        private string DescribeConvergence(double diversity, int generationsWithoutImprovement)
+        {
+            return $"Разнообразие = {diversity:P1} (порог остановки {minNormalizedDiversity:P1}). " +
+                $"Поколений без улучшения: {generationsWithoutImprovement} из {patience}.";
         }
 
         public double CalculatePopulationDiversity(List<ChromosomeUniversal> population)

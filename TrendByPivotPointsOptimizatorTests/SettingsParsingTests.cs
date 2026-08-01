@@ -24,6 +24,7 @@ namespace TrendByPivotPointsOptimizator.Tests
                 "Patience:25",
                 "TournamentSize:6",
                 "MinDiversity:0,05",
+                "EliteFraction:0.1",
                 @"LogFile:C:\Данные\run.log",
                 "BackwardDays:730",
                 "ForwardDays:180",
@@ -53,6 +54,7 @@ namespace TrendByPivotPointsOptimizator.Tests
                 Assert.AreEqual(25, settings.Patience);
                 Assert.AreEqual(6, settings.TournamentSize);
                 Assert.AreEqual(0.05, settings.MinDiversity);
+                Assert.AreEqual(0.1, settings.EliteFraction);
                 Assert.AreEqual(@"C:\Данные\run.log", settings.LogFile);
                 Assert.AreEqual(730, settings.BackwardDays);
                 Assert.AreEqual(180, settings.ForwardDays);
