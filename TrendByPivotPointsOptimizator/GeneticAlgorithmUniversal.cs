@@ -242,11 +242,17 @@ namespace TrendByPivotPointsOptimizator
             //и содержимое журнала не зависят от того, сколько потоков считает.
             var toEvaluate = new List<ChromosomeUniversal>();
             var twinsByName = new Dictionary<string, List<ChromosomeUniversal>>();
+            var elite = 0;
+            var fromCache = 0;
 
             foreach (var chromosome in population)
             {
                 if (!double.IsNaN(chromosome.FitnessValue))
+                {
+                    //Элита: перешла из прошлого поколения с готовым результатом.
+                    elite++;
                     continue;
+                }
 
                 SetWindow(chromosome);
                 var key = chromosome.Name;
@@ -254,6 +260,7 @@ namespace TrendByPivotPointsOptimizator
                 if (chromosomeCache.TryGetValue(key, out ChromosomeMetrics cached))
                 {
                     cached.ApplyTo(chromosome);
+                    fromCache++;
                     continue;
                 }
 
@@ -261,6 +268,7 @@ namespace TrendByPivotPointsOptimizator
                 if (twinsByName.TryGetValue(key, out List<ChromosomeUniversal> twins))
                 {
                     twins.Add(chromosome);
+                    fromCache++;
                     continue;
                 }
 
@@ -268,6 +276,7 @@ namespace TrendByPivotPointsOptimizator
                 toEvaluate.Add(chromosome);
             }
 
+            LogPopulationBreakdown(toEvaluate.Count, elite, fromCache);
             EvaluateInParallel(toEvaluate, period);
 
             foreach (var chromosome in toEvaluate)
@@ -312,8 +321,7 @@ namespace TrendByPivotPointsOptimizator
                 return;
 
             var threads = GetThreadsCount(chromosomes.Count);
-            runLogger.Log("Считаем {0} хромосом в {1} поток(ов).",
-                chromosomes.Count, threads);
+            runLogger.Log("Потоков: {0}.", threads);
 
             if (threads <= 1)
             {
@@ -344,6 +352,17 @@ namespace TrendByPivotPointsOptimizator
                 //ошибок».
                 ExceptionDispatchInfo.Capture(e.Flatten().InnerExceptions.First()).Throw();
             }
+        }
+
+        /// <summary>
+        /// Раскладка популяции перед расчётом: сколько особей надо посчитать, а
+        /// сколько уже с готовым результатом. Без неё непонятно, почему счётчик
+        /// расчётов меньше размера популяции.
+        /// </summary>
+        private void LogPopulationBreakdown(int toEvaluate, int elite, int fromCache)
+        {
+            runLogger.Log("Популяция {0}: считаем {1}, в элите {2}, взяли из кэша {3}.",
+                population.Count, toEvaluate, elite, fromCache);
         }
 
         private void LogEvaluated(int number, int total)
