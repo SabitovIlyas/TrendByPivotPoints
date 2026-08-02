@@ -68,13 +68,14 @@ namespace TrendByPivotPointsOptimizator.Tests
 
         private List<ChromosomeUniversal> RunGa(StrategyDefinition definition, int seed,
             PositionSide side = PositionSide.Long, Logger runLogger = null,
-            bool isLastBackwardTesting = true)
+            bool isLastBackwardTesting = true, int threads = 1)
         {
             var bars = CreateBars(days: 90);
             var logger = new LoggerNull();
             var ticker = new Ticker("TEST", Currency.RUB, 1, bars, logger,
                 commissionRate: 0, isUSD: false, rateUSD: 1);
             var settings = CreateTestSettings(side);
+            settings.Threads = threads;
             var context = new ContextLab();
             var randomProvider = new RandomProvider(seed);
 
@@ -133,6 +134,54 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void ParallelRun_GivesSameResultAsSingleThreaded()
+        {
+            //Хромосомы считаются независимо, генератор случайных чисел при расчёте
+            //не трогается — значит от количества потоков результат зависеть не должен.
+            var single = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42, threads: 1).First();
+            var parallel = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42, threads: 4).First();
+
+            Assert.AreEqual(single.Name, parallel.Name,
+                "Параллельный прогон нашёл другую хромосому.");
+            Assert.AreEqual(single.FitnessValue, parallel.FitnessValue);
+            Assert.AreEqual(single.Profit, parallel.Profit);
+            Assert.AreEqual(single.MaxDrawDown, parallel.MaxDrawDown);
+            Assert.AreEqual(single.DealsCount, parallel.DealsCount);
+        }
+
+        [TestMethod()]
+        public void ThreadsCount_FollowsSettingsAndWork()
+        {
+            var settings = CreateTestSettings();
+            var ga = CreateGa(settings);
+
+            //0 — по числу ядер, но не больше, чем хромосом в очереди.
+            settings.Threads = 0;
+            Assert.AreEqual(Math.Min(Environment.ProcessorCount, 50),
+                ga.GetThreadsCount(chromosomesCount: 50));
+            Assert.AreEqual(1, ga.GetThreadsCount(chromosomesCount: 1));
+
+            settings.Threads = 3;
+            Assert.AreEqual(3, ga.GetThreadsCount(chromosomesCount: 50));
+            Assert.AreEqual(2, ga.GetThreadsCount(chromosomesCount: 2));
+        }
+
+        private GeneticAlgorithmUniversal CreateGa(Settings settings)
+        {
+            var logger = new LoggerNull();
+            var ticker = new Ticker("TEST", Currency.RUB, 1, CreateBars(days: 90), logger,
+                commissionRate: 0, isUSD: false, rateUSD: 1);
+
+            return new GeneticAlgorithmUniversal(settings.PopulationSize,
+                settings.Generations, crossoverRate: 0.85, mutationRate: 0.10,
+                new RandomProvider(42), new List<Ticker>() { ticker }, settings,
+                new ContextLab(), new MeanReversionStrategyDefinition(PositionSide.Long),
+                logger, logger);
+        }
+
+        [TestMethod()]
         public void BestChromosome_IsReadyForForwardTesting()
         {
             //Повторяем то, что делает оптимизатор после Run в форвардном периоде:
@@ -152,8 +201,8 @@ namespace TrendByPivotPointsOptimizator.Tests
             Assert.IsTrue(result.ForwardStart > result.BackwardEnd,
                 "Форвардное окно должно идти после окна бэктеста.");
 
-            best.SetForwardBarsAsTickerBars();
-            Assert.AreSame(result.ForwardBars, best.Ticker.Bars,
+            best.Fitness.Bars = result.ForwardBars;
+            Assert.AreSame(result.ForwardBars, best.Fitness.Bars,
                 "Форвардный тест пошёл бы не по тем барам.");
 
             //Главное — прогон проходит целиком: до правки памяти здесь падало

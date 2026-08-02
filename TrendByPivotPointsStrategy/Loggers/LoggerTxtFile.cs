@@ -1,13 +1,25 @@
-﻿using System.IO;
+using System;
+using System.IO;
 
 namespace TradingSystems
 {
-    public class LoggerTxtFile : Logger
+    /// <summary>
+    /// Журнал в текстовый файл. Файл открывается один раз и держится открытым:
+    /// открывать и закрывать его на каждой строке слишком дорого — прогон
+    /// оптимизатора пишет десятки тысяч строк. Каждая строка сразу сбрасывается
+    /// на диск, поэтому после аварийного завершения журнал не обрывается.
+    /// </summary>
+    public class LoggerTxtFile : Logger, IDisposable
     {
-        private string fileName = string.Empty;
+        private readonly object sync = new object();
+        private readonly StreamWriter writer;
+
         public LoggerTxtFile(string filename)
         {
-            this.fileName = filename;  
+            //FileShare.ReadWrite — чтобы журнал можно было читать, пока идёт прогон.
+            var stream = new FileStream(filename, FileMode.Append, FileAccess.Write,
+                FileShare.ReadWrite);
+            writer = new StreamWriter(stream) { AutoFlush = true };
         }
 
         public void LockCurrentStatus()
@@ -16,25 +28,28 @@ namespace TradingSystems
 
         public override void Log(string text)
         {
-            if (switchOn)
-            {
-                using (StreamWriter writer = new StreamWriter(fileName, append: true))
-                {
-                    writer.WriteLine($"{text}");
-                }
-            }
+            if (!switchOn)
+                return;
+
+            //Писать могут несколько потоков сразу — строки не должны перемешиваться.
+            lock (sync)
+                writer.WriteLine(text);
         }
 
         public override void Log(string text, params object[] args)
         {
-            if (switchOn)
-            {
-                using (StreamWriter writer = new StreamWriter(fileName, append: true))
-                {
-                    var log = string.Format(text, args);
-                    writer.WriteLine(log);
-                }
-            }
+            if (!switchOn)
+                return;
+
+            var log = string.Format(text, args);
+            lock (sync)
+                writer.WriteLine(log);
+        }
+
+        public void Dispose()
+        {
+            lock (sync)
+                writer.Dispose();
         }
     }
 }

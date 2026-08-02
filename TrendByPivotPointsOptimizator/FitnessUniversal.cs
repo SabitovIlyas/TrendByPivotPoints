@@ -25,12 +25,21 @@ namespace TrendByPivotPointsOptimizator
         private int dealsCount;
         private Account account;
 
+        /// <summary>
+        /// Бары, на которых гоняется стратегия: окно бэктеста, а для форвардного
+        /// теста их подменяют на бары форвардного окна. Передаются явно, а не через
+        /// общий Ticker, иначе хромосомы нельзя считать параллельно — они бы
+        /// перетирали бары друг другу.
+        /// </summary>
+        public List<Bar> Bars { get; set; }
+
         public FitnessUniversal(SystemParameters parameters, ChromosomeUniversal chromosome,
-            Starter starter)
+            Starter starter, List<Bar> bars)
         {
             this.parameters = parameters;
             this.chromosome = chromosome;
             this.starter = starter;
+            Bars = bars;
             chromosome.Fitness = this;
         }
 
@@ -70,7 +79,7 @@ namespace TrendByPivotPointsOptimizator
             var security = clone.GetSecurity();
             if (security != null)
             {
-                security.Bars = chromosome.Ticker.Bars;
+                security.Bars = Bars;
                 var securityLab = security as SecurityLab;
                 securityLab.Initialize();   //не удалять! Пересоздаёт внутренние структуры под новые бары
             }

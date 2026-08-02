@@ -40,6 +40,10 @@ namespace TrendByPivotPointsOptimizator
         /// останавливается, потому что особи стали почти одинаковыми.</summary>
         public double MinDiversity = 0.1;
 
+        /// <summary>Сколько потоков считают хромосомы поколения; 0 — по числу ядер.
+        /// Результат от этого не зависит, только скорость.</summary>
+        public int Threads = 0;
+
         /// <summary>Сохранять состояние прогона после каждого поколения, чтобы после
         /// сбоя продолжить с последнего поколения, а не с начала.</summary>
         public bool SaveCheckpoint = true;

@@ -358,6 +358,9 @@ namespace TrendByPivotPointsOptimizator
             logger.Log("Элита: {0:P0} популяции — {1} особей переходят в следующее " +
                 "поколение без пересчёта", settings.EliteFraction,
                 GeneticAlgorithmUniversal.GetEliteCount(settings));
+            logger.Log("Потоков на расчёт хромосом: {0}", settings.Threads > 0
+                ? settings.Threads.ToString()
+                : $"по числу ядер ({Environment.ProcessorCount})");
             logger.Log("Сохранение состояния прогона: {0}", settings.SaveCheckpoint
                 ? "после каждого поколения" : "выключено");
             logger.Log("Окна: бэктест {0} дней, форвард {1} дней, периодов {2}, " +
@@ -522,8 +525,10 @@ namespace TrendByPivotPointsOptimizator
                         result.BackwardProfitPrcnt = chromosome.ProfitPrcnt;
                     }
 
+                    //Форвардный тест: та же стратегия на барах форвардного окна.
                     foreach (var chromosome in bestPopulation)
-                        chromosome.SetForwardBarsAsTickerBars();
+                        chromosome.Fitness.Bars =
+                            chromosome.ForwardAnalysisResults.First().ForwardBars;
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.Fitness.SetUpChromosomeFitnessValue(
@@ -880,6 +885,7 @@ namespace TrendByPivotPointsOptimizator
                     case "TournamentSize": settings.TournamentSize = int.Parse(value); break;
                     case "MinDiversity": settings.MinDiversity = ParseDouble(value); break;
                     case "EliteFraction": settings.EliteFraction = ParseDouble(value); break;
+                    case "Threads": settings.Threads = int.Parse(value); break;
                     case "SaveCheckpoint": settings.SaveCheckpoint = ParseBool(value); break;
                     case "CheckpointFile": settings.CheckpointFile = value; break;
                     case "BackwardDays": settings.BackwardDays = int.Parse(value); break;

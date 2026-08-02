@@ -33,6 +33,7 @@ namespace ProjectsManager
         private NumericUpDown tournamentBox;
         private NumericUpDown minDiversityBox;
         private NumericUpDown eliteFractionBox;
+        private NumericUpDown threadsBox;
         private CheckBox saveCheckpointBox;
         private TextBox checkpointFileBox;
         private CheckBox trimHistoryBox;
@@ -99,6 +100,7 @@ namespace ProjectsManager
             tournamentBox = AddNumeric(table, "Размер турнира:", 2, 1000, 4);
             minDiversityBox = AddNumeric(table, "Мин. разнообразие:", 0, 1, 0.10m, 2, 0.05m);
             eliteFractionBox = AddNumeric(table, "Доля элиты:", 0, 1, 0.20m, 2, 0.05m);
+            threadsBox = AddNumeric(table, "Потоков (0 — по числу ядер):", 0, 256, 0);
             saveCheckpointBox = AddCheckBox(table,
                 "Сохранять состояние прогона (продолжить после сбоя):", true);
 
@@ -381,6 +383,7 @@ namespace ProjectsManager
             builder.AppendLine("TournamentSize:" + tournamentBox.Value);
             builder.AppendLine("MinDiversity:" + minDiversityBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("EliteFraction:" + eliteFractionBox.Value.ToString(CultureInfo.InvariantCulture));
+            builder.AppendLine("Threads:" + threadsBox.Value);
             builder.AppendLine("SaveCheckpoint:" + (saveCheckpointBox.Checked ? "1" : "0"));
             if (checkpointFileBox.Text.Trim().Length > 0)
                 builder.AppendLine("CheckpointFile:" + checkpointFileBox.Text.Trim());
@@ -455,6 +458,7 @@ namespace ProjectsManager
                         case "TournamentSize": SetValue(tournamentBox, value); break;
                         case "MinDiversity": SetValue(minDiversityBox, value); break;
                         case "EliteFraction": SetValue(eliteFractionBox, value); break;
+                        case "Threads": SetValue(threadsBox, value); break;
                         case "SaveCheckpoint": saveCheckpointBox.Checked = IsTrue(value); break;
                         case "CheckpointFile": checkpointFileBox.Text = value; break;
                         case "BackwardDays": SetValue(backwardDaysBox, value); break;

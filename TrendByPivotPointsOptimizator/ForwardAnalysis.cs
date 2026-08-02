@@ -110,8 +110,18 @@ namespace TrendByPivotPointsOptimizator
 
         public void SetTradingPeriods(IOptimizableChromosome chromosome)
         {
-            var results = new List<ForwardAnalysisResult>();            
-            var sortedBars = chromosome.Ticker.Bars.OrderBy(b => b.Date).ToList();
+            chromosome.ForwardAnalysisResults.Add(
+                CreateTradingPeriod(chromosome.Ticker.Bars));
+        }
+
+        /// <summary>
+        /// Нарезает окна бэктеста и форвардного теста для номера периода. Результат
+        /// зависит только от баров инструмента и номера периода, поэтому его можно
+        /// посчитать один раз и раздать всем хромосомам поколения.
+        /// </summary>
+        public ForwardAnalysisResult CreateTradingPeriod(List<Bar> bars)
+        {
+            var sortedBars = bars.OrderBy(b => b.Date).ToList();
             var latestDate = sortedBars.Last().Date;
 
             var forwardEnd = latestDate.AddDays(-shiftWindowDays * Period);
@@ -133,7 +143,7 @@ namespace TrendByPivotPointsOptimizator
             if (!backwardBars.Any() || !forwardBars.Any())
                 throw new InvalidOperationException("Отсутствуют бары");
 
-            var result = new ForwardAnalysisResult
+            return new ForwardAnalysisResult
             {
                 BackwardStart = backwardStart,
                 BackwardEnd = backwardEnd,
@@ -142,13 +152,20 @@ namespace TrendByPivotPointsOptimizator
                 BackwardBars = backwardBars,
                 ForwardBars = forwardBars
             };
-            chromosome.ForwardAnalysisResults.Add(result);          
         }
 
         public void SetTradingPeriodsFinal(IOptimizableChromosome chromosome)
         {
-            var results = new List<ForwardAnalysisResult>();
-            var sortedBars = chromosome.Ticker.Bars.OrderBy(b => b.Date).ToList();
+            chromosome.ForwardAnalysisResults.Add(
+                CreateTradingPeriodFinal(chromosome.Ticker.Bars));
+        }
+
+        /// <summary>
+        /// То же для главного прогона бэктеста: форвардное окно здесь пустое.
+        /// </summary>
+        public ForwardAnalysisResult CreateTradingPeriodFinal(List<Bar> bars)
+        {
+            var sortedBars = bars.OrderBy(b => b.Date).ToList();
             var latestDate = sortedBars.Last().Date;
 
 
@@ -172,7 +189,7 @@ namespace TrendByPivotPointsOptimizator
             //if (!backwardBars.Any() || !forwardBars.Any())
             //    throw new InvalidOperationException("Отсутствуют бары");
 
-            var result = new ForwardAnalysisResult
+            return new ForwardAnalysisResult
             {
                 BackwardStart = backwardStart,
                 BackwardEnd = backwardEnd,
@@ -181,7 +198,6 @@ namespace TrendByPivotPointsOptimizator
                 BackwardBars = backwardBars,
                 ForwardBars = forwardBars
             };
-            chromosome.ForwardAnalysisResults.Add(result);
         }
 
         public bool IsStrategyViable(List<ForwardAnalysisResult> results, double correlationThreshold = 0.7)

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
+using System.Threading;
+using System.Threading.Tasks;
 using TradingSystems;
 using Security = TradingSystems.Security;
 
@@ -44,7 +47,11 @@ namespace TrendByPivotPointsOptimizator
         private readonly double epsilon = 1e-5;
 
         private Dictionary<string, double> seedGenes;
-        private ForwardAnalysis forwardAnalysis;
+
+        //Окна тестирования на поколение: инструмент -> нарезка баров.
+        private Dictionary<string, ForwardAnalysisResult> windows;
+        private int windowsPeriod = -1;
+        private bool windowsAreFinal;
 
         //Кэш результатов по комбинации генов: только числа, без баров и стартеров.
         private readonly Dictionary<string, ChromosomeMetrics> chromosomeCache =
@@ -229,36 +236,62 @@ namespace TrendByPivotPointsOptimizator
 
         public void Evaluate(int period)
         {
-            var i = 0;
+            PrepareWindows(period);
+
+            //Разбор популяции идёт последовательно: так порядок обращений к кэшу
+            //и содержимое журнала не зависят от того, сколько потоков считает.
+            var toEvaluate = new List<ChromosomeUniversal>();
+            var twinsByName = new Dictionary<string, List<ChromosomeUniversal>>();
+
             foreach (var chromosome in population)
             {
-                runLogger.Log("\r\nХромосома №{0} из {1}.\r\n", ++i, population.Count);
                 if (!double.IsNaN(chromosome.FitnessValue))
                     continue;
 
+                SetWindow(chromosome);
                 var key = chromosome.Name;
+
                 if (chromosomeCache.TryGetValue(key, out ChromosomeMetrics cached))
                 {
-                    runLogger.Log("Взяли хромосому из кэша");
                     cached.ApplyTo(chromosome);
+                    continue;
                 }
-                else
-                {
-                    EvaluateChromosome(chromosome, period);
-                    chromosomeCache[key] = ChromosomeMetrics.From(chromosome);
 
-                    //Числа посчитаны и лежат в кэше — бары, сделки и стартер больше
-                    //не нужны. Без этого прогон удерживает историю каждой хромосомы
-                    //и съедает десятки гигабайт.
-                    ReleaseHeavyData(chromosome);
+                //Одинаковые наборы генов внутри поколения считаем один раз.
+                if (twinsByName.TryGetValue(key, out List<ChromosomeUniversal> twins))
+                {
+                    twins.Add(chromosome);
+                    continue;
                 }
+
+                twinsByName[key] = new List<ChromosomeUniversal>();
+                toEvaluate.Add(chromosome);
             }
 
-            i = 0;
-            foreach (var chromosome in population)
+            EvaluateInParallel(toEvaluate, period);
+
+            foreach (var chromosome in toEvaluate)
             {
-                runLogger.Log("Расчёт фитнес-функции для {0} хромосомы из {1}." +
-                    "\r\n\r\nХромосома: {2}", ++i, population.Count, chromosome.Name);
+                var metrics = ChromosomeMetrics.From(chromosome);
+                chromosomeCache[chromosome.Name] = metrics;
+
+                foreach (var twin in twinsByName[chromosome.Name])
+                    metrics.ApplyTo(twin);
+
+                //Числа посчитаны и лежат в кэше — бары, сделки и стартер больше
+                //не нужны. Без этого прогон удерживает историю каждой хромосомы
+                //и съедает десятки гигабайт.
+                ReleaseHeavyData(chromosome);
+            }
+
+            //Подробности пишем только по хромосомам, посчитанным в этом поколении:
+            //у элиты и попаданий в кэш числа те же, что и раньше, и повторять их
+            //каждое поколение — это десятки тысяч лишних строк за прогон.
+            var i = 0;
+            foreach (var chromosome in toEvaluate)
+            {
+                runLogger.Log("Хромосома {0} из {1}: {2}", ++i, toEvaluate.Count,
+                    chromosome.Name);
                 runLogger.Log("Фитнес-функция = {0}. Количество сделок = {1}. " +
                     "Прибыль, р. = {2}. Прибыль, % = {3}. Максимальная просадка, % = {4}. " +
                     "Фактор восстановления = {5}\r\n", chromosome.FitnessValue,
@@ -268,22 +301,83 @@ namespace TrendByPivotPointsOptimizator
         }
 
         /// <summary>
-        /// Полный прогон стратегии для хромосомы: нарезка баров под окно периода,
-        /// свой стартер и расчёт фитнес-функции.
+        /// Считает хромосомы поколения в несколько потоков. Прогоны независимы:
+        /// у каждого свои стартер, бумага и фитнес-функция, бары окна общие и только
+        /// на чтение, а генератор случайных чисел здесь не используется — поэтому
+        /// результат не зависит ни от количества потоков, ни от порядка расчёта.
+        /// </summary>
+        private void EvaluateInParallel(List<ChromosomeUniversal> chromosomes, int period)
+        {
+            if (chromosomes.Count == 0)
+                return;
+
+            var threads = GetThreadsCount(chromosomes.Count);
+            runLogger.Log("Считаем {0} хромосом в {1} поток(ов).",
+                chromosomes.Count, threads);
+
+            if (threads <= 1)
+            {
+                var number = 0;
+                foreach (var chromosome in chromosomes)
+                {
+                    EvaluateChromosome(chromosome, period);
+                    LogEvaluated(++number, chromosomes.Count);
+                }
+                return;
+            }
+
+            var counter = 0;
+            var options = new ParallelOptions() { MaxDegreeOfParallelism = threads };
+
+            try
+            {
+                Parallel.ForEach(chromosomes, options, chromosome =>
+                {
+                    EvaluateChromosome(chromosome, period);
+                    LogEvaluated(Interlocked.Increment(ref counter), chromosomes.Count);
+                });
+            }
+            catch (AggregateException e)
+            {
+                //Иначе настоящая ошибка тонет внутри AggregateException, и в журнале
+                //вместо внятного сообщения оказывается «произошла одна или несколько
+                //ошибок».
+                ExceptionDispatchInfo.Capture(e.Flatten().InnerExceptions.First()).Throw();
+            }
+        }
+
+        private void LogEvaluated(int number, int total)
+        {
+            //Живой отсчёт по ходу поколения: одно поколение боевого прогона считается
+            //минутами, и без него непонятно, идёт работа или нет.
+            runLogger.Log("Посчитана хромосома {0} из {1}.", number, total);
+        }
+
+        /// <summary>
+        /// Сколько потоков пустить на поколение: из настроек, а 0 — по числу ядер.
+        /// Больше, чем хромосом, не нужно.
+        /// </summary>
+        public int GetThreadsCount(int chromosomesCount)
+        {
+            var threads = settings.Threads > 0
+                ? settings.Threads : Environment.ProcessorCount;
+            return Math.Max(1, Math.Min(threads, chromosomesCount));
+        }
+
+        /// <summary>
+        /// Полный прогон стратегии для хромосомы: свой стартер, своя бумага и своя
+        /// фитнес-функция на барах окна бэктеста.
         /// </summary>
         private void EvaluateChromosome(ChromosomeUniversal chromosome, int period)
         {
-            var starter = CreateStarterForChromosome(chromosome);
+            SetWindow(chromosome);
+            var backwardBars = chromosome.ForwardAnalysisResults.First().BackwardBars;
+
+            var starter = CreateStarterForChromosome(chromosome, backwardBars);
             var parameters = definition.CreateSystemParameters(chromosome.Genes,
                 chromosome.Ticker, chromosome.Side, chromosome.TimeFrame, settings);
 
-            if (IsLastBackwardTesting)
-                PrepareChromosomeFinal(chromosome, period);
-            else
-                PrepareChromosome(chromosome, period);
-            chromosome.SetBackwardBarsAsTickerBars();
-
-            var fitness = new FitnessUniversal(parameters, chromosome, starter);
+            var fitness = new FitnessUniversal(parameters, chromosome, starter, backwardBars);
             fitness.SetUpChromosomeFitnessValue();
         }
 
@@ -313,48 +407,70 @@ namespace TrendByPivotPointsOptimizator
             if (chromosome.Fitness != null)
                 return;
 
+            PrepareWindows(period);
             EvaluateChromosome(chromosome, period);
         }
 
-        private Starter CreateStarterForChromosome(ChromosomeUniversal chromosome)
+        private Starter CreateStarterForChromosome(ChromosomeUniversal chromosome,
+            List<Bar> bars)
         {
             var ticker = chromosome.Ticker;
             var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares,
-                ticker.Bars, ticker.Logger, ticker.CommissionRate);
+                bars, ticker.Logger, ticker.CommissionRate);
             security.RateUSD = ticker.RateUSD;
 
             return definition.CreateStarter(context, new List<Security>() { security }, logger);
         }
 
-        private void PrepareChromosome(ChromosomeUniversal chromosome, int period)
+        /// <summary>
+        /// Нарезает окна тестирования — по одному разу на инструмент за поколение.
+        /// Окно зависит только от баров инструмента и номера периода, поэтому всем
+        /// хромосомам поколения достаются одни и те же списки баров (только на
+        /// чтение). Раньше нарезка считалась заново для каждой хромосомы: сортировка
+        /// десятков тысяч баров десятки тысяч раз за прогон.
+        /// </summary>
+        private void PrepareWindows(int period)
         {
-            forwardAnalysis = new ForwardAnalysis(genAlg: null,
-                forwardPeriodDays: settings.ForwardDays,
+            if (windows != null && windowsPeriod == period &&
+                windowsAreFinal == IsLastBackwardTesting)
+                return;
+
+            var forwardAnalysis = new ForwardAnalysis(genAlg: null,
+                forwardPeriodDays: IsLastBackwardTesting ? 0 : settings.ForwardDays,
                 backwardPeriodDays: settings.BackwardDays,
-                forwardPeriodsCount: settings.ForwardPeriodsCount,
+                forwardPeriodsCount: IsLastBackwardTesting ? 1 : settings.ForwardPeriodsCount,
                 shiftWindowDays: settings.ShiftWindowDays);
-
             forwardAnalysis.Period = period;
-            chromosome.ResetBarsToInitBars();
 
-            //Окно у хромосомы одно: если её считают повторно, старый результат
-            //заменяем, а не добавляем второй.
-            chromosome.ForwardAnalysisResults.Clear();
-            forwardAnalysis.SetTradingPeriods(chromosome);
+            windows = new Dictionary<string, ForwardAnalysisResult>();
+            foreach (var ticker in tickers)
+                windows[ticker.Name] = IsLastBackwardTesting
+                    ? forwardAnalysis.CreateTradingPeriodFinal(ticker.InitBars)
+                    : forwardAnalysis.CreateTradingPeriod(ticker.InitBars);
+
+            windowsPeriod = period;
+            windowsAreFinal = IsLastBackwardTesting;
         }
 
-        private void PrepareChromosomeFinal(ChromosomeUniversal chromosome, int period)
+        /// <summary>
+        /// Выдаёт хромосоме окно её инструмента: свой объект с датами и результатами,
+        /// но общие списки баров. Окно у хромосомы одно — при повторном расчёте
+        /// старое заменяется, а не добавляется второе.
+        /// </summary>
+        private void SetWindow(ChromosomeUniversal chromosome)
         {
-            forwardAnalysis = new ForwardAnalysis(genAlg: null,
-                forwardPeriodDays: 0,
-                backwardPeriodDays: settings.BackwardDays,
-                forwardPeriodsCount: 1,
-                shiftWindowDays: settings.ShiftWindowDays);
+            var window = windows[chromosome.Ticker.Name];
 
-            forwardAnalysis.Period = period;
-            chromosome.ResetBarsToInitBars();
             chromosome.ForwardAnalysisResults.Clear();
-            forwardAnalysis.SetTradingPeriodsFinal(chromosome);
+            chromosome.ForwardAnalysisResults.Add(new ForwardAnalysisResult()
+            {
+                BackwardStart = window.BackwardStart,
+                BackwardEnd = window.BackwardEnd,
+                ForwardStart = window.ForwardStart,
+                ForwardEnd = window.ForwardEnd,
+                BackwardBars = window.BackwardBars,
+                ForwardBars = window.ForwardBars,
+            });
         }
 
         public ChromosomeUniversal TournamentSelection()
