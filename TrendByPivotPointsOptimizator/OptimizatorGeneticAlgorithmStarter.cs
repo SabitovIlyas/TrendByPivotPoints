@@ -733,12 +733,17 @@ namespace TrendByPivotPointsOptimizator
 
             using (StreamWriter writer = new StreamWriter(fileName))
             {
-                //Заголовки: общие колонки + имена параметров стратегии
+                //Заголовки: общие колонки + имена параметров стратегии + показатели
                 var header = $"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
                     $"{nameof(t.TimeFrame)};{nameof(t.Side)};{nameof(t.Ticker.Name)}";
                 foreach (var descriptor in definition.Parameters)
                     header += ";" + descriptor.Name;
-                header += $";{nameof(t.Profit)};{nameof(t.ProfitPrcnt)}";
+                header += ";Прибыль, р.;Прибыль, %;Максимальная просадка, %;" +
+                    "Фактор восстановления;Выигрышных сделок, %;Выигрышных сделок;" +
+                    "Убыточных сделок;Средний выигрыш, р.;Средний проигрыш, р.;" +
+                    "Выигрыш к проигрышу;Профит-фактор;Средняя сделка, р.;" +
+                    "Лучшая сделка, р.;Худшая сделка, р.;Убытков подряд;" +
+                    "Выигрышей подряд;Средняя длительность сделки, баров";
                 writer.WriteLine(header);
 
                 foreach (var c in population)
@@ -747,7 +752,14 @@ namespace TrendByPivotPointsOptimizator
                         $"{c.Ticker.Name}";
                     foreach (var descriptor in definition.Parameters)
                         line += ";" + c.Genes[descriptor.Name];
-                    line += $";{c.Profit};{c.ProfitPrcnt}";
+
+                    var s = c.DealsStatistics ?? new DealsStatistics();
+                    line += $";{c.Profit};{c.ProfitPrcnt};{c.MaxDrawDown};" +
+                        $"{c.RecoveryFactor};{s.WinRatePrcnt};{s.WinningDealsCount};" +
+                        $"{s.LosingDealsCount};{s.AverageWin};{s.AverageLoss};" +
+                        $"{s.PayoffRatio};{s.ProfitFactor};{s.ExpectedPayoff};" +
+                        $"{s.LargestWin};{s.LargestLoss};{s.MaxConsecutiveLosses};" +
+                        $"{s.MaxConsecutiveWins};{s.AverageBarsInDeal}";
                     writer.WriteLine(line);
                 }
             }

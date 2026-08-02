@@ -24,6 +24,7 @@ namespace TrendByPivotPointsOptimizator
         private readonly Starter starter;
         private int dealsCount;
         private Account account;
+        private DealsStatistics tradeStatistics = new DealsStatistics();
 
         /// <summary>
         /// Бары, на которых гоняется стратегия: окно бэктеста, а для форвардного
@@ -48,6 +49,7 @@ namespace TrendByPivotPointsOptimizator
             IsCriteriaPassedNeedToCheck = isCriteriaPassedNeedToCheck;
             chromosome.FitnessValue = Calculate();
             chromosome.DealsCount = dealsCount;
+            chromosome.DealsStatistics = tradeStatistics;
 
             var profit = account.Equity - account.InitDeposit;
             chromosome.Profit = profit;
@@ -63,7 +65,12 @@ namespace TrendByPivotPointsOptimizator
             SystemRun(starter);
 
             var security = starter.GetSecurity();
-            dealsCount = security.GetMetaDeals().Count;
+
+            //Показатели считаем по этому прогону — он без пессимизации, то есть
+            //описывает стратегию такой, какой она торгуется.
+            var metaDeals = security.GetMetaDeals();
+            dealsCount = metaDeals.Count;
+            tradeStatistics = DealsStatistics.Calculate(metaDeals);
             account = starter.Account;
 
             var recoveryFactor = CheckCriteriaPassed(starter);

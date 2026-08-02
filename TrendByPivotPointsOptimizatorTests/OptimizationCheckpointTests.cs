@@ -155,6 +155,89 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void Metrics_RoundTripWithDealsStatistics()
+        {
+            var metrics = new ChromosomeMetrics()
+            {
+                FitnessValue = 3.35,
+                Profit = 256164,
+                ProfitPrcnt = 256.16,
+                RecoveryFactor = 5.77,
+                MaxDrawDown = 44.32,
+                DealsCount = 199,
+                DealsStatistics = new DealsStatistics()
+                {
+                    DealsCount = 199,
+                    WinningDealsCount = 84,
+                    LosingDealsCount = 115,
+                    WinRatePrcnt = 42.21,
+                    AverageWin = 6120.5,
+                    AverageLoss = 2240.75,
+                    PayoffRatio = 2.73,
+                    ProfitFactor = 1.99,
+                    ExpectedPayoff = 1287.25,
+                    LargestWin = 48120,
+                    LargestLoss = 9870.5,
+                    MaxConsecutiveLosses = 9,
+                    MaxConsecutiveWins = 5,
+                    AverageBarsInDeal = 37.4,
+                },
+            };
+
+            var restored = ChromosomeMetrics.Parse(metrics.ToLine());
+
+            Assert.AreEqual(3.35, restored.FitnessValue);
+            Assert.AreEqual(199, restored.DealsCount);
+            Assert.AreEqual(84, restored.DealsStatistics.WinningDealsCount);
+            Assert.AreEqual(115, restored.DealsStatistics.LosingDealsCount);
+            Assert.AreEqual(42.21, restored.DealsStatistics.WinRatePrcnt);
+            Assert.AreEqual(6120.5, restored.DealsStatistics.AverageWin);
+            Assert.AreEqual(2240.75, restored.DealsStatistics.AverageLoss);
+            Assert.AreEqual(2.73, restored.DealsStatistics.PayoffRatio);
+            Assert.AreEqual(1.99, restored.DealsStatistics.ProfitFactor);
+            Assert.AreEqual(1287.25, restored.DealsStatistics.ExpectedPayoff);
+            Assert.AreEqual(48120, restored.DealsStatistics.LargestWin);
+            Assert.AreEqual(9870.5, restored.DealsStatistics.LargestLoss);
+            Assert.AreEqual(9, restored.DealsStatistics.MaxConsecutiveLosses);
+            Assert.AreEqual(5, restored.DealsStatistics.MaxConsecutiveWins);
+            Assert.AreEqual(37.4, restored.DealsStatistics.AverageBarsInDeal);
+        }
+
+        [TestMethod()]
+        public void Metrics_RoundTripInfinity()
+        {
+            //Прогон без убыточных сделок: отношения бесконечны — и такими же должны
+            //прочитаться обратно, иначе продолженный прогон получит другие числа.
+            var metrics = new ChromosomeMetrics()
+            {
+                DealsStatistics = new DealsStatistics()
+                {
+                    ProfitFactor = double.PositiveInfinity,
+                    PayoffRatio = double.PositiveInfinity,
+                },
+            };
+
+            var restored = ChromosomeMetrics.Parse(metrics.ToLine());
+
+            Assert.IsTrue(double.IsPositiveInfinity(restored.DealsStatistics.ProfitFactor));
+            Assert.IsTrue(double.IsPositiveInfinity(restored.DealsStatistics.PayoffRatio));
+        }
+
+        [TestMethod()]
+        public void Metrics_ParseOldLineWithoutDealsStatistics()
+        {
+            //Чек-поинт, снятый до появления показателей: прерванный прогон должен
+            //продолжиться после обновления оптимизатора, а не начаться заново.
+            var restored = ChromosomeMetrics.Parse("3.35;256164;256.16;5.77;44.32;199");
+
+            Assert.AreEqual(3.35, restored.FitnessValue);
+            Assert.AreEqual(199, restored.DealsCount);
+            Assert.IsNotNull(restored.DealsStatistics);
+            Assert.AreEqual(199, restored.DealsStatistics.DealsCount);
+            Assert.AreEqual(0, restored.DealsStatistics.WinningDealsCount);
+        }
+
+        [TestMethod()]
         public void Fingerprint_DependsOnSettingsAndRanges()
         {
             var settings = CreateSettings();

@@ -20,6 +20,10 @@ namespace TrendByPivotPointsOptimizator
         public double RecoveryFactor { get; set; } = double.NaN;
         public double MaxDrawDown { get; set; } = double.NaN;
         public int DealsCount { get; set; } = 0;
+
+        /// <summary>Показатели по метасделкам «честного» прогона — без пессимизации,
+        /// которая применяется только при расчёте фитнес-функции.</summary>
+        public DealsStatistics DealsStatistics { get; set; } = new DealsStatistics();
         public Ticker Ticker { get; set; }
         public Interval TimeFrame { get; set; }
         public PositionSide Side { get; set; }
