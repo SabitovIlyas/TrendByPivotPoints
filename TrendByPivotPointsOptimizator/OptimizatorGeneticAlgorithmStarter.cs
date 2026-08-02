@@ -358,6 +358,8 @@ namespace TrendByPivotPointsOptimizator
             logger.Log("Элита: {0:P0} популяции — {1} особей переходят в следующее " +
                 "поколение без пересчёта", settings.EliteFraction,
                 GeneticAlgorithmUniversal.GetEliteCount(settings));
+            logger.Log("Сохранение состояния прогона: {0}", settings.SaveCheckpoint
+                ? "после каждого поколения" : "выключено");
             logger.Log("Окна: бэктест {0} дней, форвард {1} дней, периодов {2}, " +
                 "смещение {3} дней", settings.BackwardDays, settings.ForwardDays,
                 settings.ForwardPeriodsCount, settings.ShiftWindowDays);
@@ -399,57 +401,126 @@ namespace TrendByPivotPointsOptimizator
             var results = new List<ForwardAnalysisResult>();
             var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}_" +
                 $"{definition.Name}.csv";
-            CreateTxtFile(resultFileName);
+
+            var checkpointFileName = GetCheckpointFileName(settings, resultFileName);
+            var fingerprint = OptimizationCheckpoint.CalculateFingerprint(settings, definition);
+            var checkpoint = LoadCheckpoint(checkpointFileName, fingerprint, logger);
 
             try
             {
                 var context = new ContextLab();
-                var effectiveSeed = settings.Seed ?? seed;
-                var randomProvider = effectiveSeed.HasValue
-                    ? new RandomProvider(effectiveSeed.Value)
-                    : new RandomProvider();
+                var effectiveSeed = checkpoint != null
+                    ? checkpoint.Seed
+                    : settings.Seed ?? seed ?? Environment.TickCount;
+
+                //Сид всегда конкретный и записан в журнал: без этого прогон нельзя
+                //ни повторить, ни продолжить с чек-поинта.
+                var randomProvider = new RandomProvider(effectiveSeed);
+                logger.Log("Сид генератора случайных чисел: {0}", effectiveSeed);
 
                 var ga = new GeneticAlgorithmUniversal(settings.PopulationSize,
                     settings.Generations, settings.CrossoverRate, settings.MutationRate,
                     randomProvider, tickers, settings, context, definition, loggerNull,
                     logger);
 
-                logger.Log("Старт генетического алгоритма");
-                logger.Log("Актуальная оптимизация!");
-                ga.IsLastBackwardTesting = true;
-                var bestPopulationLast = ga.Run(period: 0, seedGenes);
-
-                foreach (var chromosome in bestPopulationLast)
-                    chromosome.ForwardAnalysisResults.First().BackwardFitness =
-                        chromosome.FitnessValue;
-
-                var sumResults = 0d;
-                foreach (var chromosome in bestPopulationLast)
-                    sumResults += chromosome.ForwardAnalysisResults.First().BackwardFitness;
-
-                var avgResults = sumResults / bestPopulationLast.Count;
-                var tmpRes = new ForwardAnalysisResult() { BackwardFitness = avgResults, };
-
-                if (bestPopulationLast.Count > 0)
+                var state = new OptimizationCheckpoint()
                 {
-                    tmpRes.BackwardStart = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardStart;
-                    tmpRes.BackwardEnd = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardEnd;
-                    tmpRes.BackwardProfit = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardProfit;
-                    tmpRes.BackwardProfitPrcnt = bestPopulationLast.First().ForwardAnalysisResults.First().BackwardProfitPrcnt;
+                    Fingerprint = fingerprint,
+                    Seed = effectiveSeed,
+                };
+
+                if (checkpoint != null)
+                {
+                    randomProvider.Replay(checkpoint.RandomDraws);
+                    state.Stage = checkpoint.Stage;
+                    state.Period = checkpoint.Period;
+                    state.BestGenes = checkpoint.BestGenes;
+                    state.FinalBackwardResult = checkpoint.FinalBackwardResult;
+                    state.CompletedResults = checkpoint.CompletedResults;
+
+                    logger.Log("Продолжаем прерванный прогон: этап {0}, период {1}, " +
+                        "готовых периодов {2}.", state.Stage, state.Period + 1,
+                        state.CompletedResults.Count);
                 }
 
-                PrintToTxtFile(bestPopulationLast, definition);
-                var bestChromosome = bestPopulationLast.First();
+                if (settings.SaveCheckpoint)
+                    ga.GenerationCompleted = progress => SaveCheckpoint(state, progress,
+                        randomProvider, settings, checkpointFileName, logger);
+
+                //Сводный отчёт переписываем с нуля, возвращая в него уже посчитанные
+                //периоды: дописывать в старый файл после перезапуска нельзя.
+                CreateTxtFile(resultFileName);
+                foreach (var completed in state.CompletedResults)
+                {
+                    results.Add(completed);
+                    AppendToTxtFile(completed, resultFileName);
+                }
+
+                logger.Log("Старт генетического алгоритма");
+                var tmpRes = state.FinalBackwardResult;
+
+                if (state.Stage == OptimizationCheckpoint.StageFinalBackward)
+                {
+                    logger.Log("Актуальная оптимизация!");
+                    ga.IsLastBackwardTesting = true;
+                    var bestPopulationLast = ga.Run(period: 0, seedGenes,
+                        ToProgress(checkpoint, settings, tickers,
+                            OptimizationCheckpoint.StageFinalBackward, period: 0));
+
+                    foreach (var chromosome in bestPopulationLast)
+                    {
+                        var result = chromosome.ForwardAnalysisResults.First();
+                        result.BackwardFitness = chromosome.FitnessValue;
+                        result.BackwardProfit = chromosome.Profit;
+                        result.BackwardProfitPrcnt = chromosome.ProfitPrcnt;
+                    }
+
+                    var sumResults = 0d;
+                    foreach (var chromosome in bestPopulationLast)
+                        sumResults += chromosome.ForwardAnalysisResults.First().BackwardFitness;
+
+                    var avgResults = sumResults / bestPopulationLast.Count;
+                    tmpRes = new ForwardAnalysisResult() { BackwardFitness = avgResults, };
+
+                    if (bestPopulationLast.Count > 0)
+                    {
+                        var first = bestPopulationLast.First().ForwardAnalysisResults.First();
+                        tmpRes.BackwardStart = first.BackwardStart;
+                        tmpRes.BackwardEnd = first.BackwardEnd;
+                        tmpRes.BackwardProfit = first.BackwardProfit;
+                        tmpRes.BackwardProfitPrcnt = first.BackwardProfitPrcnt;
+                    }
+
+                    PrintToTxtFile(bestPopulationLast, definition);
+
+                    state.BestGenes = bestPopulationLast.First().Genes;
+                    state.FinalBackwardResult = tmpRes;
+                    state.Stage = OptimizationCheckpoint.StageForward;
+                    state.Period = 0;
+                    SaveCheckpoint(state, progress: null, randomProvider: randomProvider,
+                        settings: settings, fullFileName: checkpointFileName, logger: logger);
+                }
+
+                if (state.BestGenes == null)
+                    throw new Exception("В чек-поинте нет лучшей хромосомы главного " +
+                        "прогона — продолжить форвардные периоды не с чего.");
 
                 ga.IsLastBackwardTesting = false;
-                for (var period = 0; period < settings.ForwardPeriodsCount; period++)
+                for (var period = state.Period; period < settings.ForwardPeriodsCount; period++)
                 {
+                    state.Period = period;
                     logger.Log("Период № {0}", period + 1);
-                    var bestPopulation = ga.Run(period, bestChromosome.Genes);
+                    var bestPopulation = ga.Run(period, state.BestGenes,
+                        ToProgress(checkpoint, settings, tickers,
+                            OptimizationCheckpoint.StageForward, period));
 
                     foreach (var chromosome in bestPopulation)
-                        chromosome.ForwardAnalysisResults.First().BackwardFitness =
-                            chromosome.FitnessValue;
+                    {
+                        var result = chromosome.ForwardAnalysisResults.First();
+                        result.BackwardFitness = chromosome.FitnessValue;
+                        result.BackwardProfit = chromosome.Profit;
+                        result.BackwardProfitPrcnt = chromosome.ProfitPrcnt;
+                    }
 
                     foreach (var chromosome in bestPopulation)
                         chromosome.SetForwardBarsAsTickerBars();
@@ -459,8 +530,12 @@ namespace TrendByPivotPointsOptimizator
                             isCriteriaPassedNeedToCheck: false);
 
                     foreach (var chromosome in bestPopulation)
-                        chromosome.ForwardAnalysisResults.First().ForwardFitness =
-                            chromosome.FitnessValue;
+                    {
+                        var result = chromosome.ForwardAnalysisResults.First();
+                        result.ForwardFitness = chromosome.FitnessValue;
+                        result.ForwardProfit = chromosome.Profit;
+                        result.ForwardProfitPrcnt = chromosome.ProfitPrcnt;
+                    }
 
                     var sumResultsBackward = 0d;
                     var sumResultsForward = 0d;
@@ -498,9 +573,17 @@ namespace TrendByPivotPointsOptimizator
                         $"{settings.Sides.First()}_{definition.Name}_Period_{period}.csv";
                     CreateTxtFile(bestPopulationFile);
                     PrintToTxtFile(bestPopulation, definition, bestPopulationFile);
+
+                    //Период закрыт: следующий перезапуск начнёт со следующего.
+                    state.CompletedResults.Add(tmp);
+                    state.Period = period + 1;
+                    SaveCheckpoint(state, progress: null, randomProvider: randomProvider,
+                        settings: settings, fullFileName: checkpointFileName, logger: logger);
                 }
                 results.Add(tmpRes);
                 AppendToTxtFile(tmpRes, resultFileName);
+
+                DeleteCheckpoint(checkpointFileName, logger);
 
                 var stopTime = DateTime.Now;
                 logger.Log("Стоп {0}", stopTime);
@@ -513,6 +596,114 @@ namespace TrendByPivotPointsOptimizator
             {
                 logger.Log("\r\nОшибка во время оптимизации:\r\n{0}", e.ToString());
             }
+        }
+
+        /// <summary>Куда писать чек-поинт: из настроек либо рядом со сводным отчётом.</summary>
+        public string GetCheckpointFileName(Settings settings, string resultFileName)
+        {
+            if (!string.IsNullOrEmpty(settings.CheckpointFile))
+                return Path.GetFullPath(settings.CheckpointFile);
+
+            return Path.GetFullPath(Path.ChangeExtension(resultFileName, null) +
+                "_checkpoint.txt");
+        }
+
+        /// <summary>
+        /// Читает чек-поинт, если он подходит к текущим настройкам. Чужой или битый
+        /// файл не должен ломать запуск — тогда прогон просто начинается сначала.
+        /// </summary>
+        public OptimizationCheckpoint LoadCheckpoint(string fullFileName,
+            string fingerprint, Logger logger)
+        {
+            if (!File.Exists(fullFileName))
+                return null;
+
+            try
+            {
+                var checkpoint = OptimizationCheckpoint.Load(fullFileName);
+                if (checkpoint.Fingerprint != fingerprint)
+                {
+                    logger.Log("Найден чек-поинт «{0}», но он от прогона с другими " +
+                        "настройками — начинаем сначала.", fullFileName);
+                    return null;
+                }
+
+                logger.Log("Найден чек-поинт: {0}", fullFileName);
+                return checkpoint;
+            }
+            catch (Exception e)
+            {
+                logger.Log("Не удалось прочитать чек-поинт «{0}»: {1}. " +
+                    "Начинаем сначала.", fullFileName, e.Message);
+                return null;
+            }
+        }
+
+        private void SaveCheckpoint(OptimizationCheckpoint state, GaProgress progress,
+            RandomProvider randomProvider, Settings settings, string fullFileName,
+            Logger logger)
+        {
+            if (!settings.SaveCheckpoint)
+                return;
+
+            try
+            {
+                state.RandomDraws = randomProvider.DrawsCount;
+                state.Generation = progress == null ? 0 : progress.Generation;
+                state.BestFitnessEver = progress == null
+                    ? double.MinValue : progress.BestFitnessEver;
+                state.GenerationsWithoutImprovement = progress == null
+                    ? 0 : progress.GenerationsWithoutImprovement;
+                state.Population = progress == null
+                    ? new List<CheckpointChromosome>()
+                    : OptimizationCheckpoint.FromPopulation(progress.Population, settings);
+
+                state.Save(fullFileName);
+            }
+            catch (Exception e)
+            {
+                //Прогон важнее чек-поинта: не смогли сохранить — идём дальше.
+                logger.Log("Не удалось сохранить чек-поинт «{0}»: {1}",
+                    fullFileName, e.Message);
+            }
+        }
+
+        private void DeleteCheckpoint(string fullFileName, Logger logger)
+        {
+            try
+            {
+                if (File.Exists(fullFileName))
+                {
+                    File.Delete(fullFileName);
+                    logger.Log("Прогон завершён, чек-поинт удалён.");
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Log("Не удалось удалить чек-поинт «{0}»: {1}",
+                    fullFileName, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Разворачивает чек-поинт в состояние генетического алгоритма — но только
+        /// если он про этот самый этап и период и в нём есть незаконченное поколение.
+        /// </summary>
+        public GaProgress ToProgress(OptimizationCheckpoint checkpoint, Settings settings,
+            List<Ticker> tickers, string stage, int period)
+        {
+            if (checkpoint == null || checkpoint.Stage != stage ||
+                checkpoint.Period != period || checkpoint.Generation <= 0 ||
+                checkpoint.Population.Count == 0)
+                return null;
+
+            return new GaProgress()
+            {
+                Generation = checkpoint.Generation,
+                BestFitnessEver = checkpoint.BestFitnessEver,
+                GenerationsWithoutImprovement = checkpoint.GenerationsWithoutImprovement,
+                Population = checkpoint.ToPopulation(settings, tickers),
+            };
         }
 
         //Затравочные гены: JSON-словарь «имя параметра — значение».
@@ -689,6 +880,8 @@ namespace TrendByPivotPointsOptimizator
                     case "TournamentSize": settings.TournamentSize = int.Parse(value); break;
                     case "MinDiversity": settings.MinDiversity = ParseDouble(value); break;
                     case "EliteFraction": settings.EliteFraction = ParseDouble(value); break;
+                    case "SaveCheckpoint": settings.SaveCheckpoint = ParseBool(value); break;
+                    case "CheckpointFile": settings.CheckpointFile = value; break;
                     case "BackwardDays": settings.BackwardDays = int.Parse(value); break;
                     case "ForwardDays": settings.ForwardDays = int.Parse(value); break;
                     case "ForwardPeriodsCount": settings.ForwardPeriodsCount = int.Parse(value); break;

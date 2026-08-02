@@ -67,7 +67,8 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         private List<ChromosomeUniversal> RunGa(StrategyDefinition definition, int seed,
-            PositionSide side = PositionSide.Long, Logger runLogger = null)
+            PositionSide side = PositionSide.Long, Logger runLogger = null,
+            bool isLastBackwardTesting = true)
         {
             var bars = CreateBars(days: 90);
             var logger = new LoggerNull();
@@ -81,7 +82,7 @@ namespace TrendByPivotPointsOptimizator.Tests
                 settings.Generations, crossoverRate: 0.85, mutationRate: 0.10,
                 randomProvider, new List<Ticker>() { ticker }, settings, context,
                 definition, logger, runLogger ?? new LoggerNull());
-            ga.IsLastBackwardTesting = true;
+            ga.IsLastBackwardTesting = isLastBackwardTesting;
             return ga.Run(period: 0);
         }
 
@@ -129,6 +130,68 @@ namespace TrendByPivotPointsOptimizator.Tests
                 "rsiEntryLevel шорта вне диапазона [50; 95]: " + genes["rsiEntryLevel"]);
             Assert.IsTrue(genes["rsiExitLevel"] >= 5 && genes["rsiExitLevel"] <= 50,
                 "rsiExitLevel шорта вне диапазона [5; 50]: " + genes["rsiExitLevel"]);
+        }
+
+        [TestMethod()]
+        public void BestChromosome_IsReadyForForwardTesting()
+        {
+            //Повторяем то, что делает оптимизатор после Run в форвардном периоде:
+            //гоняет лучшую хромосому на барах форвардного окна через её же
+            //фитнес-функцию. Расчёт хромосом освобождает бары и стартер ради памяти —
+            //для возвращённых хромосом всё это должно быть восстановлено.
+            var best = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42, isLastBackwardTesting: false).First();
+
+            Assert.IsNotNull(best.Fitness, "У лучшей хромосомы нет фитнес-функции.");
+            Assert.AreEqual(1, best.ForwardAnalysisResults.Count,
+                "Окно тестирования должно быть ровно одно.");
+
+            var result = best.ForwardAnalysisResults.First();
+            Assert.IsNotNull(result.BackwardBars, "Потеряны бары окна бэктеста.");
+            Assert.IsNotNull(result.ForwardBars, "Потеряны бары форвардного окна.");
+            Assert.IsTrue(result.ForwardStart > result.BackwardEnd,
+                "Форвардное окно должно идти после окна бэктеста.");
+
+            best.SetForwardBarsAsTickerBars();
+            Assert.AreSame(result.ForwardBars, best.Ticker.Bars,
+                "Форвардный тест пошёл бы не по тем барам.");
+
+            //Главное — прогон проходит целиком: до правки памяти здесь падало
+            //исключение, потому что бары и стартер были отпущены безвозвратно.
+            best.Fitness.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck: false);
+        }
+
+        [TestMethod()]
+        public void Evaluate_DoesNotKeepBarsOfEveryChromosome()
+        {
+            //Кэш хранит только числа, а посчитанные хромосомы отпускают бары и
+            //стартер: иначе прогон удерживает историю каждой особи.
+            var bars = CreateBars(days: 90);
+            var logger = new LoggerNull();
+            var ticker = new Ticker("TEST", Currency.RUB, 1, bars, logger,
+                commissionRate: 0, isUSD: false, rateUSD: 1);
+            var settings = CreateTestSettings();
+            var definition = new MeanReversionStrategyDefinition(PositionSide.Long);
+
+            var ga = new GeneticAlgorithmUniversal(settings.PopulationSize,
+                settings.Generations, crossoverRate: 0.85, mutationRate: 0.10,
+                new RandomProvider(42), new List<Ticker>() { ticker }, settings,
+                new ContextLab(), definition, logger, new LoggerNull());
+            ga.IsLastBackwardTesting = true;
+
+            ga.Initialize();
+            ga.Evaluate(period: 0);
+
+            var withBars = ga.GetPopulation().Count(c =>
+                c.ForwardAnalysisResults.Any(r => r.BackwardBars != null) ||
+                c.Fitness != null);
+
+            Assert.AreEqual(0, withBars,
+                "После расчёта хромосомы не должны держать бары и стартер.");
+
+            //Даты окна — лёгкие, их оставляем: по ним пишется отчёт.
+            Assert.IsTrue(ga.GetPopulation().All(c => c.ForwardAnalysisResults.Count == 1),
+                "У каждой хромосомы должно остаться описание её окна тестирования.");
         }
 
         [TestMethod()]

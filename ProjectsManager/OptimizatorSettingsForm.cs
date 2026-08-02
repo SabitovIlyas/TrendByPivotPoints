@@ -33,6 +33,8 @@ namespace ProjectsManager
         private NumericUpDown tournamentBox;
         private NumericUpDown minDiversityBox;
         private NumericUpDown eliteFractionBox;
+        private CheckBox saveCheckpointBox;
+        private TextBox checkpointFileBox;
         private CheckBox trimHistoryBox;
         private TextBox securitiesFileBox;
         private TextBox seedGenesFileBox;
@@ -56,7 +58,7 @@ namespace ProjectsManager
         {
             Text = "Настройки оптимизатора";
             Width = 820;
-            Height = 840;
+            Height = 900;
             StartPosition = FormStartPosition.CenterParent;
             Font = new Font("Segoe UI", 9f);
             MinimizeBox = false;
@@ -64,7 +66,7 @@ namespace ProjectsManager
             var table = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 290,
+                Height = 320,
                 ColumnCount = 4,
                 Padding = new Padding(8, 8, 8, 0)
             };
@@ -97,6 +99,8 @@ namespace ProjectsManager
             tournamentBox = AddNumeric(table, "Размер турнира:", 2, 1000, 4);
             minDiversityBox = AddNumeric(table, "Мин. разнообразие:", 0, 1, 0.10m, 2, 0.05m);
             eliteFractionBox = AddNumeric(table, "Доля элиты:", 0, 1, 0.20m, 2, 0.05m);
+            saveCheckpointBox = AddCheckBox(table,
+                "Сохранять состояние прогона (продолжить после сбоя):", true);
 
             strategyCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
             sideCombo.SelectedIndexChanged += (s, e) => OnStrategyOrSideChanged();
@@ -104,7 +108,7 @@ namespace ProjectsManager
             var filesTable = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 135,
+                Height = 170,
                 ColumnCount = 3,
                 Padding = new Padding(8, 0, 8, 0)
             };
@@ -118,6 +122,8 @@ namespace ProjectsManager
                 () => BrowseOpen(seedGenesFileBox, "JSON|*.json|Все файлы|*.*"));
             logFileBox = AddFileRow(filesTable, "Журнал прогона (необязательно):",
                 () => BrowseSaveFile(logFileBox, "Журнал|*.log|Текстовые файлы|*.txt|Все файлы|*.*"));
+            checkpointFileBox = AddFileRow(filesTable, "Файл продолжения (необязательно):",
+                () => BrowseSaveFile(checkpointFileBox, "Текстовые файлы|*.txt|Все файлы|*.*"));
             settingsFileBox = AddFileRow(filesTable, "Файл настроек (куда сохранить):",
                 BrowseSettingsFile);
 
@@ -375,6 +381,9 @@ namespace ProjectsManager
             builder.AppendLine("TournamentSize:" + tournamentBox.Value);
             builder.AppendLine("MinDiversity:" + minDiversityBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("EliteFraction:" + eliteFractionBox.Value.ToString(CultureInfo.InvariantCulture));
+            builder.AppendLine("SaveCheckpoint:" + (saveCheckpointBox.Checked ? "1" : "0"));
+            if (checkpointFileBox.Text.Trim().Length > 0)
+                builder.AppendLine("CheckpointFile:" + checkpointFileBox.Text.Trim());
             builder.AppendLine("BackwardDays:" + backwardDaysBox.Value);
             builder.AppendLine("ForwardDays:" + forwardDaysBox.Value);
             builder.AppendLine("ForwardPeriodsCount:" + forwardPeriodsBox.Value);
@@ -446,6 +455,8 @@ namespace ProjectsManager
                         case "TournamentSize": SetValue(tournamentBox, value); break;
                         case "MinDiversity": SetValue(minDiversityBox, value); break;
                         case "EliteFraction": SetValue(eliteFractionBox, value); break;
+                        case "SaveCheckpoint": saveCheckpointBox.Checked = IsTrue(value); break;
+                        case "CheckpointFile": checkpointFileBox.Text = value; break;
                         case "BackwardDays": SetValue(backwardDaysBox, value); break;
                         case "ForwardDays": SetValue(forwardDaysBox, value); break;
                         case "ForwardPeriodsCount": SetValue(forwardPeriodsBox, value); break;

@@ -18,6 +18,12 @@ namespace TrendByPivotPointsOptimizator
         public bool IsLastBackwardTesting = false;
         public List<ChromosomeUniversal> GetPopulation() => population;
 
+        /// <summary>
+        /// Вызывается после каждого завершённого поколения — по этому событию
+        /// оптимизатор сохраняет чек-поинт.
+        /// </summary>
+        public Action<GaProgress> GenerationCompleted { get; set; }
+
         private List<ChromosomeUniversal> population;
         private readonly int populationSize;
         private readonly int generations;
@@ -40,8 +46,9 @@ namespace TrendByPivotPointsOptimizator
         private Dictionary<string, double> seedGenes;
         private ForwardAnalysis forwardAnalysis;
 
-        private readonly Dictionary<string, ChromosomeUniversal> chromosomeCache =
-            new Dictionary<string, ChromosomeUniversal>();
+        //Кэш результатов по комбинации генов: только числа, без баров и стартеров.
+        private readonly Dictionary<string, ChromosomeMetrics> chromosomeCache =
+            new Dictionary<string, ChromosomeMetrics>();
 
         /// <param name="logger">Журнал торговой системы: его стратегия глушит на
         /// исторических барах, поэтому ход оптимизации в него писать нельзя.</param>
@@ -69,8 +76,11 @@ namespace TrendByPivotPointsOptimizator
             eliteFraction = settings.EliteFraction;
         }
 
+        /// <param name="resumeFrom">Состояние прерванного прогона: популяция и счётчики
+        /// последнего завершённого поколения. Если задано — стартовая популяция не
+        /// создаётся, прогон продолжается со следующего поколения.</param>
         public List<ChromosomeUniversal> Run(int period,
-            Dictionary<string, double> seedGenes = null)
+            Dictionary<string, double> seedGenes = null, GaProgress resumeFrom = null)
         {
             this.seedGenes = seedGenes;
 
@@ -82,7 +92,19 @@ namespace TrendByPivotPointsOptimizator
             int gen = 0;
 
             chromosomeCache.Clear();
-            Initialize();
+
+            if (resumeFrom != null)
+            {
+                population = resumeFrom.Population;
+                gen = resumeFrom.Generation;
+                bestFitnessEver = resumeFrom.BestFitnessEver;
+                generationsWithoutImprovement = resumeFrom.GenerationsWithoutImprovement;
+                runLogger.Log($"Продолжаем прогон с поколения {gen + 1}: рекорд " +
+                    $"{bestFitnessEver}, поколений без улучшения " +
+                    $"{generationsWithoutImprovement} из {patience}.");
+            }
+            else
+                Initialize();
 
             for (; gen < generations; gen++)
             {
@@ -139,6 +161,14 @@ namespace TrendByPivotPointsOptimizator
                 }
 
                 population = newPopulation;
+
+                GenerationCompleted?.Invoke(new GaProgress()
+                {
+                    Generation = gen + 1,
+                    BestFitnessEver = bestFitnessEver,
+                    GenerationsWithoutImprovement = generationsWithoutImprovement,
+                    Population = population,
+                });
             }
 
             if (isGenerationsWithoutImprovement)
@@ -153,8 +183,15 @@ namespace TrendByPivotPointsOptimizator
                 Evaluate(period);
             }
 
-            return population.Where(c => c.FitnessPassed)
+            var result = population.Where(c => c.FitnessPassed)
                 .OrderByDescending(c => c.FitnessValue).Take(1).ToList();
+
+            //Возвращаемым хромосомам нужен живой прогон: по нему оптимизатор
+            //считает форвардный тест и пишет отчёт.
+            foreach (var chromosome in result)
+                RestoreHeavyData(chromosome, period);
+
+            return result;
         }
 
         public void Initialize()
@@ -192,45 +229,30 @@ namespace TrendByPivotPointsOptimizator
 
         public void Evaluate(int period)
         {
-            var chromosomesForRemove = new List<ChromosomeUniversal>();
-            var chromosomesForAdd = new List<ChromosomeUniversal>();
-
             var i = 0;
             foreach (var chromosome in population)
             {
                 runLogger.Log("\r\nХромосома №{0} из {1}.\r\n", ++i, population.Count);
-                if (!chromosome.FitnessValue.Equals(double.NaN))
+                if (!double.IsNaN(chromosome.FitnessValue))
                     continue;
 
                 var key = chromosome.Name;
-                if (chromosomeCache.TryGetValue(key, out ChromosomeUniversal cached))
+                if (chromosomeCache.TryGetValue(key, out ChromosomeMetrics cached))
                 {
                     runLogger.Log("Взяли хромосому из кэша");
-                    chromosomesForRemove.Add(chromosome);
-                    chromosomesForAdd.Add(cached);
+                    cached.ApplyTo(chromosome);
                 }
                 else
                 {
-                    var starter = CreateStarterForChromosome(chromosome);
-                    var parameters = definition.CreateSystemParameters(chromosome.Genes,
-                        chromosome.Ticker, chromosome.Side, chromosome.TimeFrame, settings);
+                    EvaluateChromosome(chromosome, period);
+                    chromosomeCache[key] = ChromosomeMetrics.From(chromosome);
 
-                    if (IsLastBackwardTesting)
-                        PrepareChromosomeFinal(chromosome, period);
-                    else
-                        PrepareChromosome(chromosome, period);
-                    chromosome.SetBackwardBarsAsTickerBars();
-
-                    var fitness = new FitnessUniversal(parameters, chromosome, starter);
-                    fitness.SetUpChromosomeFitnessValue();
-                    chromosomeCache[key] = chromosome;
+                    //Числа посчитаны и лежат в кэше — бары, сделки и стартер больше
+                    //не нужны. Без этого прогон удерживает историю каждой хромосомы
+                    //и съедает десятки гигабайт.
+                    ReleaseHeavyData(chromosome);
                 }
             }
-
-            foreach (var chromosome in chromosomesForRemove)
-                population.Remove(chromosome);
-            foreach (var chromosome in chromosomesForAdd)
-                population.Add(chromosome);
 
             i = 0;
             foreach (var chromosome in population)
@@ -243,6 +265,55 @@ namespace TrendByPivotPointsOptimizator
                     chromosome.DealsCount, chromosome.Profit, chromosome.ProfitPrcnt,
                     chromosome.MaxDrawDown, chromosome.RecoveryFactor);
             }
+        }
+
+        /// <summary>
+        /// Полный прогон стратегии для хромосомы: нарезка баров под окно периода,
+        /// свой стартер и расчёт фитнес-функции.
+        /// </summary>
+        private void EvaluateChromosome(ChromosomeUniversal chromosome, int period)
+        {
+            var starter = CreateStarterForChromosome(chromosome);
+            var parameters = definition.CreateSystemParameters(chromosome.Genes,
+                chromosome.Ticker, chromosome.Side, chromosome.TimeFrame, settings);
+
+            if (IsLastBackwardTesting)
+                PrepareChromosomeFinal(chromosome, period);
+            else
+                PrepareChromosome(chromosome, period);
+            chromosome.SetBackwardBarsAsTickerBars();
+
+            var fitness = new FitnessUniversal(parameters, chromosome, starter);
+            fitness.SetUpChromosomeFitnessValue();
+        }
+
+        /// <summary>
+        /// Отпускает всё тяжёлое, что осталось от прогона хромосомы: списки баров
+        /// окна и фитнес-функцию со стартером, сделками и рядами индикаторов.
+        /// Числовой результат к этому моменту уже лежит в кэше и в самой хромосоме.
+        /// </summary>
+        private void ReleaseHeavyData(ChromosomeUniversal chromosome)
+        {
+            chromosome.Fitness = null;
+            foreach (var result in chromosome.ForwardAnalysisResults)
+            {
+                result.BackwardBars = null;
+                result.ForwardBars = null;
+            }
+        }
+
+        /// <summary>
+        /// Возвращает хромосоме то, что было отпущено после расчёта: форвардный тест
+        /// в оптимизаторе гоняет стратегию заново через chromosome.Fitness на барах
+        /// форвардного окна. Прогон здесь один — на итоговых хромосомах, поэтому
+        /// на время это не влияет.
+        /// </summary>
+        private void RestoreHeavyData(ChromosomeUniversal chromosome, int period)
+        {
+            if (chromosome.Fitness != null)
+                return;
+
+            EvaluateChromosome(chromosome, period);
         }
 
         private Starter CreateStarterForChromosome(ChromosomeUniversal chromosome)
@@ -265,6 +336,10 @@ namespace TrendByPivotPointsOptimizator
 
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();
+
+            //Окно у хромосомы одно: если её считают повторно, старый результат
+            //заменяем, а не добавляем второй.
+            chromosome.ForwardAnalysisResults.Clear();
             forwardAnalysis.SetTradingPeriods(chromosome);
         }
 
@@ -278,6 +353,7 @@ namespace TrendByPivotPointsOptimizator
 
             forwardAnalysis.Period = period;
             chromosome.ResetBarsToInitBars();
+            chromosome.ForwardAnalysisResults.Clear();
             forwardAnalysis.SetTradingPeriodsFinal(chromosome);
         }
 

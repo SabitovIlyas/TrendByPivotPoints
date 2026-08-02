@@ -40,6 +40,13 @@ namespace TrendByPivotPointsOptimizator
         /// останавливается, потому что особи стали почти одинаковыми.</summary>
         public double MinDiversity = 0.1;
 
+        /// <summary>Сохранять состояние прогона после каждого поколения, чтобы после
+        /// сбоя продолжить с последнего поколения, а не с начала.</summary>
+        public bool SaveCheckpoint = true;
+
+        /// <summary>Файл чек-поинта; пусто — рядом со сводным отчётом.</summary>
+        public string CheckpointFile = string.Empty;
+
         //Окна бэктеста и форвардного анализа, в днях
         public int BackwardDays = 1460;
         public int ForwardDays = 1460;
