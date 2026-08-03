@@ -19,6 +19,7 @@ namespace ProjectsManager
         private ComboBox platformCombo;
         private ComboBox encodingCombo;
         private TextBox argsBox;
+        private Label optimizationStatusLabel;
         private TextBox outputBox;
         private TextBox inputBox;
         private Button buildButton;
@@ -167,19 +168,31 @@ namespace ProjectsManager
             var topTable = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 120,
+                Height = 154,
                 ColumnCount = 1,
-                RowCount = 4,
+                RowCount = 5,
                 Padding = new Padding(6, 4, 6, 0)
             };
+            //Ход оптимизации отдельной строкой: в консоли эти значения приходится
+            //выискивать, а она постоянно доливается и уезжает вниз.
+            optimizationStatusLabel = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font("Consolas", 9.5f),
+                ForeColor = Color.FromArgb(0, 90, 0),
+                Visible = false
+            };
+
             topTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 22f));
             topTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 34f));
             topTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 30f));
+            topTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 34f));
             topTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 34f));
             topTable.Controls.Add(descriptionLabel, 0, 0);
             topTable.Controls.Add(controlsFlow, 0, 1);
             topTable.Controls.Add(argsPanel, 0, 2);
             topTable.Controls.Add(buttonsFlow, 0, 3);
+            topTable.Controls.Add(optimizationStatusLabel, 0, 4);
 
             outputBox = new TextBox
             {
@@ -301,6 +314,7 @@ namespace ProjectsManager
             outputBox.SelectionStart = outputBox.TextLength;
             outputBox.ScrollToCaret();
             switching = false;
+            ShowOptimizationStatus(project);
             UpdateButtons();
         }
 
@@ -370,6 +384,12 @@ namespace ProjectsManager
                 return;
             }
 
+            if (!IsExecutableOfSelectedConfiguration(exePath))
+                AppendToProject(project, $"Внимание: сборки «{configCombo.Text}» нет, " +
+                    $"запускается то, что нашлось: {exePath}\r\n" +
+                    "Отчёты и чек-поинты лягут рядом с этим файлом. " +
+                    "Соберите нужную конфигурацию кнопкой «Собрать».\r\n");
+
             var psi = new ProcessStartInfo
             {
                 FileName = exePath,
@@ -390,6 +410,14 @@ namespace ProjectsManager
             psi.StandardOutputEncoding = encoding;
             psi.StandardErrorEncoding = encoding;
             psi.StandardInputEncoding = encoding;
+
+            //Новый прогон — значения прошлого больше не актуальны.
+            if (!isBuild)
+            {
+                project.Status.Reset();
+                if (project == Selected)
+                    ShowOptimizationStatus(project);
+            }
 
             try
             {
@@ -553,6 +581,9 @@ namespace ProjectsManager
                     }
                 }
 
+                if (chunk != null && project.Status.Feed(chunk) && project == Selected)
+                    ShowOptimizationStatus(project);
+
                 if (chunk != null && project == Selected)
                 {
                     if (trimmed)
@@ -615,15 +646,55 @@ namespace ProjectsManager
                 project.Item.SubItems[1].Text = status;
         }
 
+        /// <summary>
+        /// Ищет исполняемый файл выбранной конфигурации. Раньше брался просто самый
+        /// свежий exe из всех подпапок bin — и запускалась то Debug-сборка, то
+        /// Release, смотря что собиралось последним, причём молча. Рабочая папка у
+        /// них разная, поэтому и отчёты с чек-поинтами оказывались в разных местах.
+        /// </summary>
         private string FindExecutable(ConsoleProject project)
         {
             var binDir = Path.Combine(solutionDir,
                 Path.GetDirectoryName(project.CsprojPath), "bin");
             if (!Directory.Exists(binDir))
                 return null;
-            return Directory.GetFiles(binDir, project.AssemblyName + ".exe", SearchOption.AllDirectories)
+
+            var all = Directory.GetFiles(binDir, project.AssemblyName + ".exe",
+                SearchOption.AllDirectories);
+
+            //Конфигурация — это отдельная папка в пути: bin\x64\Release или
+            //bin\Release\net8.0-windows.
+            var configuration = configCombo.Text;
+            var wanted = all
+                .Where(p => p.Split(Path.DirectorySeparatorChar).Contains(configuration))
                 .OrderByDescending(File.GetLastWriteTimeUtc)
                 .FirstOrDefault();
+
+            if (wanted != null)
+                return wanted;
+
+            return all.OrderByDescending(File.GetLastWriteTimeUtc).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Показывает ход оптимизации над консолью. Для остальных проектов строка
+        /// прячется — разбирать там нечего.
+        /// </summary>
+        private void ShowOptimizationStatus(ConsoleProject project)
+        {
+            var isOptimizator = project != null &&
+                project.AssemblyName == "TrendByPivotPointsOptimizator";
+
+            optimizationStatusLabel.Visible = isOptimizator;
+            optimizationStatusLabel.Text = isOptimizator
+                ? project.Status.ToDisplayText() : string.Empty;
+        }
+
+        /// <summary>Найден ли файл именно выбранной конфигурации.</summary>
+        private bool IsExecutableOfSelectedConfiguration(string exePath)
+        {
+            return exePath != null &&
+                exePath.Split(Path.DirectorySeparatorChar).Contains(configCombo.Text);
         }
 
         private static Encoding GetEncoding(int index)

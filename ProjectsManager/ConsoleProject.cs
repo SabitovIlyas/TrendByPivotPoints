@@ -19,6 +19,10 @@ namespace ProjectsManager
         public readonly StringBuilder Pending = new();
         public readonly object SyncRoot = new();
 
+        /// <summary>Текущие значения прогона оптимизатора, разобранные из вывода.
+        /// У остальных проектов остаётся пустым.</summary>
+        public readonly OptimizatorStatus Status = new();
+
         public Process Process;
         public Task StdoutTask;
         public Task StderrTask;
