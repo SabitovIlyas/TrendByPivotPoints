@@ -82,6 +82,25 @@ namespace TrendByPivotPointsOptimizator
         }
 
         /// <summary>
+        /// Приводит неопределённую оценку к отбраковке. Фактор восстановления — это
+        /// прибыль, делённая на просадку: без сделок обе равны нулю и получается
+        /// «не число», а при нулевой просадке с прибылью — бесконечность. И то и
+        /// другое означает, что оценивать нечего: стратегия либо не торговала, либо
+        /// сделала одну сделку без единого отката, чего на четырёх годах не бывает.
+        ///
+        /// Отдельно важно, что «не число» служит признаком «ещё не считали»: пока
+        /// оценка могла им остаться после расчёта, такие хромосомы пересчитывались
+        /// каждое поколение и путались с непосчитанными.
+        /// </summary>
+        public static double RejectIfNotFinite(double fitness)
+        {
+            if (double.IsNaN(fitness) || double.IsPositiveInfinity(fitness))
+                return double.NegativeInfinity;
+
+            return fitness;
+        }
+
+        /// <summary>
         /// Считает фитнес-функцию, ничего не записывая в хромосому — для соседних
         /// точек окрестности. Штрафы применяются те же, иначе соседей судили бы
         /// по другому правилу, чем центр.
@@ -128,6 +147,11 @@ namespace TrendByPivotPointsOptimizator
         }
 
         private double Calculate()
+        {
+            return RejectIfNotFinite(CalculateRecoveryFactor());
+        }
+
+        private double CalculateRecoveryFactor()
         {
             var starter = CloneStarterWithChromosomeBars();
             SystemRun(starter);

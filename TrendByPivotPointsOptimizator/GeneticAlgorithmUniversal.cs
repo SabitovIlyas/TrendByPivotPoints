@@ -207,6 +207,13 @@ namespace TrendByPivotPointsOptimizator
             var result = population.Where(c => c.FitnessPassed)
                 .OrderByDescending(c => c.FitnessValue).Take(1).ToList();
 
+            if (result.Count == 0)
+                throw new Exception("Ни одна хромосома не прошла отбор: все " +
+                    "отбракованы. Проверьте настройки — минимум сделок " +
+                    $"({settings.MinDealsCount}) может быть недостижим на этих " +
+                    "данных, либо стратегия не совершает сделок в заданных " +
+                    "диапазонах параметров.");
+
             //Возвращаемым хромосомам нужен живой прогон: по нему оптимизатор
             //считает форвардный тест и пишет отчёт.
             foreach (var chromosome in result)
@@ -593,13 +600,26 @@ namespace TrendByPivotPointsOptimizator
             for (int i = 0; i < tournamentSize; i++)
             {
                 var candidate = population[randomProvider.Next(population.Count)];
-                if (best == null || (candidate.FitnessPassed &&
-                    candidate.FitnessValue > best.FitnessValue))
-                {
+                if (best == null || IsBetter(candidate, best))
                     best = candidate;
-                }
             }
             return best;
+        }
+
+        /// <summary>
+        /// Сравнение участников турнира. «Не число» приходится разбирать отдельно:
+        /// любое сравнение с ним ложно, поэтому непосчитанная хромосома, вытянутая
+        /// первой, выигрывала турнир у любой нормальной и уходила в потомство.
+        /// </summary>
+        public static bool IsBetter(ChromosomeUniversal candidate, ChromosomeUniversal best)
+        {
+            if (double.IsNaN(best.FitnessValue))
+                return !double.IsNaN(candidate.FitnessValue);
+
+            if (double.IsNaN(candidate.FitnessValue))
+                return false;
+
+            return candidate.FitnessValue > best.FitnessValue;
         }
 
         public ChromosomeUniversal Crossover(ChromosomeUniversal parent1,
