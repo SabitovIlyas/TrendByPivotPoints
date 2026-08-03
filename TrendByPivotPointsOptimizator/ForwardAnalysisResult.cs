@@ -18,5 +18,14 @@ namespace TrendByPivotPointsOptimizator
         public double ForwardProfit { get; set; }
         public double BackwardProfitPrcnt { get; set; }
         public double ForwardProfitPrcnt { get; set; }
+
+        //Показатели обоих окон рядом: разрыв между ними и есть мера переобучения.
+        public double BackwardMaxDrawDown { get; set; }
+        public double ForwardMaxDrawDown { get; set; }
+        public double BackwardRecoveryFactor { get; set; }
+        public double ForwardRecoveryFactor { get; set; }
+
+        public DealsStatistics BackwardDealsStatistics { get; set; }
+        public DealsStatistics ForwardDealsStatistics { get; set; }
     }
 }

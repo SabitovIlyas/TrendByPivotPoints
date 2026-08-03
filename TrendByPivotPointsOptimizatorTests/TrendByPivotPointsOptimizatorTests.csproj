@@ -100,6 +100,7 @@
     <Compile Include="GeneticAlgorithmTests.cs" />
     <Compile Include="GeneticAlgorithmUniversalTests.cs" />
     <Compile Include="DealsStatisticsTests.cs" />
+    <Compile Include="FitnessPenaltiesTests.cs" />
     <Compile Include="NeighbourhoodBuilderTests.cs" />
     <Compile Include="HistoryTrimmerTests.cs" />
     <Compile Include="OptimizationCheckpointTests.cs" />

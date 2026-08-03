@@ -489,6 +489,9 @@ namespace TrendByPivotPointsOptimizator
             {
                 PrcntDealForExclude = settings.ExcludeBestDealsPrcnt,
                 DealsCountCriteria = settings.MinDealsCount,
+                MaxDrawDownPrcnt = settings.MaxDrawDownPrcnt,
+                MinWinRatePrcnt = settings.MinWinRatePrcnt,
+                PenaltyPower = settings.PenaltyPower,
             };
         }
 

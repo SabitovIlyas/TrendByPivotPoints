@@ -97,6 +97,9 @@ namespace TrendByPivotPointsOptimizator
             //начатый с другими, нельзя.
             builder.Append(settings.ExcludeBestDealsPrcnt.ToString("R", culture)).Append('|');
             builder.Append(settings.MinDealsCount).Append('|');
+            builder.Append(settings.MaxDrawDownPrcnt.ToString("R", culture)).Append('|');
+            builder.Append(settings.MinWinRatePrcnt.ToString("R", culture)).Append('|');
+            builder.Append(settings.PenaltyPower.ToString("R", culture)).Append('|');
             builder.Append(settings.NeighbourhoodPoints).Append('|');
             builder.Append(settings.NeighbourhoodPercent.ToString("R", culture)).Append('|');
             builder.Append(settings.NeighbourhoodUseMedian).Append('|');

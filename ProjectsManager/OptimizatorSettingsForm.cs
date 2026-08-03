@@ -36,6 +36,9 @@ namespace ProjectsManager
         private NumericUpDown threadsBox;
         private NumericUpDown excludeBestDealsBox;
         private NumericUpDown minDealsBox;
+        private NumericUpDown maxDrawDownBox;
+        private NumericUpDown minWinRateBox;
+        private NumericUpDown penaltyPowerBox;
         private NumericUpDown neighbourhoodPointsBox;
         private NumericUpDown neighbourhoodPercentBox;
         private CheckBox neighbourhoodMedianBox;
@@ -64,7 +67,7 @@ namespace ProjectsManager
         {
             Text = "Настройки оптимизатора";
             Width = 820;
-            Height = 980;
+            Height = 1040;
             StartPosition = FormStartPosition.CenterParent;
             Font = new Font("Segoe UI", 9f);
             MinimizeBox = false;
@@ -72,7 +75,7 @@ namespace ProjectsManager
             var table = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 400,
+                Height = 460,
                 ColumnCount = 4,
                 Padding = new Padding(8, 8, 8, 0)
             };
@@ -109,6 +112,11 @@ namespace ProjectsManager
             excludeBestDealsBox = AddNumeric(table,
                 "Исключать лучших сделок, доля:", 0, 1, 0.05m, 2, 0.01m);
             minDealsBox = AddNumeric(table, "Минимум сделок:", 0, 100000, 0);
+            maxDrawDownBox = AddNumeric(table,
+                "Порог просадки, % (0 — без штрафа):", 0, 100, 0, 1, 1m);
+            minWinRateBox = AddNumeric(table,
+                "Порог выигрышных сделок, % (0 — без штрафа):", 0, 100, 0, 1, 1m);
+            penaltyPowerBox = AddNumeric(table, "Жёсткость штрафов:", 0, 10, 1, 1, 0.5m);
             neighbourhoodPointsBox = AddNumeric(table,
                 "Точек окрестности (0 — выключено):", 0, 1000, 0);
             neighbourhoodPercentBox = AddNumeric(table,
@@ -401,6 +409,9 @@ namespace ProjectsManager
             builder.AppendLine("ExcludeBestDealsPrcnt:" +
                 excludeBestDealsBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("MinDealsCount:" + minDealsBox.Value);
+            builder.AppendLine("MaxDrawDownPrcnt:" + maxDrawDownBox.Value.ToString(CultureInfo.InvariantCulture));
+            builder.AppendLine("MinWinRatePrcnt:" + minWinRateBox.Value.ToString(CultureInfo.InvariantCulture));
+            builder.AppendLine("PenaltyPower:" + penaltyPowerBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("NeighbourhoodPoints:" + neighbourhoodPointsBox.Value);
             builder.AppendLine("NeighbourhoodPercent:" +
                 neighbourhoodPercentBox.Value.ToString(CultureInfo.InvariantCulture));
@@ -483,6 +494,9 @@ namespace ProjectsManager
                         case "Threads": SetValue(threadsBox, value); break;
                         case "ExcludeBestDealsPrcnt": SetValue(excludeBestDealsBox, value); break;
                         case "MinDealsCount": SetValue(minDealsBox, value); break;
+                        case "MaxDrawDownPrcnt": SetValue(maxDrawDownBox, value); break;
+                        case "MinWinRatePrcnt": SetValue(minWinRateBox, value); break;
+                        case "PenaltyPower": SetValue(penaltyPowerBox, value); break;
                         case "NeighbourhoodPoints": SetValue(neighbourhoodPointsBox, value); break;
                         case "NeighbourhoodPercent": SetValue(neighbourhoodPercentBox, value); break;
                         case "NeighbourhoodUseMedian":

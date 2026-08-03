@@ -20,6 +20,15 @@ namespace TrendByPivotPointsOptimizator
 
         /// <summary>Доля лучших прибыльных сделок, исключаемых перед расчётом.</summary>
         public double PrcntDealForExclude { get; set; } = 0.05;
+
+        /// <summary>Порог просадки, %; 0 — не штрафовать.</summary>
+        public double MaxDrawDownPrcnt { get; set; } = 0;
+
+        /// <summary>Порог доли выигрышных сделок, %; 0 — не штрафовать.</summary>
+        public double MinWinRatePrcnt { get; set; } = 0;
+
+        /// <summary>Жёсткость штрафов.</summary>
+        public double PenaltyPower { get; set; } = 1;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
         private readonly SystemParameters parameters;
@@ -52,19 +61,12 @@ namespace TrendByPivotPointsOptimizator
                 chromosome.Fitness = this;
         }
 
-        /// <summary>
-        /// Считает фитнес-функцию, ничего не записывая в хромосому — для соседних
-        /// точек окрестности.
-        /// </summary>
-        public double CalculateFitnessValue()
-        {
-            return Calculate();
-        }
 
         public void SetUpChromosomeFitnessValue(bool isCriteriaPassedNeedToCheck = true)
         {
             IsCriteriaPassedNeedToCheck = isCriteriaPassedNeedToCheck;
-            chromosome.FitnessValue = Calculate();
+            var fitness = Calculate();
+
             chromosome.DealsCount = dealsCount;
             chromosome.DealsStatistics = tradeStatistics;
 
@@ -74,6 +76,55 @@ namespace TrendByPivotPointsOptimizator
             chromosome.ProfitPrcnt = accountLab.GetProfitPrcnt();
             chromosome.MaxDrawDown = accountLab.GetMaxDrawDownPrcnt();
             chromosome.RecoveryFactor = accountLab.GetRecoveryFactor();
+
+            chromosome.FitnessValue = ApplyPenalties(fitness, chromosome.MaxDrawDown,
+                tradeStatistics.WinRatePrcnt);
+        }
+
+        /// <summary>
+        /// Считает фитнес-функцию, ничего не записывая в хромосому — для соседних
+        /// точек окрестности. Штрафы применяются те же, иначе соседей судили бы
+        /// по другому правилу, чем центр.
+        /// </summary>
+        public double CalculateFitnessValue()
+        {
+            var fitness = Calculate();
+            var accountLab = account as AccountLab;
+
+            return ApplyPenalties(fitness, accountLab.GetMaxDrawDownPrcnt(),
+                tradeStatistics.WinRatePrcnt);
+        }
+
+        /// <summary>
+        /// Снижает оценку за нарушение порогов просадки и доли выигрышных сделок.
+        /// Штраф мягкий, а не отбраковка: генетическому алгоритму нужен градиент —
+        /// если бы всё нарушающее порог получало минус бесконечность, поиск ослеп бы
+        /// в тот момент, когда порог не проходит вся стартовая популяция.
+        /// </summary>
+        public double ApplyPenalties(double fitness, double maxDrawDownPrcnt,
+            double winRatePrcnt)
+        {
+            if (double.IsNegativeInfinity(fitness) || double.IsNaN(fitness))
+                return fitness;
+
+            var penalty = 1d;
+
+            if (MaxDrawDownPrcnt > 0 && maxDrawDownPrcnt > MaxDrawDownPrcnt)
+                penalty *= Math.Pow(MaxDrawDownPrcnt / maxDrawDownPrcnt, PenaltyPower);
+
+            if (MinWinRatePrcnt > 0 && winRatePrcnt < MinWinRatePrcnt)
+                penalty *= Math.Pow(winRatePrcnt / MinWinRatePrcnt, PenaltyPower);
+
+            if (penalty >= 1)
+                return fitness;
+
+            //У нуля штраф вырождается, а делить на него нельзя.
+            penalty = Math.Max(penalty, 1e-6);
+
+            //Убыточную стратегию штраф должен делать хуже, а не лучше: умножение
+            //на долю меньше единицы приблизило бы отрицательную оценку к нулю.
+            var result = fitness >= 0 ? fitness * penalty : fitness / penalty;
+            return Math.Round(result, 2);
         }
 
         private double Calculate()

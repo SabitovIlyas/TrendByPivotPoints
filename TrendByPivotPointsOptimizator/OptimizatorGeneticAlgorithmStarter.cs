@@ -21,6 +21,11 @@ namespace TrendByPivotPointsOptimizator
         // Задайте число, чтобы прогоны стали воспроизводимыми (отладка, регрессии).
         private int? seed = null;
 
+        // Отчёты пишем в UTF-8 с меткой кодировки: без неё Excel на русской
+        // Windows открывает файл как ANSI и русские заголовки превращаются в мусор.
+        private static readonly System.Text.Encoding CsvEncoding =
+            new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
+
         public void Start()
         {
             var logger = new ConsoleLogger();
@@ -364,6 +369,9 @@ namespace TrendByPivotPointsOptimizator
             logger.Log("Фитнес-функция: фактор восстановления после исключения {0:P0} " +
                 "лучших прибыльных сделок; минимум сделок {1}",
                 settings.ExcludeBestDealsPrcnt, settings.MinDealsCount);
+            logger.Log("Штрафы: просадка глубже {0} % и доля выигрышных ниже {1} %, " +
+                "жёсткость {2} (0 — штраф выключен)", settings.MaxDrawDownPrcnt,
+                settings.MinWinRatePrcnt, settings.PenaltyPower);
             logger.Log("Окрестность: {0}", settings.NeighbourhoodPoints > 0
                 ? string.Format("{0} точек в пределах {1:P0} диапазона каждого гена, " +
                     "оценка — {2}", settings.NeighbourhoodPoints,
@@ -485,6 +493,9 @@ namespace TrendByPivotPointsOptimizator
                         result.BackwardFitness = chromosome.FitnessValue;
                         result.BackwardProfit = chromosome.Profit;
                         result.BackwardProfitPrcnt = chromosome.ProfitPrcnt;
+                        result.BackwardMaxDrawDown = chromosome.MaxDrawDown;
+                        result.BackwardRecoveryFactor = chromosome.RecoveryFactor;
+                        result.BackwardDealsStatistics = chromosome.DealsStatistics;
                     }
 
                     var sumResults = 0d;
@@ -532,6 +543,9 @@ namespace TrendByPivotPointsOptimizator
                         result.BackwardFitness = chromosome.FitnessValue;
                         result.BackwardProfit = chromosome.Profit;
                         result.BackwardProfitPrcnt = chromosome.ProfitPrcnt;
+                        result.BackwardMaxDrawDown = chromosome.MaxDrawDown;
+                        result.BackwardRecoveryFactor = chromosome.RecoveryFactor;
+                        result.BackwardDealsStatistics = chromosome.DealsStatistics;
                     }
 
                     //Форвардный тест: та же стратегия на барах форвардного окна.
@@ -549,6 +563,9 @@ namespace TrendByPivotPointsOptimizator
                         result.ForwardFitness = chromosome.FitnessValue;
                         result.ForwardProfit = chromosome.Profit;
                         result.ForwardProfitPrcnt = chromosome.ProfitPrcnt;
+                        result.ForwardMaxDrawDown = chromosome.MaxDrawDown;
+                        result.ForwardRecoveryFactor = chromosome.RecoveryFactor;
+                        result.ForwardDealsStatistics = chromosome.DealsStatistics;
                     }
 
                     var sumResultsBackward = 0d;
@@ -740,35 +757,38 @@ namespace TrendByPivotPointsOptimizator
             if (fileName == "")
                 fileName = $"{t.Ticker.Name}_{t.Side}_{definition.Name}_params.csv";
 
-            using (StreamWriter writer = new StreamWriter(fileName))
+            using (StreamWriter writer = new StreamWriter(fileName, append: false, encoding: CsvEncoding))
             {
-                //Заголовки: общие колонки + имена параметров стратегии + показатели
-                var header = $"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
-                    $"{nameof(t.TimeFrame)};{nameof(t.Side)};{nameof(t.Ticker.Name)}";
+                //Заголовки: общие колонки + параметры стратегии + два блока
+                //показателей, бэктест и форвард. Разрыв между блоками — это и есть
+                //мера переобучения, ради неё они и стоят рядом.
+                var header = $"{nameof(t.TimeFrame)};{nameof(t.Side)};{nameof(t.Ticker.Name)}";
                 foreach (var descriptor in definition.Parameters)
                     header += ";" + descriptor.Name;
-                header += ";Прибыль, р.;Прибыль, %;Максимальная просадка, %;" +
-                    "Фактор восстановления;Выигрышных сделок, %;Выигрышных сделок;" +
-                    "Убыточных сделок;Средний выигрыш, р.;Средний проигрыш, р.;" +
-                    "Выигрыш к проигрышу;Профит-фактор;Средняя сделка, р.;" +
-                    "Лучшая сделка, р.;Худшая сделка, р.;Убытков подряд;" +
-                    "Выигрышей подряд;Средняя длительность сделки, баров";
+                header += ";Оценка (бэктест);Оценка (форвард)";
+                header += GetMetricsHeader("бэктест") + GetMetricsHeader("форвард");
                 writer.WriteLine(header);
 
                 foreach (var c in population)
                 {
-                    var line = $"{c.FitnessValue};{c.DealsCount};{c.TimeFrame};{c.Side};" +
-                        $"{c.Ticker.Name}";
+                    var line = $"{c.TimeFrame};{c.Side};{c.Ticker.Name}";
                     foreach (var descriptor in definition.Parameters)
                         line += ";" + c.Genes[descriptor.Name];
 
-                    var s = c.DealsStatistics ?? new DealsStatistics();
-                    line += $";{c.Profit};{c.ProfitPrcnt};{c.MaxDrawDown};" +
-                        $"{c.RecoveryFactor};{s.WinRatePrcnt};{s.WinningDealsCount};" +
-                        $"{s.LosingDealsCount};{s.AverageWin};{s.AverageLoss};" +
-                        $"{s.PayoffRatio};{s.ProfitFactor};{s.ExpectedPayoff};" +
-                        $"{s.LargestWin};{s.LargestLoss};{s.MaxConsecutiveLosses};" +
-                        $"{s.MaxConsecutiveWins};{s.AverageBarsInDeal}";
+                    var r = c.ForwardAnalysisResults.FirstOrDefault();
+                    if (r == null)
+                    {
+                        writer.WriteLine(line);
+                        continue;
+                    }
+
+                    line += $";{r.BackwardFitness};{r.ForwardFitness}";
+                    line += GetMetricsLine(r.BackwardProfit, r.BackwardProfitPrcnt,
+                        r.BackwardMaxDrawDown, r.BackwardRecoveryFactor,
+                        r.BackwardDealsStatistics);
+                    line += GetMetricsLine(r.ForwardProfit, r.ForwardProfitPrcnt,
+                        r.ForwardMaxDrawDown, r.ForwardRecoveryFactor,
+                        r.ForwardDealsStatistics);
                     writer.WriteLine(line);
                 }
             }
@@ -791,7 +811,7 @@ namespace TrendByPivotPointsOptimizator
             if (fileName == "")
                 fileName= $"{t.Ticker.Name}_{t.Side}_params.csv";
 
-            using (StreamWriter writer = new StreamWriter(fileName))
+            using (StreamWriter writer = new StreamWriter(fileName, append: false, encoding: CsvEncoding))
             {
                 // Запись заголовков столбцов                
                 writer.WriteLine($"{nameof(t.FitnessValue)};{nameof(t.DealsCount)};" +
@@ -811,9 +831,38 @@ namespace TrendByPivotPointsOptimizator
             }
         }
 
+        private string GetMetricsHeader(string window)
+        {
+            return $";Сделок ({window});Прибыль, р. ({window});Прибыль, % ({window});" +
+                $"Просадка, % ({window});Фактор восстановления ({window});" +
+                $"Выигрышных, % ({window});Выигрышных ({window});Убыточных ({window});" +
+                $"Средний выигрыш ({window});Средний проигрыш ({window});" +
+                $"Выигрыш к проигрышу ({window});Профит-фактор ({window});" +
+                $"Средняя сделка ({window});Лучшая сделка ({window});" +
+                $"Худшая сделка ({window});Убытков подряд ({window});" +
+                $"Выигрышей подряд ({window});Длительность сделки, баров ({window})";
+        }
+
+        private string GetMetricsLine(double profit, double profitPrcnt,
+            double maxDrawDown, double recoveryFactor, DealsStatistics statistics)
+        {
+            //Окна может не быть — например, у главного прогона нет форвардной части.
+            if (statistics == null)
+                return string.Concat(Enumerable.Repeat(";", 18));
+
+            return $";{statistics.DealsCount};{profit};{profitPrcnt};{maxDrawDown};" +
+                $"{recoveryFactor};{statistics.WinRatePrcnt};" +
+                $"{statistics.WinningDealsCount};{statistics.LosingDealsCount};" +
+                $"{statistics.AverageWin};{statistics.AverageLoss};" +
+                $"{statistics.PayoffRatio};{statistics.ProfitFactor};" +
+                $"{statistics.ExpectedPayoff};{statistics.LargestWin};" +
+                $"{statistics.LargestLoss};{statistics.MaxConsecutiveLosses};" +
+                $"{statistics.MaxConsecutiveWins};{statistics.AverageBarsInDeal}";
+        }
+
         private void CreateTxtFile(string fileName)
         {
-            using (StreamWriter writer = new StreamWriter(fileName))
+            using (StreamWriter writer = new StreamWriter(fileName, append: false, encoding: CsvEncoding))
             {
                 writer.WriteLine($"BackwardFitness;ForwardFitness;" +
                     $"BackwardProfit;ForwardProfit;" +
@@ -824,7 +873,7 @@ namespace TrendByPivotPointsOptimizator
 
         private void AppendToTxtFile(ForwardAnalysisResult result, string fileName)
         {
-            using (StreamWriter writer = new StreamWriter(fileName, append: true))
+            using (StreamWriter writer = new StreamWriter(fileName, append: true, encoding: CsvEncoding))
             {
                 writer.WriteLine($"{result.BackwardFitness};{result.ForwardFitness};" +
                     $"{result.BackwardProfit};{result.ForwardProfit};" +
@@ -910,6 +959,11 @@ namespace TrendByPivotPointsOptimizator
                     case "ExcludeBestDealsPrcnt":
                         settings.ExcludeBestDealsPrcnt = ParseDouble(value); break;
                     case "MinDealsCount": settings.MinDealsCount = int.Parse(value); break;
+                    case "MaxDrawDownPrcnt":
+                        settings.MaxDrawDownPrcnt = ParseDouble(value); break;
+                    case "MinWinRatePrcnt":
+                        settings.MinWinRatePrcnt = ParseDouble(value); break;
+                    case "PenaltyPower": settings.PenaltyPower = ParseDouble(value); break;
                     case "NeighbourhoodPoints":
                         settings.NeighbourhoodPoints = int.Parse(value); break;
                     case "NeighbourhoodPercent":
