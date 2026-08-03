@@ -469,12 +469,8 @@ namespace TrendByPivotPointsOptimizator
 
                 //Сводный отчёт переписываем с нуля, возвращая в него уже посчитанные
                 //периоды: дописывать в старый файл после перезапуска нельзя.
-                CreateTxtFile(resultFileName);
-                foreach (var completed in state.CompletedResults)
-                {
-                    results.Add(completed);
-                    AppendToTxtFile(completed, resultFileName);
-                }
+                results.AddRange(state.CompletedResults);
+                WriteSummaryReport(results, resultFileName, logger);
 
                 logger.Log("Старт генетического алгоритма");
                 var tmpRes = state.FinalBackwardResult;
@@ -514,7 +510,7 @@ namespace TrendByPivotPointsOptimizator
                         tmpRes.BackwardProfitPrcnt = first.BackwardProfitPrcnt;
                     }
 
-                    PrintToTxtFile(bestPopulationLast, definition);
+                    PrintToTxtFile(bestPopulationLast, definition, logger);
 
                     state.BestGenes = bestPopulationLast.First().Genes;
                     state.FinalBackwardResult = tmpRes;
@@ -598,12 +594,11 @@ namespace TrendByPivotPointsOptimizator
                     }
 
                     results.Add(tmp);
-                    AppendToTxtFile(tmp, resultFileName);
+                    WriteSummaryReport(results, resultFileName, logger);
 
                     var bestPopulationFile = $"{tickers.First().Name}_" +
                         $"{settings.Sides.First()}_{definition.Name}_Period_{period}.csv";
-                    CreateTxtFile(bestPopulationFile);
-                    PrintToTxtFile(bestPopulation, definition, bestPopulationFile);
+                    PrintToTxtFile(bestPopulation, definition, logger, bestPopulationFile);
 
                     //Период закрыт: следующий перезапуск начнёт со следующего.
                     state.CompletedResults.Add(tmp);
@@ -612,7 +607,7 @@ namespace TrendByPivotPointsOptimizator
                         settings: settings, fullFileName: checkpointFileName, logger: logger);
                 }
                 results.Add(tmpRes);
-                AppendToTxtFile(tmpRes, resultFileName);
+                WriteSummaryReport(results, resultFileName, logger);
 
                 DeleteCheckpoint(checkpointFileName, logger);
 
@@ -747,7 +742,7 @@ namespace TrendByPivotPointsOptimizator
         }
 
         private void PrintToTxtFile(List<ChromosomeUniversal> population,
-            StrategyDefinition definition, string fileName = "")
+            StrategyDefinition definition, Logger logger, string fileName = "")
         {
             if (population == null || population.Count == 0)
                 return;
@@ -757,7 +752,7 @@ namespace TrendByPivotPointsOptimizator
             if (fileName == "")
                 fileName = $"{t.Ticker.Name}_{t.Side}_{definition.Name}_params.csv";
 
-            using (StreamWriter writer = new StreamWriter(fileName, append: false, encoding: CsvEncoding))
+            TryWriteReport(fileName, writer =>
             {
                 //Заголовки: общие колонки + параметры стратегии + два блока
                 //показателей, бэктест и форвард. Разрыв между блоками — это и есть
@@ -791,7 +786,7 @@ namespace TrendByPivotPointsOptimizator
                         r.ForwardDealsStatistics);
                     writer.WriteLine(line);
                 }
-            }
+            }, logger);
         }
 
         private SurogateChromosome CreateBestChromosome(string fullFileName)
@@ -858,6 +853,73 @@ namespace TrendByPivotPointsOptimizator
                 $"{statistics.ExpectedPayoff};{statistics.LargestWin};" +
                 $"{statistics.LargestLoss};{statistics.MaxConsecutiveLosses};" +
                 $"{statistics.MaxConsecutiveWins};{statistics.AverageBarsInDeal}";
+        }
+
+        /// <summary>
+        /// Пишет отчёт, не роняя прогон. Файл может быть занят — например, открыт
+        /// в Excel, чтобы посмотреть промежуточный результат. Отчёт этого не стоит:
+        /// прогон идёт часами, а его данные лежат в чек-поинте и будут дописаны
+        /// при следующей записи.
+        /// </summary>
+        private bool TryWriteReport(string fileName, Action<StreamWriter> write,
+            Logger logger, bool append = false)
+        {
+            const int attempts = 5;
+
+            for (var attempt = 1; attempt <= attempts; attempt++)
+            {
+                try
+                {
+                    using (var writer = new StreamWriter(fileName, append, CsvEncoding))
+                        write(writer);
+                    return true;
+                }
+                catch (IOException e)
+                {
+                    if (attempt == attempts)
+                    {
+                        logger.Log("Не удалось записать отчёт «{0}»: {1}\r\n" +
+                            "Скорее всего, файл открыт в другой программе. Прогон " +
+                            "продолжается, отчёт допишется при следующей записи.",
+                            fileName, e.Message);
+                        return false;
+                    }
+
+                    Thread.Sleep(200);
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    logger.Log("Нет доступа к отчёту «{0}»: {1}. Прогон продолжается.",
+                        fileName, e.Message);
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Переписывает сводный отчёт целиком из накопленных результатов. Именно
+        /// целиком, а не дописывает строку: если запись сорвалась, следующая
+        /// восстановит и пропущенное.
+        /// </summary>
+        public void WriteSummaryReport(List<ForwardAnalysisResult> results,
+            string fileName, Logger logger)
+        {
+            TryWriteReport(fileName, writer =>
+            {
+                writer.WriteLine("BackwardFitness;ForwardFitness;" +
+                    "BackwardProfit;ForwardProfit;" +
+                    "BackwardProfitPrcnt;ForwardProfitPrcnt;" +
+                    "BackwardTestDates;ForwardTestDates;");
+
+                foreach (var result in results)
+                    writer.WriteLine($"{result.BackwardFitness};{result.ForwardFitness};" +
+                        $"{result.BackwardProfit};{result.ForwardProfit};" +
+                        $"{result.BackwardProfitPrcnt};{result.ForwardProfitPrcnt};" +
+                        $"{result.BackwardStart}-{result.BackwardEnd};" +
+                        $"{result.ForwardStart} - {result.ForwardEnd}");
+            }, logger);
         }
 
         private void CreateTxtFile(string fileName)

@@ -102,6 +102,7 @@
     <Compile Include="DealsStatisticsTests.cs" />
     <Compile Include="FitnessPenaltiesTests.cs" />
     <Compile Include="TournamentSelectionTests.cs" />
+    <Compile Include="ReportWritingTests.cs" />
     <Compile Include="NeighbourhoodBuilderTests.cs" />
     <Compile Include="HistoryTrimmerTests.cs" />
     <Compile Include="OptimizationCheckpointTests.cs" />

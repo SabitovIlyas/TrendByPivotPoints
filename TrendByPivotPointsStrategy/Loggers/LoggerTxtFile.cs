@@ -33,7 +33,7 @@ namespace TradingSystems
 
             //Писать могут несколько потоков сразу — строки не должны перемешиваться.
             lock (sync)
-                writer.WriteLine(text);
+                Write(text);
         }
 
         public override void Log(string text, params object[] args)
@@ -43,7 +43,21 @@ namespace TradingSystems
 
             var log = string.Format(text, args);
             lock (sync)
-                writer.WriteLine(log);
+                Write(log);
+        }
+
+        private void Write(string text)
+        {
+            try
+            {
+                writer.WriteLine(text);
+            }
+            catch (IOException)
+            {
+                //Многочасовой прогон не должен погибнуть из-за того, что не
+                //записалась строка журнала. Сообщить об этом всё равно некуда —
+                //журнал и есть то, что сломалось; в консоль пишет другой журнал.
+            }
         }
 
         public void Dispose()
