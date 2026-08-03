@@ -15,8 +15,9 @@ namespace TrendByPivotPointsOptimizator
     /// </summary>
     public class FitnessUniversal
     {
-        /// <summary>Минимальное количество сделок; с меньшим хромосома отбраковывается.</summary>
-        public int DealsCountCriteria { get; set; } = 0;
+        /// <summary>Порог количества сделок: с меньшим оценка снижается штрафом.
+        /// 0 — не штрафовать.</summary>
+        public int MinDealsCount { get; set; } = 0;
 
         /// <summary>Доля лучших прибыльных сделок, исключаемых перед расчётом.</summary>
         public double PrcntDealForExclude { get; set; } = 0.05;
@@ -78,7 +79,7 @@ namespace TrendByPivotPointsOptimizator
             chromosome.RecoveryFactor = accountLab.GetRecoveryFactor();
 
             chromosome.FitnessValue = ApplyPenalties(fitness, chromosome.MaxDrawDown,
-                tradeStatistics.WinRatePrcnt);
+                tradeStatistics.WinRatePrcnt, dealsCount);
         }
 
         /// <summary>
@@ -111,7 +112,7 @@ namespace TrendByPivotPointsOptimizator
             var accountLab = account as AccountLab;
 
             return ApplyPenalties(fitness, accountLab.GetMaxDrawDownPrcnt(),
-                tradeStatistics.WinRatePrcnt);
+                tradeStatistics.WinRatePrcnt, dealsCount);
         }
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace TrendByPivotPointsOptimizator
         /// в тот момент, когда порог не проходит вся стартовая популяция.
         /// </summary>
         public double ApplyPenalties(double fitness, double maxDrawDownPrcnt,
-            double winRatePrcnt)
+            double winRatePrcnt, int dealsCount)
         {
             if (double.IsNegativeInfinity(fitness) || double.IsNaN(fitness))
                 return fitness;
@@ -133,6 +134,14 @@ namespace TrendByPivotPointsOptimizator
 
             if (MinWinRatePrcnt > 0 && winRatePrcnt < MinWinRatePrcnt)
                 penalty *= Math.Pow(winRatePrcnt / MinWinRatePrcnt, PenaltyPower);
+
+            //Малая выборка — ненадёжная оценка: на трёх сделках отличный результат
+            //получается по случайности. Штраф, а не отбраковка: у жёсткого порога
+            //есть обрыв на границе, и его выгодно перешагнуть любой ценой — в том
+            //числе размыв фильтр входа ради лишних сделок. Плавный штраф такого
+            //стимула не создаёт, а выше порога за сделки не доплачивают вовсе.
+            if (MinDealsCount > 0 && dealsCount < MinDealsCount)
+                penalty *= Math.Pow((double)dealsCount / MinDealsCount, PenaltyPower);
 
             if (penalty >= 1)
                 return fitness;
@@ -187,13 +196,8 @@ namespace TrendByPivotPointsOptimizator
 
         private double CheckCriteriaPassed(Starter system)
         {
-            var recoveryFactor = double.NegativeInfinity;
             var security = system.GetSecurity();
-
             var deals = security.GetMetaDeals();
-            var isQtyDealsEnough = deals.Count >= DealsCountCriteria;
-            if (IsCriteriaPassedNeedToCheck && !isQtyDealsEnough)
-                return recoveryFactor;
 
             if (!IsCriteriaPassedNeedToCheck)
                 return CalcRecoveryFactor(system.Account);

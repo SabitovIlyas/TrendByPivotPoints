@@ -209,10 +209,8 @@ namespace TrendByPivotPointsOptimizator
 
             if (result.Count == 0)
                 throw new Exception("Ни одна хромосома не прошла отбор: все " +
-                    "отбракованы. Проверьте настройки — минимум сделок " +
-                    $"({settings.MinDealsCount}) может быть недостижим на этих " +
-                    "данных, либо стратегия не совершает сделок в заданных " +
-                    "диапазонах параметров.");
+                    "отбракованы. Похоже, стратегия не совершает сделок ни при " +
+                    "каких значениях параметров из заданных диапазонов.");
 
             //Возвращаемым хромосомам нужен живой прогон: по нему оптимизатор
             //считает форвардный тест и пишет отчёт.
@@ -495,7 +493,7 @@ namespace TrendByPivotPointsOptimizator
             return new FitnessUniversal(parameters, chromosome, starter, bars)
             {
                 PrcntDealForExclude = settings.ExcludeBestDealsPrcnt,
-                DealsCountCriteria = settings.MinDealsCount,
+                MinDealsCount = settings.MinDealsCount,
                 MaxDrawDownPrcnt = settings.MaxDrawDownPrcnt,
                 MinWinRatePrcnt = settings.MinWinRatePrcnt,
                 PenaltyPower = settings.PenaltyPower,

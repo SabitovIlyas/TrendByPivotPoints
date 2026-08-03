@@ -367,7 +367,7 @@ namespace TrendByPivotPointsOptimizator
                 ? settings.Threads.ToString()
                 : $"по числу ядер ({Environment.ProcessorCount})");
             logger.Log("Фитнес-функция: фактор восстановления после исключения {0:P0} " +
-                "лучших прибыльных сделок; минимум сделок {1}",
+                "лучших прибыльных сделок; порог числа сделок {1}",
                 settings.ExcludeBestDealsPrcnt, settings.MinDealsCount);
             logger.Log("Штрафы: просадка глубже {0} % и доля выигрышных ниже {1} %, " +
                 "жёсткость {2} (0 — штраф выключен)", settings.MaxDrawDownPrcnt,

@@ -111,7 +111,8 @@ namespace ProjectsManager
             threadsBox = AddNumeric(table, "Потоков (0 — по числу ядер):", 0, 256, 0);
             excludeBestDealsBox = AddNumeric(table,
                 "Исключать лучших сделок, доля:", 0, 1, 0.05m, 2, 0.01m);
-            minDealsBox = AddNumeric(table, "Минимум сделок:", 0, 100000, 0);
+            minDealsBox = AddNumeric(table,
+                "Порог числа сделок (0 — без штрафа):", 0, 100000, 0);
             maxDrawDownBox = AddNumeric(table,
                 "Порог просадки, % (0 — без штрафа):", 0, 100, 0, 1, 1m);
             minWinRateBox = AddNumeric(table,
