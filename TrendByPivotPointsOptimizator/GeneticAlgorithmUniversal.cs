@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
@@ -57,6 +58,13 @@ namespace TrendByPivotPointsOptimizator
         private readonly Dictionary<string, ChromosomeMetrics> chromosomeCache =
             new Dictionary<string, ChromosomeMetrics>();
 
+        //Оценки отдельных точек пространства параметров — центров и соседей.
+        //Пишется из нескольких потоков сразу, поэтому потокобезопасный словарь.
+        private readonly ConcurrentDictionary<string, double> pointFitnessCache =
+            new ConcurrentDictionary<string, double>();
+
+        private readonly NeighbourhoodBuilder neighbourhoodBuilder;
+
         /// <param name="logger">Журнал торговой системы: его стратегия глушит на
         /// исторических барах, поэтому ход оптимизации в него писать нельзя.</param>
         /// <param name="runLogger">Журнал прогона (консоль + файл). Если не задан,
@@ -81,6 +89,11 @@ namespace TrendByPivotPointsOptimizator
             tournamentSize = settings.TournamentSize;
             minNormalizedDiversity = settings.MinDiversity;
             eliteFraction = settings.EliteFraction;
+
+            if (settings.NeighbourhoodPoints > 0)
+                neighbourhoodBuilder = new NeighbourhoodBuilder(definition.Parameters,
+                    settings.NeighbourhoodPoints, settings.NeighbourhoodPercent,
+                    settings.Seed ?? 0);
         }
 
         /// <param name="resumeFrom">Состояние прерванного прогона: популяция и счётчики
@@ -99,6 +112,7 @@ namespace TrendByPivotPointsOptimizator
             int gen = 0;
 
             chromosomeCache.Clear();
+            pointFitnessCache.Clear();
 
             if (resumeFrom != null)
             {
@@ -396,8 +410,86 @@ namespace TrendByPivotPointsOptimizator
             var parameters = definition.CreateSystemParameters(chromosome.Genes,
                 chromosome.Ticker, chromosome.Side, chromosome.TimeFrame, settings);
 
-            var fitness = new FitnessUniversal(parameters, chromosome, starter, backwardBars);
+            var fitness = CreateFitness(parameters, chromosome, starter, backwardBars);
             fitness.SetUpChromosomeFitnessValue();
+
+            //Оценка самой точки — она же может оказаться соседом другой хромосомы.
+            var centreFitness = chromosome.FitnessValue;
+            pointFitnessCache[chromosome.Name] = centreFitness;
+
+            //Показатели по сделкам остаются от самой хромосомы, усредняется только
+            //оценка: отчёт должен описывать её саму, а не размазанную окрестность.
+            chromosome.FitnessValue = CalculateNeighbourhoodFitness(chromosome,
+                centreFitness, backwardBars);
+        }
+
+        /// <summary>
+        /// Усредняет оценку по окрестности хромосомы. Так побеждает не одиночный пик,
+        /// который развалится от сдвига параметра на шаг, а плато, где рядом стоящие
+        /// наборы параметров работают тоже.
+        /// </summary>
+        private double CalculateNeighbourhoodFitness(ChromosomeUniversal chromosome,
+            double centreFitness, List<Bar> backwardBars)
+        {
+            if (neighbourhoodBuilder == null || double.IsNegativeInfinity(centreFitness))
+                return centreFitness;
+
+            var neighbours = neighbourhoodBuilder.Build(chromosome.Name, chromosome.Genes);
+            if (neighbours.Count == 0)
+                return centreFitness;
+
+            var values = new List<double>() { centreFitness };
+            foreach (var genes in neighbours)
+                values.Add(EvaluateNeighbour(chromosome, genes, backwardBars));
+
+            return Aggregate(values);
+        }
+
+        private double EvaluateNeighbour(ChromosomeUniversal chromosome,
+            Dictionary<string, double> genes, List<Bar> backwardBars)
+        {
+            definition.Repair(genes);
+
+            //Кэш оценок точек — отдельный от кэша хромосом: там лежит уже усреднённая
+            //по окрестности оценка, а соседу нужна оценка самой точки.
+            var key = chromosome.GetNameForGenes(genes);
+            if (pointFitnessCache.TryGetValue(key, out double cached))
+                return cached;
+
+            var starter = CreateStarterForChromosome(chromosome, backwardBars);
+            var parameters = definition.CreateSystemParameters(genes, chromosome.Ticker,
+                chromosome.Side, chromosome.TimeFrame, settings);
+
+            //Хромосому не передаём: результат соседа идёт только в усреднение.
+            var fitness = CreateFitness(parameters, null, starter, backwardBars);
+            var value = fitness.CalculateFitnessValue();
+
+            pointFitnessCache[key] = value;
+            return value;
+        }
+
+        private double Aggregate(List<double> values)
+        {
+            if (!settings.NeighbourhoodUseMedian)
+                return Math.Round(values.Average(), 2);
+
+            var sorted = values.OrderBy(v => v).ToList();
+            var middle = sorted.Count / 2;
+            var median = sorted.Count % 2 == 1
+                ? sorted[middle]
+                : (sorted[middle - 1] + sorted[middle]) / 2;
+
+            return Math.Round(median, 2);
+        }
+
+        private FitnessUniversal CreateFitness(SystemParameters parameters,
+            ChromosomeUniversal chromosome, Starter starter, List<Bar> bars)
+        {
+            return new FitnessUniversal(parameters, chromosome, starter, bars)
+            {
+                PrcntDealForExclude = settings.ExcludeBestDealsPrcnt,
+                DealsCountCriteria = settings.MinDealsCount,
+            };
         }
 
         /// <summary>

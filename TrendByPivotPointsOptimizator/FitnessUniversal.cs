@@ -15,7 +15,10 @@ namespace TrendByPivotPointsOptimizator
     /// </summary>
     public class FitnessUniversal
     {
+        /// <summary>Минимальное количество сделок; с меньшим хромосома отбраковывается.</summary>
         public int DealsCountCriteria { get; set; } = 0;
+
+        /// <summary>Доля лучших прибыльных сделок, исключаемых перед расчётом.</summary>
         public double PrcntDealForExclude { get; set; } = 0.05;
         public bool IsCriteriaPassedNeedToCheck { get; set; } = true;
 
@@ -34,6 +37,9 @@ namespace TrendByPivotPointsOptimizator
         /// </summary>
         public List<Bar> Bars { get; set; }
 
+        /// <param name="chromosome">Хромосома, в которую сложить результат. null —
+        /// когда считается соседняя точка окрестности: её результат идёт только
+        /// в усреднение и ничего не перезаписывает.</param>
         public FitnessUniversal(SystemParameters parameters, ChromosomeUniversal chromosome,
             Starter starter, List<Bar> bars)
         {
@@ -41,7 +47,18 @@ namespace TrendByPivotPointsOptimizator
             this.chromosome = chromosome;
             this.starter = starter;
             Bars = bars;
-            chromosome.Fitness = this;
+
+            if (chromosome != null)
+                chromosome.Fitness = this;
+        }
+
+        /// <summary>
+        /// Считает фитнес-функцию, ничего не записывая в хромосому — для соседних
+        /// точек окрестности.
+        /// </summary>
+        public double CalculateFitnessValue()
+        {
+            return Calculate();
         }
 
         public void SetUpChromosomeFitnessValue(bool isCriteriaPassedNeedToCheck = true)

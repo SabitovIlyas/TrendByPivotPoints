@@ -93,6 +93,14 @@ namespace TrendByPivotPointsOptimizator
             builder.Append(settings.SecuritiesFile).Append('|');
             builder.Append(settings.TrimHistory).Append('|');
 
+            //Настройки фитнес-функции меняют оценки, значит продолжать прогон,
+            //начатый с другими, нельзя.
+            builder.Append(settings.ExcludeBestDealsPrcnt.ToString("R", culture)).Append('|');
+            builder.Append(settings.MinDealsCount).Append('|');
+            builder.Append(settings.NeighbourhoodPoints).Append('|');
+            builder.Append(settings.NeighbourhoodPercent.ToString("R", culture)).Append('|');
+            builder.Append(settings.NeighbourhoodUseMedian).Append('|');
+
             foreach (var descriptor in definition.Parameters)
                 builder.Append(descriptor.Name).Append('=')
                     .Append(descriptor.Min.ToString("R", culture)).Append(':')

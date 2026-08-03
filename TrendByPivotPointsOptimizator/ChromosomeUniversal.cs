@@ -66,15 +66,24 @@ namespace TrendByPivotPointsOptimizator
 
         public void UpdateName()
         {
+            Name = GetNameForGenes(Genes);
+        }
+
+        /// <summary>
+        /// Имя (оно же ключ кэша) для произвольного набора генов на том же
+        /// инструменте, таймфрейме и стороне — нужно для точек окрестности.
+        /// </summary>
+        public string GetNameForGenes(Dictionary<string, double> genes)
+        {
             var builder = new StringBuilder();
             builder.AppendFormat("Ticker: {0}; TimeFrame: {1}; Side: {2};", Ticker.Name,
                 TimeFrame, Side);
 
             //Гены — в отсортированном порядке, чтобы имя (ключ кэша) было детерминированным.
-            foreach (var gene in Genes.OrderBy(g => g.Key))
+            foreach (var gene in genes.OrderBy(g => g.Key))
                 builder.AppendFormat(" {0}: {1};", gene.Key, gene.Value);
 
-            Name = builder.ToString();
+            return builder.ToString();
         }
     }
 }

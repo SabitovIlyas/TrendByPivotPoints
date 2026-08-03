@@ -68,7 +68,8 @@ namespace TrendByPivotPointsOptimizator.Tests
 
         private List<ChromosomeUniversal> RunGa(StrategyDefinition definition, int seed,
             PositionSide side = PositionSide.Long, Logger runLogger = null,
-            bool isLastBackwardTesting = true, int threads = 1)
+            bool isLastBackwardTesting = true, int threads = 1,
+            int neighbourhoodPoints = 0)
         {
             var bars = CreateBars(days: 90);
             var logger = new LoggerNull();
@@ -76,6 +77,8 @@ namespace TrendByPivotPointsOptimizator.Tests
                 commissionRate: 0, isUSD: false, rateUSD: 1);
             var settings = CreateTestSettings(side);
             settings.Threads = threads;
+            settings.NeighbourhoodPoints = neighbourhoodPoints;
+            settings.Seed = seed;
             var context = new ContextLab();
             var randomProvider = new RandomProvider(seed);
 
@@ -131,6 +134,55 @@ namespace TrendByPivotPointsOptimizator.Tests
                 "rsiEntryLevel шорта вне диапазона [50; 95]: " + genes["rsiEntryLevel"]);
             Assert.IsTrue(genes["rsiExitLevel"] >= 5 && genes["rsiExitLevel"] <= 50,
                 "rsiExitLevel шорта вне диапазона [5; 50]: " + genes["rsiExitLevel"]);
+        }
+
+        [TestMethod()]
+        public void Neighbourhood_ChangesFitnessButKeepsDealStatistics()
+        {
+            var plain = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42).First();
+
+            var withNeighbourhood = RunGa(
+                new MeanReversionStrategyDefinition(PositionSide.Long), seed: 42,
+                neighbourhoodPoints: 4).First();
+
+            //Оценка усредняется по окрестности, поэтому побеждает другая хромосома
+            //либо та же, но с другой оценкой — совпадение обоих было бы странным.
+            var sameChromosome = plain.Name == withNeighbourhood.Name;
+            var sameFitness = plain.FitnessValue == withNeighbourhood.FitnessValue;
+            Assert.IsFalse(sameChromosome && sameFitness,
+                "Окрестность никак не повлияла на оценку.");
+
+            //Показатели по сделкам описывают саму хромосому, а не окрестность.
+            Assert.AreEqual(withNeighbourhood.DealsCount,
+                withNeighbourhood.DealsStatistics.DealsCount,
+                "Показатели по сделкам не от самой хромосомы.");
+        }
+
+        [TestMethod()]
+        public void Neighbourhood_IsDeterministic()
+        {
+            var first = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42, neighbourhoodPoints: 4).First();
+            var second = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42, neighbourhoodPoints: 4).First();
+
+            Assert.AreEqual(first.Name, second.Name);
+            Assert.AreEqual(first.FitnessValue, second.FitnessValue);
+        }
+
+        [TestMethod()]
+        public void Neighbourhood_GivesSameResultInParallel()
+        {
+            //Соседи считаются в тех же потоках, что и хромосомы, а случайность для
+            //окрестности берётся из имени хромосомы — от числа потоков зависеть нечему.
+            var single = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42, neighbourhoodPoints: 4, threads: 1).First();
+            var parallel = RunGa(new MeanReversionStrategyDefinition(PositionSide.Long),
+                seed: 42, neighbourhoodPoints: 4, threads: 4).First();
+
+            Assert.AreEqual(single.Name, parallel.Name);
+            Assert.AreEqual(single.FitnessValue, parallel.FitnessValue);
         }
 
         [TestMethod()]

@@ -361,6 +361,15 @@ namespace TrendByPivotPointsOptimizator
             logger.Log("Потоков на расчёт хромосом: {0}", settings.Threads > 0
                 ? settings.Threads.ToString()
                 : $"по числу ядер ({Environment.ProcessorCount})");
+            logger.Log("Фитнес-функция: фактор восстановления после исключения {0:P0} " +
+                "лучших прибыльных сделок; минимум сделок {1}",
+                settings.ExcludeBestDealsPrcnt, settings.MinDealsCount);
+            logger.Log("Окрестность: {0}", settings.NeighbourhoodPoints > 0
+                ? string.Format("{0} точек в пределах {1:P0} диапазона каждого гена, " +
+                    "оценка — {2}", settings.NeighbourhoodPoints,
+                    settings.NeighbourhoodPercent,
+                    settings.NeighbourhoodUseMedian ? "медиана" : "среднее")
+                : "не используется, оценивается только сама хромосома");
             logger.Log("Сохранение состояния прогона: {0}", settings.SaveCheckpoint
                 ? "после каждого поколения" : "выключено");
             logger.Log("Окна: бэктест {0} дней, форвард {1} дней, периодов {2}, " +
@@ -898,6 +907,15 @@ namespace TrendByPivotPointsOptimizator
                     case "MinDiversity": settings.MinDiversity = ParseDouble(value); break;
                     case "EliteFraction": settings.EliteFraction = ParseDouble(value); break;
                     case "Threads": settings.Threads = int.Parse(value); break;
+                    case "ExcludeBestDealsPrcnt":
+                        settings.ExcludeBestDealsPrcnt = ParseDouble(value); break;
+                    case "MinDealsCount": settings.MinDealsCount = int.Parse(value); break;
+                    case "NeighbourhoodPoints":
+                        settings.NeighbourhoodPoints = int.Parse(value); break;
+                    case "NeighbourhoodPercent":
+                        settings.NeighbourhoodPercent = ParseDouble(value); break;
+                    case "NeighbourhoodUseMedian":
+                        settings.NeighbourhoodUseMedian = ParseBool(value); break;
                     case "SaveCheckpoint": settings.SaveCheckpoint = ParseBool(value); break;
                     case "CheckpointFile": settings.CheckpointFile = value; break;
                     case "BackwardDays": settings.BackwardDays = int.Parse(value); break;

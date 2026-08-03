@@ -86,6 +86,7 @@
     <Compile Include="ChromosomeDonchianChannel.cs" />
     <Compile Include="ChromosomeMetrics.cs" />
     <Compile Include="GaProgress.cs" />
+    <Compile Include="NeighbourhoodBuilder.cs" />
     <Compile Include="OptimizationCheckpoint.cs" />
     <Compile Include="ChromosomeUniversal.cs" />
     <Compile Include="DonchianStrategyDefinition.cs" />

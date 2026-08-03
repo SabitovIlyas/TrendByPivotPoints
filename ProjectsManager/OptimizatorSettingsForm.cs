@@ -34,6 +34,11 @@ namespace ProjectsManager
         private NumericUpDown minDiversityBox;
         private NumericUpDown eliteFractionBox;
         private NumericUpDown threadsBox;
+        private NumericUpDown excludeBestDealsBox;
+        private NumericUpDown minDealsBox;
+        private NumericUpDown neighbourhoodPointsBox;
+        private NumericUpDown neighbourhoodPercentBox;
+        private CheckBox neighbourhoodMedianBox;
         private CheckBox saveCheckpointBox;
         private TextBox checkpointFileBox;
         private CheckBox trimHistoryBox;
@@ -59,7 +64,7 @@ namespace ProjectsManager
         {
             Text = "Настройки оптимизатора";
             Width = 820;
-            Height = 900;
+            Height = 980;
             StartPosition = FormStartPosition.CenterParent;
             Font = new Font("Segoe UI", 9f);
             MinimizeBox = false;
@@ -67,7 +72,7 @@ namespace ProjectsManager
             var table = new TableLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 320,
+                Height = 400,
                 ColumnCount = 4,
                 Padding = new Padding(8, 8, 8, 0)
             };
@@ -101,6 +106,15 @@ namespace ProjectsManager
             minDiversityBox = AddNumeric(table, "Мин. разнообразие:", 0, 1, 0.10m, 2, 0.05m);
             eliteFractionBox = AddNumeric(table, "Доля элиты:", 0, 1, 0.20m, 2, 0.05m);
             threadsBox = AddNumeric(table, "Потоков (0 — по числу ядер):", 0, 256, 0);
+            excludeBestDealsBox = AddNumeric(table,
+                "Исключать лучших сделок, доля:", 0, 1, 0.05m, 2, 0.01m);
+            minDealsBox = AddNumeric(table, "Минимум сделок:", 0, 100000, 0);
+            neighbourhoodPointsBox = AddNumeric(table,
+                "Точек окрестности (0 — выключено):", 0, 1000, 0);
+            neighbourhoodPercentBox = AddNumeric(table,
+                "Радиус окрестности, доля диапазона:", 0, 1, 0.05m, 2, 0.01m);
+            neighbourhoodMedianBox = AddCheckBox(table,
+                "Оценка по окрестности — медиана (иначе среднее):", false);
             saveCheckpointBox = AddCheckBox(table,
                 "Сохранять состояние прогона (продолжить после сбоя):", true);
 
@@ -384,6 +398,14 @@ namespace ProjectsManager
             builder.AppendLine("MinDiversity:" + minDiversityBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("EliteFraction:" + eliteFractionBox.Value.ToString(CultureInfo.InvariantCulture));
             builder.AppendLine("Threads:" + threadsBox.Value);
+            builder.AppendLine("ExcludeBestDealsPrcnt:" +
+                excludeBestDealsBox.Value.ToString(CultureInfo.InvariantCulture));
+            builder.AppendLine("MinDealsCount:" + minDealsBox.Value);
+            builder.AppendLine("NeighbourhoodPoints:" + neighbourhoodPointsBox.Value);
+            builder.AppendLine("NeighbourhoodPercent:" +
+                neighbourhoodPercentBox.Value.ToString(CultureInfo.InvariantCulture));
+            builder.AppendLine("NeighbourhoodUseMedian:" +
+                (neighbourhoodMedianBox.Checked ? "1" : "0"));
             builder.AppendLine("SaveCheckpoint:" + (saveCheckpointBox.Checked ? "1" : "0"));
             if (checkpointFileBox.Text.Trim().Length > 0)
                 builder.AppendLine("CheckpointFile:" + checkpointFileBox.Text.Trim());
@@ -459,6 +481,12 @@ namespace ProjectsManager
                         case "MinDiversity": SetValue(minDiversityBox, value); break;
                         case "EliteFraction": SetValue(eliteFractionBox, value); break;
                         case "Threads": SetValue(threadsBox, value); break;
+                        case "ExcludeBestDealsPrcnt": SetValue(excludeBestDealsBox, value); break;
+                        case "MinDealsCount": SetValue(minDealsBox, value); break;
+                        case "NeighbourhoodPoints": SetValue(neighbourhoodPointsBox, value); break;
+                        case "NeighbourhoodPercent": SetValue(neighbourhoodPercentBox, value); break;
+                        case "NeighbourhoodUseMedian":
+                            neighbourhoodMedianBox.Checked = IsTrue(value); break;
                         case "SaveCheckpoint": saveCheckpointBox.Checked = IsTrue(value); break;
                         case "CheckpointFile": checkpointFileBox.Text = value; break;
                         case "BackwardDays": SetValue(backwardDaysBox, value); break;
