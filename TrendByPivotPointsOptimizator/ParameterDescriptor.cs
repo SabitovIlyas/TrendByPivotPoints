@@ -13,11 +13,18 @@ namespace TrendByPivotPointsOptimizator
         public double Step { get; }
         public bool IsInteger { get; }
 
+        /// <summary>
+        /// Переключатель режима, а не величина: промежуточных значений у него нет.
+        /// Такой параметр не сдвигается при построении окрестности — сосед должен
+        /// быть чуть иначе настроенной стратегией, а не принципиально другой.
+        /// </summary>
+        public bool IsCategorical { get; }
+
         public double Range => Max - Min;
         public int StepsCount => (int)Math.Round((Max - Min) / Step);
 
         public ParameterDescriptor(string name, double min, double max, double step = 1,
-            bool isInteger = true)
+            bool isInteger = true, bool isCategorical = false)
         {
             if (min > max)
                 throw new ArgumentException("Минимум больше максимума: " + name);
@@ -29,6 +36,7 @@ namespace TrendByPivotPointsOptimizator
             Max = max;
             Step = step;
             IsInteger = isInteger;
+            IsCategorical = isCategorical;
         }
 
         /// <summary>Случайный узел сетки параметра.</summary>

@@ -78,6 +78,35 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void Build_DoesNotTouchSwitches()
+        {
+            //Переключатель режима не имеет промежуточных значений: сдвинув его,
+            //мы получили бы не соседа, а принципиально другую стратегию, и удачная
+            //комбинация штрафовалась бы за то, что противоположный режим хуже.
+            var parameters = new List<ParameterDescriptor>()
+            {
+                new ParameterDescriptor("maPeriod", 50, 250),
+                new ParameterDescriptor("useTrailingStop", 0, 1, isCategorical: true),
+            };
+
+            var genes = new Dictionary<string, double>()
+            {
+                { "maPeriod", 150 },
+                { "useTrailingStop", 1 },
+            };
+
+            var neighbours = new NeighbourhoodBuilder(parameters, points: 40,
+                percent: 0.05, seed: 42).Build("хромосома", genes);
+
+            foreach (var neighbour in neighbours)
+                Assert.AreEqual(1, neighbour["useTrailingStop"],
+                    "Переключатель режима в окрестности сдвигать нельзя.");
+
+            Assert.IsTrue(neighbours.Any(n => n["maPeriod"] != 150),
+                "Обычные параметры сдвигаться должны.");
+        }
+
+        [TestMethod()]
         public void Build_KeepsGenesWithinBounds()
         {
             var parameters = CreateParameters();

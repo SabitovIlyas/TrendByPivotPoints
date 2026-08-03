@@ -101,5 +101,26 @@ namespace TrendByPivotPointsOptimizator.Tests
             Assert.AreEqual(5, atrPeriod.Min);
             Assert.AreEqual(50, atrPeriod.Max);
         }
+
+        [TestMethod()]
+        public void ApplyRangeOverrides_KeepsSwitchMarking()
+        {
+            //Переопределение диапазона не должно превращать переключатель режима
+            //в обычный параметр — иначе его начнёт сдвигать окрестность.
+            var settings = new Settings();
+            settings.ParameterRanges["useTrailingStop"] = new ParameterRange()
+            {
+                Min = 0,
+                Max = 1,
+                Step = 1,
+            };
+
+            var definition = new MeanReversionStrategyDefinition(PositionSide.Long);
+            definition.ApplyRangeOverrides(settings);
+
+            var useTrailingStop = definition.Parameters.Find(
+                p => p.Name == "useTrailingStop");
+            Assert.IsTrue(useTrailingStop.IsCategorical);
+        }
     }
 }

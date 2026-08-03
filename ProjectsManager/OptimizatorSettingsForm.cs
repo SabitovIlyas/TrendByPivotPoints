@@ -114,7 +114,7 @@ namespace ProjectsManager
             neighbourhoodPercentBox = AddNumeric(table,
                 "Радиус окрестности, доля диапазона:", 0, 1, 0.05m, 2, 0.01m);
             neighbourhoodMedianBox = AddCheckBox(table,
-                "Оценка по окрестности — медиана (иначе среднее):", false);
+                "Брать по окрестности медиану вместо среднего:", false);
             saveCheckpointBox = AddCheckBox(table,
                 "Сохранять состояние прогона (продолжить после сбоя):", true);
 

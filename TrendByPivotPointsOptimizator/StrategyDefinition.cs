@@ -40,7 +40,8 @@ namespace TrendByPivotPointsOptimizator
                     out ParameterRange range))
                 {
                     parameters[i] = new ParameterDescriptor(parameters[i].Name,
-                        range.Min, range.Max, range.Step, parameters[i].IsInteger);
+                        range.Min, range.Max, range.Step, parameters[i].IsInteger,
+                        parameters[i].IsCategorical);
                 }
             }
         }

@@ -53,6 +53,11 @@ namespace TrendByPivotPointsOptimizator
                     if (!neighbour.ContainsKey(descriptor.Name))
                         continue;
 
+                    //Переключатели режима оставляем как есть: у них нет «чуть-чуть
+                    //в сторону», а смена режима — это не сосед, а другая стратегия.
+                    if (descriptor.IsCategorical)
+                        continue;
+
                     //Сдвиг не меньше шага: иначе на узких диапазонах сосед
                     //совпадёт с центром и проверять будет нечего.
                     var offset = Math.Max(descriptor.Step, descriptor.Range * percent);

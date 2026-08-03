@@ -105,7 +105,8 @@ namespace TrendByPivotPointsOptimizator
                 builder.Append(descriptor.Name).Append('=')
                     .Append(descriptor.Min.ToString("R", culture)).Append(':')
                     .Append(descriptor.Max.ToString("R", culture)).Append(':')
-                    .Append(descriptor.Step.ToString("R", culture)).Append(',');
+                    .Append(descriptor.Step.ToString("R", culture)).Append(':')
+                    .Append(descriptor.IsCategorical).Append(',');
 
             using (var sha = SHA256.Create())
             {

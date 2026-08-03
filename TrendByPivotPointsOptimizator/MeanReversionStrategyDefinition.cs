@@ -35,7 +35,9 @@ namespace TrendByPivotPointsOptimizator
                 rsiEntryLevel,
                 rsiExitLevel,
                 new ParameterDescriptor("atrMultiplier", 0.5, 3.0, step: 0.5, isInteger: false),
-                new ParameterDescriptor("useTrailingStop", 0, 1),
+                //Переключатель режима: в окрестности не сдвигается — иначе соседом
+                //удачной комбинации оказалась бы стратегия с другим типом стопа.
+                new ParameterDescriptor("useTrailingStop", 0, 1, isCategorical: true),
             };
         }
 
