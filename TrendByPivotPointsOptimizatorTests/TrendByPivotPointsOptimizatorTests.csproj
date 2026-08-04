@@ -104,6 +104,7 @@
     <Compile Include="TournamentSelectionTests.cs" />
     <Compile Include="ReportWritingTests.cs" />
     <Compile Include="PopulationDiversityTests.cs" />
+    <Compile Include="ForwardSummaryTests.cs" />
     <Compile Include="NeighbourhoodBuilderTests.cs" />
     <Compile Include="HistoryTrimmerTests.cs" />
     <Compile Include="OptimizationCheckpointTests.cs" />

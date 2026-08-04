@@ -616,8 +616,17 @@ namespace TrendByPivotPointsOptimizator
                     SaveCheckpoint(state, progress: null, randomProvider: randomProvider,
                         settings: settings, fullFileName: checkpointFileName, logger: logger);
                 }
+                //Итог по форвардным отрезкам считаем до того, как добавим строку
+                //главного прогона: у неё форвардной части нет.
+                var forwardSummary = ForwardSummary.Calculate(results);
+
                 results.Add(tmpRes);
                 WriteSummaryReport(results, resultFileName, logger);
+
+                logger.Log("");
+                foreach (var line in forwardSummary.ToLines())
+                    logger.Log(line);
+                logger.Log("");
 
                 DeleteCheckpoint(checkpointFileName, logger);
 
