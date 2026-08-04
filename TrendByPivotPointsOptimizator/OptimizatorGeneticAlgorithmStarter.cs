@@ -419,10 +419,12 @@ namespace TrendByPivotPointsOptimizator
                     securitiesFileName);
 
             var results = new List<ForwardAnalysisResult>();
-            var resultFileName = $"{tickers.First().Name}_{settings.Sides.First()}_" +
-                $"{definition.Name}.csv";
+            var reportName = $"{tickers.First().Name}_{settings.Sides.First()}_" +
+                $"{definition.Name}";
 
-            var checkpointFileName = GetCheckpointFileName(settings, resultFileName);
+            //Чек-поинт лежит в рабочей папке, а не в папке результатов: его надо
+            //найти до того, как станет известно, куда писал прерванный прогон.
+            var checkpointFileName = GetCheckpointFileName(settings, reportName + ".csv");
             var fingerprint = OptimizationCheckpoint.CalculateFingerprint(settings, definition);
             var checkpoint = LoadCheckpoint(checkpointFileName, fingerprint, logger);
 
@@ -448,6 +450,13 @@ namespace TrendByPivotPointsOptimizator
                     Fingerprint = fingerprint,
                     Seed = effectiveSeed,
                 };
+
+                //Отчёты — в свою папку на каждый прогон, иначе следующий запуск
+                //затирает результаты предыдущего. Продолженный прогон дописывает
+                //в ту же папку, что и прерванный: она запомнена в чек-поинте.
+                state.ResultsFolder = CreateResultsFolder(settings, checkpoint,
+                    startTime, logger);
+                var resultFileName = Path.Combine(state.ResultsFolder, reportName + ".csv");
 
                 if (checkpoint != null)
                 {
@@ -510,7 +519,8 @@ namespace TrendByPivotPointsOptimizator
                         tmpRes.BackwardProfitPrcnt = first.BackwardProfitPrcnt;
                     }
 
-                    PrintToTxtFile(bestPopulationLast, definition, logger);
+                    PrintToTxtFile(bestPopulationLast, definition, logger,
+                        Path.Combine(state.ResultsFolder, reportName + "_params.csv"));
 
                     state.BestGenes = bestPopulationLast.First().Genes;
                     state.FinalBackwardResult = tmpRes;
@@ -596,8 +606,8 @@ namespace TrendByPivotPointsOptimizator
                     results.Add(tmp);
                     WriteSummaryReport(results, resultFileName, logger);
 
-                    var bestPopulationFile = $"{tickers.First().Name}_" +
-                        $"{settings.Sides.First()}_{definition.Name}_Period_{period}.csv";
+                    var bestPopulationFile = Path.Combine(state.ResultsFolder,
+                        $"{reportName}_Period_{period}.csv");
                     PrintToTxtFile(bestPopulation, definition, logger, bestPopulationFile);
 
                     //Период закрыт: следующий перезапуск начнёт со следующего.
@@ -621,6 +631,38 @@ namespace TrendByPivotPointsOptimizator
             catch (Exception e)
             {
                 logger.Log("\r\nОшибка во время оптимизации:\r\n{0}", e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Папка для отчётов прогона. Продолженный прогон пишет туда же, куда писал
+        /// прерванный — иначе его результаты растеклись бы по двум папкам. Если папка
+        /// не задана настройкой, заводится своя, с датой и временем старта: так
+        /// следующий прогон не затирает результаты предыдущего.
+        /// </summary>
+        public string CreateResultsFolder(Settings settings,
+            OptimizationCheckpoint checkpoint, DateTime startTime, Logger logger)
+        {
+            var folder = checkpoint != null && !string.IsNullOrEmpty(checkpoint.ResultsFolder)
+                ? checkpoint.ResultsFolder
+                : settings.ResultsFolder;
+
+            if (string.IsNullOrEmpty(folder))
+                folder = Path.GetFullPath(string.Format("Результаты_{0:yyyy-MM-dd_HH-mm-ss}",
+                    startTime));
+
+            try
+            {
+                Directory.CreateDirectory(folder);
+                logger.Log("Отчёты прогона: {0}", folder);
+                return folder;
+            }
+            catch (Exception e)
+            {
+                //Без папки прогон всё равно должен идти — пишем рядом с программой.
+                logger.Log("Не удалось создать папку отчётов «{0}»: {1}. " +
+                    "Отчёты будут в рабочей папке.", folder, e.Message);
+                return string.Empty;
             }
         }
 
@@ -1034,6 +1076,7 @@ namespace TrendByPivotPointsOptimizator
                         settings.NeighbourhoodUseMedian = ParseBool(value); break;
                     case "SaveCheckpoint": settings.SaveCheckpoint = ParseBool(value); break;
                     case "CheckpointFile": settings.CheckpointFile = value; break;
+                    case "ResultsFolder": settings.ResultsFolder = value; break;
                     case "BackwardDays": settings.BackwardDays = int.Parse(value); break;
                     case "ForwardDays": settings.ForwardDays = int.Parse(value); break;
                     case "ForwardPeriodsCount": settings.ForwardPeriodsCount = int.Parse(value); break;

@@ -92,6 +92,10 @@ namespace TrendByPivotPointsOptimizator
         /// <summary>Файл чек-поинта; пусто — рядом со сводным отчётом.</summary>
         public string CheckpointFile = string.Empty;
 
+        /// <summary>Папка для отчётов прогона; пусто — создаётся своя, с датой и
+        /// временем старта. Так результаты прошлых прогонов не затираются.</summary>
+        public string ResultsFolder = string.Empty;
+
         //Окна бэктеста и форвардного анализа, в днях
         public int BackwardDays = 1460;
         public int ForwardDays = 1460;

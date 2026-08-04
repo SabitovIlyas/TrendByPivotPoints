@@ -42,6 +42,10 @@ namespace TrendByPivotPointsOptimizator
 
         public int Seed { get; set; }
         public int RandomDraws { get; set; }
+
+        /// <summary>Папка отчётов прогона: продолженный прогон должен дописывать
+        /// свои результаты туда же, а не заводить новую папку.</summary>
+        public string ResultsFolder { get; set; } = string.Empty;
         public string Stage { get; set; } = StageFinalBackward;
         public int Period { get; set; }
 
@@ -171,6 +175,7 @@ namespace TrendByPivotPointsOptimizator
             builder.AppendLine("Fingerprint:" + Fingerprint);
             builder.AppendLine("Seed:" + Seed.ToString(culture));
             builder.AppendLine("RandomDraws:" + RandomDraws.ToString(culture));
+            builder.AppendLine("ResultsFolder:" + ResultsFolder);
             builder.AppendLine("Stage:" + Stage);
             builder.AppendLine("Period:" + Period.ToString(culture));
             builder.AppendLine("Generation:" + Generation.ToString(culture));
@@ -223,6 +228,7 @@ namespace TrendByPivotPointsOptimizator
                     case "Fingerprint": checkpoint.Fingerprint = value; break;
                     case "Seed": checkpoint.Seed = int.Parse(value, culture); break;
                     case "RandomDraws": checkpoint.RandomDraws = int.Parse(value, culture); break;
+                    case "ResultsFolder": checkpoint.ResultsFolder = value; break;
                     case "Stage": checkpoint.Stage = value; break;
                     case "Period": checkpoint.Period = int.Parse(value, culture); break;
                     case "Generation": checkpoint.Generation = int.Parse(value, culture); break;
