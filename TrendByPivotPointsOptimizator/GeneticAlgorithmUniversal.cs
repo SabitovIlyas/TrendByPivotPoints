@@ -736,7 +736,15 @@ namespace TrendByPivotPointsOptimizator
             if (population.Count < 2)
                 return 0.0;
 
-            var descriptors = definition.Parameters;
+            //Считаем только по генам, которым есть где меняться. Ген с нулевым
+            //диапазоном (закреплённый строкой Range вида 0:0) в сумму не входит,
+            //и делить на него тоже нельзя — иначе разнообразие занижается тем
+            //сильнее, чем больше генов закреплено, и прогон останавливается раньше
+            //времени.
+            var descriptors = definition.Parameters.Where(d => d.Range > 0).ToList();
+            if (descriptors.Count == 0)
+                return 0.0;
+
             double totalDiversity = 0;
             int pairsCount = 0;
 
@@ -746,12 +754,9 @@ namespace TrendByPivotPointsOptimizator
                 {
                     double pairDiversity = 0;
                     foreach (var descriptor in descriptors)
-                    {
-                        if (descriptor.Range <= 0)
-                            continue;
                         pairDiversity += Math.Abs(population[i].Genes[descriptor.Name] -
                             population[j].Genes[descriptor.Name]) / descriptor.Range;
-                    }
+
                     totalDiversity += pairDiversity / descriptors.Count;
                     pairsCount++;
                 }
