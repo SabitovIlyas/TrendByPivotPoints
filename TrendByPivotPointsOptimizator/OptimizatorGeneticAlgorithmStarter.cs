@@ -601,6 +601,12 @@ namespace TrendByPivotPointsOptimizator
                         tmp.ForwardProfit = bestPopulation.First().ForwardAnalysisResults.First().ForwardProfit;
                         tmp.BackwardProfitPrcnt = bestPopulation.First().ForwardAnalysisResults.First().BackwardProfitPrcnt;
                         tmp.ForwardProfitPrcnt = bestPopulation.First().ForwardAnalysisResults.First().ForwardProfitPrcnt;
+
+                        //Показатели по сделкам и просадку тоже переносим: по ним
+                        //считается итог по всем форвардным отрезкам. Без них он
+                        //молча выходил нулевым.
+                        CopyWindowMetrics(bestPopulation.First().ForwardAnalysisResults.First(),
+                            tmp);
                     }
 
                     results.Add(tmp);
@@ -875,6 +881,22 @@ namespace TrendByPivotPointsOptimizator
                         $"{c.Profit};{c.ProfitPrcnt}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Переносит показатели окон из результата лучшей хромосомы в строку отчёта.
+        /// Прибыль и даты копируются рядом, а это — просадка, фактор восстановления
+        /// и статистика по сделкам, по которой считается итог по всем отрезкам.
+        /// </summary>
+        public static void CopyWindowMetrics(ForwardAnalysisResult from,
+            ForwardAnalysisResult to)
+        {
+            to.BackwardMaxDrawDown = from.BackwardMaxDrawDown;
+            to.ForwardMaxDrawDown = from.ForwardMaxDrawDown;
+            to.BackwardRecoveryFactor = from.BackwardRecoveryFactor;
+            to.ForwardRecoveryFactor = from.ForwardRecoveryFactor;
+            to.BackwardDealsStatistics = from.BackwardDealsStatistics;
+            to.ForwardDealsStatistics = from.ForwardDealsStatistics;
         }
 
         private string GetMetricsHeader(string window)

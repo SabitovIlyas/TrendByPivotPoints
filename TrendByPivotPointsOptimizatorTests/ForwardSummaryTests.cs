@@ -116,6 +116,46 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void CopyWindowMetrics_CarriesDealsStatisticsIntoReportRow()
+        {
+            //Из-за пропуска этого переноса итог по форвардным отрезкам выходил
+            //нулевым: статистика оставалась на хромосоме и до отчёта не доезжала.
+            var from = CreateSegment(100, 10, winners: 2, losers: 3,
+                averageWin: 200, averageLoss: 100, drawDown: 18);
+            from.BackwardMaxDrawDown = 12;
+            from.BackwardRecoveryFactor = 5.5;
+            from.ForwardRecoveryFactor = 2.1;
+            from.BackwardDealsStatistics = new DealsStatistics() { DealsCount = 40 };
+
+            var to = new ForwardAnalysisResult();
+            OptimizatorGeneticAlgorithmStarter.CopyWindowMetrics(from, to);
+
+            Assert.IsNotNull(to.ForwardDealsStatistics);
+            Assert.AreEqual(5, to.ForwardDealsStatistics.DealsCount);
+            Assert.AreEqual(40, to.BackwardDealsStatistics.DealsCount);
+            Assert.AreEqual(18, to.ForwardMaxDrawDown);
+            Assert.AreEqual(12, to.BackwardMaxDrawDown);
+            Assert.AreEqual(2.1, to.ForwardRecoveryFactor);
+            Assert.AreEqual(5.5, to.BackwardRecoveryFactor);
+        }
+
+        [TestMethod()]
+        public void Calculate_WorksOnRowsBuiltByCopyWindowMetrics()
+        {
+            //Сквозная проверка: строка отчёта, собранная так же, как в прогоне,
+            //должна попадать в агрегат, а не отсеиваться.
+            var row = new ForwardAnalysisResult() { ForwardProfit = 100 };
+            OptimizatorGeneticAlgorithmStarter.CopyWindowMetrics(
+                CreateSegment(100, 10, 2, 3, 200, 100), row);
+
+            var summary = ForwardSummary.Calculate(
+                new List<ForwardAnalysisResult>() { row });
+
+            Assert.AreEqual(1, summary.SegmentsCount);
+            Assert.AreEqual(5, summary.DealsCount);
+        }
+
+        [TestMethod()]
         public void Calculate_HandlesEmptyInput()
         {
             var summary = ForwardSummary.Calculate(new List<ForwardAnalysisResult>());
