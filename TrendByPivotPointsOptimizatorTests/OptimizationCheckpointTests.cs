@@ -272,6 +272,106 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void Fingerprint_DependsOnSeed()
+        {
+            //Сид задаёт всю последовательность случайных чисел — с другим сидом это
+            //другой прогон. Раньше смена сида молча игнорировалась: при продолжении
+            //он берётся из чек-поинта.
+            var settings = CreateSettings();
+            var definition = new MeanReversionStrategyDefinition(PositionSide.Long);
+
+            settings.Seed = 0;
+            var withZero = OptimizationCheckpoint.CalculateFingerprint(settings, definition);
+
+            settings.Seed = 1;
+            var withOne = OptimizationCheckpoint.CalculateFingerprint(settings, definition);
+
+            settings.Seed = null;
+            var withRandom = OptimizationCheckpoint.CalculateFingerprint(settings, definition);
+
+            Assert.AreNotEqual(withZero, withOne, "Смена сида должна менять отпечаток.");
+            Assert.AreNotEqual(withZero, withRandom);
+        }
+
+        [TestMethod()]
+        public void Fingerprint_DependsOnSecuritiesFileContent()
+        {
+            //Правка комиссии или лота не меняет путь к файлу, но меняет результат.
+            var folder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(folder);
+            var securitiesFile = Path.Combine(folder, "!Securities_BR.txt");
+
+            try
+            {
+                var settings = CreateSettings();
+                settings.SecuritiesFile = securitiesFile;
+                var definition = new MeanReversionStrategyDefinition(PositionSide.Long);
+
+                File.WriteAllText(securitiesFile, "BR;USD;10;0,0001320;1;77,4631");
+                var before = OptimizationCheckpoint.CalculateFingerprint(settings, definition);
+
+                //Та же строка — тот же отпечаток.
+                Assert.AreEqual(before,
+                    OptimizationCheckpoint.CalculateFingerprint(settings, definition));
+
+                //Поправили комиссию — отпечаток обязан измениться.
+                File.WriteAllText(securitiesFile, "BR;USD;10;0,0013200;1;77,4631");
+                Assert.AreNotEqual(before,
+                    OptimizationCheckpoint.CalculateFingerprint(settings, definition),
+                    "Смена комиссии должна менять отпечаток.");
+            }
+            finally
+            {
+                Directory.Delete(folder, recursive: true);
+            }
+        }
+
+        [TestMethod()]
+        public void Fingerprint_DependsOnQuotesFile()
+        {
+            //Обновили котировки — прерванный прогон нельзя продолжать на новых
+            //данных: в одном отчёте смешались бы результаты по разной истории.
+            var folder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(folder);
+            var securitiesFile = Path.Combine(folder, "!Securities_BR.txt");
+            var quotesFile = Path.Combine(folder, "BR.txt");
+
+            try
+            {
+                var settings = CreateSettings();
+                settings.SecuritiesFile = securitiesFile;
+                var definition = new MeanReversionStrategyDefinition(PositionSide.Long);
+
+                File.WriteAllText(securitiesFile, "BR;USD;10;0,0013200;1;77,4631");
+                File.WriteAllText(quotesFile, "BR,1,20260731,234900,90.07,90.07,90.06,90.06,300");
+                var before = OptimizationCheckpoint.CalculateFingerprint(settings, definition);
+
+                File.AppendAllText(quotesFile,
+                    "\r\nBR,1,20260801,100000,90.10,90.15,90.05,90.12,400");
+                Assert.AreNotEqual(before,
+                    OptimizationCheckpoint.CalculateFingerprint(settings, definition),
+                    "Обновление котировок должно менять отпечаток.");
+            }
+            finally
+            {
+                Directory.Delete(folder, recursive: true);
+            }
+        }
+
+        [TestMethod()]
+        public void Fingerprint_SurvivesMissingSecuritiesFile()
+        {
+            //Файла нет — отпечаток всё равно должен посчитаться, а не упасть.
+            var settings = CreateSettings();
+            settings.SecuritiesFile = @"C:\нет\такого\файла.txt";
+
+            var fingerprint = OptimizationCheckpoint.CalculateFingerprint(settings,
+                new MeanReversionStrategyDefinition(PositionSide.Long));
+
+            Assert.IsFalse(string.IsNullOrEmpty(fingerprint));
+        }
+
+        [TestMethod()]
         public void Replay_ContinuesSameRandomSequence()
         {
             var straight = new RandomProvider(42);

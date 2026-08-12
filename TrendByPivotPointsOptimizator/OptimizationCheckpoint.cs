@@ -97,6 +97,17 @@ namespace TrendByPivotPointsOptimizator
             builder.Append(settings.SecuritiesFile).Append('|');
             builder.Append(settings.TrimHistory).Append('|');
 
+            //Сид определяет всю последовательность случайных чисел: с другим сидом
+            //это другой прогон. Без него смену сида нельзя было заметить — она
+            //молча игнорировалась, потому что при продолжении сид берётся из
+            //чек-поинта.
+            builder.Append(settings.Seed.HasValue
+                ? settings.Seed.Value.ToString(culture) : "случайный").Append('|');
+
+            //Содержимое файла инструментов, а не только путь: подмена комиссии или
+            //лота меняет результат, а имя файла при этом остаётся прежним.
+            builder.Append(DescribeSecuritiesFile(settings.SecuritiesFile)).Append('|');
+
             //Настройки фитнес-функции меняют оценки, значит продолжать прогон,
             //начатый с другими, нельзя.
             builder.Append(settings.ExcludeBestDealsPrcnt.ToString("R", culture)).Append('|');
@@ -120,6 +131,49 @@ namespace TrendByPivotPointsOptimizator
                 var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
                 return string.Concat(hash.Take(16).Select(b => b.ToString("x2")));
             }
+        }
+
+        /// <summary>
+        /// Описание файла инструментов для отпечатка: само содержимое плюс размер и
+        /// время правки файлов котировок, на которые он ссылается. Так обновление
+        /// данных или правка комиссии честно обнуляют чек-поинт — иначе прерванный
+        /// прогон продолжился бы на других данных и смешал бы в одном отчёте
+        /// результаты, посчитанные по разным правилам.
+        /// </summary>
+        public static string DescribeSecuritiesFile(string fullFileName)
+        {
+            if (string.IsNullOrEmpty(fullFileName) || !File.Exists(fullFileName))
+                return string.Empty;
+
+            var builder = new StringBuilder();
+
+            try
+            {
+                var folder = Path.GetDirectoryName(fullFileName);
+
+                foreach (var line in File.ReadAllLines(fullFileName))
+                {
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
+                    builder.Append(line.Trim()).Append(';');
+
+                    //Файл котировок ищется по имени инструмента — первому полю.
+                    var name = line.Split(';')[0].Trim();
+                    var quotes = new FileInfo(Path.Combine(folder, name + ".txt"));
+                    if (quotes.Exists)
+                        builder.Append(quotes.Length).Append(':')
+                            .Append(quotes.LastWriteTimeUtc.Ticks).Append(';');
+                }
+            }
+            catch (IOException)
+            {
+                //Не смогли прочитать — пусть отпечаток будет по одному пути, как
+                //раньше. Ронять прогон из-за этого незачем.
+                return fullFileName;
+            }
+
+            return builder.ToString();
         }
 
         /// <summary>Складывает популяцию в снимок: гены и числа, без баров.</summary>
