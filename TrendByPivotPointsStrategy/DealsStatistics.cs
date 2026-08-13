@@ -98,13 +98,18 @@ namespace TradingSystems
                 if (consecutiveWins > statistics.MaxConsecutiveWins)
                     statistics.MaxConsecutiveWins = consecutiveWins;
 
-                //У незакрытой сделки номера бара закрытия нет — её длительность
-                //в среднее не берём.
-                var bars = deal.BarNumberClosePosition - deal.BarNumberOpenPosition;
-                if (bars >= 0)
+                //У незакрытой сделки номер бара закрытия остаётся int.MaxValue —
+                //её длительность в среднее не берём. Проверять разность на знак
+                //нельзя: int.MaxValue минус номер бара входа положителен, и такая
+                //сделка утаскивала среднее к 429 496 610 баров.
+                if (deal.BarNumberClosePosition != int.MaxValue)
                 {
-                    sumBars += bars;
-                    dealsWithBars++;
+                    var bars = deal.BarNumberClosePosition - deal.BarNumberOpenPosition;
+                    if (bars >= 0)
+                    {
+                        sumBars += bars;
+                        dealsWithBars++;
+                    }
                 }
             }
 

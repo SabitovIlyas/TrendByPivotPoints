@@ -136,5 +136,26 @@ namespace TrendByPivotPointsOptimizator.Tests
 
             Assert.AreEqual(7, statistics.AverageBarsInDeal);
         }
+
+        [TestMethod()]
+        public void Calculate_SkipsDurationOfDealStillOpenAtWindowEnd()
+        {
+            //У незакрытой позиции номер бара закрытия остаётся int.MaxValue.
+            //Раньше он попадал в среднее и давал 429 496 610 баров на сделку.
+            var deals = new List<Position>()
+            {
+                new DealStub(100, barOpen: 10, barClose: 20),   //10 баров
+                new DealStub(-50, barOpen: 30, barClose: 34),   //4 бара
+                new DealStub(70, barOpen: 40, barClose: int.MaxValue),
+            };
+
+            var statistics = DealsStatistics.Calculate(deals);
+
+            Assert.AreEqual(7, statistics.AverageBarsInDeal);
+            //Сама сделка из остальных показателей не выпадает: её результат
+            //переоценён по последнему закрытию окна и в статистике учтён.
+            Assert.AreEqual(3, statistics.DealsCount);
+            Assert.AreEqual(2, statistics.WinningDealsCount);
+        }
     }
 }
