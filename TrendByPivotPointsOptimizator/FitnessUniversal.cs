@@ -171,7 +171,12 @@ namespace TrendByPivotPointsOptimizator
             //описывает стратегию такой, какой она торгуется.
             var metaDeals = security.GetMetaDeals();
             dealsCount = metaDeals.Count;
-            tradeStatistics = DealsStatistics.Calculate(metaDeals);
+
+            //Сделки приходят в валюте инструмента, а счёт ведётся в валюте счёта:
+            //приводим, иначе денежные показатели сделок и прибыль по счёту окажутся
+            //в разных валютах.
+            var rate = (security as SecurityLab)?.RateUSD ?? 1;
+            tradeStatistics = DealsStatistics.Calculate(metaDeals, rate);
             account = starter.Account;
 
             var recoveryFactor = CheckCriteriaPassed(starter);

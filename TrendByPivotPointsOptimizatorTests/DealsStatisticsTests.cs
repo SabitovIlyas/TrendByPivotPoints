@@ -138,6 +138,37 @@ namespace TrendByPivotPointsOptimizator.Tests
         }
 
         [TestMethod()]
+        public void Calculate_ConvertsDealMoneyToAccountCurrency()
+        {
+            //Сделки приходят в валюте инструмента. Без приведения к валюте счёта
+            //«Средний выигрыш» и «Прибыль, р.» в одной строке отчёта расходились
+            //в 77 раз на долларовых инструментах.
+            var statistics = DealsStatistics.Calculate(Deals(100, -50, 200, -30, -20),
+                rateToAccountCurrency: 77.4631);
+
+            //Крупнейшие сделки не округляются, поэтому сравниваем с допуском.
+            Assert.AreEqual(11619.46, statistics.AverageWin, 0.01);      //150 × 77,4631
+            Assert.AreEqual(2582.10, statistics.AverageLoss, 0.01);      //33,33 × 77,4631
+            Assert.AreEqual(15492.62, statistics.LargestWin, 0.01);      //200 × 77,4631
+            Assert.AreEqual(3873.16, statistics.LargestLoss, 0.01);      //50 × 77,4631
+            Assert.AreEqual(3098.52, statistics.ExpectedPayoff, 0.01);   //40 × 77,4631
+        }
+
+        [TestMethod()]
+        public void Calculate_KeepsRatiosIndependentOfCurrencyRate()
+        {
+            var inRubles = DealsStatistics.Calculate(Deals(100, -50, 200, -30, -20),
+                rateToAccountCurrency: 77.4631);
+            var inDollars = DealsStatistics.Calculate(Deals(100, -50, 200, -30, -20));
+
+            Assert.AreEqual(inDollars.WinRatePrcnt, inRubles.WinRatePrcnt);
+            Assert.AreEqual(inDollars.ProfitFactor, inRubles.ProfitFactor);
+            Assert.AreEqual(inDollars.PayoffRatio, inRubles.PayoffRatio);
+            Assert.AreEqual(inDollars.DealsCount, inRubles.DealsCount);
+            Assert.AreEqual(inDollars.MaxConsecutiveLosses, inRubles.MaxConsecutiveLosses);
+        }
+
+        [TestMethod()]
         public void Calculate_SkipsDurationOfDealStillOpenAtWindowEnd()
         {
             //У незакрытой позиции номер бара закрытия остаётся int.MaxValue.

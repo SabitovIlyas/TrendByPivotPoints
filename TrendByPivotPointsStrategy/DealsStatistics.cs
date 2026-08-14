@@ -49,8 +49,18 @@ namespace TradingSystems
         /// <summary>
         /// Считает показатели по списку метасделок. Сделка с нулевым результатом
         /// не считается ни выигрышной, ни убыточной, но череду прерывает.
+        ///
+        /// <paramref name="rateToAccountCurrency"/> приводит результат сделки к валюте
+        /// счёта. Position.GetProfit() отдаёт прибыль в валюте инструмента, а кривая
+        /// капитала строится в валюте счёта: SecurityLab.GetProfit умножает сумму на
+        /// RateUSD. Без этого множителя денежные показатели сделок и «Прибыль, р.»
+        /// в одной строке отчёта оказывались в разных валютах — на долларовых
+        /// инструментах они расходились в 77 раз. Отношения (доля выигрышных,
+        /// профит-фактор, выигрыш к проигрышу) от масштаба не зависят и одинаковы
+        /// при любом курсе.
         /// </summary>
-        public static DealsStatistics Calculate(List<Position> metaDeals)
+        public static DealsStatistics Calculate(List<Position> metaDeals,
+            double rateToAccountCurrency = 1)
         {
             var statistics = new DealsStatistics();
             if (metaDeals == null || metaDeals.Count == 0)
@@ -65,7 +75,7 @@ namespace TradingSystems
 
             foreach (var deal in metaDeals)
             {
-                var profit = deal.GetProfit();
+                var profit = deal.GetProfit() * rateToAccountCurrency;
 
                 if (profit > 0)
                 {
