@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using TradingSystems;
 using TrendByPivotPointsStarter;
+using TSLab.DataSource;
+using Security = TradingSystems.Security;
 
 namespace TrendByPivotPointsOptimizator
 {
@@ -30,6 +33,31 @@ namespace TrendByPivotPointsOptimizator
         };
 
         public override List<ParameterDescriptor> Parameters => parameters;
+
+        /// <summary>
+        /// Делит риск между уровнями пирамиды. Каждый уровень считает контракты
+        /// сам и рискует полной долей, поэтому без деления четыре уровня дают до
+        /// четырёхкратного риска на сделку. Раньше это гасил общий стоп по границе
+        /// канала: он тянется за ценой и снижает риск ранних уровней. С выключенным
+        /// канальным выходом у каждого уровня остаётся свой неподвижный стоп, и
+        /// риски складываются полностью.
+        ///
+        /// Деление точно соответствует лимиту при выключенном канале и оставляет
+        /// запас при включённом — там суммарный риск падает ещё быстрее.
+        /// </summary>
+        public override SystemParameters CreateSystemParameters(
+            Dictionary<string, double> genes, Ticker ticker, PositionSide side,
+            Interval timeFrame, Settings settings)
+        {
+            var parameters = base.CreateSystemParameters(genes, ticker, side,
+                timeFrame, settings);
+
+            var levels = (int)Math.Round(genes["limitOpenedPositions"]);
+            if (levels > 1)
+                parameters.SetValue("riskValuePrcnt", settings.RiskValuePrcnt / levels);
+
+            return parameters;
+        }
 
         public override void Repair(Dictionary<string, double> genes)
         {

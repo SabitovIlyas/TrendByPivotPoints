@@ -101,6 +101,7 @@
     <Compile Include="GeneticAlgorithmUniversalTests.cs" />
     <Compile Include="DealsStatisticsTests.cs" />
     <Compile Include="MeanReversionRepairTests.cs" />
+    <Compile Include="DonchianPyramidRiskTests.cs" />
     <Compile Include="FitnessPenaltiesTests.cs" />
     <Compile Include="TournamentSelectionTests.cs" />
     <Compile Include="ReportWritingTests.cs" />
