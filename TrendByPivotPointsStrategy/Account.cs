@@ -21,9 +21,10 @@ namespace TradingSystems
 
         public virtual void Update(int barNumber)
         {
+            var accountStarted = PerfCounters.Start();
             this.barNumber = barNumber;
             foreach (var security in securities)
-            {                
+            {
                 if (lastLongPositionsClosed.TryGetValue(security, out Position lastLongPositionClosedPrevious))
                 {
                     var lastLongPositionClosed = security.GetLastClosedLongPosition(barNumber);
@@ -78,6 +79,8 @@ namespace TradingSystems
                     }
                 }
             }
+
+            PerfCounters.Stop(PerfCounters.AccountUpdate, accountStarted);
         }
 
         public abstract double GetMaxDrawDownPrcnt();        

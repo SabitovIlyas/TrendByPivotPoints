@@ -71,6 +71,9 @@ namespace TradingSystems
 
         public double GetMaxDrawDownPrcnt(int barNumber)
         {
+            var started = PerfCounters.Start();
+            try
+            {
             var maxCapital = initDeposit;
             var maxDrawdown = 0d;
 
@@ -87,6 +90,11 @@ namespace TradingSystems
             }
 
             return maxDrawdown;
+            }
+            finally
+            {
+                PerfCounters.Stop(PerfCounters.MaxDrawDown, started);
+            }
         }
 
         public override double GetMaxDrawDownPrcnt()

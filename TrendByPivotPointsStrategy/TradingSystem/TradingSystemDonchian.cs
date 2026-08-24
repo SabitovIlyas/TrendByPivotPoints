@@ -24,8 +24,11 @@ namespace TradingSystems
         private IList<double> atr;
         private double fixedAtr;
 
-        private LinkedList<double> highest;
-        private LinkedList<double> lowest;
+        //Список, а не связный список: ElementAt(barNumber) по LinkedList проходит
+        //его от головы, и на каждом баре это обходится всё дороже. У List тот же
+        //ElementAt берёт элемент по индексу.
+        private IList<double> highest;
+        private IList<double> lowest;
 
         private int slowDonchian;
         private int fastDonchian;
@@ -278,8 +281,8 @@ namespace TradingSystems
         public override void CalculateIndicators()
         {
             nonTradingPeriod = Math.Max(slowDonchian, atrPeriod);
-            highest = converter.GetHighest(converter.GetHighPrices(security).ToList(), slowDonchian);
-            lowest = converter.GetLowest(converter.GetLowPrices(security).ToList(), fastDonchian);
+            highest = converter.GetHighest(converter.GetHighPrices(security).ToList(), slowDonchian).ToList();
+            lowest = converter.GetLowest(converter.GetLowPrices(security).ToList(), fastDonchian).ToList();
             var candles = ConvertBarsForUsingInTsLabIndicators();
             atr = Series.AverageTrueRange(candles, atrPeriod);        
         }

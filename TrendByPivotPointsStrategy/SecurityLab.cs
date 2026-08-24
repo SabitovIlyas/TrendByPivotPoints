@@ -245,16 +245,24 @@ namespace TradingSystems
 
         public Position GetLastClosedPosition(int barNumber, PositionSide positionSide)
         {
-            var allPositions = mapping.GetPositions(barNumber);
+            var started = PerfCounters.Start();
+            try
+            {
+                var allPositions = mapping.GetPositions(barNumber);
 
-            var positions = (from position in allPositions
-                             where position.BarNumberClosePosition <= barNumber
-                             && position.PositionSide == positionSide
-                             select position.Position).ToList();
-            if (positions.Count == 0)
-                return null;
+                var positions = (from position in allPositions
+                                 where position.BarNumberClosePosition <= barNumber
+                                 && position.PositionSide == positionSide
+                                 select position.Position).ToList();
+                if (positions.Count == 0)
+                    return null;
 
-            return positions.Last();
+                return positions.Last();
+            }
+            finally
+            {
+                PerfCounters.Stop(PerfCounters.GetLastClosedPosition, started);
+            }
         }
 
         public bool IsRealTimeActualBar(int barNumber)
@@ -330,8 +338,17 @@ namespace TradingSystems
                 throw new NotImplementedException("Обновление BarNumber должно идти " +
                     "инкрементно на 1 бар");
 
+            var barStarted = PerfCounters.Start();
+
+            var mappingStarted = PerfCounters.Start();
             mapping.Update(barNumber);
+            PerfCounters.Stop(PerfCounters.MappingUpdate, mappingStarted);
+
+            var profitStarted = PerfCounters.Start();
             profits.Add(GetProfit(barNumber));
+            PerfCounters.Stop(PerfCounters.GetProfitTotal, profitStarted);
+
+            PerfCounters.Stop(PerfCounters.SecurityUpdate, barStarted);
         }
         
         public List<Order> GetActiveOrders(int barNumber)
@@ -355,6 +372,17 @@ namespace TradingSystems
         private List<double> profitCacheX = new List<double>();
         private int profitCacheXIndex = 0;
 
+        /// <summary>Накопленная прибыль уже закрытых позиций: она не меняется,
+        /// поэтому пересчитывать её на каждом баре незачем.</summary>
+        private double accountedClosedProfit = 0;
+
+        /// <summary>Сколько записей списка закрытых позиций уже учтено.</summary>
+        private int accountedClosedCount = 0;
+
+        /// <summary>Одна и та же позиция попадает в список закрытых несколько раз
+        /// (по числу закрывающих ордеров), поэтому учтённые запоминаются.</summary>
+        private readonly HashSet<Position> accountedClosedPositions = new HashSet<Position>();
+
         public double GetProfit(int barNumber)
         {
             if (profits.Count > barNumber)
@@ -365,7 +393,30 @@ namespace TradingSystems
 
             var profit = 0d;
 
+            var closedStarted = PerfCounters.Start();
             var closedPositionsMap = mapping.GetClosedPositions(barNumber);
+
+            //Прибыль закрытой позиции больше не меняется, поэтому на текущем баре
+            //достаточно прибавить только вновь закрытые. Раньше здесь на каждом
+            //баре заново суммировались все закрытые с начала прогона.
+            //Ретроспективные запросы (не текущий бар) считаются полностью: у них
+            //свой список закрытых позиций, и накопитель к нему не подходит.
+            if (barNumber == BarNumber && closedPositionsMap.Count >= accountedClosedCount)
+            {
+                for (var i = accountedClosedCount; i < closedPositionsMap.Count; i++)
+                {
+                    var closed = closedPositionsMap[i].Position;
+                    if (accountedClosedPositions.Add(closed))
+                        accountedClosedProfit += closed.GetProfit(barNumber);
+                }
+
+                accountedClosedCount = closedPositionsMap.Count;
+                profit = accountedClosedProfit;
+
+                PerfCounters.Stop(PerfCounters.GetProfitClosed, closedStarted);
+                return FinishProfit(profit, barNumber);
+            }
+
             var closedPositions = (from position in closedPositionsMap
                              select position.Position).ToList();
 
@@ -375,9 +426,22 @@ namespace TradingSystems
                 if (!uniqueClosedPositions1.Contains(position))
                     uniqueClosedPositions1.Add(position);            
             
-            foreach (var position in uniqueClosedPositions1)            
+            foreach (var position in uniqueClosedPositions1)
                 profit += position.GetProfit(barNumber);
 
+            PerfCounters.Stop(PerfCounters.GetProfitClosed, closedStarted);
+
+            return FinishProfit(profit, barNumber);
+        }
+
+        /// <summary>
+        /// Добавляет к прибыли закрытых позиций переоценку открытых и приводит
+        /// сумму к валюте счёта. Открытых позиций единицы, поэтому здесь всё
+        /// считается напрямую.
+        /// </summary>
+        private double FinishProfit(double profit, int barNumber)
+        {
+            var activeStarted = PerfCounters.Start();
             var activePositionsMap = mapping.GetActivePositions(barNumber);
             var activePositions = (from position in activePositionsMap
                                    select position.Position).ToList();
@@ -388,17 +452,11 @@ namespace TradingSystems
                     uniqueActivePositions.Add(position);
 
             foreach (var position in uniqueActivePositions)
-                profit += position.GetProfit(barNumber);            
-                        
-            profit = profit * RateUSD;
+                profit += position.GetProfit(barNumber);
 
-            //if (profitCacheXIndex == barNumber)
-            //{
-            //    profitCacheX.Add(profit);
-            //    profitCacheXIndex++;
-            //}
+            PerfCounters.Stop(PerfCounters.GetProfitActive, activeStarted);
 
-            return profit;
+            return profit * RateUSD;
         }
 
         public List<Position> GetDeals(int barNumber)

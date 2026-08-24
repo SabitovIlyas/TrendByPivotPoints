@@ -134,6 +134,7 @@
     <Compile Include="SecurityNull.cs" />
     <Compile Include="SecurityTSLab.cs" />
     <Compile Include="Security.cs" />
+    <Compile Include="PerfCounters.cs" />
     <Compile Include="SecurityLab.cs" />
     <Compile Include="StopLoss\IStopLoss.cs" />
     <Compile Include="StopLoss\StopLoss.cs" />

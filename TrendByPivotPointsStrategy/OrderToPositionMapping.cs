@@ -19,6 +19,14 @@ namespace TradingSystems
         private HashSet<OrderToPositionMap> closedPositions = new HashSet<OrderToPositionMap>();
         private HashSet<OrderToPositionMap> positions = new HashSet<OrderToPositionMap>();
 
+        /// <summary>Индекс первого ещё не отжившего ордера в maps: голову списка
+        /// при поиске активных ордеров можно пропускать.</summary>
+        private int firstAliveOrderIndex = 0;
+
+        /// <summary>Номер бара последнего поиска активных ордеров: указатель
+        /// двигается только вперёд.</summary>
+        private int lastActiveOrdersBar = -1;
+
         private List<List<OrderToPositionMap>> activePositionsPerBarNumber = new
             List<List<OrderToPositionMap>>();
         private List<List<OrderToPositionMap>> closedPositionsPerBarNumber = new
@@ -182,6 +190,8 @@ namespace TradingSystems
 
 
 
+                var snapshotsStarted = PerfCounters.Start();
+
                 var cPos = new List<OrderToPositionMap>();
                 foreach (var p in closedPositions)                
                     cPos.Add(p);                
@@ -196,6 +206,8 @@ namespace TradingSystems
                 foreach (var p in positions)
                     pos.Add(p);
                 positionsPerBarNumber.Add(pos);
+
+                PerfCounters.Stop(PerfCounters.MappingSnapshots, snapshotsStarted);
 
                 //var orders = new List<OrderToPositionMap>();
                 //foreach (var m in maps)
@@ -219,10 +231,39 @@ namespace TradingSystems
             //else
             //    return activeOrdersPerBarNumber[barNumber];
 
-            var activeOrders = (from order in maps
-                                where order.BarNumber <= barNumber
-                                && barNumber < order.BarNumberSinceOrderIsNotActive
-                                select order).ToList();
+            var started = PerfCounters.Start();
+            var activeOrders = new List<OrderToPositionMap>();
+
+            //Список ордеров только растёт и никогда не чистится, а номера баров в
+            //нём не убывают. Отжившие ордера копятся в начале: заявка, выставленная
+            //на бар N, к бару N+1 обычно уже отменена или исполнена. Поэтому голову
+            //списка можно пропускать — иначе каждый вызов перебирал бы всю историю
+            //ордеров, а вызывается он несколько раз на каждом баре.
+            //
+            //Указатель сдвигается только вперёд и только по непрерывной череде
+            //отживших, поэтому ни один ещё живой ордер пропущен быть не может.
+            //Запрос к прошлому бару (такое бывает в тестах) считается по-старому,
+            //полным перебором.
+            var scanFrom = 0;
+            if (barNumber >= lastActiveOrdersBar)
+            {
+                lastActiveOrdersBar = barNumber;
+                while (firstAliveOrderIndex < maps.Count &&
+                    barNumber >= maps[firstAliveOrderIndex].BarNumberSinceOrderIsNotActive)
+                    firstAliveOrderIndex++;
+
+                scanFrom = firstAliveOrderIndex;
+            }
+
+            for (var i = scanFrom; i < maps.Count; i++)
+            {
+                var order = maps[i];
+                if (order.BarNumber <= barNumber
+                    && barNumber < order.BarNumberSinceOrderIsNotActive)
+                    activeOrders.Add(order);
+            }
+
+            PerfCounters.Stop(PerfCounters.GetActiveOrders, started);
             return activeOrders;
         }      
 

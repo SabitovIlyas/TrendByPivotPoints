@@ -60,6 +60,7 @@ namespace TradingSystems
                         return;
                     }
 
+            var started = PerfCounters.Start();
             try
             {
                 this.barNumber = barNumber;
@@ -75,6 +76,10 @@ namespace TradingSystems
             catch (Exception e)
             {
                 Log("Исключение в методе Update(): " + e.ToString());
+            }
+            finally
+            {
+                PerfCounters.Stop(PerfCounters.TradingSystemUpdate, started);
             }
         }
 
