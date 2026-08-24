@@ -41,7 +41,7 @@ namespace TradingSystems.Tests
         }
 
         private SecurityLab Run(List<Bar> bars, int maxBarsInPosition = 0,
-            int useChannelExit = 1, double kAtrForStopLoss = 2)
+            int useChannelExit = 1, double kAtrForStopLoss = 2, int? useTimeExit = null)
         {
             var logger = new LoggerNull();
             var security = new SecurityLab(Currency.RUB, shares: 1, bars, logger,
@@ -60,6 +60,11 @@ namespace TradingSystems.Tests
             parameters.Add("limitOpenedPositions", 1);
             parameters.Add("maxBarsInPosition", maxBarsInPosition);
             parameters.Add("useChannelExit", useChannelExit);
+
+            //Не передаём вовсе, если не задан: так проверяется и старое правило,
+            //по которому признаком служила ненулевая длительность.
+            if (useTimeExit.HasValue)
+                parameters.Add("useTimeExit", useTimeExit.Value);
 
             parameters.Add("positionSide", 0);
             parameters.Add("isUSD", 0);
@@ -118,6 +123,60 @@ namespace TradingSystems.Tests
             Assert.AreEqual(1, deals.Count);
             Assert.AreEqual(int.MaxValue, deals[0].BarNumberClosePosition,
                 "Срок не вышел — позиция остаётся открытой.");
+        }
+
+        [TestMethod()]
+        public void TimeExitSwitchOff_IgnoresDurationEvenWhenItIsSet()
+        {
+            //Переключатель главнее длительности: при выключенном выходе срок не
+            //имеет значения.
+            var bars = CreateBreakoutThenSteadyRise(risingBars: 12);
+
+            var security = Run(bars, maxBarsInPosition: 5, useTimeExit: 0);
+
+            var deals = security.GetDeals();
+            Assert.AreEqual(1, deals.Count);
+            Assert.AreEqual(int.MaxValue, deals[0].BarNumberClosePosition);
+        }
+
+        [TestMethod()]
+        public void TimeExitSwitchOn_ClosesPositionByDuration()
+        {
+            var bars = CreateBreakoutThenSteadyRise(risingBars: 12);
+
+            var openBar = Run(bars, useTimeExit: 0).GetDeals()[0].BarNumberOpenPosition;
+            var deal = Run(bars, maxBarsInPosition: 5, useTimeExit: 1).GetDeals()[0];
+
+            Assert.AreEqual(openBar + 6, deal.BarNumberClosePosition);
+            StringAssert.Contains(deal.SignalNameForClosePosition, "время");
+        }
+
+        [TestMethod()]
+        public void TimeExitSwitchOn_WithZeroDurationClosesNoEarlierThanNextBar()
+        {
+            //Нулевая длительность при включённом выходе не должна закрывать позицию
+            //на том же баре, на котором она открылась.
+            var bars = CreateBreakoutThenSteadyRise(risingBars: 12);
+
+            var openBar = Run(bars, useTimeExit: 0).GetDeals()[0].BarNumberOpenPosition;
+            var deal = Run(bars, maxBarsInPosition: 0, useTimeExit: 1).GetDeals()[0];
+
+            Assert.IsTrue(deal.BarNumberClosePosition > deal.BarNumberOpenPosition,
+                "Позиция не может закрыться на баре открытия.");
+            Assert.AreEqual(openBar + 2, deal.BarNumberClosePosition);
+        }
+
+        [TestMethod()]
+        public void WithoutSwitch_NonZeroDurationStillWorks()
+        {
+            //Старые файлы настроек переключателя не содержат: признаком включения
+            //служит ненулевая длительность.
+            var bars = CreateBreakoutThenSteadyRise(risingBars: 12);
+
+            var openBar = Run(bars, maxBarsInPosition: 0).GetDeals()[0].BarNumberOpenPosition;
+            var deal = Run(bars, maxBarsInPosition: 5).GetDeals()[0];
+
+            Assert.AreEqual(openBar + 6, deal.BarNumberClosePosition);
         }
 
         [TestMethod()]

@@ -23,6 +23,7 @@ namespace TrendByPivotPointsOptimizator.Tests
                 ["limitOpenedPositions"] = levels,
                 ["kAtrForOpenPosition"] = 0.5,
                 ["kAtrForStopLoss"] = 2,
+                ["useTimeExit"] = 1,
                 ["maxBarsInPosition"] = 200,
                 ["useChannelExit"] = 0,
             };

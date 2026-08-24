@@ -37,12 +37,20 @@ namespace TradingSystems
         private int digitsAfterPoint = 0;
 
         /// <summary>
-        /// Через сколько баров позиция закрывается по рынку. 0 — не закрывать по
-        /// времени. Замеры по Si показывают, что преимущество пробоя канала
-        /// проявляется на 100–400 часах, а выход по каналу срабатывает заметно
-        /// раньше и до этого момента не доживает.
+        /// Через сколько баров позиция закрывается по рынку. Замеры по Si
+        /// показывают, что преимущество пробоя канала проявляется на 100–400 часах,
+        /// а выход по каналу срабатывает заметно раньше и до этого момента позиция
+        /// не доживает.
         /// </summary>
         private int maxBarsInPosition;
+
+        /// <summary>
+        /// Включён ли выход по времени. Отдельный переключатель, а не нулевая
+        /// длительность: на сетке из восьмисот узлов вариант «выключено» почти
+        /// никогда не попадал бы в стартовую популяцию, а это базовое поведение,
+        /// с которым сравнивают остальные.
+        /// </summary>
+        private bool useTimeExit;
 
         /// <summary>
         /// Держать ли стоп по противоположной границе канала. Он тянется за ценой
@@ -174,7 +182,7 @@ namespace TradingSystems
                 //Выход по времени идёт раньше стопа: если срок вышел, стоп на
                 //следующий бар не выставляем, позиция закрывается по рынку.
                 var barsInPosition = barNumber - position.BarNumberOpenPosition;
-                if (maxBarsInPosition > 0 && barsInPosition >= maxBarsInPosition)
+                if (useTimeExit && barsInPosition >= maxBarsInPosition)
                 {
                     Log("Позиция держится {0} баров при пределе {1}. Закрываем по рынку.",
                         barsInPosition, maxBarsInPosition);
@@ -240,6 +248,17 @@ namespace TradingSystems
             useChannelExit = !systemParameters.TryGetValue("useChannelExit",
                 out object channelExit) || (int)channelExit == 1;
 
+            //Переключатель появился позже самой длительности: если его не передали,
+            //признаком служит ненулевая длительность, как было раньше.
+            useTimeExit = systemParameters.TryGetValue("useTimeExit", out object timeExit)
+                ? (int)timeExit == 1
+                : maxBarsInPosition > 0;
+
+            //Нулевая длительность при включённом выходе закрывала бы позицию на том
+            //же баре, на котором она открылась.
+            if (useTimeExit && maxBarsInPosition < 1)
+                maxBarsInPosition = 1;
+
             var pSide = (int)systemParameters.GetValue("positionSide");
 
             if (pSide == 0)
@@ -250,9 +269,9 @@ namespace TradingSystems
                 positionSide = PositionSide.Null;
 
             parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; " +
-                "kAtr: {2}; atrPeriod: {3}; maxBarsInPosition: {4}; useChannelExit: {5}",
-                slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod, maxBarsInPosition,
-                useChannelExit);
+                "kAtr: {2}; atrPeriod: {3}; useTimeExit: {4}; maxBarsInPosition: {5}; " +
+                "useChannelExit: {6}", slowDonchian, fastDonchian, kAtrForStopLoss,
+                atrPeriod, useTimeExit, maxBarsInPosition, useChannelExit);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
         

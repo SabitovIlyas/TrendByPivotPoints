@@ -23,9 +23,14 @@ namespace TrendByPivotPointsOptimizator
             new ParameterDescriptor("limitOpenedPositions", 1, 4),
             new ParameterDescriptor("kAtrForOpenPosition", 0.5, 3.0, step: 0.5, isInteger: false),
             new ParameterDescriptor("kAtrForStopLoss", 0.5, 3.0, step: 0.5, isInteger: false),
-            //Выход по времени: 0 — не закрывать по времени. Верхняя граница взята
-            //с запасом к замеренному диапазону преимущества (100–400 баров).
-            new ParameterDescriptor("maxBarsInPosition", 0, 800, step: 10),
+            //Выход по времени — отдельным переключателем, а не нулевой
+            //длительностью: на сетке из восьмисот узлов «выключено» попадало бы в
+            //стартовую популяцию с вероятностью 0,1%, а это базовое поведение,
+            //с которым сравнивают остальные.
+            new ParameterDescriptor("useTimeExit", 0, 1, isCategorical: true),
+            //Длительность удержания. Верхняя граница взята с запасом к замеренному
+            //диапазону преимущества (100–400 баров).
+            new ParameterDescriptor("maxBarsInPosition", 1, 800),
             //Канальный выход тянется за ценой и закрывает позицию раньше, чем
             //преимущество успевает проявиться; выключенный оставляет только стоп
             //по ATR, отвечающий за риск.
