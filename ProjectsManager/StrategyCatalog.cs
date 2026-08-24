@@ -21,18 +21,22 @@ namespace ProjectsManager
             switch (strategy)
             {
                 case "MeanReversion":
-                    //Пороги RSI зависят от стороны: у лонга и шорта свои независимые диапазоны.
-                    var isShort = side == "Short";
+                    //Пороги RSI ищутся в общем диапазоне для обеих сторон: их взаимный
+                    //порядок наводит Repair в MeanReversionStrategyDefinition.
                     return new List<ParameterRangeInfo>
                     {
                         new("maPeriod", 50, 250, 1),
                         new("rsiEntryPeriod", 5, 50, 1),
                         new("rsiExitPeriod", 5, 50, 1),
                         new("atrPeriod", 5, 50, 1),
-                        new("rsiEntryLevel", isShort ? 50 : 5, isShort ? 95 : 50, 1),
-                        new("rsiExitLevel", isShort ? 5 : 50, isShort ? 50 : 95, 1),
+                        new("rsiEntryLevel", 5, 95, 1),
+                        new("rsiExitLevel", 5, 95, 1),
                         new("atrMultiplier", 0.5, 3.0, 0.5),
                         new("useTrailingStop", 0, 1, 1),
+                        //0 — уровень, 1 — разворот, 2 — вход в зону экстремума.
+                        new("rsiEntryMode", 0, 2, 1),
+                        //0 — выключен, 1 — цель достигнута, 2 — движение угасло, 3 — уровень.
+                        new("rsiExitMode", 0, 3, 1),
                     };
                 case "DonchianUniversal":
                     return new List<ParameterRangeInfo>

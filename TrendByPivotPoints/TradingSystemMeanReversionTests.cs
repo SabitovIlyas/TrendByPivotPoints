@@ -40,7 +40,8 @@ namespace TradingSystems.Tests
         }
 
         private SecurityLab Run(List<Bar> bars, int positionSide,
-            double atrMultiplier = 3.0, int useTrailingStop = 0, int rsiExitLevel = 50)
+            double atrMultiplier = 3.0, int useTrailingStop = 0, int rsiExitLevel = 50,
+            int? rsiEntryMode = null, int? rsiExitMode = null)
         {
             var logger = new LoggerNull();
             var security = new SecurityLab(Currency.RUB, shares: 1, bars, logger,
@@ -59,6 +60,13 @@ namespace TradingSystems.Tests
             parameters.Add("rsiExitLevel", rsiExitLevel);
             parameters.Add("atrMultiplier", atrMultiplier);
             parameters.Add("useTrailingStop", useTrailingStop);
+
+            //Не передаём вовсе, если режим не задан: так проверяется и то, что
+            //стратегия работает по-старому со старым набором параметров.
+            if (rsiEntryMode.HasValue)
+                parameters.Add("rsiEntryMode", rsiEntryMode.Value);
+            if (rsiExitMode.HasValue)
+                parameters.Add("rsiExitMode", rsiExitMode.Value);
 
             parameters.Add("positionSide", positionSide);
             parameters.Add("isUSD", 0);
@@ -203,6 +211,113 @@ namespace TradingSystems.Tests
             var closedDeal = deals.Find(d => d.BarNumberOpenPosition == 22);
             Assert.IsNotNull(closedDeal);
             Assert.AreEqual(26, closedDeal.BarNumberClosePosition);
+        }
+
+        //Бары теста ClosesLong_ByRsiCross: вход на баре № 22 и резкий рост, на
+        //котором RSI пересекает порог выхода 50 снизу вверх.
+        private List<Bar> CreateEntryThenRsiSpike()
+        {
+            var bars = CreateUptrendWithDip();
+            AddBar(bars, 132, 152, 131, 151);
+            AddBar(bars, 151, 152, 149, 150);
+            AddBar(bars, 150, 151, 148, 149);
+            return bars;
+        }
+
+        [TestMethod()]
+        public void ExitModeOff_KeepsPositionOpenWhenRsiCrossesExitLevel()
+        {
+            //Режим «выход по RSI выключен»: закрывать позицию может только стоп.
+            //На золоте в лонг оптимизатор добивался того же самого окольным путём —
+            //задирал порог выхода в недостижимую зону.
+            var bars = CreateEntryThenRsiSpike();
+
+            var security = Run(bars, positionSide: 0,
+                rsiExitMode: TradingSystemMeanReversion.ExitModeOff);
+
+            var position = security.GetLastActiveForSignal("LE Вход №1", bars.Count - 1);
+            Assert.IsNotNull(position, "Выход по RSI выключен — позиция должна остаться открытой.");
+            Assert.AreEqual(22, position.BarNumberOpenPosition);
+            Assert.AreEqual(int.MaxValue, position.BarNumberClosePosition);
+        }
+
+        [TestMethod()]
+        public void ExitModeTargetReached_IsTheDefaultBehaviour()
+        {
+            //Тот же набор баров без указания режима и с явным режимом 1 должен
+            //давать один и тот же результат.
+            var bars = CreateEntryThenRsiSpike();
+
+            var byDefault = Run(bars, positionSide: 0);
+            var explicitMode = Run(bars, positionSide: 0,
+                rsiExitMode: TradingSystemMeanReversion.ExitModeTargetReached);
+
+            var dealByDefault = byDefault.GetDeals()[0];
+            var dealExplicit = explicitMode.GetDeals()[0];
+
+            Assert.AreEqual(dealByDefault.BarNumberClosePosition,
+                dealExplicit.BarNumberClosePosition);
+            Assert.AreEqual(23, dealExplicit.BarNumberClosePosition);
+            Assert.AreEqual("LXS Выход №1 RSI", dealExplicit.SignalNameForClosePosition);
+        }
+
+        [TestMethod()]
+        public void ExitModeLevel_ClosesPositionWithoutRequiringCrossing()
+        {
+            //Режим «уровень» не требует пересечения: единственный, которому
+            //безразлично, где RSI находился в момент входа.
+            var bars = CreateEntryThenRsiSpike();
+
+            var security = Run(bars, positionSide: 0,
+                rsiExitMode: TradingSystemMeanReversion.ExitModeLevel);
+
+            var deals = security.GetDeals();
+            Assert.AreEqual(1, deals.Count);
+            Assert.AreEqual(23, deals[0].BarNumberClosePosition);
+            Assert.AreEqual("LXS Выход №1 RSI", deals[0].SignalNameForClosePosition);
+        }
+
+        [TestMethod()]
+        public void EntryModeReversal_WaitsForRsiToTurnUp()
+        {
+            //Провал на баре № 21 роняет RSI(2) ниже порога 50. Режим «уровень»
+            //входит сразу, режим «разворот» ждёт возврата RSI выше порога, который
+            //случается на следующем баре.
+            var bars = CreateUptrendWithDip();
+            AddBar(bars, 132, 141, 131, 140);   //бар № 22: отскок, RSI снова выше 50
+            AddBar(bars, 140, 142, 139, 141);
+            AddBar(bars, 141, 143, 140, 142);
+
+            var byLevel = Run(bars, positionSide: 0, rsiExitLevel: 95,
+                rsiEntryMode: TradingSystemMeanReversion.EntryModeLevel);
+            var byReversal = Run(bars, positionSide: 0, rsiExitLevel: 95,
+                rsiEntryMode: TradingSystemMeanReversion.EntryModeReversal);
+
+            var positionByLevel = byLevel.GetDeals()[0];
+            var positionByReversal = byReversal.GetDeals()[0];
+
+            Assert.AreEqual(22, positionByLevel.BarNumberOpenPosition);
+            Assert.AreEqual(23, positionByReversal.BarNumberOpenPosition,
+                "Разворот подтверждается на бар позже, чем срабатывает уровень.");
+        }
+
+        [TestMethod()]
+        public void EntryModeEnterZone_EntersOnTheDipBar()
+        {
+            //Режим «вход в зону»: пересечение порога сверху вниз. Провал на баре
+            //№ 21 — как раз такое пересечение, вход на открытии бара № 22.
+            var bars = CreateUptrendWithDip();
+            AddBar(bars, 131, 132, 129, 130);
+            AddBar(bars, 129, 130, 127, 128);
+            AddBar(bars, 127, 128, 125, 126);
+
+            var security = Run(bars, positionSide: 0,
+                rsiEntryMode: TradingSystemMeanReversion.EntryModeEnterZone);
+
+            var position = security.GetLastActiveForSignal("LE Вход №1", bars.Count - 1);
+            Assert.IsNotNull(position);
+            Assert.AreEqual(22, position.BarNumberOpenPosition);
+            Assert.AreEqual(131, position.EntryPrice);
         }
     }
 }

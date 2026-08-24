@@ -30,8 +30,36 @@ namespace TradingSystems
         private int atrPeriod;
         private int rsiEntryLevel;
         private int rsiExitLevel;
+        private int rsiEntryMode;
+        private int rsiExitMode;
         private double atrMultiplier;
         private bool useTrailingStop;
+
+        /// <summary>Вход: RSI по одну сторону от уровня (прежнее поведение).</summary>
+        public const int EntryModeLevel = 0;
+
+        /// <summary>Вход: RSI уходит от экстремума — лонг пересекает уровень снизу
+        /// вверх, шорт сверху вниз. Разворот подтверждён.</summary>
+        public const int EntryModeReversal = 1;
+
+        /// <summary>Вход: RSI входит в зону экстремума — лонг пересекает уровень
+        /// сверху вниз, шорт снизу вверх.</summary>
+        public const int EntryModeEnterZone = 2;
+
+        /// <summary>Выход по RSI выключен: закрывает только стоп.</summary>
+        public const int ExitModeOff = 0;
+
+        /// <summary>Выход: RSI дошёл до цели — лонг пересекает уровень снизу вверх,
+        /// шорт сверху вниз (прежнее поведение).</summary>
+        public const int ExitModeTargetReached = 1;
+
+        /// <summary>Выход: движение угасло — лонг пересекает уровень сверху вниз,
+        /// шорт снизу вверх.</summary>
+        public const int ExitModeFaded = 2;
+
+        /// <summary>Выход: RSI просто по нужную сторону уровня, без пересечения.
+        /// Единственный режим, которому безразлично состояние на входе.</summary>
+        public const int ExitModeLevel = 3;
 
         private double fixedAtr;
         private double trailingStopPrice;
@@ -57,6 +85,10 @@ namespace TradingSystems
             atrMultiplier = (double)systemParameters.GetValue("atrMultiplier");
             useTrailingStop = (int)systemParameters.GetValue("useTrailingStop") == 1;
 
+            //Режимы появились позже уровней: без них работаем как раньше.
+            rsiEntryMode = GetIntOrDefault(systemParameters, "rsiEntryMode", EntryModeLevel);
+            rsiExitMode = GetIntOrDefault(systemParameters, "rsiExitMode", ExitModeTargetReached);
+
             //Одновременно открыта только одна позиция, пирамидирование не используется.
             limitOpenedPositions = 1;
 
@@ -70,9 +102,10 @@ namespace TradingSystems
 
             parametersCombination = string.Format("maPeriod: {0}; rsiEntryPeriod: {1}; " +
                 "rsiExitPeriod: {2}; atrPeriod: {3}; rsiEntryLevel: {4}; rsiExitLevel: {5}; " +
-                "atrMultiplier: {6}; useTrailingStop: {7}", maPeriod, rsiEntryPeriod,
+                "atrMultiplier: {6}; useTrailingStop: {7}; rsiEntryMode: {8}; " +
+                "rsiExitMode: {9}", maPeriod, rsiEntryPeriod,
                 rsiExitPeriod, atrPeriod, rsiEntryLevel, rsiExitLevel, atrMultiplier,
-                useTrailingStop);
+                useTrailingStop, rsiEntryMode, rsiExitMode);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name,
                 parametersCombination, security.Name, positionSide);
         }
@@ -108,19 +141,15 @@ namespace TradingSystems
             var close = security.GetBarClose(barNumber);
             var rsi = rsiEntry[barNumber];
 
-            //Лонг: RSI ниже порога (перепроданность); шорт: RSI выше порога
-            //(перекупленность). Пороги сторон независимы.
-            bool isRsiExtreme;
-            if (positionSide == PositionSide.Long)
-                isRsiExtreme = rsi < rsiEntryLevel;
-            else
-                isRsiExtreme = rsi > rsiEntryLevel;
+            var rsiPrevious = rsiEntry[barNumber - 1];
+            var isRsiExtreme = IsEntrySignal(rsiPrevious, rsi);
 
             //Фильтр тренда: лонг — закрытие выше SMA, шорт — ниже (через converter).
             var isTrendFilterPassed = converter.IsGreater(close, sma[barNumber]);
 
-            Log("RSI = {0} (порог {1}); закрытие {2} {3} SMA = {4}", rsi, rsiEntryLevel,
-                close, converter.Above, sma[barNumber]);
+            Log("RSI = {0} (предыдущий {1}, порог {2}, режим входа {3}); закрытие {4} {5} " +
+                "SMA = {6}", rsi, rsiPrevious, rsiEntryLevel, rsiEntryMode, close,
+                converter.Above, sma[barNumber]);
 
             if (!isRsiExtreme || !isTrendFilterPassed)
                 return;
@@ -147,6 +176,68 @@ namespace TradingSystems
                     signalNameForOpenPosition + notes);
         }
 
+        private static int GetIntOrDefault(SystemParameters systemParameters, string key,
+            int defaultValue)
+        {
+            return systemParameters.TryGetValue(key, out object value)
+                ? (int)value : defaultValue;
+        }
+
+        /// <summary>
+        /// Сигнал входа по RSI. Режимы описаны зеркально: то, что для лонга «вверх»,
+        /// для шорта «вниз», поэтому у обеих сторон один и тот же смысл режима.
+        /// </summary>
+        private bool IsEntrySignal(double previous, double current)
+        {
+            var isLong = positionSide == PositionSide.Long;
+
+            switch (rsiEntryMode)
+            {
+                case EntryModeReversal:
+                    return isLong
+                        ? previous <= rsiEntryLevel && current > rsiEntryLevel
+                        : previous >= rsiEntryLevel && current < rsiEntryLevel;
+
+                case EntryModeEnterZone:
+                    return isLong
+                        ? previous >= rsiEntryLevel && current < rsiEntryLevel
+                        : previous <= rsiEntryLevel && current > rsiEntryLevel;
+
+                default:
+                    return isLong ? current < rsiEntryLevel : current > rsiEntryLevel;
+            }
+        }
+
+        /// <summary>
+        /// Сигнал выхода по RSI. Режим ExitModeOff оставляет позицию стопу: это не
+        /// поломка, а осознанный вариант — на золоте в лонг оптимизатор шестнадцать
+        /// раз подряд задирал порог выхода в недостижимую зону, добиваясь того же
+        /// самого окольным путём.
+        /// </summary>
+        private bool IsExitSignal(double previous, double current)
+        {
+            var isLong = positionSide == PositionSide.Long;
+
+            switch (rsiExitMode)
+            {
+                case ExitModeOff:
+                    return false;
+
+                case ExitModeFaded:
+                    return isLong
+                        ? previous > rsiExitLevel && current <= rsiExitLevel
+                        : previous < rsiExitLevel && current >= rsiExitLevel;
+
+                case ExitModeLevel:
+                    return isLong ? current >= rsiExitLevel : current <= rsiExitLevel;
+
+                default:
+                    return isLong
+                        ? previous < rsiExitLevel && current >= rsiExitLevel
+                        : previous > rsiExitLevel && current <= rsiExitLevel;
+            }
+        }
+
         private double GetStopPriceFromEntry(double entryPrice)
         {
             return converter.Minus(entryPrice, Math.Round(atrMultiplier * fixedAtr,
@@ -157,22 +248,14 @@ namespace TradingSystems
         {
             var position = GetOpenedPosition(notes);
 
-            //Выход по RSI: лонг — пересечение порога снизу вверх,
-            //шорт — пересечение порога сверху вниз.
             var rsiPrevious = rsiExit[barNumber - 1];
             var rsiCurrent = rsiExit[barNumber];
-            bool isRsiCrossedExitLevel;
-            if (positionSide == PositionSide.Long)
-                isRsiCrossedExitLevel = rsiPrevious < rsiExitLevel &&
-                    rsiCurrent >= rsiExitLevel;
-            else
-                isRsiCrossedExitLevel = rsiPrevious > rsiExitLevel &&
-                    rsiCurrent <= rsiExitLevel;
+            var isRsiCrossedExitLevel = IsExitSignal(rsiPrevious, rsiCurrent);
 
             if (isRsiCrossedExitLevel)
             {
-                Log("RSI пересёк порог выхода {0} ({1} -> {2}). Закрываем " +
-                    "позицию по рынку.", rsiExitLevel, rsiPrevious, rsiCurrent);
+                Log("Сигнал выхода по RSI: порог {0}, режим {1} ({2} -> {3}). Закрываем " +
+                    "позицию по рынку.", rsiExitLevel, rsiExitMode, rsiPrevious, rsiCurrent);
                 security.CloseAtMarket(barNumber + 1, signalNameForClosePosition,
                     " Выход №1 RSI", position);
                 return;
