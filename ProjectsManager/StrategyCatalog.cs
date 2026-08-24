@@ -47,6 +47,10 @@ namespace ProjectsManager
                         new("limitOpenedPositions", 1, 4, 1),
                         new("kAtrForOpenPosition", 0.5, 3.0, 0.5),
                         new("kAtrForStopLoss", 0.5, 3.0, 0.5),
+                        //0 — не закрывать по времени.
+                        new("maxBarsInPosition", 0, 800, 10),
+                        //0 — выход только по ATR-стопу, без канального.
+                        new("useChannelExit", 0, 1, 1),
                     };
                 default:
                     return new List<ParameterRangeInfo>();

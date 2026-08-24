@@ -36,6 +36,21 @@ namespace TradingSystems
         private double firstPositionEntryPrice;
         private int digitsAfterPoint = 0;
 
+        /// <summary>
+        /// Через сколько баров позиция закрывается по рынку. 0 — не закрывать по
+        /// времени. Замеры по Si показывают, что преимущество пробоя канала
+        /// проявляется на 100–400 часах, а выход по каналу срабатывает заметно
+        /// раньше и до этого момента не доживает.
+        /// </summary>
+        private int maxBarsInPosition;
+
+        /// <summary>
+        /// Держать ли стоп по противоположной границе канала. Он тянется за ценой
+        /// и закрывает позицию раньше времени; при выключенном канале остаётся
+        /// только стоп по ATR, который отвечает за риск и никуда не девается.
+        /// </summary>
+        private bool useChannelExit = true;
+
         public TradingSystemDonchian(List<Security> securities,
             ContractsManager contractsManager, Indicators indicators, Context context,
             Logger logger, List<NonTradingPeriod> nonTradingPeriods = null):
@@ -67,6 +82,13 @@ namespace TradingSystems
             else
                 stopPriceAtr = converter.Minus(highest.ElementAt(barNumber), Math.Round(kAtrForStopLoss *
                     fixedAtr, digitsAfterPoint));
+            //Без канального выхода позицию держит только стоп по ATR: он дальше от
+            //цены, поэтому позиция доживает до выхода по времени. Отключать канал
+            //можно лишь когда ATR-стоп существует: при нулевом множителе он равен
+            //цене входа и выбил бы позицию сразу.
+            if (!useChannelExit && kAtrForStopLoss > 0)
+                return stopPriceAtr;
+
             var stopPriceDonchian = lowest.ElementAt(barNumber);
             if (kAtrForStopLoss > 0)
                 return converter.Maximum(stopPriceAtr, stopPriceDonchian);
@@ -146,8 +168,26 @@ namespace TradingSystems
 
                 var position = GetOpenedPosition(notes);
                 Log("{0} позиция открыта.", converter.Long);
+
+                var exitNotes = " Выход №" + (positionNumber + 1);
+
+                //Выход по времени идёт раньше стопа: если срок вышел, стоп на
+                //следующий бар не выставляем, позиция закрывается по рынку.
+                var barsInPosition = barNumber - position.BarNumberOpenPosition;
+                if (maxBarsInPosition > 0 && barsInPosition >= maxBarsInPosition)
+                {
+                    Log("Позиция держится {0} баров при пределе {1}. Закрываем по рынку.",
+                        barsInPosition, maxBarsInPosition);
+                    security.CloseAtMarket(barNumber + 1, signalNameForClosePosition,
+                        exitNotes + " время", position);
+
+                    if (positionNumber == 0)
+                        firstPositionEntryPrice = position.EntryPrice;
+                    return;
+                }
+
                 stopPrice = GetStopPrice(notes);
-                notes = " Выход №" + (positionNumber + 1);
+                notes = exitNotes;
                 security.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition, notes, position);
 
                 if (positionNumber == 0)
@@ -192,6 +232,14 @@ namespace TradingSystems
             kAtrForOpenPosition = (double)systemParameters.GetValue("kAtrForOpenPosition");
             atrPeriod = (int)systemParameters.GetValue("atrPeriod");
             limitOpenedPositions = (int)systemParameters.GetValue("limitOpenedPositions");
+
+            //Появились позже: без них система работает как раньше — держит позицию
+            //до стопа, канальный выход включён.
+            maxBarsInPosition = systemParameters.TryGetValue("maxBarsInPosition",
+                out object maxBars) ? (int)maxBars : 0;
+            useChannelExit = !systemParameters.TryGetValue("useChannelExit",
+                out object channelExit) || (int)channelExit == 1;
+
             var pSide = (int)systemParameters.GetValue("positionSide");
 
             if (pSide == 0)
@@ -201,7 +249,10 @@ namespace TradingSystems
             else
                 positionSide = PositionSide.Null;
 
-            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; kAtr: {2}; atrPeriod: {3}", slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod);
+            parametersCombination = string.Format("slowDonchian: {0}; fastDonchian: {1}; " +
+                "kAtr: {2}; atrPeriod: {3}; maxBarsInPosition: {4}; useChannelExit: {5}",
+                slowDonchian, fastDonchian, kAtrForStopLoss, atrPeriod, maxBarsInPosition,
+                useChannelExit);
             tradingSystemDescription = string.Format("{0}/{1}/{2}/{3}/", name, parametersCombination, security.Name, positionSide);
         }
         
