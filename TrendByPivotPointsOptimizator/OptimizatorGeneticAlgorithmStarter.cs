@@ -522,6 +522,12 @@ namespace TrendByPivotPointsOptimizator
                     PrintToTxtFile(bestPopulationLast, definition, logger,
                         Path.Combine(state.ResultsFolder, reportName + "_params.csv"));
 
+                    //Итоговый прогон идёт по всей истории без перезапусков счёта —
+                    //это единственное место, где кривая капитала сквозная.
+                    if (!string.IsNullOrEmpty(settings.EquityCurveFile))
+                        EquityCurveWriter.Write(bestPopulationLast.First(),
+                            settings.EquityCurveFile, logger);
+
                     state.BestGenes = bestPopulationLast.First().Genes;
                     state.FinalBackwardResult = tmpRes;
                     state.Stage = OptimizationCheckpoint.StageForward;
@@ -1120,6 +1126,7 @@ namespace TrendByPivotPointsOptimizator
                     case "SecuritiesFile": settings.SecuritiesFile = value; break;
                     case "SeedGenesFile": settings.SeedGenesFile = value; break;
                     case "LogFile": settings.LogFile = value; break;
+                    case "EquityCurveFile": settings.EquityCurveFile = value; break;
                     case "TrimHistory": settings.TrimHistory = ParseBool(value); break;
                     case "Range":
                         //Формат: Range:имя:мин:макс:шаг
@@ -1200,6 +1207,11 @@ namespace TrendByPivotPointsOptimizator
                         CommissionRate = double.Parse(splStr[3]),
                         IsUSD = int.Parse(splStr[4]) == 1,
                         RateUSD = double.Parse(splStr[5]),
+
+                        //Седьмое поле появилось позже: файлы без него читаются
+                        //как раньше, с нулевым проскальзыванием.
+                        SlippagePerSide = splStr.Length > 6
+                            ? double.Parse(splStr[6]) : 0,
                     });
                 }
                 catch (Exception ex)
@@ -1280,7 +1292,8 @@ namespace TrendByPivotPointsOptimizator
             }
 
             var ticker = new Ticker(data.Name, data.Currency, data.Shares, bars,
-                logger, data.CommissionRate, data.IsUSD, data.RateUSD);
+                logger, data.CommissionRate, data.IsUSD, data.RateUSD,
+                data.SlippagePerSide);
 
             return ticker;
         }

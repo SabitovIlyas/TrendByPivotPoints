@@ -281,18 +281,22 @@ namespace TradingSystems
         public override void CalculateIndicators()
         {
             nonTradingPeriod = Math.Max(slowDonchian, atrPeriod);
-            highest = converter.GetHighest(converter.GetHighPrices(security).ToList(), slowDonchian).ToList();
-            lowest = converter.GetLowest(converter.GetLowPrices(security).ToList(), fastDonchian).ToList();
-            var candles = ConvertBarsForUsingInTsLabIndicators();
-            atr = Series.AverageTrueRange(candles, atrPeriod);        
-        }
 
-        private IReadOnlyList<IDataBar> ConvertBarsForUsingInTsLabIndicators()
-        {
-            var candles = new ReadAndAddList<IDataBar>();
-            foreach (var bar in security.Bars)            
-                candles.Add(bar);
-            return candles;
+            //Ряды берём из кэша окна: оптимизатор гоняет по одному и тому же окну
+            //сотни наборов параметров, и раньше каждый прогон считал их заново.
+            //Стороне сделки соответствует своя пара границ канала: для шорта верх и
+            //низ меняются местами — раньше это делал converter, теперь выбор явный.
+            var series = BarSeriesCache.For(security.Bars);
+
+            highest = converter.IsConverted
+                ? series.LowestOfLows(slowDonchian)
+                : series.HighestOfHighs(slowDonchian);
+
+            lowest = converter.IsConverted
+                ? series.HighestOfHighs(fastDonchian)
+                : series.LowestOfLows(fastDonchian);
+
+            atr = series.AverageTrueRange(atrPeriod);
         }
 
         public void Paint(Context context)

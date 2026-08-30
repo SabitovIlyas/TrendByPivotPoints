@@ -317,6 +317,9 @@ namespace TradingSystems
 
         public double CommissionRate => throw new NotImplementedException();
 
+        /// <summary>В боевой торговле проскальзывание не моделируют — оно случается.</summary>
+        public double SlippagePerSide => 0;
+
         List<Bar> Security.Bars { get => Bars; set => throw new NotImplementedException(); }
 
         public Security GetClone()

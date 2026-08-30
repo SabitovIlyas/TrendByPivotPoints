@@ -15,9 +15,13 @@ namespace TrendByPivotPointsOptimizator
         public Logger Logger { get; private set; }
         public List<Bar> InitBars { get; }
 
-        public Ticker(string name, Currency currency, double shares, List<Bar> bars, Logger logger, 
-            double commissionRate, bool isUSD, double rateUSD)
+        /// <summary>Проскальзывание на сторону, в рублях.</summary>
+        public double SlippagePerSide { get; private set; }
+
+        public Ticker(string name, Currency currency, double shares, List<Bar> bars, Logger logger,
+            double commissionRate, bool isUSD, double rateUSD, double slippagePerSide = 0)
         {
+            SlippagePerSide = slippagePerSide;
             Name = name;
             Currency = currency;
             Shares = shares;

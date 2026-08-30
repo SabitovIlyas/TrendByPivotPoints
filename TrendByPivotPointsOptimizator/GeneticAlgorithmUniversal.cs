@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -190,6 +191,8 @@ namespace TrendByPivotPointsOptimizator
                     GenerationsWithoutImprovement = generationsWithoutImprovement,
                     Population = population,
                 });
+
+                ReturnMemoryToSystem();
             }
 
             if (isGenerationsWithoutImprovement)
@@ -487,6 +490,24 @@ namespace TrendByPivotPointsOptimizator
             return Math.Round(median, 2);
         }
 
+        /// <summary>
+        /// Отдаёт системе память, набранную за поколение.
+        ///
+        /// Серверный сборщик мусора на машине с большой памятью не торопится: он
+        /// предпочитает занять у системы ещё, чем собирать, и процесс дорастал до
+        /// двадцати гигабайт при живых данных на единицы гигабайт. Поколение —
+        /// естественная граница: расчёт закончен, чек-поинт записан, всё
+        /// промежуточное мертво. Полная уплотняющая сборка здесь занимает секунды
+        /// против минут самого поколения, зато возвращает страницы системе и
+        /// приводит в порядок кучу больших объектов, которая иначе только
+        /// фрагментируется.
+        /// </summary>
+        private void ReturnMemoryToSystem()
+        {
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: true);
+        }
+
         private FitnessUniversal CreateFitness(SystemParameters parameters,
             ChromosomeUniversal chromosome, Starter starter, List<Bar> bars)
         {
@@ -537,6 +558,7 @@ namespace TrendByPivotPointsOptimizator
             var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares,
                 bars, ticker.Logger, ticker.CommissionRate);
             security.RateUSD = ticker.RateUSD;
+            security.SlippagePerSide = ticker.SlippagePerSide;
 
             return definition.CreateStarter(context, new List<Security>() { security }, logger);
         }

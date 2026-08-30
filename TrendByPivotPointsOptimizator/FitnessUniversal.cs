@@ -37,6 +37,10 @@ namespace TrendByPivotPointsOptimizator
         private readonly Starter starter;
         private int dealsCount;
         private Account account;
+
+        /// <summary>Счёт последнего прогона: по нему выгружается кривая капитала.
+        /// null, пока прогон не выполнен.</summary>
+        public Account Account { get { return account; } }
         private DealsStatistics tradeStatistics = new DealsStatistics();
 
         /// <summary>

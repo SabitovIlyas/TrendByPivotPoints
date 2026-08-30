@@ -124,7 +124,10 @@ namespace TradingSystems
             var totalCommission = exchangeCommission + brokerCommission;
             var reserve = 0.25 * totalCommission;
 
-            return totalCommission + reserve;            
+            //Проскальзывание задаётся в рублях, а не долей от цены: шаг цены —
+            //величина фиксированная, и процентная модель занижает его на низких
+            //ценах и завышает на высоких.
+            return totalCommission + reserve + Security.SlippagePerSide;
         }
 
         public double GetProfit()

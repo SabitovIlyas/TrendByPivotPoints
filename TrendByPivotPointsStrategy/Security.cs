@@ -58,6 +58,12 @@ namespace TradingSystems
         double[] LowPrices { get; }
         List<Bar> Bars { get; set; }
         double CommissionRate { get; }
+
+        /// <summary>Проскальзывание на одну сторону сделки, в единицах цены.
+        /// Комиссия задана долей от цены, а шаг цены — величина фиксированная,
+        /// поэтому проскальзывание задаётся отдельно и в рублях, а не процентом.</summary>
+        double SlippagePerSide { get; }
+
         Security GetClone();
     }
 }

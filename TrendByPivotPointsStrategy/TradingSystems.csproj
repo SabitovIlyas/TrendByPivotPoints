@@ -91,6 +91,7 @@
     <Compile Include="AccountTsLab.cs" />
     <Compile Include="AccountTsLabRt.cs" />
     <Compile Include="Bar.cs" />
+    <Compile Include="BarSeriesCache.cs" />
     <Compile Include="DealsStatistics.cs" />
     <Compile Include="BarCompressor.cs" />
     <Compile Include="Context.cs" />

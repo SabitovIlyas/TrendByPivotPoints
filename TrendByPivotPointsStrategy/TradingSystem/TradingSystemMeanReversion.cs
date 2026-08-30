@@ -115,13 +115,14 @@ namespace TradingSystems
             nonTradingPeriod = Math.Max(Math.Max(maPeriod, atrPeriod),
                 Math.Max(rsiEntryPeriod, rsiExitPeriod));
 
-            var closes = security.Bars.Select(b => b.Close).ToList();
-            sma = Series.SMA(closes, maPeriod);
-            rsiEntry = Series.RSI(closes, rsiEntryPeriod);
-            rsiExit = Series.RSI(closes, rsiExitPeriod);
+            //Ряды берём из кэша окна: оптимизатор гоняет по одному и тому же окну
+            //сотни наборов параметров, и раньше каждый прогон считал их заново.
+            var series = BarSeriesCache.For(security.Bars);
 
-            var candles = ConvertBarsForUsingInTsLabIndicators();
-            atr = Series.AverageTrueRange(candles, atrPeriod);
+            sma = series.Sma(maPeriod);
+            rsiEntry = series.Rsi(rsiEntryPeriod);
+            rsiExit = series.Rsi(rsiExitPeriod);
+            atr = series.AverageTrueRange(atrPeriod);
         }
 
         protected override void CheckPositionOpenLongCase(int positionNumber)
@@ -274,14 +275,6 @@ namespace TradingSystems
             Log("Обновляем стоп-заявку. Стоп-цена = {0}.", stopPrice);
             security.CloseAtStop(barNumber + 1, stopPrice, signalNameForClosePosition,
                 " Выход №1", position);
-        }
-
-        private IReadOnlyList<IDataBar> ConvertBarsForUsingInTsLabIndicators()
-        {
-            var candles = new ReadAndAddList<IDataBar>();
-            foreach (var bar in security.Bars)
-                candles.Add(bar);
-            return candles;
         }
 
         private int CountDecimalPlaces(double value)

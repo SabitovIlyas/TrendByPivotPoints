@@ -118,6 +118,10 @@ namespace TrendByPivotPointsOptimizator
         /// в рабочей папке оптимизатора.</summary>
         public string LogFile = string.Empty;
 
+        /// <summary>Куда выгрузить кривую капитала итогового прогона по всей
+        /// истории: капитал и просадка на каждом баре. Пусто — не выгружать.</summary>
+        public string EquityCurveFile = string.Empty;
+
         //Переопределение диапазонов поиска параметров стратегии
         //(строки вида «Range:имя:мин:макс:шаг»)
         public Dictionary<string, ParameterRange> ParameterRanges =

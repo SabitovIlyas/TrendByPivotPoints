@@ -245,6 +245,7 @@ namespace TrendByPivotPointsOptimizator
             var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares, ticker.Bars,
                                 ticker.Logger, ticker.CommissionRate);
             security.RateUSD = ticker.RateUSD;
+            security.SlippagePerSide = ticker.SlippagePerSide;
 
             return new TradingSystemParameters()
             {

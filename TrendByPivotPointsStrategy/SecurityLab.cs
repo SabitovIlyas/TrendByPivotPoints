@@ -25,6 +25,11 @@ namespace TradingSystems
         public double[] HighPrices { get; private set; }
         public double[] LowPrices { get; private set; }
         public double CommissionRate { get; }
+
+        /// <summary>Проскальзывание на сторону, в рублях. По умолчанию нуля:
+        /// прежние прогоны учитывали его долей внутри комиссии.</summary>
+        public double SlippagePerSide { get; set; } = 0;
+
         public double RateUSD { get; set; } = 1;
 
         private Currency currency;
@@ -97,15 +102,13 @@ namespace TradingSystems
 
         public void Initialize()
         {
-            HighPrices = new double[Bars.Count];
-            LowPrices = new double[Bars.Count];
-            var i = 0;
-            foreach (Bar bar in Bars)
-            {
-                HighPrices[i] = bar.High;
-                LowPrices[i] = bar.Low;
-                i++;
-            }
+            //Массивы цен берём из кэша окна: в оптимизаторе на одном окне создаются
+            //сотни бумаг за поколение, и каждая раскладывала бары заново. Массивы
+            //отдаются на чтение и меняться не должны.
+            var series = BarSeriesCache.For(Bars);
+            HighPrices = series.HighPrices;
+            LowPrices = series.LowPrices;
+
             mapping = new OrderToPositionMapping(Bars, this, logger);
             digitsAfterPoint = CountDecimalPlaces(Bars.First().Close);
         }
@@ -140,30 +143,35 @@ namespace TradingSystems
                     {
                         var res = new SecurityLab(currency, shares, logger, CommissionRate);
                         res.RateUSD = RateUSD;
+                        res.SlippagePerSide = SlippagePerSide;
                         return res;                        
                     }
                 case 1:
                     {
                         var res = new SecurityLab(currency, shares, GObuying, GOselling, logger);
                         res.RateUSD = RateUSD;
+                        res.SlippagePerSide = SlippagePerSide;
                         return res;                        
                     }
                 case 2:
                     {
                         var res = new SecurityLab(currency, shares, Bars, logger, CommissionRate);
                         res.RateUSD = RateUSD;
+                        res.SlippagePerSide = SlippagePerSide;
                         return res;                        
                     }
                 case 3:
                     {
                         var res = new SecurityLab(Name, currency, shares, GObuying, GOselling, Bars, logger);
                         res.RateUSD = RateUSD;
+                        res.SlippagePerSide = SlippagePerSide;
                         return res;                        
                     }
                 case 4:
                     {
                         var res = new SecurityLab(Name, currency, shares, Bars, logger, CommissionRate);
                         res.RateUSD = RateUSD;
+                        res.SlippagePerSide = SlippagePerSide;
                         return res; 
                     }
                 default:
