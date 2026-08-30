@@ -20,7 +20,13 @@ namespace TrendByPivotPointsOptimizator
             new ParameterDescriptor("fastDonchian", 10, 100),
             new ParameterDescriptor("slowDonchian", 10, 200),
             new ParameterDescriptor("atrPeriod", 2, 24),
-            new ParameterDescriptor("limitOpenedPositions", 1, 4),
+            //Число уровней пирамиды — переключатель режима, а не величина: одна
+            //позиция и пирамида это разные стратегии, вдобавок с разным риском на
+            //уровень. Сосед по нему сдвигался бы на треть диапазона (шаг сетки
+            //равен единице, меньше некуда) и давал четверть всего разброса
+            //окрестности — замер на 128 соседях показал вклад 0,21 против 0,17
+            //у следующей по величине оси.
+            new ParameterDescriptor("limitOpenedPositions", 1, 4, isCategorical: true),
             new ParameterDescriptor("kAtrForOpenPosition", 0.5, 3.0, step: 0.5, isInteger: false),
             new ParameterDescriptor("kAtrForStopLoss", 0.5, 3.0, step: 0.5, isInteger: false),
             //Выход по времени — отдельным переключателем, а не нулевой

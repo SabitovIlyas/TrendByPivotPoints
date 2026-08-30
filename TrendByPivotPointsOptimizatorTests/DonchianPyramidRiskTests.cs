@@ -64,5 +64,39 @@ namespace TrendByPivotPointsOptimizator.Tests
                 Assert.AreEqual(2, RiskFor(levels) * levels, 1e-9,
                     "Суммарный риск на сделку должен оставаться в пределах лимита.");
         }
+
+        [TestMethod()]
+        public void LevelsCountIsCategorical()
+        {
+            //Одна позиция и пирамида — разные стратегии, да ещё с разным риском на
+            //уровень. Сдвиг по этому гену давал четверть всего разброса окрестности
+            //(замер на 128 соседях: вклад 0,21 против 0,17 у следующей оси), потому
+            //что шаг сетки равен единице — треть диапазона, меньше сдвинуть нельзя.
+            var definition = new DonchianStrategyDefinition();
+            var levels = definition.Parameters.Find(p => p.Name == "limitOpenedPositions");
+
+            Assert.IsTrue(levels.IsCategorical,
+                "Число уровней пирамиды не должно сдвигаться при построении окрестности.");
+            Assert.AreEqual(1, levels.Min);
+            Assert.AreEqual(4, levels.Max);
+        }
+
+        [TestMethod()]
+        public void NeighbourhoodKeepsLevelsCount()
+        {
+            //Проверяем не флаг, а поведение: соседи обязаны сохранять число уровней.
+            var definition = new DonchianStrategyDefinition();
+            var builder = new NeighbourhoodBuilder(definition.Parameters, points: 32,
+                percent: 0.05, seed: 1);
+
+            var genes = new Dictionary<string, double>();
+            foreach (var parameter in definition.Parameters)
+                genes[parameter.Name] = (parameter.Min + parameter.Max) / 2;
+            genes["limitOpenedPositions"] = 2;
+
+            foreach (var neighbour in builder.Build("проверка", genes))
+                Assert.AreEqual(2, neighbour["limitOpenedPositions"], 1e-9,
+                    "Сосед сменил число уровней пирамиды — это другая стратегия, а не сосед.");
+        }
     }
 }
