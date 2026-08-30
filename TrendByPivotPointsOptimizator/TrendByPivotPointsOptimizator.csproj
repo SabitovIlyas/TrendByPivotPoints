@@ -85,6 +85,7 @@
     <Compile Include="Chromosome.cs" />
     <Compile Include="ChromosomeDonchianChannel.cs" />
     <Compile Include="ChromosomeMetrics.cs" />
+    <Compile Include="DealsWriter.cs" />
     <Compile Include="EquityCurveWriter.cs" />
     <Compile Include="ForwardSummary.cs" />
     <Compile Include="GaProgress.cs" />

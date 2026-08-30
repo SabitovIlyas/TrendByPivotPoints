@@ -528,6 +528,10 @@ namespace TrendByPivotPointsOptimizator
                         EquityCurveWriter.Write(bestPopulationLast.First(),
                             settings.EquityCurveFile, logger);
 
+                    if (!string.IsNullOrEmpty(settings.DealsFile))
+                        DealsWriter.Write(bestPopulationLast.First(),
+                            settings.DealsFile, logger);
+
                     state.BestGenes = bestPopulationLast.First().Genes;
                     state.FinalBackwardResult = tmpRes;
                     state.Stage = OptimizationCheckpoint.StageForward;
@@ -1127,6 +1131,7 @@ namespace TrendByPivotPointsOptimizator
                     case "SeedGenesFile": settings.SeedGenesFile = value; break;
                     case "LogFile": settings.LogFile = value; break;
                     case "EquityCurveFile": settings.EquityCurveFile = value; break;
+                    case "DealsFile": settings.DealsFile = value; break;
                     case "TrimHistory": settings.TrimHistory = ParseBool(value); break;
                     case "Range":
                         //Формат: Range:имя:мин:макс:шаг

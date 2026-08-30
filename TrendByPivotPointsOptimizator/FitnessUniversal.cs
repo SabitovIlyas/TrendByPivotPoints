@@ -41,6 +41,12 @@ namespace TrendByPivotPointsOptimizator
         /// <summary>Счёт последнего прогона: по нему выгружается кривая капитала.
         /// null, пока прогон не выполнен.</summary>
         public Account Account { get { return account; } }
+
+        private List<Position> deals;
+
+        /// <summary>Метасделки последнего прогона — того, что без пессимизации,
+        /// то есть стратегия такая, какой она торгуется. null до прогона.</summary>
+        public List<Position> Deals { get { return deals; } }
         private DealsStatistics tradeStatistics = new DealsStatistics();
 
         /// <summary>
@@ -175,6 +181,7 @@ namespace TrendByPivotPointsOptimizator
             //описывает стратегию такой, какой она торгуется.
             var metaDeals = security.GetMetaDeals();
             dealsCount = metaDeals.Count;
+            deals = metaDeals;
 
             //Сделки приходят в валюте инструмента, а счёт ведётся в валюте счёта:
             //приводим, иначе денежные показатели сделок и прибыль по счёту окажутся

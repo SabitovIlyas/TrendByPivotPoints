@@ -122,6 +122,10 @@ namespace TrendByPivotPointsOptimizator
         /// истории: капитал и просадка на каждом баре. Пусто — не выгружать.</summary>
         public string EquityCurveFile = string.Empty;
 
+        /// <summary>Куда выгрузить сделки итогового прогона: цены, объём, прибыль
+        /// и размах баров входа и выхода. Пусто — не выгружать.</summary>
+        public string DealsFile = string.Empty;
+
         //Переопределение диапазонов поиска параметров стратегии
         //(строки вида «Range:имя:мин:макс:шаг»)
         public Dictionary<string, ParameterRange> ParameterRanges =
