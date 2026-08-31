@@ -83,7 +83,15 @@ namespace TrendByPivotPointsStarter
             ContractsManager contractsManager;
             if (contracts <= 0)
             {
-                riskValuePrcnt = kAtrForStopLoss;
+                //Риск на сделку берётся из настроек. Раньше здесь стояло
+                //riskValuePrcnt = kAtrForStopLoss: настройка читалась, попадала в
+                //журнал и тут же затиралась множителем стопа. Из-за этого один ген
+                //задавал сразу две вещи — ширину стопа и размер позиции, причём они
+                //взаимно сокращались (контракты = риск% x капитал / (k x ATR), k
+                //уходит), так что позиция была одинаковой при любом стопе, а риск
+                //на сделку молча равнялся множителю: три ATR означали 3% на сделку.
+                //Деление риска между уровнями пирамиды по той же причине не
+                //работало вовсе — вычисленное значение затиралось здесь же.
                 var riskManager = new RiskManagerReal(Account, logger, riskValuePrcnt);
                 contractsManager = new ContractsManager(riskManager, Account, currency,
                 currencyConverter, shares, logger);

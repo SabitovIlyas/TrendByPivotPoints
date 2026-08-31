@@ -94,6 +94,7 @@
     <Compile Include="DrawdownTests.cs" />
     <Compile Include="HelperForClassForTestKeyWords.cs" />
     <Compile Include="BarSeriesCacheTests.cs" />
+    <Compile Include="PositionSizingTests.cs" />
     <Compile Include="SlippageTests.cs" />
     <Compile Include="MarketOrdersTests.cs" />
     <Compile Include="TradingSystemMeanReversionTests.cs" />
