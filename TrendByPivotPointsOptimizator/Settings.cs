@@ -126,6 +126,16 @@ namespace TrendByPivotPointsOptimizator
         /// и размах баров входа и выхода. Пусто — не выгружать.</summary>
         public string DealsFile = string.Empty;
 
+        /// <summary>Папка результатов уже посчитанного прогона, откуда взять гены
+        /// каждого форвардного окна (файлы *_Period_N.csv). Задана — оптимизатор
+        /// вместо поиска повторяет форвардные окна с готовыми генами и склеивает
+        /// кривую капитала. Пусто — обычный прогон с генетикой.</summary>
+        public string ReplayGenesFolder = string.Empty;
+
+        /// <summary>Основа имени файлов повторного прогона: к ней дописываются
+        /// «_проверка», «_сквозной» и «_окна».</summary>
+        public string ReplayCurveFile = string.Empty;
+
         //Переопределение диапазонов поиска параметров стратегии
         //(строки вида «Range:имя:мин:макс:шаг»)
         public Dictionary<string, ParameterRange> ParameterRanges =

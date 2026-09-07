@@ -87,6 +87,7 @@
     <Compile Include="ChromosomeMetrics.cs" />
     <Compile Include="DealsWriter.cs" />
     <Compile Include="EquityCurveWriter.cs" />
+    <Compile Include="ForwardReplay.cs" />
     <Compile Include="ForwardSummary.cs" />
     <Compile Include="GaProgress.cs" />
     <Compile Include="NeighbourhoodBuilder.cs" />

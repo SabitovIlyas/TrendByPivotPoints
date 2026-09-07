@@ -293,6 +293,18 @@ namespace TrendByPivotPointsOptimizator
 
                 LogSettings(settings, definition, logger);
 
+                //Повторный прогон форвардных окон — отдельный режим: гены уже
+                //найдены, генетику запускать не надо.
+                if (!string.IsNullOrEmpty(settings.ReplayGenesFolder))
+                {
+                    if (string.IsNullOrEmpty(settings.ReplayCurveFile))
+                        throw new Exception("Для повторного прогона нужна строка " +
+                            "ReplayCurveFile: куда писать склеенную кривую.");
+
+                    ReplayForwardWindows(settings, definition, logger);
+                    return;
+                }
+
                 Dictionary<string, double> seedGenes = null;
                 if (string.IsNullOrEmpty(settings.SeedGenesFile))
                     logger.Log("Затравочная хромосома не задана — стартовая популяция " +
@@ -1132,6 +1144,8 @@ namespace TrendByPivotPointsOptimizator
                     case "LogFile": settings.LogFile = value; break;
                     case "EquityCurveFile": settings.EquityCurveFile = value; break;
                     case "DealsFile": settings.DealsFile = value; break;
+                    case "ReplayGenesFolder": settings.ReplayGenesFolder = value; break;
+                    case "ReplayCurveFile": settings.ReplayCurveFile = value; break;
                     case "TrimHistory": settings.TrimHistory = ParseBool(value); break;
                     case "Range":
                         //Формат: Range:имя:мин:макс:шаг
@@ -1407,5 +1421,174 @@ namespace TrendByPivotPointsOptimizator
 
             return result;
         }        
+
+        /// <summary>
+        /// Прогоняет форвардные окна уже посчитанного прогона с его же генами и
+        /// склеивает кривую капитала в одну — ту, которой у сводного отчёта нет.
+        ///
+        /// Считается два раза. Сверочный проход даёт каждому окну тот же депозит,
+        /// что и исходный прогон: проценты по окнам обязаны совпасть с отчётом,
+        /// иначе повтору верить нельзя. Сквозной проход передаёт капитал из окна в
+        /// окно, так что размер позиции растёт вместе со счётом — это и есть кривая
+        /// счёта, торговавшего все периоды подряд.
+        /// </summary>
+        public void ReplayForwardWindows(Settings settings, StrategyDefinition definition,
+            Logger logger)
+        {
+            var securitiesData = GetSecuritiesData(settings.SecuritiesFile);
+            var loggerNull = new LoggerNull();
+            var tickers = CreateTickers(securitiesData, settings.SecuritiesFile, settings,
+                loggerNull, settings.TrimHistory, logger);
+
+            if (tickers.Count == 0)
+                throw new Exception("Не удалось загрузить ни одного инструмента из файла " +
+                    settings.SecuritiesFile);
+
+            var ticker = tickers.First();
+            var side = settings.Sides.First();
+            var timeFrame = settings.TimeFrames.First();
+            var reportName = ticker.Name + "_" + side + "_" + definition.Name;
+
+            logger.Log("Повторный прогон форвардных окон: {0}, окон {1}, гены из папки {2}",
+                reportName, settings.ForwardPeriodsCount, settings.ReplayGenesFolder);
+
+            var genesByPeriod = new Dictionary<int, Dictionary<string, double>>();
+            for (var period = 0; period < settings.ForwardPeriodsCount; period++)
+            {
+                var genesFile = Path.Combine(settings.ReplayGenesFolder,
+                    reportName + "_Period_" + period + ".csv");
+
+                if (!File.Exists(genesFile))
+                    throw new Exception("Не найден отчёт периода: " + genesFile +
+                        ". Повторить прогон можно только по папке результатов, где " +
+                        "посчитаны все периоды.");
+
+                genesByPeriod[period] = ForwardReplay.ReadGenes(genesFile, definition);
+            }
+
+            var startEquity = settings.Equity;
+
+            RunReplayPass(settings, definition, ticker, side, timeFrame, genesByPeriod,
+                carryEquity: false, startEquity: startEquity,
+                curveFile: settings.ReplayCurveFile + "_проверка.csv",
+                windowsFile: settings.ReplayCurveFile + "_проверка_окна.csv",
+                title: "сверочный проход (каждое окно с чистого депозита)", logger: logger);
+
+            RunReplayPass(settings, definition, ticker, side, timeFrame, genesByPeriod,
+                carryEquity: true, startEquity: startEquity,
+                curveFile: settings.ReplayCurveFile + "_сквозной.csv",
+                windowsFile: settings.ReplayCurveFile + "_сквозной_окна.csv",
+                title: "сквозной проход (капитал переходит из окна в окно)", logger: logger);
+
+            //Настройки — общий объект прогона, а проходы меняли в нём депозит.
+            settings.Equity = startEquity;
+        }
+
+        private void RunReplayPass(Settings settings, StrategyDefinition definition,
+            Ticker ticker, PositionSide side, Interval timeFrame,
+            Dictionary<int, Dictionary<string, double>> genesByPeriod, bool carryEquity,
+            double startEquity, string curveFile, string windowsFile, string title,
+            Logger logger)
+        {
+            logger.Log("");
+            logger.Log("--- {0} ---", title);
+
+            var context = new ContextLab();
+            var forwardAnalysis = new ForwardAnalysis(genAlg: null,
+                forwardPeriodDays: settings.ForwardDays,
+                backwardPeriodDays: settings.BackwardDays,
+                forwardPeriodsCount: settings.ForwardPeriodsCount,
+                shiftWindowDays: settings.ShiftWindowDays);
+
+            var curve = new List<ForwardReplay.CurvePoint>();
+            var windows = new List<ForwardReplay.WindowResult>();
+            var peak = double.MinValue;
+            var equity = startEquity;
+
+            //Периоды пронумерованы от свежего к старому, а счёт живёт наоборот:
+            //склеивать надо от самого старого окна к самому свежему.
+            for (var period = settings.ForwardPeriodsCount - 1; period >= 0; period--)
+            {
+                forwardAnalysis.Period = period;
+                var window = forwardAnalysis.CreateTradingPeriod(ticker.InitBars);
+                var bars = window.ForwardBars;
+
+                settings.Equity = carryEquity ? equity : startEquity;
+                var equityAtStart = settings.Equity;
+
+                var chromosome = new ChromosomeUniversal(ticker, timeFrame, side,
+                    genesByPeriod[period]);
+                chromosome.ForwardAnalysisResults.Add(window);
+
+                var security = new SecurityLab(ticker.Name, ticker.Currency, ticker.Shares,
+                    bars, ticker.Logger, ticker.CommissionRate);
+                security.RateUSD = ticker.RateUSD;
+                security.SlippagePerSide = ticker.SlippagePerSide;
+
+                var starter = definition.CreateStarter(context,
+                    new List<Security>() { security }, logger);
+                var parameters = definition.CreateSystemParameters(chromosome.Genes,
+                    ticker, side, timeFrame, settings);
+
+                var fitness = new FitnessUniversal(parameters, chromosome, starter, bars)
+                {
+                    PrcntDealForExclude = settings.ExcludeBestDealsPrcnt,
+                    MinDealsCount = settings.MinDealsCount,
+                    MaxDrawDownPrcnt = settings.MaxDrawDownPrcnt,
+                    MinWinRatePrcnt = settings.MinWinRatePrcnt,
+                    PenaltyPower = settings.PenaltyPower,
+                };
+
+                //Тот же вызов, что делает форвардный тест в самом прогоне: без
+                //исключения лучших сделок, то есть стратегия как она торгуется.
+                fitness.SetUpChromosomeFitnessValue(isCriteriaPassedNeedToCheck: false);
+
+                ForwardReplay.AppendWindow(curve, fitness.Account, bars, period + 1, ref peak);
+                equity = fitness.Account.Equity;
+
+                windows.Add(new ForwardReplay.WindowResult()
+                {
+                    Period = period + 1,
+                    Start = window.ForwardStart,
+                    End = window.ForwardEnd,
+                    StartEquity = equityAtStart,
+                    EndEquity = equity,
+                    ProfitPrcnt = chromosome.ProfitPrcnt,
+                    MaxDrawDownPrcnt = chromosome.MaxDrawDown,
+                    DealsCount = chromosome.DealsCount,
+                });
+
+                logger.Log("Период {0} ({1:dd.MM.yyyy}-{2:dd.MM.yyyy}): капитал {3:N0} -> " +
+                    "{4:N0}, прибыль {5:N2} %, просадка окна {6:N2} %, сделок {7}",
+                    period + 1, window.ForwardStart, window.ForwardEnd, equityAtStart,
+                    equity, chromosome.ProfitPrcnt, chromosome.MaxDrawDown,
+                    chromosome.DealsCount);
+            }
+
+            windows.Reverse();
+            ForwardReplay.WriteCurve(curve, curveFile);
+            ForwardReplay.WriteWindows(windows, windowsFile);
+
+            if (carryEquity)
+            {
+                var maxDrawdown = ForwardReplay.GetMaxDrawdownPrcnt(curve);
+                logger.Log("Итог прохода: капитал {0:N0} -> {1:N0} ({2:N1} %), " +
+                    "сквозная просадка {3:N2} %, баров в кривой {4}",
+                    startEquity, equity, (equity / startEquity - 1) * 100, maxDrawdown,
+                    curve.Count);
+            }
+            else
+            {
+                //Сквозной просадки у этого прохода нет: капитал каждого окна
+                //сбрасывается к исходному депозиту, и кривая — пила из сорока
+                //независимых кусков. Смысл прохода только в сверке процентов по
+                //окнам с отчётом исходного прогона.
+                logger.Log("Итог прохода: посчитано {0} окон, баров {1}. Проценты по " +
+                    "окнам сверяются с отчётом прогона; склеенной кривой у этого " +
+                    "прохода нет.", windows.Count, curve.Count);
+            }
+            logger.Log("Кривая: {0}", curveFile);
+            logger.Log("Окна: {0}", windowsFile);
+        }
     }
 }
