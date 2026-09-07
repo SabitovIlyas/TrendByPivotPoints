@@ -1466,6 +1466,8 @@ namespace TrendByPivotPointsOptimizator
                 genesByPeriod[period] = ForwardReplay.ReadGenes(genesFile, definition);
             }
 
+            VerifyWindowsMatchReport(settings, ticker, reportName, logger);
+
             var startEquity = settings.Equity;
 
             RunReplayPass(settings, definition, ticker, side, timeFrame, genesByPeriod,
@@ -1482,6 +1484,41 @@ namespace TrendByPivotPointsOptimizator
 
             //Настройки — общий объект прогона, а проходы меняли в нём депозит.
             settings.Equity = startEquity;
+        }
+
+        /// <summary>
+        /// Проверяет, что окна нарезаются там же, где их нарезал сам прогон.
+        /// Гены берутся из его отчётов, и на других отрезках они означают уже не то,
+        /// что означали. Ошибка здесь дешевле молча неверной кривой.
+        /// </summary>
+        private void VerifyWindowsMatchReport(Settings settings, Ticker ticker,
+            string reportName, Logger logger)
+        {
+            var summaryFile = Path.Combine(settings.ReplayGenesFolder, reportName + ".csv");
+            if (!File.Exists(summaryFile))
+                throw new Exception("Не найден сводный отчёт прогона: " + summaryFile +
+                    ". По нему сверяются границы окон, без него повтор может " +
+                    "посчитать старые гены на других отрезках.");
+
+            var report = ForwardReplay.ReadForwardWindows(summaryFile,
+                settings.ForwardPeriodsCount);
+
+            var forwardAnalysis = new ForwardAnalysis(genAlg: null,
+                forwardPeriodDays: settings.ForwardDays,
+                backwardPeriodDays: settings.BackwardDays,
+                forwardPeriodsCount: settings.ForwardPeriodsCount,
+                shiftWindowDays: settings.ShiftWindowDays);
+
+            for (var period = 0; period < settings.ForwardPeriodsCount; period++)
+            {
+                forwardAnalysis.Period = period;
+                var window = forwardAnalysis.CreateTradingPeriod(ticker.InitBars);
+                ForwardReplay.EnsureWindowMatchesReport(period, window.ForwardStart,
+                    window.ForwardEnd, report);
+            }
+
+            logger.Log("Границы всех {0} окон совпадают с отчётом прогона — котировки " +
+                "те же, гены относятся к тем же отрезкам.", settings.ForwardPeriodsCount);
         }
 
         private void RunReplayPass(Settings settings, StrategyDefinition definition,

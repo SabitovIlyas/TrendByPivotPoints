@@ -114,6 +114,7 @@
     <Compile Include="SettingsParsingTests.cs" />
     <Compile Include="MatrixCreatorTests.cs" />
     <Compile Include="OptimizatorTests.cs" />
+    <Compile Include="ForwardReplayTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

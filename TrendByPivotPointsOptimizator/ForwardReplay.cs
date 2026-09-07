@@ -45,6 +45,100 @@ namespace TrendByPivotPointsOptimizator
             public int DealsCount;
         }
 
+        /// <summary>Форвардное окно, как его записал сводный отчёт прогона.</summary>
+        public class ReportWindow
+        {
+            public DateTime Start;
+            public DateTime End;
+        }
+
+        /// <summary>
+        /// Читает даты форвардных окон из сводного отчёта прогона.
+        ///
+        /// Строки идут в том же порядке, что и периоды: первая строка данных —
+        /// период 0. Последняя строка отчёта описывает итоговый бэктест по всей
+        /// истории, форвардного окна у неё нет — такие строки пропускаем.
+        /// </summary>
+        public static Dictionary<int, ReportWindow> ReadForwardWindows(string fileName,
+            int periodsCount)
+        {
+            var lines = File.ReadAllLines(fileName, Encoding.UTF8);
+            var windows = new Dictionary<int, ReportWindow>();
+
+            for (var i = 1; i < lines.Length && windows.Count < periodsCount; i++)
+            {
+                var parts = SplitLine(lines[i]);
+                if (parts.Length < 8)
+                    continue;
+
+                var dates = parts[7].Split(new[] { " - " }, StringSplitOptions.None);
+                if (dates.Length != 2)
+                    continue;
+
+                DateTime start, end;
+                if (!TryParseDate(dates[0], out start) || !TryParseDate(dates[1], out end))
+                    continue;
+
+                //Строка итогового бэктеста: форвардных дат нет, стоят значения
+                //по умолчанию.
+                if (start == default(DateTime) || end == default(DateTime))
+                    continue;
+
+                windows[windows.Count] = new ReportWindow() { Start = start, End = end };
+            }
+
+            if (windows.Count < periodsCount)
+                throw new Exception("В отчёте " + fileName + " форвардных окон " +
+                    windows.Count + ", а нужно " + periodsCount +
+                    ". Повторить прогон можно только по папке, где посчитаны все периоды.");
+
+            return windows;
+        }
+
+        /// <summary>
+        /// Отчёт пишется в культуре машины, поэтому сначала пробуем её, а потом
+        /// инвариантную — чтобы файл читался и на машине с другими настройками.
+        /// </summary>
+        private static bool TryParseDate(string text, out DateTime value)
+        {
+            var trimmed = text.Trim();
+
+            return DateTime.TryParse(trimmed, CultureInfo.CurrentCulture,
+                       DateTimeStyles.None, out value)
+                || DateTime.TryParse(trimmed, CultureInfo.InvariantCulture,
+                       DateTimeStyles.None, out value);
+        }
+
+        /// <summary>
+        /// Сверяет нарезанное сейчас окно с тем, что записал отчёт прогона.
+        ///
+        /// Окна нарезаются от даты последнего бара, а котировки дописываются: стоит
+        /// добавить месяц истории — и все сорок окон уезжают. Гены при этом читаются
+        /// из отчётов старого прогона, и повтор молча посчитал бы старые параметры на
+        /// новых отрезках. Числа вышли бы правдоподобные и неверные, поэтому здесь
+        /// не предупреждение, а остановка.
+        /// </summary>
+        public static void EnsureWindowMatchesReport(int period, DateTime start,
+            DateTime end, Dictionary<int, ReportWindow> report)
+        {
+            ReportWindow expected;
+            if (!report.TryGetValue(period, out expected))
+                throw new Exception("В отчёте прогона нет форвардного окна для периода " +
+                    (period + 1) + ".");
+
+            if (expected.Start == start && expected.End == end)
+                return;
+
+            throw new Exception(string.Format(
+                "Окно периода {0} не совпадает с отчётом прогона: отчёт {1:dd.MM.yyyy}—" +
+                "{2:dd.MM.yyyy}, сейчас нарезано {3:dd.MM.yyyy}—{4:dd.MM.yyyy}. " +
+                "Скорее всего, котировки изменились после прогона — окна отсчитываются " +
+                "от последнего бара. Гены старого прогона на новых отрезках дадут " +
+                "правдоподобный и неверный результат, поэтому повтор остановлен. " +
+                "Повторяйте на тех же данных, на которых считался прогон.",
+                period + 1, expected.Start, expected.End, start, end));
+        }
+
         /// <summary>
         /// Читает гены лучшей хромосомы периода из отчёта *_Period_N.csv.
         /// Колонки ищутся по именам в заголовке, а не по номерам: порядок колонок
